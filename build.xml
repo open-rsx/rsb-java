@@ -79,7 +79,7 @@
 	
   <target name="test" depends="test-compile" description="JUnit tests">
   	<forget>
-  	        <exec executable="/vol/cit/sbin/spread">
+  	        <exec executable="${spread.daemon}">
   	            <arg line="-n localhost" />
   	        </exec>
   	    </forget>
