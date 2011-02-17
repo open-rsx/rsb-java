@@ -1,0 +1,94 @@
+<project name="RSBJava" default="dist" basedir=".">
+    <description>
+        Build file for Java Bindings of Robotics Service Bus Middleware
+    </description>
+	
+  <!-- set global properties for this build -->
+  <property name="src" location="spread-4.0.0;src"/>
+  <property name="build.dir" location="build/classes"/>
+  <property name="dist.dir"  location="dist"/>
+  <property name="test.dir"  location="build/test"/>
+  <property name="lib.dir" location="lib"/>
+  <property file="build.properties"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build.dir}"/>
+  	<mkdir dir="${build.dir}/classes"/>
+  	<mkdir dir="${build.dir}/test"/>
+  	<!-- Create library classpath -->
+  	<path id="compile.classpath">  
+  	    <pathelement path="${classpath}"/>
+        <pathelement location="${lib.dir}/protobuf-java-2.3.0.jar"/>	    	     	
+   </path>  
+  	<!-- Create test classpath -->
+  	<path id="test.classpath">
+	  	<path refid="compile.classpath"/>
+	  	<pathelement location="${lib.dir}/junit4-4.8.1.jar"/>
+  		<pathelement location="${lib.dir}/hamcrest-core.jar"/>
+	  	<pathelement location="${build.dir}"/>  		
+	  	<pathelement location="${test.dir}"/>
+  	</path>
+  </target>
+	
+  <target name="protocol">
+  	<exec executable="${pbuf.protoc}">
+  	  <arg value="--java_out=src" />
+  	  <arg value="--proto_path=${pbuf.protopath}" />
+  	  <arg value="${pbuf.protopath}/Attachment.proto" />
+  	  <arg value="${pbuf.protopath}/Notification.proto" />
+  	  <arg value="${pbuf.protopath}/introspection/PortStateChange.proto" />
+  	</exec>  	
+  </target>
+	
+  <target name="compile" depends="init, protocol"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build.dir}">
+    	<classpath refid="compile.classpath"/>
+    </javac>
+  </target>
+
+  <target name="test-compile" depends="compile">
+	<javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test">
+    	<classpath refid="test.classpath"/>
+	</javac>
+	<copy todir="${test.dir}">
+	  <fileset dir="test" excludes="**/*.java"/>
+	</copy>
+  </target>	
+	
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}/lib"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist.dir}/lib/RSBJava-${DSTAMP}.jar" basedir="${build.dir}/classes"/>
+  </target>
+	
+  <target name="test" depends="test-compile" description="JUnit tests">
+  <junit printsummary="yes" haltonfailure="yes">
+	        <formatter type="xml"/>	   
+  	<formatter type="plain" usefile="false"/>
+	  	<classpath refid="test.classpath"/>
+	        <batchtest fork="yes" todir="${dir.report.unittests.xml}">
+	                <fileset dir="test">
+	                        <include name="**/*Test*.java"/>
+	                </fileset>
+	        </batchtest>
+	</junit>
+  	</target>
+	
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build.dir}"/>
+  	<delete dir="${test.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+</project>
+
