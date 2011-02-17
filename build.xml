@@ -21,7 +21,7 @@
   	<!-- Create library classpath -->
   	<path id="compile.classpath">  
   	    <pathelement path="${classpath}"/>
-        <pathelement location="${lib.dir}/protobuf-java-2.3.0.jar"/>	    	     	
+        <pathelement location="${pbuf.lib}/"/>	    	     	
    </path>  
   	<!-- Create test classpath -->
   	<path id="test.classpath">
