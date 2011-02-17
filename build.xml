@@ -7,7 +7,7 @@
   <property name="src" location="spread-4.0.0;src"/>
   <property name="build.dir" location="build/classes"/>
   <property name="dist.dir"  location="dist"/>
-  <property name="test.dir"  location="build/test"/>
+  <property name="test.dir"  location="build/classes/test"/>
   <property name="lib.dir" location="lib"/>
   <property file="build.properties"/>
 
