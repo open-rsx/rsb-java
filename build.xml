@@ -10,6 +10,14 @@
   <property name="test.dir"  location="build/classes/test"/>
   <property name="lib.dir" location="lib"/>
   <property file="build.properties"/>
+	
+  <!-- set up ant-contrib -->
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	<classpath>
+	  <pathelement location="${lib.dir}/ant-contrib-1.0b3.jar"/>
+	</classpath>
+  </taskdef>
+	
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -70,6 +78,16 @@
   </target>
 	
   <target name="test" depends="test-compile" description="JUnit tests">
+  	<forget>
+  	        <exec executable="/vol/cit/sbin/spread">
+  	            <arg line="-n localhost" />
+  	        </exec>
+  	    </forget>
+
+  	    <waitfor maxwait="3" maxwaitunit="second"
+  	                checkevery="100" checkeveryunit="millisecond">
+  	    	<socket server="localhost" port="4803"/>
+  	    </waitfor>  	
   <junit printsummary="yes" haltonfailure="yes">
 	        <formatter type="xml"/>	   
   	<formatter type="plain" usefile="false"/>
