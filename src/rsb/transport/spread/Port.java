@@ -96,9 +96,11 @@ public class Port extends AbstractPort {
 		Attachment.Builder ab = Attachment.newBuilder();
 		nb.setEid(e.getUuid().toString());
 		nb.setTypeId("string");
-		nb.setUri(e.getUri());		
-		ByteBuffer bb = ByteBuffer.wrap(((String) e.getData()).getBytes()); 
-		nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));	
+		nb.setUri(e.getUri());
+		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
+		//ByteBuffer bb = ByteBuffer.wrap(((String) e.getData()).getBytes()); 
+		//nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));	
+		nb.setData(ab.setBinary(ByteString.copyFrom(((String) e.getData()).getBytes())));
 		nb.setStandalone(true);
 		Notification n = nb.build();
         log.info("push called, sending message on port infrastructure, event id: " + e.getUuid());
