@@ -12,9 +12,26 @@ import java.util.UUID;
  */
 public class RSBEvent {
 	
-	UUID uuid = UUID.randomUUID();
+	UUID uuid;
 	String type;
+	String uri;
 	Object data;
+	
+	public boolean hasID() {
+		return (uuid!=null) ? true : false;
+	}
+	
+	public UUID generateID() {
+		uuid = UUID.randomUUID();
+		return uuid;
+	}
+	
+	public UUID ensureID() {
+		if (!hasID()) {
+			generateID();
+		}
+		return uuid;
+	}
 	
 	/**
 	 * @return the type
@@ -72,16 +89,5 @@ public class RSBEvent {
 		this.uri = uri;
 	}
 
-	String uri;
-	
-	public void setUUID(UUID id) {
-		uuid = id;
-	}
-	
-	public UUID getUUID() {
-		return uuid;
-	}
-
-	
 
 }

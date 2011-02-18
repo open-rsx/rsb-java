@@ -4,11 +4,16 @@
  */
 package rsb.transport.spread;
 
+import java.nio.ByteBuffer;
 import java.util.logging.Logger;
+
+import com.google.protobuf.ByteString;
 
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
+import rsb.protocol.AttachmentPB.Attachment;
+import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractPort;
 import rsb.util.QueueClosedException;
 import spread.SpreadException;
@@ -86,9 +91,19 @@ public class Port extends AbstractPort {
     }
 
     public void push(RSBEvent e) {
-        // TODO 
+        // TODO refactor this
+		Notification.Builder nb = Notification.newBuilder();
+		Attachment.Builder ab = Attachment.newBuilder();
+		nb.setEid(e.getUuid().toString());
+		nb.setTypeId("string");
+		nb.setUri(e.getUri());		
+		ByteBuffer bb = ByteBuffer.wrap(((String) e.getData()).getBytes()); 
+		nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));	
+		nb.setStandalone(true);
+		Notification n = nb.build();
         log.info("push called, sending message on port infrastructure, event id: " + e.getUuid());
-        DataMessage dm = new DataMessage(e.getData().toString());
+        // TODO remove data message
+        DataMessage dm = new DataMessage(n.toByteArray());
         String[] groups = {"rsb://example/informer"};
         dm.setGroups(groups);
         spread.send(dm);
@@ -122,6 +137,7 @@ public class Port extends AbstractPort {
 
     public void deactivate() throws RSBException {
         if (spread.isActivated()) {
+        	log.info("deactivating SpreadPort");
             spread.deactivate();
         }
     }

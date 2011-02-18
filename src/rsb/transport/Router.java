@@ -38,8 +38,8 @@ public class Router {
 			log.severe("exception occured during port initialization for router");
 			throw new InitializeException(e); 
 		}		
-		epi.start();
-		epo.start();
+		//epi.start();
+		//epo.start();
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public class Router {
 	
 	public void publishSync(RSBEvent e) {
 		// send event sync?
-		// epo.dispatchEvent(e);
+		po.push(e);
 	}
 	
 	/**

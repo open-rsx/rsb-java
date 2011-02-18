@@ -21,13 +21,13 @@ public class DataMessage {
 	protected boolean selfDiscard = false;
 	
 	String[] groups;
-	String payload;
+	byte[] payload;
 	
-	public DataMessage(String d) {
+	public DataMessage(byte[] d) {
 		payload = d;
 	}
 
-	public DataMessage(String d, String[] grps) {
+	public DataMessage(byte[] d, String[] grps) {
 		groups = grps; 
 		payload = d;
 	}
@@ -49,11 +49,11 @@ public class DataMessage {
 		return false;
 	}
 	
-	public void setData(String d) {
+	public void setData(byte[] d) {
 		payload = d;
 	}
 	
-	public String getData() {
+	public byte[] getData() {
 		return payload;
 	}
 	

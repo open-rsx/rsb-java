@@ -1,5 +1,6 @@
 package rsb;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import rsb.transport.Router;
@@ -64,25 +65,28 @@ public class Publisher implements RSBObject {
 			p.state = new PublisherStateInactive(p);
 		}
 
-		protected void send(RSBEvent e) {
+		protected RSBEvent send(RSBEvent e) {		
+			e.setUri(name);
+			e.ensureID();
 			// TODO move event creation into factory?
-			// e.getMetadata().setEventID(UUID.randomUUID());
 		//	e.getMetadata().setSenderUri(uri);
 		//	e.getMetadata().setReceiverUri(receiverUri);
 			Timestamp now = new Timestamp();
 			//e.getMetadata().setCreatedAt(now);
 			//e.getMetadata().setUpdatedAt(now);
 			router.publishSync(e);
+			return e;
 		}
 		
 	}
 	
 	public Publisher(String name, TransportFactory tfac) {
 		state = new PublisherStateInactive(this);
+		this.name = name;
 //		manager = m;
 //		uri = new XcfUri(Configurator.getInstance().getInterfaceLocalUri(name));
 //		this.transportFactory = tfac;
-//		router = new Router(tfac);
+		router = new Router(tfac);
 		// find the root scope
 		// TO DO this has to be set in a better way from configuration
 //		XcfUri current = uri.getScope();
@@ -92,7 +96,7 @@ public class Publisher implements RSBObject {
 //		receiverUri = current;
 		// TODO what about multiple targets?
 		//receiverUri = new XcfUri(Configurator.getInstance().getFirstInterfaceRemoteUri(name));
-		log.fine("new publisher instance with URI: "); //+ uri.getUri());
+		log.fine("New publisher instance with URI " + name + " created"); //+ uri.getUri());
 	}
 
 	/**

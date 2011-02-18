@@ -310,7 +310,7 @@ public class SpreadWrapper implements RSBObject {
     		try {
     			SpreadMessage sm = new SpreadMessage();
     			sm.addGroups(msg.getGroups());
-    			sm.setData(msg.getData().getBytes());
+    			sm.setData(msg.getData());
 				conn.multicast(sm);
 				return true;
 			} catch (SpreadException e) {
@@ -408,8 +408,12 @@ public class SpreadWrapper implements RSBObject {
 				it.remove();
 			}
 			// close connection
-			makeConnection(MAN_PREFIX, true,false);
-			status = State.ACTIVATED;
+			try {
+				conn.disconnect();
+			} catch (SpreadException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

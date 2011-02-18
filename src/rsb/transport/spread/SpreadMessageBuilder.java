@@ -28,13 +28,13 @@ public class SpreadMessageBuilder {
 		return new RSBEvent();
 	}
 		
-	public DataMessage convert(RSBEvent e) {
-		// TODO serialize user types
-		String[] groups = new String[1];
-		groups[0] = group;
-		DataMessage m = new DataMessage(e.getData().toString(),groups);
-		return m;
-	}
+//	public DataMessage convert(RSBEvent e) {
+//		// TODO serialize user types
+//		String[] groups = new String[1];
+//		groups[0] = group;
+//		DataMessage m = new DataMessage(e.getData(),groups);
+//		return m;
+//	}
 	
 	static SpreadMessage convertDataMessage(DataMessage dmsg) throws SerializeException {
 		SpreadMessage msg = new SpreadMessage();
@@ -44,7 +44,7 @@ public class SpreadMessageBuilder {
 		msg.addGroups(dmsg.getGroups());
 		byte[] buf = null;
 		if (dmsg.getData()!=null) {
-			buf = dmsg.getData().getBytes();
+			buf = dmsg.getData();
 		}
 		if ((buf.length==0) || (buf.length>DataMessage.MAX_MESSAGE_LENGTH)) {
 			throw new SerializeException("Invalid Length of SpreadMessage (either null or larger than " + DataMessage.MAX_MESSAGE_LENGTH + " bytes)");
@@ -60,7 +60,7 @@ public class SpreadMessageBuilder {
 	static DataMessage convertSpreadMessage(SpreadMessage msg) {
 		if (!msg.isMembership()) {
 			DataMessage data = null;
-			data = new DataMessage(new String(msg.getData()));
+			data = new DataMessage(msg.getData());
 			SpreadGroup[] sg = msg.getGroups();
 			String[] grps = new String[sg.length];
 			for (int i = 0; i < grps.length; i++) {
