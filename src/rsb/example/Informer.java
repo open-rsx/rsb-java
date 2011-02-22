@@ -22,8 +22,6 @@ package rsb.example;
 
 import rsb.InitializeException;
 import rsb.Publisher;
-import rsb.RSBEvent;
-import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
@@ -37,15 +35,10 @@ public class Informer {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws InitializeException, InterruptedException {
-		TransportFactory tf = TransportFactory.getInstance();
-		Publisher p = new Publisher("rsb://example/informer", tf);
+		Publisher<String> p = new Publisher<String>("rsb://example/informer");
 		p.activate();
-		RSBEvent e = new RSBEvent("string");
 		for (int i = 0; i < 100; i++) {
-			e.generateID();
-			e.setData("<message uuid=\""+e.getUuid()+"\" val=\"Hello World!\" nr="+i+"\"/>");			
-			p.send(e);
-			Thread.sleep(1);
+			p.send("<message val=\"Hello World!\" nr="+i+"\"/>");
 		}
 		p.deactivate();
 	}

@@ -122,9 +122,14 @@ public class SpreadPort extends AbstractPort {
 		Notification n = nb.build();
         log.info("push called, sending message on port infrastructure, event id: " + e.getUuid());
         // TODO remove data message
-        DataMessage dm = new DataMessage(n.toByteArray());
-        String[] groups = {"rsb://example/informer"};
-        dm.setGroups(groups);
+        DataMessage dm = new DataMessage();
+        try {
+			dm.setData(n.toByteArray());
+		} catch (SerializeException e1) {
+			// TODO think about reasonable error handling
+			e1.printStackTrace();
+		}
+        dm.addGroup(e.getUri());
         spread.send(dm);
     }
 

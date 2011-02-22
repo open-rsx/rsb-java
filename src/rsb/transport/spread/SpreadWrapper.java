@@ -1,5 +1,22 @@
 /**
- * 
+ * ============================================================
+ *
+ * This file is a part of the RSBJava project
+ *
+ * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation;
+ * either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ============================================================
  */
 package rsb.transport.spread;
 
@@ -130,7 +147,15 @@ public class SpreadWrapper implements RSBObject {
     private BasicSynchronizedQueue<DataMessage,SpreadMessage> msgs = new BasicSynchronizedQueue<DataMessage,SpreadMessage>() {
 		@Override
 		public DataMessage convert(SpreadMessage sm) {
-			return SpreadMessageBuilder.convertSpreadMessage(sm);
+			DataMessage dm = null;
+			try {
+				dm = DataMessage.convertSpreadMessage(sm);
+			} catch (SerializeException e) {				
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			// TODO in this design, the router must be capable of handling null objects!
+			return dm;
 			
 		}    	
     }; 
@@ -308,13 +333,13 @@ public class SpreadWrapper implements RSBObject {
     	if (conn!=null) {
         	checkConnection();
     		try {
-    			SpreadMessage sm = new SpreadMessage();
-    			sm.addGroups(msg.getGroups());
-    			sm.setData(msg.getData());
-				conn.multicast(sm);
+				conn.multicast(msg.getSpreadMessage());
 				return true;
 			} catch (SpreadException e) {
-				log.warning("exception occurred during multicast send of message, reason: " + e.getMessage());
+				log.warning("SpreadException occurred during multicast send of message, reason: " + e.getMessage());
+				return false;
+			} catch (SerializeException e) {
+				log.warning("SerializeException occurred during multicast send of message, reason: " + e.getMessage());
 				return false;
 			}
     	} else {
