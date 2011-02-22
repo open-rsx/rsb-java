@@ -2,13 +2,13 @@ package rsb;
 
 import java.util.logging.Logger;
 
-public abstract class PublisherState {
+public abstract class PublisherState<T> {
 
 	private final static Logger log = Logger.getLogger(PublisherState.class.getName());
 	
-	protected Publisher p; 
+	protected Publisher<T> p; 
 	
-	protected PublisherState (Publisher ctx) {
+	protected PublisherState (Publisher<T> ctx) {
 		p = ctx;
 	}
 	
@@ -26,5 +26,10 @@ public abstract class PublisherState {
 		log.warning("invalid state exception during call to send");
 		throw new InvalidStateException("publisher not activated");
 	}
+	
+	protected RSBEvent send(T d) {
+		log.warning("invalid state exception during call to send");
+		throw new InvalidStateException("publisher not activated");
+	}	
 	
 }

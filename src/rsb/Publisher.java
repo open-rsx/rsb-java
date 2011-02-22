@@ -38,7 +38,7 @@ import rsb.transport.TransportFactory;
  * @author jschaefe
  *
  */
-public class Publisher implements RSBObject {
+public class Publisher<T> implements RSBObject {
 	
 	private final static Logger log = Logger.getLogger(Publisher.class.getName()); 
 
@@ -46,17 +46,20 @@ public class Publisher implements RSBObject {
 	protected String uri;
 
 	/* state variable for publisher instance */
-	protected PublisherState state;
+	protected PublisherState<T> state;
 
 	/* transport factory object */
 	protected TransportFactory transportFactory;
 	
+	/* default data type for this publisher */
+	protected String typeinfo; 
+	
 	/* transport router */
 	protected Router router;
 
-	protected class PublisherStateInactive extends PublisherState {
+	protected class PublisherStateInactive extends PublisherState<T> {
 
-		protected PublisherStateInactive(Publisher ctx) {
+		protected PublisherStateInactive(Publisher<T> ctx) {
 			super(ctx);
 		}
 		
@@ -67,9 +70,9 @@ public class Publisher implements RSBObject {
 		
 	}
 	
-	protected class PublisherStateActive extends PublisherState {
+	protected class PublisherStateActive extends PublisherState<T> {
 
-		protected PublisherStateActive(Publisher ctx) {
+		protected PublisherStateActive(Publisher<T> ctx) {
 			super(ctx);
 		}
 		
@@ -85,22 +88,39 @@ public class Publisher implements RSBObject {
 			return e;
 		}
 		
+		protected RSBEvent send(T d) {
+			RSBEvent e = new RSBEvent(typeinfo,(Object) d);
+			e.setUri(uri);
+			e.ensureID();
+			router.publishSync(e);
+			return e;
+		}		
+		
 	}
 
-	private void initMembers(String u, TransportFactory tfac) {
+	private void initMembers(String u, String t, TransportFactory tfac) {
 		state = new PublisherStateInactive(this);
 		this.transportFactory = tfac;
 		this.uri = u;
+		this.typeinfo = t;
 		router = new Router(transportFactory);
 		log.info("New publisher instance created: [URI:" + uri + ",State: Inactive]"); 		
 	}
-	
+
 	public Publisher(String u) {		 
-		initMembers(u, TransportFactory.getInstance());
+		initMembers(u, "string", TransportFactory.getInstance());
+	}
+	
+	public Publisher(String u, TransportFactory tfac) {		 
+		initMembers(u, "string", tfac);
 	}	
 	
-	public Publisher(String u, TransportFactory tfac) {
-		initMembers(u,tfac);
+	public Publisher(String u, String t) {		 
+		initMembers(u, t, TransportFactory.getInstance());
+	}	
+	
+	public Publisher(String u, String t, TransportFactory tfac) {
+		initMembers(u, t, tfac);
 	}
 
 	/**
@@ -122,10 +142,18 @@ public class Publisher implements RSBObject {
 	/**
 	 * Send an RSBEvent to all subscribed participants 
 	 */
-	public synchronized void send(RSBEvent e) {
-		state.send(e);
+	public synchronized RSBEvent send(RSBEvent e) {
+		return state.send(e);
 	}
 
+	/**
+	 * Send data (of type <T>) to all subscribed participants 
+	 */
+	public synchronized RSBEvent send(T d) {
+		return state.send(d);
+	}
+	
+	
 }
 	
 
