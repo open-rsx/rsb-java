@@ -18,36 +18,25 @@
  *
  * ============================================================
  */
-package rsb.example;
+package rsb.transport;
 
-import rsb.InitializeException;
-import rsb.Publisher;
-import rsb.RSBEvent;
-import rsb.transport.TransportFactory;
+import java.nio.ByteBuffer;
 
 /**
  * @author swrede
  *
  */
-public class Informer {
-
-	/**
-	 * @param args
-	 * @throws InitializeException 
-	 * @throws InterruptedException 
-	 */
-	public static void main(String[] args) throws InitializeException, InterruptedException {
-		TransportFactory tf = TransportFactory.getInstance();
-		Publisher p = new Publisher("rsb://example/informer", tf);
-		p.activate();
-		RSBEvent e = new RSBEvent("string");
-		for (int i = 0; i < 100; i++) {
-			e.generateID();
-			e.setData("<message uuid=\""+e.getUuid()+"\" val=\"Hello World!\" nr="+i+"\"/>");			
-			p.send(e);
-			Thread.sleep(1);
-		}
-		p.deactivate();
+public abstract class AbstractConverter {
+	
+	// TODO think about handling different wire formats
+	
+	String typeinfo;
+	
+	public abstract <T extends Object> ByteBuffer serialize(String typeinfo, T obj);
+	public abstract <T extends Object> T deserialize(String typeinfo, ByteBuffer b);
+	
+	String getTypeInfo() {
+			return typeinfo;
 	}
 
 }

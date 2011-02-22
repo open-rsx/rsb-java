@@ -92,7 +92,7 @@ public class Publisher implements RSBObject {
 		this.transportFactory = tfac;
 		this.uri = u;
 		router = new Router(transportFactory);
-		log.info("New publisher instance created: [URI:" + uri + ",State: Inactive"); 		
+		log.info("New publisher instance created: [URI:" + uri + ",State: Inactive]"); 		
 	}
 	
 	public Publisher(String u) {		 
