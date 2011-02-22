@@ -34,7 +34,9 @@ import rsb.protocol.AttachmentPB.Attachment;
 import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
+import rsb.transport.convert.ByteBufferConverter;
 import rsb.transport.convert.StringConverter;
+import rsb.util.Holder;
 import rsb.util.QueueClosedException;
 import spread.SpreadException;
 
@@ -63,7 +65,7 @@ public class SpreadPort extends AbstractPort {
      */
 
     SpreadWrapper spread = null;
-    Map<String, AbstractConverter<String>> converters = new HashMap<String, AbstractConverter<String>>();
+    Map<String, AbstractConverter<ByteBuffer>> converters = new HashMap<String, AbstractConverter<ByteBuffer>>();
 
     public SpreadPort(SpreadWrapper sw) {
         spread = sw;
@@ -103,17 +105,18 @@ public class SpreadPort extends AbstractPort {
     }
 
     public void push(RSBEvent e) {
-        // TODO refactor this
+        // TODO deal with missing converter    	
+    	AbstractConverter<ByteBuffer> c = converters.get(e.getType());
 		Notification.Builder nb = Notification.newBuilder();
 		Attachment.Builder ab = Attachment.newBuilder();
 		nb.setEid(e.getUuid().toString());
-		nb.setTypeId("string");
+		nb.setTypeId(e.getType());
 		nb.setUri(e.getUri());		
-		ByteBuffer bb = ByteBuffer.wrap(((String) e.getData()).getBytes());
 		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
-		//nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));		
-		ab.setBinary(ByteString.copyFrom(bb.array()));		
-		ab.setLength(bb.limit());
+		//nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));
+		Holder<ByteBuffer> bb = c.serialize("string",e.getData());
+		ab.setBinary(ByteString.copyFrom(bb.value.array()));		
+		ab.setLength(bb.value.limit());
 		nb.setData(ab.build());
 		nb.setStandalone(true);
 		Notification n = nb.build();
@@ -164,7 +167,7 @@ public class SpreadPort extends AbstractPort {
 		return "SpreadPort";
 	}
 
-	public void addConverter(String s, AbstractConverter<String> c) {
-		converters.put(s, c);		
+	public void addConverter(String s, ByteBufferConverter bbc) {
+		converters.put(s, bbc);		
 	}
 }

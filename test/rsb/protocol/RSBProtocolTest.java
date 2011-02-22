@@ -5,8 +5,6 @@ package rsb.protocol;
 
 import static org.junit.Assert.*;
 
-import java.util.logging.Logger;
-
 import org.junit.Test;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -19,8 +17,6 @@ import rsb.protocol.NotificationPB.Notification;
  *
  */
 public class RSBProtocolTest {
-	
-	private final static Logger log = Logger.getLogger(RSBProtocolTest.class.getName());	
 	
 	@Test
 	public void testNotification() {

@@ -5,7 +5,6 @@ package rsb.transport;
 
 import rsb.RSBEvent;
 import rsb.RSBObject;
-import rsb.transport.convert.StringConverter;
 
 /**
  * @author swrede

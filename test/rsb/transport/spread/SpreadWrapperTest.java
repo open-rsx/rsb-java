@@ -3,9 +3,9 @@
  */
 package rsb.transport.spread;
 
-import static org.junit.Assert.*;
-
-import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -16,8 +16,6 @@ import rsb.InitializeException;
  *
  */
 public class SpreadWrapperTest {
-
-	private final static Logger log = Logger.getLogger(SpreadWrapperTest.class.getName());
 	
 	/**
 	 * Test method for {@link rsb.transport.spread.SpreadWrapper#SpreadWrapper()}.

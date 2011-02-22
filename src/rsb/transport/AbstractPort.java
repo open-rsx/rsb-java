@@ -5,7 +5,6 @@
 package rsb.transport;
 
 import rsb.RSBEvent;
-import rsb.RSBObject;
 
 /**
  *
