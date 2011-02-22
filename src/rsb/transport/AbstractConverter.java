@@ -20,23 +20,20 @@
  */
 package rsb.transport;
 
-import java.nio.ByteBuffer;
+import rsb.util.Holder;
 
 /**
  * @author swrede
  *
+ * AbstractConverter<T> represents a converter interface for 
+ * a wire format T. Implementations may support one or more
+ * domain types for (de-)serialization to T and back to a 
+ * specific object type referenced through the typeinfo parameter.
+ * 
  */
-public abstract class AbstractConverter {
+public interface AbstractConverter<T> {
 	
-	// TODO think about handling different wire formats
-	
-	String typeinfo;
-	
-	public abstract <T extends Object> ByteBuffer serialize(String typeinfo, T obj);
-	public abstract <T extends Object> T deserialize(String typeinfo, ByteBuffer b);
-	
-	String getTypeInfo() {
-			return typeinfo;
-	}
+	public Holder<T> serialize(String typeinfo, Object obj);
+	public Holder<Object> deserialize(String typeinfo, Holder<T> buffer);	
 
 }

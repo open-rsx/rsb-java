@@ -5,7 +5,9 @@
 
 package rsb.transport.spread;
 
+import rsb.transport.Port;
 import rsb.transport.TransportFactory;
+import rsb.transport.convert.StringConverter;
 
 /**
  *
@@ -26,9 +28,10 @@ public class SpreadFactory extends TransportFactory {
 	
 	@Override
 	public Port createPort() {
-		// TODO check port multiplicity 
-		return new Port(new SpreadWrapper());
-		//return new Port(this.getSpreadWrapper());
+		// TODO check port multiplicity
+		SpreadPort sp = new SpreadPort(new SpreadWrapper());
+		sp.addConverter("string", new StringConverter());
+		return sp;
 	}
 	
 }

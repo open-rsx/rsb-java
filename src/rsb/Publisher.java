@@ -74,6 +74,7 @@ public class Publisher<T> implements RSBObject {
 
 		protected PublisherStateActive(Publisher<T> ctx) {
 			super(ctx);
+			log.info("Publisher instance activated: [URI:" + uri + ",State:Active,Type:" + typeinfo +"]"); 	
 		}
 		
 		protected void deactivate() {
@@ -104,7 +105,7 @@ public class Publisher<T> implements RSBObject {
 		this.uri = u;
 		this.typeinfo = t;
 		router = new Router(transportFactory);
-		log.info("New publisher instance created: [URI:" + uri + ",State: Inactive]"); 		
+		log.info("New publisher instance created: [URI:" + uri + ",State:Inactive,Type:" + typeinfo +"]"); 		
 	}
 
 	public Publisher(String u) {		 

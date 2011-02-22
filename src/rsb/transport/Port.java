@@ -5,6 +5,7 @@ package rsb.transport;
 
 import rsb.RSBEvent;
 import rsb.RSBObject;
+import rsb.transport.convert.StringConverter;
 
 /**
  * @author swrede
@@ -12,6 +13,8 @@ import rsb.RSBObject;
  */
 public interface Port extends RSBObject {
 
-    public void push(RSBEvent e);	
+    public void push(RSBEvent e);
+
+	public String getType();
 	
 }

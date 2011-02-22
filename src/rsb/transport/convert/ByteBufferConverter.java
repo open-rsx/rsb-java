@@ -20,6 +20,8 @@
  */
 package rsb.transport.convert;
 
+import java.nio.ByteBuffer;
+
 import rsb.transport.AbstractConverter;
 import rsb.util.Holder;
 
@@ -27,36 +29,24 @@ import rsb.util.Holder;
  * @author swrede
  *
  */
-public class StringConverter implements AbstractConverter<String> {
+public class ByteBufferConverter implements AbstractConverter<ByteBuffer> {
 
-	// TODO throw exceptions instead returning null
-	
-	/* 
-	 * Converts Strings to String representations...
-	 * 
-	 * @param typeinfo name of type to be serialized
-	 * @param s object object to be serizalied to String encoding
-	 */
 	@Override
-	public Holder<String> serialize(String typeinfo, Object s) {
-		if (typeinfo.equals("string")) {
-			return new Holder<String>((String) s);
+	public Holder<Object> deserialize(String typeinfo,
+			Holder<ByteBuffer> buffer) {
+		if (typeinfo.equals("string")) {			
+			return new Holder<Object>(new String(buffer.value.array()));
 		}
 		return null;
 	}
 
-	/* 
-	 * Converts String representations to Strings...
-	 * 
-	 * @param typeinfo name of type to be deserialized
-	 * @param s string representation of object to be deserialized
-	 */
 	@Override
-	public Holder<Object> deserialize(String typeinfo, Holder<String> s) {
-		if (typeinfo.equals("string")) {			
-			return new Holder<Object>(s.value);
+	public Holder<ByteBuffer> serialize(String typeinfo, Object s) {
+		if (typeinfo.equals("string")) {
+			ByteBuffer bb = ByteBuffer.wrap(((String) s).getBytes());
+			return new Holder<ByteBuffer>(bb);
 		}
 		return null;
-	}	
-	
+	}
+
 }

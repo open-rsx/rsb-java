@@ -21,6 +21,8 @@
 package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.protobuf.ByteString;
@@ -30,7 +32,9 @@ import rsb.RSBEvent;
 import rsb.RSBException;
 import rsb.protocol.AttachmentPB.Attachment;
 import rsb.protocol.NotificationPB.Notification;
+import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
+import rsb.transport.convert.StringConverter;
 import rsb.util.QueueClosedException;
 import spread.SpreadException;
 
@@ -38,9 +42,9 @@ import spread.SpreadException;
  *
  * @author swrede
  */
-public class Port extends AbstractPort {
+public class SpreadPort extends AbstractPort {
 
-	private final static Logger log = Logger.getLogger(Port.class.getName());
+	private final static Logger log = Logger.getLogger(SpreadPort.class.getName());
 	
     /**
      * Protocol for optimization based on registered filters:
@@ -57,17 +61,11 @@ public class Port extends AbstractPort {
      *   XPathFilter: no way to optimize this on the Port
      * 
      */
-   // protected static XcfLog log = XcfLog.create("Transport.Spread");
-    SpreadWrapper spread = null;
-//    UriTranslator translator = new UriTranslator();
-//    HashMap<XcfUri, IdentityFilter> identityFilters = new HashMap<XcfUri, IdentityFilter>();
-    /* reference counting for groups that may have multiple filters. */
-    // this is necessary because filters for the same scope or port may be added
-    // multiple times but the spread group is joined only once and left only if
-    // all filters for that group have been removed
-   // HashMap<String, LinkedList<MTF>> groupReferences = new HashMap<String, LinkedList<MTF>>();
 
-    public Port(SpreadWrapper sw) {
+    SpreadWrapper spread = null;
+    Map<String, AbstractConverter<String>> converters = new HashMap<String, AbstractConverter<String>>();
+
+    public SpreadPort(SpreadWrapper sw) {
         spread = sw;
     }
 
@@ -114,7 +112,7 @@ public class Port extends AbstractPort {
 		ByteBuffer bb = ByteBuffer.wrap(((String) e.getData()).getBytes());
 		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
 		//nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));		
-		ab.setBinary(ByteString.copyFrom(bb.array()));
+		ab.setBinary(ByteString.copyFrom(bb.array()));		
 		ab.setLength(bb.limit());
 		nb.setData(ab.build());
 		nb.setStandalone(true);
@@ -159,9 +157,14 @@ public class Port extends AbstractPort {
             spread.deactivate();
         }
     }
+    
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return "SpreadPort";
+	}
 
-    public String getInfo() {
-        // TODO Auto-generated method stub
-        return this.getClass().getSimpleName();
-    }
+	public void addConverter(String s, AbstractConverter<String> c) {
+		converters.put(s, c);		
+	}
 }
