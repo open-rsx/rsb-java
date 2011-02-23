@@ -5,7 +5,7 @@
 	
   <!-- set global properties for this build -->
   <property name="src" location="spread-4.0.0;src;rsb-xml"/>
-  <property name="build.dir" location="build/classes"/>
+  <property name="build.dir" location="build"/>
   <property name="dist.dir"  location="dist"/>
   <property name="test.dir"  location="build/classes/test"/>
   <property name="lib.dir" location="lib"/>
@@ -55,7 +55,7 @@
   <target name="compile" depends="init, protocol"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build.dir}">
+    <javac srcdir="${src}" destdir="${build.dir}/classes">
     	<classpath refid="compile.classpath"/>
     </javac>
   </target>
