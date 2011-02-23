@@ -22,23 +22,27 @@ package rsb.example;
 
 import rsb.InitializeException;
 import rsb.Publisher;
+import rsb.transport.XOPData;
+import rsb.xml.SyntaxException;
 
 /**
  * @author swrede
  *
  */
-public class Informer {
+public class XMLInformer {
 
 	/**
 	 * @param args
 	 * @throws InitializeException 
 	 * @throws InterruptedException 
+	 * @throws SyntaxException 
 	 */
-	public static void main(String[] args) throws InitializeException, InterruptedException {
+	public static void main(String[] args) throws InitializeException, InterruptedException, SyntaxException {
 		Publisher<String> p = new Publisher<String>("rsb://example/informer");
 		p.activate();
 		for (int i = 0; i < 100; i++) {
-			p.send("<message val=\"Hello World!\" nr=\""+i+"\"/>");
+			XOPData xop = XOPData.fromString("<message val=\"Hello World!\" nr=\""+i+"\"/>");			
+			p.send(xop.getDocumentAsText());
 		}
 		p.deactivate();
 	}
