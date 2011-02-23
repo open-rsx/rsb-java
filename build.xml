@@ -7,7 +7,7 @@
   <property name="src" location="spread-4.0.0;src;rsb-xml"/>
   <property name="build.dir" location="build"/>
   <property name="dist.dir"  location="dist"/>
-  <property name="test.dir"  location="build/classes/test"/>
+  <property name="test.dir"  location="build/test"/>
   <property name="lib.dir" location="lib"/>
   <property file="build.properties"/>
 	
@@ -37,7 +37,7 @@
 	  	<path refid="compile.classpath"/>
 	  	<pathelement location="${lib.dir}/junit4-4.8.1.jar"/>
   		<pathelement location="${lib.dir}/hamcrest-core.jar"/>
-	  	<pathelement location="${build.dir}"/>  		
+	  	<pathelement location="${build.dir}/classes"/>  		
 	  	<pathelement location="${test.dir}"/>
   	</path>
   </target>
@@ -106,6 +106,7 @@
         description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build.dir}"/>
+  	<delete dir="src/rsb/protocol"/>
   	<delete dir="${test.dir}"/>
     <delete dir="${dist.dir}"/>
   </target>
