@@ -4,7 +4,7 @@
     </description>
 	
   <!-- set global properties for this build -->
-  <property name="src" location="spread-4.0.0;src"/>
+  <property name="src" location="spread-4.0.0;src;rsb-xml"/>
   <property name="build.dir" location="build/classes"/>
   <property name="dist.dir"  location="dist"/>
   <property name="test.dir"  location="build/classes/test"/>
@@ -29,7 +29,8 @@
   	<!-- Create library classpath -->
   	<path id="compile.classpath">  
   	    <pathelement path="${classpath}"/>
-        <pathelement location="${pbuf.lib}/"/>	    	     	
+        <pathelement location="${pbuf.lib}/"/>
+  		<pathelement location="${xom.lib}/"/>	    	
    </path>  
   	<!-- Create test classpath -->
   	<path id="test.classpath">

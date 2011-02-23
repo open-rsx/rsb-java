@@ -346,26 +346,6 @@ public class SpreadWrapper implements RSBObject {
     		return false;
     	}
     }
-
-    public boolean send(SpreadMessage msg) {
-    	// TODO check whether we should rethrow the exceptions
-    	if (conn!=null) {
-    		try {
-    			//System.err.println("multicasting msg to group: " + msg.getGroups()[0] );
-				conn.multicast(msg);
-				return true;
-			} catch (SpreadException e) {
-				e.printStackTrace();
-				return false;
-			}
-    	} else {
-    		return false;
-    	}
-    }
-
-//    public DataMessage receive() throws InterruptedException {
-//    	return receive(-1);
-//    }
     
     public DataMessage next() throws InterruptedException {
     	return next(-1);
@@ -376,12 +356,6 @@ public class SpreadWrapper implements RSBObject {
     	log.info("Current data message qeue size: " + msgs.getSize() );
     	return msgs.next(timeout);
     }    
-    
-//    public DataMessage receive(long timeout) throws InterruptedException {
-//    	if ((conn != null) && !conn.isConnected() && !shutdown) log.error("lost connection to spread daemon");
-//    	log.debug("Current data message qeue size: " + msgs.getSize() );
-//    	return msgs.next(timeout);
-//    }
 
     public MembershipMessage receiveMembershipMessage() throws InterruptedException {    	
     	return receiveMembershipMessage(-1);
