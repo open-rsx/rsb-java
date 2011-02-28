@@ -33,21 +33,21 @@ import rsb.filter.Subscription;
  * @author swrede
  *
  */
-public class EventDispatcher extends ThreadPoolExecutor {
+public class EventProcessor extends ThreadPoolExecutor {
 	
 	// TODO add support for single threaded, queue receive, pull style, lazy evaluation
 	// TODO refactor to use ThreadPoolExecutor as delegate, not as derived class
 	
-	Logger log = Logger.getLogger(EventDispatcher.class.getName());
+	Logger log = Logger.getLogger(EventProcessor.class.getName());
 	ConcurrentLinkedQueue<Subscription> subscriptions = new ConcurrentLinkedQueue<Subscription>();
 	
-	public EventDispatcher() {
+	public EventProcessor() {
 		super( 1, 1, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100) );
 		log.info("Creating ThreadPool with size: 1 (1)");
 		this.prestartAllCoreThreads();
 	}
 		
-	public EventDispatcher(int coreThreads, int maxThreads, int maxQueue) {
+	public EventProcessor(int coreThreads, int maxThreads, int maxQueue) {
 		super( coreThreads, maxThreads, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(maxQueue) );
 		
 		//Properties.getInstance().getPropertyAsInt("XCF.ThreadPool.Size"),

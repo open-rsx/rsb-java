@@ -22,10 +22,10 @@ package rsb.transport;
 
 import java.util.logging.Logger;
 
-import rsb.EventProcessor;
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
+import rsb.event.EventProcessor;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
@@ -37,15 +37,17 @@ public class Router extends FilterObservable {
 
 	protected Port pi;
 	protected Port po;
-	protected EventProcessor epi;
-	protected EventProcessor epo;
-	//protected EventQueue eq = new EventQueue();
+	protected EventProcessor ep;
+	// protected EventProcessor epo;
+	// protected EventQueue eq = new EventQueue();
 
 	public Router(TransportFactory f) {
     	// router setup
 		pi = (Port) f.createPort();
+		pi.setRouter(this);
 		po = (Port) f.createPort();
 		addObserver(pi);
+
     	//epi = new EventProcessor("EP In ["+this.toString()+"]",pi);
     	//epi.addObserver(pi);
     	//epo = new EventProcessor("EP Out ["+this.toString()+"]",eq);
@@ -59,6 +61,8 @@ public class Router extends FilterObservable {
 		try {
 			pi.activate();
 			po.activate();
+			// TODO make this configurable
+			ep = new EventProcessor(1, 10, 1000);			
 		} catch (RSBException e) {
 			log.severe("exception occured during port initialization for router");
 			throw new InitializeException(e); 
@@ -74,7 +78,7 @@ public class Router extends FilterObservable {
 	public void publish(RSBEvent e) {
 		// send event async
 		throw new RuntimeException("Router::publish method not implemented!");
-	}
+	}	
 	
 	public void publishSync(RSBEvent e) {
 		// send event sync?
@@ -90,6 +94,7 @@ public class Router extends FilterObservable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		ep.waitForShutdown();
 	
 //		epi.interrupt();
 //		epo.interrupt();
@@ -116,8 +121,12 @@ public class Router extends FilterObservable {
 //	epi.remove(sub, sink);
 //}
 //
-//public void unsubscribe(Subscription sub, Port p) {
-//	epo.remove(sub, p);
-//}
+	public void unsubscribe(Subscription sub) {
+		ep.removeSubscription(sub);
+	}
+
+	public void deliver(RSBEvent e) {
+		ep.fire(e);
+	}
 	
 }

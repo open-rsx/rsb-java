@@ -34,6 +34,6 @@ import rsb.util.Holder;
 public interface AbstractConverter<T> {
 	
 	public Holder<T> serialize(String typeinfo, Object obj);
-	public Holder<Object> deserialize(String typeinfo, Holder<T> buffer);	
+	public Holder<Object> deserialize(String typeinfo, T buffer);	
 
 }

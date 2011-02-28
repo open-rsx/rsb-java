@@ -69,7 +69,8 @@ public class EventIdTest {
 	public void testToString() {
 		EventId id = EventId.generateId();
 		String s = id.toString();
-		assertTrue(s.equals("rsb:eid:"+id.id.toString()));		
+		//assertTrue(s.equals("rsb:eid:"+id.id.toString()));		
+		assertTrue(s.equals(id.id.toString()));
 	}
 
 	/**

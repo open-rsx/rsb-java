@@ -54,7 +54,7 @@ public class ByteBufferConverterTest {
 		String s1 = "testcase";
 		Holder<ByteBuffer> buf = c.serialize("string", s1);
 		assertNotNull(buf);		
-		String s2 = (String) c.deserialize("string", buf).value;
+		String s2 = (String) c.deserialize("string", buf.value).value;
 		assertTrue(s1.equals(s2));		
 	}	
 	

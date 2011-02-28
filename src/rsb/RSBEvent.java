@@ -101,6 +101,9 @@ public class RSBEvent {
 		this.uri = uri;
 	}
 
+	public void setId(EventId id) {
+		this.id = id;
+	}	
 
 	public EventId getId() {
 		return id;

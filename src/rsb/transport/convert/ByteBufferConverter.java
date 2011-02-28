@@ -33,9 +33,9 @@ public class ByteBufferConverter implements AbstractConverter<ByteBuffer> {
 
 	@Override
 	public Holder<Object> deserialize(String typeinfo,
-			Holder<ByteBuffer> buffer) {
+			ByteBuffer buffer) {
 		if (typeinfo.equals("string")) {			
-			return new Holder<Object>(new String(buffer.value.array()));
+			return new Holder<Object>(new String(buffer.array()));
 		}
 		return null;
 	}

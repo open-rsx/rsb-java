@@ -44,7 +44,7 @@ public class SpreadFactory extends TransportFactory {
 	@Override
 	public Port createPort() {
 		// TODO check port multiplicity
-		SpreadPort sp = new SpreadPort(new SpreadWrapper());
+		SpreadPort sp = new SpreadPort(new SpreadWrapper());		
 		sp.addConverter("string", new ByteBufferConverter());
 		return sp;
 	}

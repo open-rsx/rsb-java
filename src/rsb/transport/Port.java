@@ -16,5 +16,7 @@ public interface Port extends RSBObject,FilterObserver {
     public void push(RSBEvent e);
 
 	public String getType();
+
+	public void setRouter(Router router);
 	
 }

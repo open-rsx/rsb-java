@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.protobuf.ByteString;
-
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
@@ -38,14 +36,17 @@ import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
 import rsb.transport.convert.ByteBufferConverter;
 import rsb.util.Holder;
-import rsb.util.QueueClosedException;
 import spread.SpreadException;
+
+import com.google.protobuf.ByteString;
 
 /**
  *
  * @author swrede
  */
 public class SpreadPort extends AbstractPort {
+	
+	ReceiverTask receiver;
 
 	private final static Logger log = Logger.getLogger(SpreadPort.class.getName());
 	
@@ -73,10 +74,14 @@ public class SpreadPort extends AbstractPort {
     }
 
     public void activate() throws InitializeException {
+        receiver = new ReceiverTask(spread,r,converters);
         // activate spread connection
         if (!spread.isActivated()) {
             spread.activate();
         }
+        receiver.setPriority(Thread.NORM_PRIORITY+2);
+        receiver.setName("ReceiverTask [name="+spread.getName()+",grp="+ spread.getPrivateGroup() +"]");
+        receiver.start();	
     }
 
     /* (non-Javadoc)
@@ -101,32 +106,6 @@ public class SpreadPort extends AbstractPort {
 		}
 		log.info("SpreadPort::notify(ScopeFilter e, FilterAction a called");
 	}
-
-	public RSBEvent next() throws InterruptedException {
-        RSBEvent me = null;
-        // repeat until next event was successfully decoded or
-        // an exception is thrown
-        // TODO add better handling of inactive state
-        while (me == null) {
-            try {
-                DataMessage msg = spread.next();
-                log.info("Message received from Spread");
-                if (msg == null) {
-                    log.info("received null message from port, will be ignored");
-                } else {
-                    // TODO deserialize notification
-                	me = new RSBEvent("string",msg.getData());
-                }
-            } catch (QueueClosedException e) {
-                log.info("SpreadWrapper's message queues were closed");
-                throw new InterruptedException("Port next was interrupted");
-            } catch (java.lang.InterruptedException e) {
-                // TODO Auto-generated catch block
-                throw new InterruptedException("Port next was interrupted");
-            }
-        }
-        return me;
-    }
 
     public void push(RSBEvent e) {
         // TODO deal with missing converter    	
@@ -188,6 +167,12 @@ public class SpreadPort extends AbstractPort {
         	log.info("deactivating SpreadPort");
             spread.deactivate();
         }
+        try {
+			receiver.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
 	@Override

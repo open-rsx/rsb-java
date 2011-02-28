@@ -46,11 +46,13 @@ public class EventId {
 	}
 	
 	public EventId(String sid) {
-		id = UUID.fromString(sid.substring(8));
+		// id = UUID.fromString(sid.substring(8));
+		id = UUID.fromString(sid);
 	}
 	
 	public String toString() {
-		return "rsb:eid:"+id.toString();
+		//return "rsb:eid:"+id.toString();
+		return id.toString();
 	}
 	
 	public static EventId generateId() {		

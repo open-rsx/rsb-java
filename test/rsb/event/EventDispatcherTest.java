@@ -49,41 +49,41 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventDispatcher#EventDispatcher()}.
+	 * Test method for {@link rsb.event.EventProcessor#EventDispatcher()}.
 	 */
 	@Test
 	public final void testEventDispatcher() {
-		EventDispatcher ed = new EventDispatcher();
+		EventProcessor ed = new EventProcessor();
 		assertNotNull(ed);
 		// TODO test configuration
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventDispatcher#EventDispatcher(int, int, int)}.
+	 * Test method for {@link rsb.event.EventProcessor#EventDispatcher(int, int, int)}.
 	 */
 	@Test
 	public final void testEventDispatcherIntIntInt() {
-		EventDispatcher ed = new EventDispatcher(1,3, 100);
+		EventProcessor ed = new EventProcessor(1,3, 100);
 		assertNotNull(ed);		
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventDispatcher#addSubscription(rsb.filter.Subscription)}.
+	 * Test method for {@link rsb.event.EventProcessor#addSubscription(rsb.filter.Subscription)}.
 	 */
 	@Test
 	public final void testAddSubscription() {
-		EventDispatcher ed = new EventDispatcher();
+		EventProcessor ed = new EventProcessor();
 		Subscription s = new Subscription();
 		ed.addSubscription(s);
 		assertTrue(ed.subscriptions.contains(s));
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventDispatcher#removeSubscription(rsb.filter.Subscription)}.
+	 * Test method for {@link rsb.event.EventProcessor#removeSubscription(rsb.filter.Subscription)}.
 	 */
 	@Test
 	public final void testRemoveSubscription() {
-		EventDispatcher ed = new EventDispatcher();
+		EventProcessor ed = new EventProcessor();
 		Subscription s = new Subscription();
 		ed.addSubscription(s);
 		ed.removeSubscription(s);
@@ -96,11 +96,11 @@ public class EventDispatcherTest {
 	}	
 	
 	/**
-	 * Test method for {@link rsb.event.EventDispatcher#fire(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.RSBEvent)}.
 	 */
 	@Test
 	public final void testFire() {
-		EventDispatcher ed = new EventDispatcher();
+		EventProcessor ed = new EventProcessor();
 		Subscription s = new Subscription();
 		TestListener l = (TestListener) getHandler();
 		s.appendHandler(l);

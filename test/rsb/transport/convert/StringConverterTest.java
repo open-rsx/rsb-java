@@ -53,7 +53,7 @@ public class StringConverterTest {
 		String s1 = "testcase";
 		Holder<String> buf = c.serialize("string", s1);
 		assertNotNull(buf);
-		Object o = c.deserialize("string", buf).value;
+		Object o = c.deserialize("string", buf.value).value;
 		String s2 = (String) o; 		
 		assertTrue(s2.equals(s1));
 	}

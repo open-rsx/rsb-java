@@ -52,9 +52,9 @@ public class StringConverter implements AbstractConverter<String> {
 	 * @param s string representation of object to be deserialized
 	 */
 	@Override
-	public Holder<Object> deserialize(String typeinfo, Holder<String> s) {
+	public Holder<Object> deserialize(String typeinfo, String s) {
 		if (typeinfo.equals("string")) {			
-			return new Holder<Object>(s.value);
+			return new Holder<Object>(s);
 		}
 		return null;
 	}	
