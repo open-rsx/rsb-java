@@ -89,6 +89,7 @@ public class SpreadPort extends AbstractPort {
 	 */
 	@Override
 	public void notify(ScopeFilter e, FilterAction a) {
+		log.info("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name() +" called");
 		switch (a) {
 		case ADD:
 			// TODO add reference handling from xcf4j
@@ -104,7 +105,6 @@ public class SpreadPort extends AbstractPort {
 		default:
 			break;
 		}
-		log.info("SpreadPort::notify(ScopeFilter e, FilterAction a called");
 	}
 
     public void push(RSBEvent e) {

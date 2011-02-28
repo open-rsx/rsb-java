@@ -124,4 +124,8 @@ public class RSBEvent {
 		}
 		return id;
 	}		
+	
+	public String toString() {
+		return "RSBEvent[id="+id.toString()+",uri="+uri+",t="+type+"]";
+	}
 }

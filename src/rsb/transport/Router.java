@@ -58,11 +58,13 @@ public class Router extends FilterObservable {
 	}
 	
 	public void activate() throws InitializeException {
+		// TODO Think about flexible port assignment
+		// subscribers don't need out ports, publishers don't need in-ports
 		try {
 			pi.activate();
 			po.activate();
 			// TODO make this configurable
-			ep = new EventProcessor(1, 10, 1000);			
+			ep = new EventProcessor(1, 10, 1000);		
 		} catch (RSBException e) {
 			log.severe("exception occured during port initialization for router");
 			throw new InitializeException(e); 
@@ -110,11 +112,10 @@ public class Router extends FilterObservable {
 	 * Subscribes a listener to all events that pass it's filter chain.
 	 */	
 	public void subscribe(Subscription sub) {
-		// TODO Auto-generated method stub
-		// epi.add(sub,l);
 		for (Filter f: sub.getFilter()) {
 			notifyObservers(f, FilterAction.ADD);
 		}		
+		ep.addSubscription(sub);
 	}
 	
 //	public void unsubscribe(Subscription sub, XcfEventListener sink) {
