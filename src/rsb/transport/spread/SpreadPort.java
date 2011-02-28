@@ -35,7 +35,6 @@ import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
 import rsb.transport.convert.ByteBufferConverter;
-import rsb.transport.convert.StringConverter;
 import rsb.util.Holder;
 import rsb.util.QueueClosedException;
 import spread.SpreadException;
@@ -109,7 +108,7 @@ public class SpreadPort extends AbstractPort {
     	AbstractConverter<ByteBuffer> c = converters.get(e.getType());
 		Notification.Builder nb = Notification.newBuilder();
 		Attachment.Builder ab = Attachment.newBuilder();
-		nb.setEid(e.getUuid().toString());
+		nb.setEid(e.getId().toString());
 		nb.setTypeId(e.getType());
 		nb.setUri(e.getUri());		
 		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
@@ -120,7 +119,7 @@ public class SpreadPort extends AbstractPort {
 		nb.setData(ab.build());
 		nb.setStandalone(true);
 		Notification n = nb.build();
-        log.info("push called, sending message on port infrastructure, event id: " + e.getUuid());
+        log.info("push called, sending message on port infrastructure: [eid=" + e.getId().toString() + "]");
         // TODO remove data message
         DataMessage dm = new DataMessage();
         try {
