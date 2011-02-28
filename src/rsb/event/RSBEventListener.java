@@ -26,7 +26,7 @@ import rsb.RSBEvent;
 
 /**
  * XCF uses an event listener mechanism to deal with the various events raised
- * by the framework's basic communication patterns. XcfEventListener is the
+ * by the framework's basic communication patterns. RSBEventListener is the
  * topmost interface in the listener hierarchy. There are specialized listener
  * (and event) types for Publish/Subscribe, Server/RemoteServer and the
  * ActiveMemory. In Publish/Subscribe PublishEvents are raised whenever the

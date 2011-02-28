@@ -58,5 +58,11 @@ public class Subscription {
 	public List<Filter> getFilter() {
 		return filters;
 	}
+
+	public void dispatch(RSBEvent e) {
+		for (RSBEventListener<RSBEvent> l: handler) {
+			l.handleEvent(e);
+		}		
+	}
 	
 }

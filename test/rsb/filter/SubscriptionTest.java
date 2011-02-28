@@ -34,11 +34,13 @@ import rsb.event.RSBEventListener;
 public class SubscriptionTest {
 
 	private RSBEventListener<RSBEvent> getHandler() {
-		RSBEventListener<RSBEvent> l = new RSBEventListener<RSBEvent>() {
+		RSBEventListener<RSBEvent> l = new RSBEventListener<RSBEvent>() {			
+			
 			@Override
 			public void handleEvent(RSBEvent e) {				
 				// blub
 			}
+			
 		};
 		return l;
 	}	
