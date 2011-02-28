@@ -148,15 +148,24 @@ public class SpreadWrapper implements RSBObject {
 		@Override
 		public DataMessage convert(SpreadMessage sm) {
 			DataMessage dm = null;
-			try {
-				dm = DataMessage.convertSpreadMessage(sm);
-			} catch (SerializeException e) {				
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (sm.isMembership()) {
+				// TODO think about meaningful handling of membership messages
+				// and print further info
+				log.info("Received membership message for group: "
+						+ sm.getMembershipInfo().getGroup());
+
+			} else {
+				try {
+					dm = DataMessage.convertSpreadMessage(sm);
+				} catch (SerializeException e) {
+					e.printStackTrace();
+					log.warning("Error de-serializing SpreadMessage");
+				}
 			}
-			// TODO in this design, the router must be capable of handling null objects!
-			return dm;
-			
+			// TODO in this design, following objects must be capable of handling null objects!
+			// better approach would be to encapsulate logical changes to the unified event bus 
+			// in internal events
+			return dm;		
 		}    	
     }; 
 	

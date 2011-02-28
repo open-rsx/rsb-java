@@ -40,8 +40,11 @@ public class BasicSynchronizedQueue<T1,T2> {
 		if (closed) {
 			throw new QueueClosedException("Queue is closed!");
 		}
-		queue.add(convert(element));
-		notifyAll();
+		T1 e = convert(element);
+		if (e!=null) {
+			queue.add(e);
+			notifyAll(); 
+		}		
 	}	
 	
 	@SuppressWarnings("unchecked")
