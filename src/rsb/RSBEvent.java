@@ -20,7 +20,7 @@
  */
 package rsb;
 
-import java.util.UUID;
+import rsb.event.EventId;
 
 /**
  * @author swrede
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 public class RSBEvent {
 	
-	UUID uuid;
+	EventId id;
 	String type;
 	String uri;
 	Object data;
@@ -41,25 +41,7 @@ public class RSBEvent {
 	// e.getMetadata().setReceiverUri(receiverUri);
 	// e.getMetadata().setCreatedAt(now);
     // e.getMetadata().setUpdatedAt(now);
-	
-	public boolean hasID() {
-		return (uuid!=null) ? true : false;
-	}
-	
-	public UUID generateID() {
-		uuid = UUID.randomUUID();
-		return uuid;
-	}
-	
-	public UUID ensureID() {
-		if (!hasID()) {
-			generateID();
-		}
-		return uuid;
-	}
-	
-	
-	
+		
 	/**
 	 * @param type
 	 * @param data
@@ -106,20 +88,6 @@ public class RSBEvent {
 	}
 
 	/**
-	 * @return the uuid
-	 */
-	public UUID getUuid() {
-		return uuid;
-	}
-
-	/**
-	 * @param uuid the uuid to set
-	 */
-	public void setUuid(UUID uuid) {
-		this.uuid = uuid;
-	}
-
-	/**
 	 * @return the uri
 	 */
 	public String getUri() {
@@ -134,4 +102,23 @@ public class RSBEvent {
 	}
 
 
+	public EventId getId() {
+		return id;
+	}
+	
+	public EventId generateId() {
+		id = EventId.generateId();
+		return id;
+	}
+	
+	public boolean hasId() {
+		return (id!=null) ? true : false;
+	}		
+	
+	public EventId ensureId() {
+		if (!hasId()) {
+			generateId();
+		}
+		return id;
+	}		
 }
