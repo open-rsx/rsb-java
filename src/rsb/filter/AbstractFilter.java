@@ -21,13 +21,10 @@ public abstract class AbstractFilter implements Filter {
         this.type=type;
     }
 
-//	public void dispatchFilterAdded(FilterObserver o) {
-//		o.MTFAdded(this);	
-//	}
-//
-//	public void dispatchFilterRemoved(FilterObserver o) {
-//		o.MTFRemoved(this);
-//	}
+	/*
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public abstract void dispachToObserver(FilterObserver o, FilterAction a);
 
 	public RSBEvent transform(RSBEvent e) {
 		log.info("transform method matched event");

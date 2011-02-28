@@ -30,6 +30,8 @@ import com.google.protobuf.ByteString;
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
+import rsb.filter.FilterAction;
+import rsb.filter.ScopeFilter;
 import rsb.protocol.AttachmentPB.Attachment;
 import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
@@ -77,7 +79,30 @@ public class SpreadPort extends AbstractPort {
         }
     }
 
-    public RSBEvent next() throws InterruptedException {
+    /* (non-Javadoc)
+	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter, rsb.filter.FilterAction)
+	 */
+	@Override
+	public void notify(ScopeFilter e, FilterAction a) {
+		switch (a) {
+		case ADD:
+			// TODO add reference handling from xcf4j
+			joinSpreadGroup(e.getUri());
+			break;
+		case REMOVE:
+			// TODO add reference handling from xcf4j
+			leaveSpreadGroup(e.getUri());
+			break;
+		case UPDATE:
+			log.info("Update of ScopeFilter requested on SpreadSport");
+			break;
+		default:
+			break;
+		}
+		log.info("SpreadPort::notify(ScopeFilter e, FilterAction a called");
+	}
+
+	public RSBEvent next() throws InterruptedException {
         RSBEvent me = null;
         // repeat until next event was successfully decoded or
         // an exception is thrown

@@ -56,4 +56,10 @@ public class TypeFilter extends AbstractFilter {
         }		
 	}
     
+	/*
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public void dispachToObserver(FilterObserver o, FilterAction a) {
+		o.notify(this, a);
+	}		
 }

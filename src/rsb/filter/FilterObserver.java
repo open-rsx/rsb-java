@@ -13,12 +13,9 @@ public interface FilterObserver {
 	
 	// TODO change this to dynamic dispatch for extensibilty
 	//      Example: XPathFilter
-	
-	public String getInfo();
-    public void filterAdded(ScopeFilter e);
-    public void filterAdded(TypeFilter e);
-    public void filterAdded(IdentityFilter e);
-    public void filterRemoved(ScopeFilter e);
-    public void filterRemoved(TypeFilter e);
-    public void filterRemoved(IdentityFilter e);
+
+	public void notify(AbstractFilter e, FilterAction a);
+    public void notify(ScopeFilter e, FilterAction a);
+    public void notify(TypeFilter e, FilterAction a);
+    public void notify(IdentityFilter e, FilterAction a);
 }

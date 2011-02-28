@@ -54,14 +54,13 @@ public class IdentityFilter extends AbstractFilter {
     public void setInvert(boolean b) {
     	invert = b;
     }
-    
-//	public void dispatchMTFAdded(FilterObserver o) {
-//		o.MTFAdded(this);
-//	}
-//
-//	public void dispatchMTFRemoved(FilterObserver o) {
-//		o.MTFRemoved(this);
-//	}
+   
+	/*
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public void dispachToObserver(FilterObserver o, FilterAction a) {
+		o.notify(this, a);
+	}	
 
 	public void skip(EventId id) {
 		log.info("Event with ID " + id + " will not be matched by IdentityFilter as this was already done by network layer!");

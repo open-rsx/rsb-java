@@ -25,13 +25,12 @@ public class ScopeFilter extends AbstractFilter {
 		this.uri = uri;
 	}
 	
-//	public void dispatchMTFAdded(FilterObserver o) {
-//		o.MTFAdded(this);		
-//	}
-//
-//	public void dispatchMTFRemoved(FilterObserver o) {
-//		o.MTFAdded(this);		
-//	}
+	/*
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public void dispachToObserver(FilterObserver o, FilterAction a) {
+		o.notify(this, a);
+	}	
 
 	public void setUri(String u) {
 		this.uri = u;		

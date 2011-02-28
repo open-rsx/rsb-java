@@ -53,5 +53,12 @@ public class XPathFilter extends AbstractFilter {
 		return that instanceof XPathFilter
 		&& xpath.equals(((XPathFilter) that).xpath);
 	}
+	
+	/*
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public void dispachToObserver(FilterObserver o, FilterAction a) {
+		o.notify(this, a);
+	}		
 
 }
