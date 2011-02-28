@@ -84,7 +84,7 @@ public class Publisher<T> implements RSBObject {
 
 		protected RSBEvent send(RSBEvent e) {		
 			e.setUri(uri);
-			e.ensureID();
+			e.ensureId();
 			router.publishSync(e);
 			return e;
 		}
@@ -92,7 +92,7 @@ public class Publisher<T> implements RSBObject {
 		protected RSBEvent send(T d) {
 			RSBEvent e = new RSBEvent(typeinfo,(Object) d);
 			e.setUri(uri);
-			e.ensureID();
+			e.ensureId();
 			router.publishSync(e);
 			return e;
 		}		

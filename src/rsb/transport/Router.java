@@ -73,7 +73,7 @@ public class Router {
 	
 	public void publishSync(RSBEvent e) {
 		// send event sync?
-		log.finest("Router publishing new event to port: [EventID:"+e.getUuid().toString()+",PortType:"+po.getType()+"]");
+		log.finest("Router publishing new event to port: [EventID:"+e.getId().toString()+",PortType:"+po.getType()+"]");
 		po.push(e);
 	}
 	
