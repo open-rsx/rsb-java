@@ -35,4 +35,10 @@ public interface Filter {
    // public void skip(EventId id);
 
 	public boolean equals(Filter that);    
+	
+	/**
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public void dispachToObserver(FilterObserver o, FilterAction a);
+	
 }

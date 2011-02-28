@@ -26,10 +26,12 @@ import rsb.EventProcessor;
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
-import rsb.event.RSBEventListener;
+import rsb.filter.Filter;
+import rsb.filter.FilterAction;
+import rsb.filter.FilterObservable;
 import rsb.filter.Subscription;
 
-public class Router {
+public class Router extends FilterObservable {
 
 	private final static Logger log = Logger.getLogger(Router.class.getName());
 
@@ -78,20 +80,6 @@ public class Router {
 		log.finest("Router publishing new event to port: [EventID:"+e.getId().toString()+",PortType:"+po.getType()+"]");
 		po.push(e);
 	}
-	
-
-
-//	public void subscribe(Subscription sub, Port p) {
-//		epo.add(sub,p);
-//	}
-
-//	public void unsubscribe(Subscription sub, XcfEventListener sink) {
-//		epi.remove(sub, sink);
-//	}
-//	
-//	public void unsubscribe(Subscription sub, Port p) {
-//		epo.remove(sub, p);
-//	}
 
 	public void deactivate() {
 		try {
@@ -115,12 +103,20 @@ public class Router {
 	/**
 	 * Subscribes a listener to all events that pass it's filter chain.
 	 */	
-	// TODO check how to signal the ports the registration of Filters
-	@SuppressWarnings("unchecked")
 	public void subscribe(Subscription sub) {
 		// TODO Auto-generated method stub
 		// epi.add(sub,l);
-		
+		for (Filter f: sub.getFilter()) {
+			notifyObservers(f, FilterAction.ADD);
+		}		
 	}
+	
+//	public void unsubscribe(Subscription sub, XcfEventListener sink) {
+//	epi.remove(sub, sink);
+//}
+//
+//public void unsubscribe(Subscription sub, Port p) {
+//	epo.remove(sub, p);
+//}
 	
 }

@@ -42,7 +42,7 @@ public class FilterObservable {
 		observers.remove(f);
 	}
 	
-	public void notifyObservers(AbstractFilter f, FilterAction a) {
+	public void notifyObservers(Filter f, FilterAction a) {
 		for (FilterObserver o : observers) {
 			// perform double dispatch
 			f.dispachToObserver(o, a);

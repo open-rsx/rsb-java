@@ -5,6 +5,7 @@ package rsb.filter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import rsb.RSBEvent;
 import rsb.event.RSBEventListener;
@@ -52,6 +53,10 @@ public class Subscription {
 			if (e==null) return false;			
 		}
 		return true;
+	}
+
+	public List<Filter> getFilter() {
+		return filters;
 	}
 	
 }

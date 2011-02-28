@@ -87,9 +87,9 @@ public class FilterObservableTest {
 		FilterObservable fo = new FilterObservable();
 		TestObserver to = new TestObserver();
 		fo.addObserver(to);
-		fo.notifyObservers(new ScopeFilter("blub"), FilterAction.ADD);
-		fo.notifyObservers(new IdentityFilter("blub", IdentityFilter.Type.RECEIVER_IDENTITY), FilterAction.ADD);
-		fo.notifyObservers(new TypeFilter(this.getClass()), FilterAction.ADD);
+		fo.notifyObservers((Filter) new ScopeFilter("blub"), FilterAction.ADD);
+		fo.notifyObservers((Filter) new IdentityFilter("blub", IdentityFilter.Type.RECEIVER_IDENTITY), FilterAction.ADD);
+		fo.notifyObservers((Filter) new TypeFilter(this.getClass()), FilterAction.ADD);
 		assertTrue(to.notified_sf);
 		assertTrue(to.notified_tf);
 		assertTrue(to.notified_id);

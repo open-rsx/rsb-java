@@ -21,11 +21,6 @@ public abstract class AbstractFilter implements Filter {
         this.type=type;
     }
 
-	/*
-	 * Helper method for double dispatch of Filter registrations
-	 */
-	public abstract void dispachToObserver(FilterObserver o, FilterAction a);
-
 	public RSBEvent transform(RSBEvent e) {
 		log.info("transform method matched event");
 		// always matches, just returns original event
@@ -70,4 +65,9 @@ public abstract class AbstractFilter implements Filter {
 		whitelist.remove(id);		
 	}
 
+	/**
+	 * Helper method for double dispatch of Filter registrations
+	 */
+	public abstract void dispachToObserver(FilterObserver o, FilterAction a);
+		
 }
