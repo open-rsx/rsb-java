@@ -20,21 +20,17 @@
  */
 package rsb;
 
-/**
- * @author swrede
- *
- */
-public interface RSBObject {
+public interface ErrorHandler {
+
+//public interface ConnectionErrorHandler extends ErrorHandler {
+//	public void handleError(ConnectionLostError ex);
+//}
+//
+//	public void connectionLost();
+//	public void lostConnectionToMemoryServer();
+//	
 	
-	/*
-	 * Activates all network resources that belong to
-	 * a specific object.
-	 */
-	public void activate() throws RSBException;
-	
-	/*
-	 * Deactivate all network resources that are owned
-	 * by a specific object in order to reactivate it.
-	 */
-	public void deactivate() throws RSBException;
+	public void error(RSBException ex);
+	public void warning(RSBException ex);
+
 }

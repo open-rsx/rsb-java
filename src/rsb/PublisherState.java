@@ -2,6 +2,7 @@ package rsb;
 
 import java.util.logging.Logger;
 
+
 public abstract class PublisherState<T> {
 
 	private final static Logger log = Logger.getLogger(PublisherState.class.getName());
