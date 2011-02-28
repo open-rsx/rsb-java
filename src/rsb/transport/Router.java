@@ -26,6 +26,8 @@ import rsb.EventProcessor;
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
+import rsb.event.RSBEventListener;
+import rsb.filter.Subscription;
 
 public class Router {
 
@@ -77,23 +79,12 @@ public class Router {
 		po.push(e);
 	}
 	
-	/**
-	 * Subscribes a listener to all events that pass it's filter chain.
-	 * @param l The XcfEventListener to be subscribed.
-	 */
-	// TODO check whether we shall allow to register here an EventSink not a listener
-//	public void subscribe(Subscription sub, XcfEventListener listener) {
-//		epi.add(sub,listener);
-//	}
-//	
+
+
 //	public void subscribe(Subscription sub, Port p) {
 //		epo.add(sub,p);
 //	}
 
-	/**
-	 * Subscribes a listener to all events that pass it's filter chain.
-	 * @param l The XcfEventListener to be subscribed.
-	 */	
 //	public void unsubscribe(Subscription sub, XcfEventListener sink) {
 //		epi.remove(sub, sink);
 //	}
@@ -119,6 +110,17 @@ public class Router {
 //		} catch (InterruptedException e) {
 //			log.warn("Router was interrupted trying to join it's event dispatcher threads");
 //		}
+	}
+
+	/**
+	 * Subscribes a listener to all events that pass it's filter chain.
+	 */	
+	// TODO check how to signal the ports the registration of Filters
+	@SuppressWarnings("unchecked")
+	public void subscribe(Subscription sub) {
+		// TODO Auto-generated method stub
+		// epi.add(sub,l);
+		
 	}
 	
 }

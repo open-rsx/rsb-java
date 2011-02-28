@@ -3,6 +3,9 @@
  */
 package rsb;
 
+import rsb.filter.Subscription;
+
+
 /**
  * @author swrede
  *
