@@ -6,6 +6,8 @@
 package rsb.filter;
 
 import rsb.RSBEvent;
+import rsb.transport.XOPData;
+import rsb.xml.SyntaxException;
 import rsb.xml.XPath;
 
 /**
@@ -23,28 +25,19 @@ public class XPathFilter extends AbstractFilter {
     
     @Override
     public RSBEvent transform(RSBEvent e) {
-    	throw new RuntimeException("Not implemented yet!");
-//    	public boolean match(XOPData xop) {
-//    		if (xop == null) {
-//    			return false;
-//    		}
-//    		else {
-//    			Document doc = xop.getDocument();
-//    			return match(doc);
-//    		}
-//    	}
-//
-//    	public boolean match(Document document) {
-//    		if (document == null) {
-//    			return false;
-//    		}
-//    		Nodes result = document.query(this.getExpression(),this.getCtx());
-//    		if (result.size() == 0) {
-//    			return false;
-//    		}
-//    		return true;
-//    	}    	
-//        return e;
+    	// TODO introduce XML Type to make this faster and more robust
+    	XOPData xop = null;
+    	try {
+			 xop = XOPData.fromString((String) e.getData());
+		} catch (SyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		}
+		if (xpath.match(xop)) {
+			return e;
+		}
+		return null;
     }
 	
 
