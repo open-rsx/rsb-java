@@ -22,6 +22,8 @@ package rsb.event;
 
 import static org.junit.Assert.*;
 
+import java.util.UUID;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,18 +37,19 @@ public class EventIdTest {
 	 * Test method for {@link rsb.event.EventId#EventId()}.
 	 */
 	@Test
-	@Ignore
 	public void testEventId() {
-		fail("Not yet implemented");
+		EventId id = EventId.generateId();
+		assertNotNull(id.id);
 	}
 
 	/**
 	 * Test method for {@link rsb.event.EventId#EventId(java.util.UUID)}.
 	 */
 	@Test
-	@Ignore
 	public void testEventIdUUID() {
-		fail("Not yet implemented");
+		UUID uuid = UUID.randomUUID();
+		EventId id = new EventId(uuid);
+		assertTrue(uuid.compareTo(id.id)==0);
 	}
 
 	/**
@@ -55,9 +58,7 @@ public class EventIdTest {
 	@Test
 	public void testEventIdString() {
 		EventId id = EventId.generateId();
-		assertNotNull(id.id);
 		String s = id.toString();
-		assertTrue(s.equals("rsb:eid:"+id.id.toString()));
 		EventId id2 = new EventId(s);
 		assertTrue(id.equals(id2));
 	}
@@ -67,7 +68,9 @@ public class EventIdTest {
 	 */
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+		EventId id = EventId.generateId();
+		String s = id.toString();
+		assertTrue(s.equals("rsb:eid:"+id.id.toString()));		
 	}
 
 	/**
@@ -75,7 +78,8 @@ public class EventIdTest {
 	 */
 	@Test
 	public void testGenerateId() {
-		fail("Not yet implemented");
+		EventId id = EventId.generateId();
+		assertNotNull(id.id);
 	}
 
 	/**
@@ -83,7 +87,8 @@ public class EventIdTest {
 	 */
 	@Test
 	public void testGet() {
-		fail("Not yet implemented");
+		EventId id = EventId.generateId();
+		assertNotNull(id.get());		
 	}
 
 }
