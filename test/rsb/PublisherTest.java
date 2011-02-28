@@ -125,7 +125,7 @@ public class PublisherTest {
 	private void testEvent(RSBEvent e) {
 		assertTrue(e.type.equals("string"));
 		assertTrue(e.data.equals("Hello World!"));
-		assertNotNull(e.getUuid());
+		assertNotNull(e.getId());
 		assertTrue(e.getUri().equals("rsb://informer/example"));		
 	}	
 	
