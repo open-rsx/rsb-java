@@ -136,14 +136,6 @@ public class SpreadWrapper implements RSBObject {
 		}    	
     };
     
-//    private BasicSynchronizedQueue<DataMessage,SpreadMessage> msgs = new BasicSynchronizedQueue<DataMessage,SpreadMessage>() {
-//		@Override
-//		public DataMessage convert(SpreadMessage sm) {
-//			return Serializer.convertSpreadMessage(sm);
-//			
-//		}    	
-//    }; 
-    
     private BasicSynchronizedQueue<DataMessage,SpreadMessage> msgs = new BasicSynchronizedQueue<DataMessage,SpreadMessage>() {
 		@Override
 		public DataMessage convert(SpreadMessage sm) {
