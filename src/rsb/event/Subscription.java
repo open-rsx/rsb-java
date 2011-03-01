@@ -1,14 +1,14 @@
 /**
  * 
  */
-package rsb.filter;
+package rsb.event;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import rsb.RSBEvent;
-import rsb.event.RSBEventListener;
+import rsb.filter.Filter;
 
 
 /**
@@ -19,10 +19,10 @@ public class Subscription {
 
 	ArrayList<Filter> filters = new ArrayList<Filter>();
 	@SuppressWarnings("unchecked")
-	ArrayList<RSBEventListener> handler = new ArrayList<RSBEventListener>();
+	ArrayList<RSBListener> handler = new ArrayList<RSBListener>();
 
     @SuppressWarnings("unchecked")
-	public Subscription appendHandler(RSBEventListener l) {
+	public Subscription appendHandler(RSBListener l) {
     	handler.add(l);
     	return this;
 	}
@@ -33,8 +33,8 @@ public class Subscription {
 	}    
     
     @SuppressWarnings("unchecked")
-	public Iterator<RSBEventListener> getHandlerIterator() {
-    	Iterator<RSBEventListener> it = handler.iterator();
+	public Iterator<RSBListener> getHandlerIterator() {
+    	Iterator<RSBListener> it = handler.iterator();
 		return it;
 	}
 
@@ -60,9 +60,14 @@ public class Subscription {
 	}
 
 	public void dispatch(RSBEvent e) {
-		for (RSBEventListener<RSBEvent> l: handler) {
-			l.handleEvent(e);
+		for (RSBListener<RSBEvent> l: handler) {
+			l.internalNotify(e);
 		}		
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<RSBListener> getHandlers() {
+		return handler;
 	}
 	
 }

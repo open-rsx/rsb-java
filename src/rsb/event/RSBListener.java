@@ -20,7 +20,7 @@
  */
 package rsb.event;
 
-import java.util.concurrent.Callable;
+import java.util.EventListener;
 
 import rsb.RSBEvent;
 
@@ -28,23 +28,8 @@ import rsb.RSBEvent;
  * @author swrede
  *
  */
-public class MatchAndDispatchTask implements Callable<Boolean> {
+public interface RSBListener<T extends RSBEvent> extends EventListener {
 
-	RSBEvent e;
-	Subscription s;
-	
-	MatchAndDispatchTask(Subscription s, RSBEvent e) {
-		this.e = e;
-	    this.s = s;
-	}
-	
-	@Override
-	public Boolean call() throws Exception {
-		if (s.match(e)) {
-			s.dispatch(e);
-			return true;
-		} 
-		return false;
-	}
-
+    public void internalNotify(T e);
+    
 }

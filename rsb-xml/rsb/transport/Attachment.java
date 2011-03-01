@@ -25,6 +25,7 @@ public class Attachment {
 	// TODO add missing conversion routines
 	
 	private byte[] value;
+	@SuppressWarnings("unchecked")
 	private Class c;
 	
 	public void setValue(byte[] b) {
@@ -43,6 +44,7 @@ public class Attachment {
 	 * Returns the type of the serialized object 
 	 * @return serialized object type
 	 */
+	@SuppressWarnings("unchecked")
 	public Class getContentType() {
 		return c;
 	}

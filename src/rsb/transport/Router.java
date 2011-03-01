@@ -26,10 +26,10 @@ import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.RSBException;
 import rsb.event.EventProcessor;
+import rsb.event.Subscription;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
-import rsb.filter.Subscription;
 
 public class Router extends FilterObservable {
 

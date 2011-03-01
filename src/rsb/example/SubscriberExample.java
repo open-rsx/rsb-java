@@ -23,6 +23,7 @@ package rsb.example;
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.Subscriber;
+import rsb.event.RSBDataListener;
 import rsb.event.RSBEventListener;
 import rsb.naming.NotFoundException;
 import rsb.transport.TransportFactory;
@@ -41,16 +42,16 @@ public class SubscriberExample {
 			@Override
 			public void handleEvent(RSBEvent e) {
 				System.out.println("Event received: " + e.toString());
-				System.out.print("Event data: ");
-				if (e.getData()!=null) {
-					try {
-					String s = (String) e.getData();
-					System.out.println(s);
-					} catch (ClassCastException e1) {
-						e1.printStackTrace();
-					}					
-				}
 			}
+			
 		});
+		sub.addListener(new RSBDataListener<String>() {
+
+			@Override
+			public void handleEvent(String e) {
+				System.out.println("Event received: " + e);
+			}
+			
+		});		
 	};
 }

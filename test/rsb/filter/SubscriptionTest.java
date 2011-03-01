@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import rsb.RSBEvent;
 import rsb.event.RSBEventListener;
+import rsb.event.Subscription;
 
 /**
  * @author swrede
@@ -46,29 +47,29 @@ public class SubscriptionTest {
 	}	
 	
 	/**
-	 * Test method for {@link rsb.filter.Subscription#appendHandler(rsb.event.RSBEventListener)}.
+	 * Test method for {@link rsb.event.Subscription#appendHandler(rsb.event.RSBEventListener)}.
 	 */
 	@Test
 	public void testAppendHandler() {
 		RSBEventListener<RSBEvent> el = getHandler();
 		Subscription s = new Subscription();
 		s.appendHandler(el);
-		assertTrue(s.handler.contains(el));
+		assertTrue(s.getHandlers().contains(el));
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.Subscription#appendFilter(rsb.filter.Filter)}.
+	 * Test method for {@link rsb.event.Subscription#appendFilter(rsb.filter.Filter)}.
 	 */
 	@Test
 	public void testAppendFilter() {
 		ScopeFilter sf = new ScopeFilter("rsb://blub");
 		Subscription s = new Subscription();
 		s.appendFilter(sf);
-		assertTrue(s.filters.contains(sf));
+		assertTrue(s.getFilter().contains(sf));
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.Subscription#getHandlerIterator()}.
+	 * Test method for {@link rsb.event.Subscription#getHandlerIterator()}.
 	 */
 	@Test
 	public void testGetHandlerIterator() {
@@ -79,7 +80,7 @@ public class SubscriptionTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.Subscription#getFilterIterator()}.
+	 * Test method for {@link rsb.event.Subscription#getFilterIterator()}.
 	 */
 	@Test
 	public void testGetFilterIterator() {
@@ -90,7 +91,7 @@ public class SubscriptionTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.Subscription#length()}.
+	 * Test method for {@link rsb.event.Subscription#length()}.
 	 */
 	@Test
 	public void testLength() {
@@ -101,7 +102,7 @@ public class SubscriptionTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.Subscription#match(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.event.Subscription#match(rsb.RSBEvent)}.
 	 */
 	@Test
 	public void testMatch() {

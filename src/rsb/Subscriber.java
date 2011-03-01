@@ -23,8 +23,9 @@ package rsb;
 import java.util.logging.Logger;
 
 import rsb.event.RSBEventListener;
+import rsb.event.RSBListener;
+import rsb.event.Subscription;
 import rsb.filter.ScopeFilter;
-import rsb.filter.Subscription;
 import rsb.naming.NotFoundException;
 import rsb.transport.Router;
 import rsb.transport.TransportFactory;
@@ -119,7 +120,7 @@ public class Subscriber implements RSBObject {
 	 * @param l the listener instance to be registered
 	 */
 	@SuppressWarnings("unchecked")
-	public void addListener(RSBEventListener l) {
+	public void addListener(RSBListener l) {
 		Subscription sub = new Subscription();
 		log.info("subscribing new listener to url: " + publisherUri);
 		sub.appendFilter(new ScopeFilter(publisherUri));

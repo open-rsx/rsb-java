@@ -40,16 +40,12 @@ import rsb.RSBEvent;
  * @see RSBEvent
  */
  
-public interface RSBEventListener<T extends RSBEvent> extends EventListener {
+public abstract class RSBEventListener<T extends RSBEvent> implements RSBListener<T> {
 
-    public void handleEvent(T e);
+	public void internalNotify(T e) {
+		handleEvent(e);
+	};	
     
-//	// TODO Check if setXPath makes sense here
-//	public void setXPath(XPath xpath);
-//	public XPath getXPath();
-//	public String getName();
+	public abstract void handleEvent(T e);
 	
-    // TODO check if this is a common property of all listeners
-	//public void setRouter(Router r);
-
 }

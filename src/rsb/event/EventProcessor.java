@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import rsb.RSBEvent;
-import rsb.filter.Subscription;
 
 /**
  * @author swrede

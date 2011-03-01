@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import rsb.RSBEvent;
-import rsb.filter.Subscription;
 
 /**
  * @author swrede
@@ -35,7 +34,7 @@ import rsb.filter.Subscription;
  */
 public class EventDispatcherTest {
 
-	private final class TestListener implements RSBEventListener<RSBEvent> {
+	private final class TestListener extends RSBEventListener<RSBEvent> {
 		boolean notified = false;
 
 		public boolean isNotified() {
@@ -68,7 +67,7 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#addSubscription(rsb.filter.Subscription)}.
+	 * Test method for {@link rsb.event.EventProcessor#addSubscription(rsb.event.Subscription)}.
 	 */
 	@Test
 	public final void testAddSubscription() {
@@ -79,7 +78,7 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#removeSubscription(rsb.filter.Subscription)}.
+	 * Test method for {@link rsb.event.EventProcessor#removeSubscription(rsb.event.Subscription)}.
 	 */
 	@Test
 	public final void testRemoveSubscription() {
