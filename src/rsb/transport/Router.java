@@ -44,9 +44,9 @@ public class Router extends FilterObservable {
 
 	public Router(TransportFactory f) {
     	// router setup
-		pi = (Port) f.createPort();
+		pi = f.createPort();
 		pi.setRouter(this);
-		po = (Port) f.createPort();
+		po = f.createPort();
 		addObserver(pi);
 
     	//epi = new EventProcessor("EP In ["+this.toString()+"]",pi);

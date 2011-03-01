@@ -177,11 +177,11 @@ public class Properties {
 		Set<String> keys = env.keySet();
 		Iterator<String> it = keys.iterator();
 		while(it.hasNext()) {
-			String key = (String) it.next();
+			String key = it.next();
 			if(key.startsWith("RSB_") || key.startsWith("Spread_")) {
 				try {
 					// System.out.println("Found key in environment: " + key);
-					setProperty(key.replace("_", "."), (String) env.get(key));
+					setProperty(key.replace("_", "."), env.get(key));
 				} catch(InvalidPropertyException ex) {
 					System.err.println("An exception occurred reading configuration from environment: " + ex.getMessage());
 				}
