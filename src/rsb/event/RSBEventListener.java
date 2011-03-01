@@ -20,12 +20,10 @@
  */
 package rsb.event;
 
-import java.util.EventListener;
-
 import rsb.RSBEvent;
 
 /**
- * XCF uses an event listener mechanism to deal with the various events raised
+ * RSB uses an event listener mechanism to deal with the various events raised
  * by the framework's basic communication patterns. RSBEventListener is the
  * topmost interface in the listener hierarchy. There are specialized listener
  * (and event) types for Publish/Subscribe, Server/RemoteServer and the

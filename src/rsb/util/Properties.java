@@ -15,7 +15,7 @@ public class Properties {
 	
 	private static void dumpProperties() {
 		for (String key : singleton.propsMap.keySet() ) {
-			System.out.println(key + " => '" + singleton.propsMap.get(key).getValue() + "'");
+			log.info(key + " => '" + singleton.propsMap.get(key).getValue() + "'");
 		}
 	}
 
@@ -107,8 +107,9 @@ public class Properties {
 		propsMap.put("RSB.Properties.Dump", new BooleanProperty("FALSE"));
 		propsMap.put("RSB.LogAppender", new ValidProperty("CERR"));
 		propsMap.put("RSB.Network.Interface", new ValidProperty("UNSET"));
-		propsMap.put("RSB.ThreadPool.Size",  new IntegerProperty("5"));
-		propsMap.put("RSB.ThreadPool.SizeMax", new IntegerProperty("100"));
+		propsMap.put("RSB.ThreadPool.Size",  new IntegerProperty("1"));
+		propsMap.put("RSB.ThreadPool.SizeMax", new IntegerProperty("10"));
+		propsMap.put("RSB.ThreadPool.QueueSize", new IntegerProperty("10000"));
 		
 		propsMap.put("Spread.Port", new IntegerProperty("4803"));
 		propsMap.put("Spread.Host", new ValidProperty("localhost"));
@@ -157,7 +158,7 @@ public class Properties {
 		FileInputStream s = new FileInputStream(fn);
 		java.util.Properties p = new java.util.Properties();
 		p.load(s);
-		Enumeration keys = p.propertyNames();
+		Enumeration<?> keys = p.propertyNames();
 		while(keys.hasMoreElements()) {
 			String key = (String) keys.nextElement();
 			try {
@@ -172,9 +173,9 @@ public class Properties {
 		parseMap(System.getenv());
 	}
 
-	protected void parseMap(Map env) {
-		Set keys = env.keySet();
-		Iterator it = keys.iterator();
+	protected void parseMap(Map<String,String> env) {
+		Set<String> keys = env.keySet();
+		Iterator<String> it = keys.iterator();
 		while(it.hasNext()) {
 			String key = (String) it.next();
 			if(key.startsWith("RSB_") || key.startsWith("Spread_")) {

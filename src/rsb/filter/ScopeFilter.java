@@ -55,7 +55,7 @@ public class ScopeFilter extends AbstractFilter {
 	public RSBEvent transform(RSBEvent e) {
 		// TODO implement real scoping, currently it is solely an equality test on the publisher's URI
 		//      as subscription URI in the ScopeFilter and PublisherURI must match. 
-    	log.info("ScopeFilter with scope " + uri + " received event to transform.");
+    	log.fine("ScopeFilter with scope " + uri + " received event to transform.");
     	if(e.getUri()!=null)
     		log.fine("  Event's receiver URI = " + e.getUri());
     	boolean matches = false;
@@ -69,9 +69,9 @@ public class ScopeFilter extends AbstractFilter {
     		matches = uri.equals(e.getUri());
     	}
     	if (matches) {
-    		log.info("ScopeFilter matched successfully!");
+    		log.fine("ScopeFilter matched successfully!");
     	} else {
-    		log.info("ScopeFilter rejected event!");
+    		log.fine("ScopeFilter rejected event!");
     	}
    		return matches ? e : null;
 	}

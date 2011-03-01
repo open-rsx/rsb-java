@@ -22,6 +22,7 @@ package rsb.event;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -41,19 +42,14 @@ public class EventProcessor extends ThreadPoolExecutor {
 	ConcurrentLinkedQueue<Subscription> subscriptions = new ConcurrentLinkedQueue<Subscription>();
 	
 	public EventProcessor() {
-		super( 1, 1, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(100) );
+		super( 1, 1, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000) );
 		log.info("Creating ThreadPool with size: 1 (1)");
 		this.prestartAllCoreThreads();
 	}
 		
 	public EventProcessor(int coreThreads, int maxThreads, int maxQueue) {
-		super( coreThreads, maxThreads, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(maxQueue) );
-		
-		//Properties.getInstance().getPropertyAsInt("XCF.ThreadPool.Size"),
-		//Properties.getInstance().getPropertyAsInt("XCF.ThreadPool.SizeMax"),
-		//5,50, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(10)));
-		//Properties.getInstance().getPropertyAsInt("XCF.Events.DispatchQueueSize")));
-		log.info("Creating ThreadPool with size: " + coreThreads + "(" + maxThreads + ")");
+		super( coreThreads, maxThreads, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(maxQueue) );		
+		log.info("Creating ThreadPool with size: " + coreThreads + "(" + maxThreads + ") and queue size: " + maxQueue);
 		this.prestartAllCoreThreads();
 	}
 	
@@ -66,9 +62,18 @@ public class EventProcessor extends ThreadPoolExecutor {
 	}
 	
 	public void fire(RSBEvent e) {		
+		int count = 0;
 		for (Subscription s: subscriptions) {
-			this.submit(new MatchAndDispatchTask(s,e));
+			count++;
+			try {
+				this.submit(new MatchAndDispatchTask(s,e));
+			} catch (RejectedExecutionException ex) {
+				log.severe("ExecutorService rejected event matching, stack trace follows");
+				ex.printStackTrace();
+			}
+			
 		}		
+		log.fine("Dispatched event to " + count + " subscriptions");
 		// Future<Boolean> result = this.submit( new MatchAndDispatchTask(s, e) );
 	}
 	

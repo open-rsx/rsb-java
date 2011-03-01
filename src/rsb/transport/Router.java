@@ -30,6 +30,7 @@ import rsb.event.Subscription;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
+import rsb.util.Properties;
 
 public class Router extends FilterObservable {
 
@@ -63,14 +64,17 @@ public class Router extends FilterObservable {
 		try {
 			pi.activate();
 			po.activate();
-			// TODO make this configurable
-			ep = new EventProcessor(1, 10, 1000);		
+
+			// extract parameters for ExecutorService from configuration
+			int cSize = Properties.getInstance().getPropertyAsInt("RSB.ThreadPool.Size");
+			int mSize = Properties.getInstance().getPropertyAsInt("RSB.ThreadPool.SizeMax");
+			int qSize = Properties.getInstance().getPropertyAsInt("RSB.ThreadPool.QueueSize"); 
+						
+			ep = new EventProcessor(cSize, mSize, qSize);		
 		} catch (RSBException e) {
 			log.severe("exception occured during port initialization for router");
 			throw new InitializeException(e); 
 		}		
-		//epi.start();
-		//epo.start();
 	}
 	
 	/**
@@ -112,7 +116,7 @@ public class Router extends FilterObservable {
 	 * Subscribes a listener to all events that pass it's filter chain.
 	 */	
 	public void subscribe(Subscription sub) {
-		for (Filter f: sub.getFilter()) {
+		for (Filter f: sub.getFilter()) {			
 			notifyObservers(f, FilterAction.ADD);
 		}		
 		ep.addSubscription(sub);

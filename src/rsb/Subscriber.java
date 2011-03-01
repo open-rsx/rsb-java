@@ -120,13 +120,14 @@ public class Subscriber implements RSBObject {
 	 * @param l the listener instance to be registered
 	 */
 	@SuppressWarnings("unchecked")
-	public void addListener(RSBListener l) {
+	public Subscription addListener(RSBListener l) {
 		Subscription sub = new Subscription();
 		log.info("subscribing new listener to url: " + publisherUri);
 		sub.appendFilter(new ScopeFilter(publisherUri));
 		sub.appendHandler(l);
 		// sub.append(new IdentityFilter(publisherUri, IdentityFilter.Type.SENDER_IDENTITY));
 		router.subscribe(sub);
+		return sub;
 	}
 	
 	// TODO add addListener with content-based filtering options aka Subscription object

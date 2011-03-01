@@ -20,6 +20,8 @@
  */
 package rsb.example;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rsb.InitializeException;
 import rsb.RSBEvent;
 import rsb.Subscriber;
@@ -34,14 +36,31 @@ import rsb.transport.TransportFactory;
  */
 public class SubscriberExample {
 	
-	public static void main(String[] args) throws InitializeException, NotFoundException {
+	// TODO move this to a test case
+	static AtomicInteger counter1 = new AtomicInteger(0);
+	static AtomicInteger counter2 = new AtomicInteger(0);
+	static Object l = new Object();
+	
+	private synchronized static boolean allEventsDelivered() {		
+		return !((counter1.get()!=1200) || (counter2.get()!=1200));
+	}
+	
+	public static void main(String[] args) throws InitializeException, NotFoundException, InterruptedException {
 		Subscriber sub = new Subscriber("rsb://example/informer","rsb://example/informer",TransportFactory.getInstance());
 		sub.activate();
 		sub.addListener(new RSBEventListener<RSBEvent>() {
 
 			@Override
 			public void handleEvent(RSBEvent e) {
-				System.out.println("Event received: " + e.toString());
+				counter1.getAndIncrement();
+				if (counter1.get()%100==0) {
+				System.out.println("Event received: " + e.toString() + " # " + counter1);
+				}
+				if (counter1.get()==1200) {
+					synchronized (l) {
+						l.notifyAll();
+					}
+				}
 			}
 			
 		});
@@ -49,9 +68,34 @@ public class SubscriberExample {
 
 			@Override
 			public void handleEvent(String e) {
-				System.out.println("Event received: " + e);
+				try {
+//				try {
+//					Thread.sleep(1);
+//				} catch (InterruptedException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+				counter2.getAndIncrement();
+				if (counter2.get()%100==0) {
+					System.out.println("Data received: " + e + " event # " + counter2.get());
+				}
+				if (counter2.get()==1200) {
+					synchronized (l) {
+						l.notifyAll();
+					}
+				}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 			
 		});		
+		while (!allEventsDelivered()) {
+			synchronized (l) {
+				l.wait();
+				System.out.println("Wake-Up!!!");
+			}		
+		}
+		sub.deactivate();
 	};
 }
