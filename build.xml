@@ -55,7 +55,8 @@
   <target name="compile" depends="init, protocol"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build.dir}/classes">
+    <javac srcdir="${src}" destdir="${build.dir}/classes" debug="on" deprecation="on">
+    	<compilerarg value="-Xlint"/>
     	<classpath refid="compile.classpath"/>
     </javac>
   </target>
