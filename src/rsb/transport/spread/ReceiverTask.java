@@ -32,7 +32,6 @@ import rsb.event.EventId;
 import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.Router;
-import rsb.util.Holder;
 import spread.SpreadException;
 import spread.SpreadMessage;
 

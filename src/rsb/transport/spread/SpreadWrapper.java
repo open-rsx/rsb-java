@@ -31,13 +31,10 @@ import java.util.logging.Logger;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.RSBObject;
-import rsb.util.BasicSynchronizedQueue;
 import rsb.util.Properties;
-import rsb.util.QueueClosedException;
 import spread.SpreadConnection;
 import spread.SpreadException;
 import spread.SpreadGroup;
-import spread.SpreadMessage;
 
 /**
  * This class encapsulates and manages a connection to 
@@ -227,10 +224,10 @@ public class SpreadWrapper implements RSBObject {
                 }                
                 conn.connect(spreadhost, port, name, false, mship);
                 conn.setTcpNoDelay(this.useTcpNoDelay);
-                log.info("Connected to " + spreadhost + ":" + port + ". Name = " + name);
+                log.fine("Connected to " + spreadhost + ":" + port + ". Name = " + name);
                 privGrpId = conn.getPrivateGroup().toString();
                 // instantiate our own listener thread
-                log.info("Spread connection's private group id is: " + privGrpId);      
+                log.fine("Spread connection's private group id is: " + privGrpId);      
                 return;
             } catch (SpreadException e) {            	
                 ex = e;
