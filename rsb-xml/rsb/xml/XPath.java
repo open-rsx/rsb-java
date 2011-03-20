@@ -3,18 +3,19 @@
  */
 package rsb.xml;
 
-import javax.xml.namespace.NamespaceContext;
+import java.util.List;
+
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import nu.xom.Document;
-import nu.xom.Nodes;
-import nu.xom.XPathContext;
 import nu.xom.XPathException;
 
 import org.jaxen.JaxenException;
+import org.jaxen.NamespaceContext;
 import org.jaxen.expr.Expr;
 import org.jaxen.xom.XOMXPath;
 import org.xml.sax.InputSource;
@@ -32,21 +33,27 @@ import rsb.transport.XOPData;
  */
 public class XPath implements javax.xml.xpath.XPath {
 	
-	private XPathContext ctx;
+//	private XPathContext ctx;
 	private XOMXPath xp;
     private NamespaceContext namespaces;
 	
 	public XPath(String xpath) {
-		ctx = new XPathContext();
+		//ctx = new XPathContext();
 		parseXPath(xpath);
 	}	
-	
-	public XPathContext getCtx() {
-		return ctx;
-	}
+//	
+//	public XPathContext getCtx() {
+//		return ctx;
+//	}
+//
+//	public void setCtx(XPathContext ctx) {
+//		this.ctx = ctx;
+//	}
 
-	public void setCtx(XPathContext ctx) {
-		this.ctx = ctx;
+	public XPath(String xpath, RSBNamespaceContext ctx) {
+		// TODO Auto-generated constructor stub
+		namespaces = ctx;
+		parseXPath(xpath);
 	}
 
 	public String getExpression() {
@@ -57,10 +64,9 @@ public class XPath implements javax.xml.xpath.XPath {
 		parseXPath(expression);
 	}
 
-	public XPath(String xpath, XPathContext c) {
-		parseXPath(xpath);
-		ctx = c;
-	}
+//	public XPath(String xpath, XPathContext c) {
+//		parseXPath(xpath);
+//	}
 	
 	public boolean hasFilterOnRoot(String filter) {
 		Expr expr = xp.getRootExpr();
@@ -81,9 +87,21 @@ public class XPath implements javax.xml.xpath.XPath {
 		try {
 			xp = new XOMXPath(xpath);
             xp.setNamespaceContext(new org.jaxen.NamespaceContext() {
-                public String translateNamespacePrefixToUri(String prefix) {
-                    return namespaces.getNamespaceURI(prefix);
-                }
+                public String translateNamespacePrefixToUri(String prefix) {   
+                	// TODO move this to RSBNamespaceContext
+            		if (prefix == null) {
+            			throw new IllegalArgumentException("No prefix provided!");
+//            		} else if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+//          			return "http://code.cor-lab.org/rsb";
+            		} else if (prefix.equals("rsb")) {
+            			return "http://code.cor-lab.org/rsb";
+            		} else if (prefix.equals("xcf")) {
+            			return "http://xcf.sf.net";
+            		} else if (namespaces!=null) {
+            			return namespaces.translateNamespacePrefixToUri(prefix);            			
+            		} else
+            			return XMLConstants.NULL_NS_URI;
+            		}                	                                                    
             });
 		} catch (JaxenException e) {
 			throw new XPathException(e.getMessage());
@@ -104,13 +122,22 @@ public class XPath implements javax.xml.xpath.XPath {
 		if (document == null) {
 			return false;
 		}
-		Nodes result = document.query(this.getExpression(),this.getCtx());
+		List result;
+		try {
+			result = xp.selectNodes(document);
+		} catch (JaxenException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		//Nodes result = document.query(this.getExpression(),this.getCtx());
 		if (result.size() == 0) {
 			return false;
 		}
 		return true;
 	}
-
+	
 	public javax.xml.xpath.XPathExpression compile(String expression) throws XPathExpressionException {
 		// TODO Auto-generated method stub
 		return null;
@@ -136,8 +163,9 @@ public class XPath implements javax.xml.xpath.XPath {
 		return null;
 	}
 
-	public NamespaceContext getNamespaceContext() {
-		return namespaces;
+	public javax.xml.namespace.NamespaceContext getNamespaceContext() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public XPathFunctionResolver getXPathFunctionResolver() {
@@ -167,5 +195,12 @@ public class XPath implements javax.xml.xpath.XPath {
 	public void setXPathVariableResolver(XPathVariableResolver resolver) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("Method not implemented!");		
+	}
+
+	@Override
+	public void setNamespaceContext(
+			javax.xml.namespace.NamespaceContext nsContext) {
+		// TODO Auto-generated method stub
+		
 	}
 }

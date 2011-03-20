@@ -100,7 +100,7 @@ public class XPathParser {
 						else {throw new XPathNotSupportedException("XPath "+path+" currently not supported");}
 	
 
-		return new XPath(xpath.toString(),new XPathContext("dbxml","http://www.sleepycat.com/2002/dbxml"));
+		return new XPath(xpath.toString(),new RSBNamespaceContext("dbxml","http://www.sleepycat.com/2002/dbxml"));
 	}
 	
 

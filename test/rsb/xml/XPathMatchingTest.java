@@ -7,7 +7,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import nu.xom.Nodes;
 import nu.xom.XPathContext;
 
 import org.junit.After;
@@ -53,10 +52,10 @@ public class XPathMatchingTest {
 			xpath = new XPath("//False");
 			assertFalse(xpath.match(doc));
 
-			xpath = new XPath("//*[@dbxml:id=\"1\"]", new XPathContext("dbxml","http://www.sleepycat.com/2002/dbxml"));
+			xpath = new XPath("//*[@dbxml:id=\"1\"]", new RSBNamespaceContext("dbxml","http://www.sleepycat.com/2002/dbxml"));
 			assertTrue(xpath.match(doc));
 
-			xpath = new XPath("//*[@dbxml:id=\"2\"]", new XPathContext("dbxml","http://www.sleepycat.com/2002/dbxml"));
+			xpath = new XPath("//*[@dbxml:id=\"2\"]", new RSBNamespaceContext("dbxml","http://www.sleepycat.com/2002/dbxml"));
 			assertFalse(xpath.match(doc));			
 			
 			doc = XOPData.fromString("<OBJECT dbxml:id=\"81\" xmlns:dbxml=\"http://www.sleepycat.com/2002/dbxml\"><GENERATOR name=\"BOOST_DETECTOR\" timestamp=\"0123456789\"/>"+
