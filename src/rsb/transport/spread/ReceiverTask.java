@@ -89,7 +89,7 @@ class ReceiverTask extends Thread {
 				} catch (InterruptedException e) {
 				}
 				if (!spread.conn.isConnected()) {
-					log.info("Spread connection is closed.");
+					log.fine("Spread connection is closed.");
 					break;
 				}
 				if (!spread.shutdown) {
@@ -97,7 +97,7 @@ class ReceiverTask extends Thread {
 				}
 			}
 		}
-		log.info("Listener thread stopped");
+		log.fine("Listener thread stopped");
 	}
 
 	// TODO think about wheter this could actually be a regular converter call 

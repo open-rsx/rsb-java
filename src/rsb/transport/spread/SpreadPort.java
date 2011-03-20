@@ -164,7 +164,7 @@ public class SpreadPort extends AbstractPort {
 
     public void deactivate() throws RSBException {
         if (spread.isActivated()) {
-        	log.info("deactivating SpreadPort");
+        	log.fine("deactivating SpreadPort");
             spread.deactivate();
         }
         try {

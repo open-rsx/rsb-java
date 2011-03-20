@@ -62,11 +62,13 @@ public class Publisher<T> implements RSBObject {
 
 		protected PublisherStateInactive(Publisher<T> ctx) {
 			super(ctx);
+			log.fine("Publisher state activated: [URI:" + uri + ",State:Inactive,Type:" + typeinfo +"]");
 		}
 		
 		protected void activate() throws InitializeException {
 			router.activate();
-			p.state = new PublisherStateActive(p);
+			p.state = new PublisherStateActive(p);			
+			log.info("Publisher activated: [URI:" + uri + ",Type:" + typeinfo +"]");
 		}
 		
 	}
@@ -75,12 +77,13 @@ public class Publisher<T> implements RSBObject {
 
 		protected PublisherStateActive(Publisher<T> ctx) {
 			super(ctx);
-			log.info("Publisher instance activated: [URI:" + uri + ",State:Active,Type:" + typeinfo +"]"); 	
+		 	log.fine("Publisher state activated: [URI:" + uri + ",State:Active,Type:" + typeinfo +"]"); 	
 		}
 		
 		protected void deactivate() {
 			router.deactivate();
 			p.state = new PublisherStateInactive(p);
+			log.info("Publisher deactivated: [URI:" + uri + ",Type:" + typeinfo +"]");
 		}
 
 		protected RSBEvent send(RSBEvent e) {		
