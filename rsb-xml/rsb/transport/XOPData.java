@@ -283,6 +283,12 @@ public class XOPData {
 			return a.getValue();
 		}
 	}
+	
+	public void setXcfId(String id) {
+		Attribute a = new Attribute("id", id);
+		a.setNamespace("dbxml", DBXML_NS);
+		doc.getRootElement().addAttribute(a);
+	}	
 
 	@Override
 	public String toString() {
