@@ -27,6 +27,7 @@ import rsb.event.RSBListener;
 import rsb.event.Subscription;
 import rsb.filter.ScopeFilter;
 import rsb.naming.NotFoundException;
+import rsb.transport.PortConfiguration;
 import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
@@ -95,7 +96,7 @@ public class Subscriber implements RSBObject {
 	public Subscriber(String su, String pu, TransportFactory tfac) {
 		this.state = new SubscriberStateInactive(this);
 		this.transportFactory = tfac;
-		this.router = new Router(tfac);
+		this.router = new Router(tfac,PortConfiguration.IN);
 		errorHandler = new DefaultErrorHandler(log);
 		this.subscriberUri = su;
 		this.publisherUri = pu;
