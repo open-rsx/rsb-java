@@ -43,13 +43,13 @@ public class EventProcessor extends ThreadPoolExecutor {
 	
 	public EventProcessor() {
 		super( 1, 1, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000) );
-		log.info("Creating ThreadPool with size: 1 (1)");
+		log.fine("Creating ThreadPool with size: 1 (1)");
 		this.prestartAllCoreThreads();
 	}
 		
 	public EventProcessor(int coreThreads, int maxThreads, int maxQueue) {
 		super( coreThreads, maxThreads, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(maxQueue) );		
-		log.info("Creating ThreadPool with size: " + coreThreads + "(" + maxThreads + ") and queue size: " + maxQueue);
+		log.fine("Creating ThreadPool with size: " + coreThreads + "(" + maxThreads + ") and queue size: " + maxQueue);
 		this.prestartAllCoreThreads();
 	}
 	

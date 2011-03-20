@@ -61,7 +61,7 @@ class ReceiverTask extends Thread {
 	}
 
 	public void run() {
-		log.info("Listener thread started");
+		log.finer("Listener thread started");
 		while (spread.conn.isConnected()
 				&& !Thread.currentThread().isInterrupted()) {
 			try {
