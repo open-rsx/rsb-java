@@ -152,10 +152,9 @@ public class Subscriber implements RSBObject {
 	 * @return true if the instance was found and removed
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean removeListener(RSBEventListener l) {
-		// TODO put Subscription into the listener or in a map?
-		// router.unsubscribe(sub, sink);
-		return false;
+	public boolean remove(Subscription sub) {
+		router.unsubscribe(sub);
+		return true;
 	}
 
 	/**
