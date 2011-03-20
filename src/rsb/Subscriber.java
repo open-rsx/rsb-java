@@ -93,7 +93,20 @@ public class Subscriber implements RSBObject {
 	/* router to access transport layer */
 	Router router;
 
+	public Subscriber(String su, String pu) {		 
+		initMembers(su, pu, TransportFactory.getInstance());
+	}	
+	
 	public Subscriber(String su, String pu, TransportFactory tfac) {
+		initMembers(su, pu, tfac);		
+	}
+
+	/**
+	 * @param su
+	 * @param pu
+	 * @param tfac
+	 */
+	protected void initMembers(String su, String pu, TransportFactory tfac) {
 		this.state = new SubscriberStateInactive(this);
 		this.transportFactory = tfac;
 		this.router = new Router(tfac,PortConfiguration.IN);
@@ -103,7 +116,7 @@ public class Subscriber implements RSBObject {
 
 		// set own URI (configured scope + publisher name)
 		// this.uri = new XcfUri(Configurator.getInstance().getReferenceLocalUri(publisherName));
-		log.info("New subscriber instance: [sURI=" + subscriberUri + ",pURI=" + publisherUri + "]");		
+		log.info("New subscriber instance: [sURI=" + subscriberUri + ",pURI=" + publisherUri + "]");
 	}
 
 	public void activate() throws InitializeException, NotFoundException {
