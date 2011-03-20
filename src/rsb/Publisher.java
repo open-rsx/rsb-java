@@ -74,7 +74,7 @@ public class Publisher<T> implements RSBObject {
 
 		protected PublisherStateActive(Publisher<T> ctx) {
 			super(ctx);
-			log.info("Publisher instance activated: [URI:" + uri + ",State:Active,Type:" + typeinfo +"]"); 	
+			log.fine("Publisher instance activated: [URI:" + uri + ",State:Active,Type:" + typeinfo +"]"); 	
 		}
 		
 		protected void deactivate() {
