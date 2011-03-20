@@ -90,14 +90,13 @@ public class Router extends FilterObservable {
 			switch (config) {
 			case IN:
 				pi.activate();
+				setupEventProcessor();
 				break;
 			case OUT:
-				po.activate();
-				setupEventProcessor();
+				po.activate();				
 				break;
 			case INOUT:
 				po.activate();
-				setupEventProcessor();
 				break;
 			}						
 		} catch (RSBException e) {

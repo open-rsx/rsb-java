@@ -143,7 +143,7 @@ public class Subscriber implements RSBObject {
 		router.subscribe(sub);
 		return sub;
 	}
-	
+		
 	// TODO add addListener with content-based filtering options aka Subscription object
 
 	/**
