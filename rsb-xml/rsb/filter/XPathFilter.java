@@ -5,6 +5,8 @@
 
 package rsb.filter;
 
+import java.util.logging.Logger;
+
 import rsb.RSBEvent;
 import rsb.transport.XOPData;
 import rsb.xml.SyntaxException;
@@ -16,6 +18,8 @@ import rsb.xml.XPath;
  */
 public class XPathFilter extends AbstractFilter {
     
+	Logger log = Logger.getLogger(XPathFilter.class.getName());
+	
 	XPath xpath;
 	
     public XPathFilter (XPath xpath) {
@@ -34,7 +38,9 @@ public class XPathFilter extends AbstractFilter {
 			e1.printStackTrace();
 			return null;
 		}
+		log.finer("XPathfilter, doc="+xop.getDocumentAsText()+",xpath="+xpath.getExpression());
 		if (xpath.match(xop)) {
+			log.fine("XPath matched");
 			return e;
 		}
 		return null;

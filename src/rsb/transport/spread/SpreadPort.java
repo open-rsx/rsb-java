@@ -123,7 +123,8 @@ public class SpreadPort extends AbstractPort {
 		nb.setData(ab.build());
 		nb.setStandalone(true);
 		Notification n = nb.build();
-        log.info("push called, sending message on port infrastructure: [eid=" + e.getId().toString() + "]");
+        log.fine("push called, sending message on port infrastructure: [eid=" + e.getId().toString() + "]");
+        log.info("push called, sending message on port infrastructure: " + (String) e.getData());
         // TODO remove data message
         DataMessage dm = new DataMessage();
         try {
