@@ -10,6 +10,8 @@
   <property name="test.dir"  location="build/test"/>
   <property name="lib.dir" location="lib"/>
   <property file="build.properties"/>
+  <property environment="env" />
+  <property name="install.dir" location="${env.prefix}/lib/java"/>
 	
   <!-- set up ant-contrib -->
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -110,6 +112,13 @@
   	<delete dir="src/rsb/protocol"/>
   	<delete dir="${test.dir}"/>
     <delete dir="${dist.dir}"/>
+  </target>
+  
+  <target name="install" depends="dist">
+    <echo message="Installing to ${install.dir}." />
+    <mkdir dir="${install.dir}" />
+    <copy file="${dist.dir}/lib/RSBJava-${DSTAMP}.jar" todir="${install.dir}" />
+    <symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/RSBJava-${DSTAMP}.jar"/>
   </target>
 </project>
 
