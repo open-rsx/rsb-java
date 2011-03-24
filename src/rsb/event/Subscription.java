@@ -61,7 +61,12 @@ public class Subscription {
 
 	public void dispatch(RSBEvent e) {
 		for (RSBListener<RSBEvent> l: handler) {
-			l.internalNotify(e);
+			try {
+				l.internalNotify(e);
+			} catch (Exception ex) {
+				// TODO add logger, re-throw exception to user-specified exception handler 
+				ex.printStackTrace();
+			}			
 		}		
 	}
 
