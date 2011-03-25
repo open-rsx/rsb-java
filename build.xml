@@ -118,8 +118,7 @@
     <echo message="Installing to ${install.dir}." />
     <mkdir dir="${install.dir}" />
     <copy file="${dist.dir}/lib/RSBJava-${DSTAMP}.jar" todir="${install.dir}" />
-  	<delete file="${install.dir}/RSBJava.jar"/>
-    <symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/RSBJava-${DSTAMP}.jar"/>
+    <symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/RSBJava-${DSTAMP}.jar" overwrite="true" />
   </target>
 </project>
 
