@@ -111,9 +111,9 @@ class ReceiverTask extends Thread {
 		}
 		if (n!=null) {
 			log.fine("decoding notification");
-			RSBEvent e = new RSBEvent(n.getTypeId());
-			e.setUri(n.getUri());
-			e.setId(new EventId(n.getEid()));
+			RSBEvent e = new RSBEvent(n.getWireSchema());
+			e.setUri(n.getScope());
+			e.setId(new EventId(n.getId()));
 			// user data conversion
 			// why not do this lazy after / in the filtering?
 	        // TODO deal with missing converters, errors    	
