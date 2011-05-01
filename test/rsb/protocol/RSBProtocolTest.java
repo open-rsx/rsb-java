@@ -20,7 +20,7 @@ public class RSBProtocolTest {
 	
 	@Test
 	public void testNotification() {
-		Notification n1 = Notification.newBuilder().setEid("1").setTypeId("String").setUri("blub").setStandalone(true).build();
+		Notification n1 = Notification.newBuilder().setId("1").setWireSchema("String").setScope("blub").build();
 		byte[] b = n1.toByteArray();
 		Notification n2 = null;
 		try {
@@ -31,9 +31,9 @@ public class RSBProtocolTest {
 		}
 		assertNotNull(n1);
 		assertNotNull(n2);
-		assertTrue(n1.getEid().equals(n2.getEid()));
-		assertTrue(n1.getTypeId().equals(n2.getTypeId()));
-		assertTrue(n1.getUri().equals(n2.getUri()));
+		assertTrue(n1.getId().equals(n2.getId()));
+		assertTrue(n1.getWireSchema().equals(n2.getWireSchema()));
+		assertTrue(n1.getScope().equals(n2.getScope()));
 	}
 
 }
