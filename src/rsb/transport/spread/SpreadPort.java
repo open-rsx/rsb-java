@@ -112,16 +112,15 @@ public class SpreadPort extends AbstractPort {
     	AbstractConverter<ByteBuffer> c = converters.get(e.getType());
 		Notification.Builder nb = Notification.newBuilder();
 		Attachment.Builder ab = Attachment.newBuilder();
-		nb.setEid(e.getId().toString());
-		nb.setTypeId(e.getType());
-		nb.setUri(e.getUri());		
+		nb.setId(e.getId().toString());
+		nb.setWireSchema(e.getType());
+		nb.setScope(e.getUri());		
 		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
 		//nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));
 		Holder<ByteBuffer> bb = c.serialize("string",e.getData());
 		ab.setBinary(ByteString.copyFrom(bb.value.array()));		
 		ab.setLength(bb.value.limit());
 		nb.setData(ab.build());
-		nb.setStandalone(true);
 		Notification n = nb.build();
         log.fine("push called, sending message on port infrastructure: [eid=" + e.getId().toString() + "]");
         log.info("push called, sending message on port infrastructure: " + (String) e.getData());
