@@ -45,11 +45,11 @@ import com.google.protobuf.ByteString;
  * @author swrede
  */
 public class SpreadPort extends AbstractPort {
-	
+
 	ReceiverTask receiver;
 
 	private final static Logger log = Logger.getLogger(SpreadPort.class.getName());
-	
+
     /**
      * Protocol for optimization based on registered filters:
      *   TypeFilter: Some types may be received via special spread groups,
@@ -59,11 +59,11 @@ public class SpreadPort extends AbstractPort {
      *               own identity, to receive private messages (could use spread's
      *               private groups here, but that would prevent us from intercepting
      *               this communication), or filtering for another components
-     *               identity, e.g. a publisher. 
+     *               identity, e.g. a publisher.
      *   ScopeFilter: Restricts visibility according to the group encoding rules based
      *                on the Scope concept.
      *   XPathFilter: no way to optimize this on the Port
-     * 
+     *
      */
 
     SpreadWrapper spread = null;
@@ -81,7 +81,7 @@ public class SpreadPort extends AbstractPort {
         }
         receiver.setPriority(Thread.NORM_PRIORITY+2);
         receiver.setName("ReceiverTask [name="+spread.getName()+",grp="+ spread.getPrivateGroup() +"]");
-        receiver.start();	
+        receiver.start();
     }
 
     /* (non-Javadoc)
@@ -108,22 +108,22 @@ public class SpreadPort extends AbstractPort {
 	}
 
     public void push(RSBEvent e) {
-        // TODO deal with missing converter    	
-    	AbstractConverter<ByteBuffer> c = converters.get(e.getType());
+        // TODO deal with missing converter
+	AbstractConverter<ByteBuffer> c = converters.get(e.getType());
 		Notification.Builder nb = Notification.newBuilder();
 		Attachment.Builder ab = Attachment.newBuilder();
 		nb.setId(e.getId().toString());
 		nb.setWireSchema(e.getType());
-		nb.setScope(e.getUri());		
+		nb.setScope(e.getUri());
 		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
 		//nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));
 		Holder<ByteBuffer> bb = c.serialize("string",e.getData());
-		ab.setBinary(ByteString.copyFrom(bb.value.array()));		
+		ab.setBinary(ByteString.copyFrom(bb.value.array()));
 		ab.setLength(bb.value.limit());
 		nb.setData(ab.build());
 		Notification n = nb.build();
         log.fine("push called, sending message on port infrastructure: [eid=" + e.getId().toString() + "]");
-        log.info("push called, sending message on port infrastructure: " + (String) e.getData());
+        //log.info("push called, sending message on port infrastructure: " + (String) e.getData());
         // TODO remove data message
         DataMessage dm = new DataMessage();
         try {
@@ -138,7 +138,7 @@ public class SpreadPort extends AbstractPort {
 
     private void joinSpreadGroup(String hash) {
         if (spread.isActivated()) {
-            // join group 
+            // join group
             try {
                 spread.join(hash);
 
@@ -164,7 +164,7 @@ public class SpreadPort extends AbstractPort {
 
     public void deactivate() throws RSBException {
         if (spread.isActivated()) {
-        	log.fine("deactivating SpreadPort");
+		log.fine("deactivating SpreadPort");
             spread.deactivate();
         }
         try {
@@ -174,7 +174,7 @@ public class SpreadPort extends AbstractPort {
 			e.printStackTrace();
 		}
     }
-    
+
 	@Override
 	public String getType() {
 		// TODO Auto-generated method stub
@@ -182,6 +182,6 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	public void addConverter(String s, ByteBufferConverter bbc) {
-		converters.put(s, bbc);		
+		converters.put(s, bbc);
 	}
 }
