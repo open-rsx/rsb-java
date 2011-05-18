@@ -99,9 +99,10 @@ public class EventDispatcherTest {
 
 	/**
 	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.RSBEvent)}.
+	 * @throws InterruptedException 
 	 */
 	@Test
-	public final void testFire() {
+	public final void testFire() throws InterruptedException {
 		EventProcessor ed = new EventProcessor();
 		Subscription s = new Subscription();
 		TestListener l = (TestListener) getHandler();

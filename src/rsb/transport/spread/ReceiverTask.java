@@ -49,12 +49,13 @@ class ReceiverTask extends Thread {
 	private Router r;
 
 	private Map<String, AbstractConverter<ByteBuffer>> converters;
-	
+
 	/**
 	 * @param spreadWrapper
-	 * @param converters 
+	 * @param converters
 	 */
-	ReceiverTask(SpreadWrapper spreadWrapper, Router r, Map<String, AbstractConverter<ByteBuffer>> converters) {
+	ReceiverTask(SpreadWrapper spreadWrapper, Router r,
+			Map<String, AbstractConverter<ByteBuffer>> converters) {
 		this.spread = spreadWrapper;
 		this.r = r;
 		this.converters = converters;
@@ -70,12 +71,13 @@ class ReceiverTask extends Thread {
 				// similar to data messages and be converted into events
 				// TODO evaluate return value
 				DataMessage dm = smc.process(sm);
-				if (dm!=null) {
-					// TODO discuss whether we want to deserialize here or in the router
+				if (dm != null) {
+					// TODO discuss whether we want to deserialize here or in
+					// the router
 					// for now, we deserialize here
 					log.fine("Notification reveived by ReceiverTask");
 					RSBEvent e = convertNotification(dm);
-					if (e!=null) {
+					if (e != null) {
 						// dispatch event
 						r.deliver(e);
 					}
@@ -93,38 +95,40 @@ class ReceiverTask extends Thread {
 					break;
 				}
 				if (!spread.shutdown) {
-					log.warning("Caught a SpreadException while trying to receive a message: " + e1.getMessage());
+					log.warning("Caught a SpreadException while trying to receive a message: "
+							+ e1.getMessage());
 				}
 			}
 		}
 		log.fine("Listener thread stopped");
 	}
 
-	// TODO think about wheter this could actually be a regular converter call 
+	// TODO think about wheter this could actually be a regular converter call
 	private RSBEvent convertNotification(DataMessage dm) {
 		Notification n = null;
 		try {
 			n = Notification.parseFrom(dm.getData().array());
-		} catch (InvalidProtocolBufferException e1) {			
+		} catch (InvalidProtocolBufferException e1) {
 			e1.printStackTrace();
 			// TODO throw exception
 		}
-		if (n!=null) {
+		if (n != null) {
 			log.fine("decoding notification");
 			RSBEvent e = new RSBEvent(n.getWireSchema());
 			e.setUri(n.getScope());
 			e.setId(new EventId(n.getId()));
 			// user data conversion
 			// why not do this lazy after / in the filtering?
-	        // TODO deal with missing converters, errors    	
-	    	AbstractConverter<ByteBuffer> c = converters.get(e.getType());
-	    	ByteBuffer bb = ByteBuffer.wrap(n.getData().getBinary().toByteArray());
+			// TODO deal with missing converters, errors
+			AbstractConverter<ByteBuffer> c = converters.get(e.getType());
+			ByteBuffer bb = ByteBuffer.wrap(n.getData().getBinary()
+					.toByteArray());
 			e.setData(c.deserialize(e.getType(), bb).value);
-			log.finest("returning event with id: " + e.getId() );
+			log.finest("returning event with id: " + e.getId());
 			return e;
 		}
-		return null;		
-		
+		return null;
+
 	}
 
 }

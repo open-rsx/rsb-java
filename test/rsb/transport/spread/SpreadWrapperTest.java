@@ -27,7 +27,6 @@ public class SpreadWrapperTest {
 		SpreadWrapper spread = new SpreadWrapper();
 		assertNotNull(spread);
 		assertEquals(SpreadWrapper.State.DEACTIVATED, spread.getStatus());
-		System.out.println(spread.getSpreadhost().toString());
 		spread.activate();
 		assertEquals(SpreadWrapper.State.ACTIVATED, spread.getStatus());
 	}
