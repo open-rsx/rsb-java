@@ -17,7 +17,7 @@ import rsb.transport.TransportFactory;
  */
 public class UserLevelTest {
 
-	@Test
+	@Test(timeout = 30000)
 	public void roundtrip() throws Throwable {
 
 		final String scope = "/example/informer";
