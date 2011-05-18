@@ -31,6 +31,7 @@ public class UserLevelTest {
 
 			@Override
 			public void handleEvent(String d) {
+				System.out.println("Received message '" + d + "'");
 				synchronized (receivedMessages) {
 					receivedMessages.add(d);
 					receivedMessages.notify();
