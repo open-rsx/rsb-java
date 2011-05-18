@@ -137,7 +137,7 @@ public class Router extends FilterObservable implements EventHandler {
 	public void publishSync(RSBEvent e) {
 		// TODO add config checks as preconditions
 		// send event sync?
-		log.finest("Router publishing new event to port: [EventID:"
+		log.fine("Router publishing new event to port: [EventID:"
 				+ e.getId().toString() + ",PortType:" + outPort.getType() + "]");
 		outPort.push(e);
 	}

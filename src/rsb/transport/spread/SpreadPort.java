@@ -145,7 +145,8 @@ public class SpreadPort extends AbstractPort {
 			e1.printStackTrace();
 		}
 		dm.addGroup(e.getUri());
-		spread.send(dm);
+		boolean sent = spread.send(dm);
+		assert(sent);
 	}
 
 	private void joinSpreadGroup(String hash) {
