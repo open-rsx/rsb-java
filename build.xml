@@ -15,7 +15,7 @@
 	<property name="pbuf.protoc" location="/usr/bin/protoc" />
 	<property name="pbuf.lib" location="${lib.dir}/protobuf-java-2.3.0.jar" />
 	<property name="install.dir" location="${env.prefix}/lib/java" />
-	<property name="dir.report.unittests.xml" location="." />
+	<property name="dir.report.unittests.xml" location="testreports" />
 
 	<!-- set up ant-contrib -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
