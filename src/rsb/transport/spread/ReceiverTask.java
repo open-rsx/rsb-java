@@ -31,7 +31,7 @@ import rsb.RSBEvent;
 import rsb.event.EventId;
 import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
-import rsb.transport.Router;
+import rsb.transport.EventHandler;
 import spread.SpreadException;
 import spread.SpreadMessage;
 
@@ -46,7 +46,7 @@ class ReceiverTask extends Thread {
 
 	private SpreadMessageConverter smc = new SpreadMessageConverter();
 
-	private Router r;
+	private EventHandler eventHandler;
 
 	private Map<String, AbstractConverter<ByteBuffer>> converters;
 
@@ -54,10 +54,10 @@ class ReceiverTask extends Thread {
 	 * @param spreadWrapper
 	 * @param converters
 	 */
-	ReceiverTask(SpreadWrapper spreadWrapper, Router r,
+	ReceiverTask(SpreadWrapper spreadWrapper, EventHandler r,
 			Map<String, AbstractConverter<ByteBuffer>> converters) {
 		this.spread = spreadWrapper;
-		this.r = r;
+		this.eventHandler = r;
 		this.converters = converters;
 	}
 
@@ -79,7 +79,7 @@ class ReceiverTask extends Thread {
 					RSBEvent e = convertNotification(dm);
 					if (e != null) {
 						// dispatch event
-						r.deliver(e);
+						eventHandler.handle(e);
 					}
 				}
 			} catch (InterruptedIOException e1) {

@@ -22,19 +22,24 @@ package rsb.transport;
 
 import rsb.transport.spread.SpreadFactory;
 
-
 /**
- *
+ * 
  * @author swrede
  */
 public abstract class TransportFactory {
 
-    public static TransportFactory getInstance() {
-        return new SpreadFactory();
-    };
+	public static TransportFactory getInstance() {
+		return new SpreadFactory();
+	};
 
-    public Port createPort() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+	public final Port createPort() {
+		return createPort(null);
+	}
+
+	/**
+	 * @param handler
+	 *            may be <code>null</code> if no handler is required
+	 */
+	public abstract Port createPort(EventHandler handler);
 
 }

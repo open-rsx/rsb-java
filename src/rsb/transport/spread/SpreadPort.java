@@ -34,6 +34,7 @@ import rsb.protocol.AttachmentPB.Attachment;
 import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
+import rsb.transport.EventHandler;
 import rsb.transport.convert.ByteBufferConverter;
 import rsb.util.Holder;
 import spread.SpreadException;
@@ -45,7 +46,8 @@ import com.google.protobuf.ByteString;
  */
 public class SpreadPort extends AbstractPort {
 
-	ReceiverTask receiver;
+	private ReceiverTask receiver;
+	private EventHandler eventHandler;
 
 	private final static Logger log = Logger.getLogger(SpreadPort.class
 			.getName());
@@ -66,12 +68,18 @@ public class SpreadPort extends AbstractPort {
 	SpreadWrapper spread = null;
 	Map<String, AbstractConverter<ByteBuffer>> converters = new HashMap<String, AbstractConverter<ByteBuffer>>();
 
-	public SpreadPort(SpreadWrapper sw) {
+	/**
+	 * @param sw
+	 * @param eventHandler
+	 *            if <code>null</code>, no receiving of events will be done
+	 */
+	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
 		spread = sw;
+		this.eventHandler = eventHandler;
 	}
 
 	public void activate() throws InitializeException {
-		receiver = new ReceiverTask(spread, r, converters);
+		receiver = new ReceiverTask(spread, eventHandler, converters);
 		// activate spread connection
 		if (!spread.isActivated()) {
 			spread.activate();

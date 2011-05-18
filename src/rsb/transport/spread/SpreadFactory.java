@@ -20,33 +20,34 @@
  */
 package rsb.transport.spread;
 
+import rsb.transport.EventHandler;
 import rsb.transport.Port;
 import rsb.transport.TransportFactory;
 import rsb.transport.convert.ByteBufferConverter;
 
 /**
- *
+ * 
  * @author swrede
  */
 public class SpreadFactory extends TransportFactory {
 
 	private SpreadWrapper sw = null;
-	
+
 	SpreadWrapper getSpreadWrapper() {
 		if (sw == null) {
-			synchronized(SpreadFactory.class) {
+			synchronized (SpreadFactory.class) {
 				sw = new SpreadWrapper();
 			}
 		}
 		return sw;
 	}
-	
+
 	@Override
-	public Port createPort() {
+	public Port createPort(EventHandler handler) {
 		// TODO check port multiplicity
-		SpreadPort sp = new SpreadPort(new SpreadWrapper());		
+		SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler);
 		sp.addConverter("string", new ByteBufferConverter());
 		return sp;
 	}
-	
+
 }

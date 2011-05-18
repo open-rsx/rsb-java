@@ -33,12 +33,12 @@ import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
 import rsb.util.Properties;
 
-public class Router extends FilterObservable {
+public class Router extends FilterObservable implements EventHandler {
 
 	private final static Logger log = Logger.getLogger(Router.class.getName());
 
-	protected Port pi;
-	protected Port po;
+	protected Port inPort;
+	protected Port outPort;
 	protected EventProcessor ep;
 	protected PortConfiguration config;
 
@@ -73,16 +73,15 @@ public class Router extends FilterObservable {
 	 * @param f
 	 */
 	private void setupOutPorts(TransportFactory f) {
-		po = f.createPort();
+		outPort = f.createPort();
 	}
 
 	/**
 	 * @param f
 	 */
 	protected void setupInPorts(TransportFactory f) {
-		pi = f.createPort();
-		pi.setRouter(this);
-		addObserver(pi);
+		inPort = f.createPort(this);
+		addObserver(inPort);
 	}
 
 	public void activate() throws InitializeException {
@@ -91,14 +90,14 @@ public class Router extends FilterObservable {
 		try {
 			switch (config) {
 			case IN:
-				pi.activate();
+				inPort.activate();
 				setupEventProcessor();
 				break;
 			case OUT:
-				po.activate();
+				outPort.activate();
 				break;
 			case INOUT:
-				po.activate();
+				outPort.activate();
 				break;
 			}
 		} catch (RSBException e) {
@@ -139,16 +138,16 @@ public class Router extends FilterObservable {
 		// TODO add config checks as preconditions
 		// send event sync?
 		log.finest("Router publishing new event to port: [EventID:"
-				+ e.getId().toString() + ",PortType:" + po.getType() + "]");
-		po.push(e);
+				+ e.getId().toString() + ",PortType:" + outPort.getType() + "]");
+		outPort.push(e);
 	}
 
 	public void deactivate() {
 		try {
-			if (pi != null)
-				pi.deactivate();
-			if (po != null)
-				po.deactivate();
+			if (inPort != null)
+				inPort.deactivate();
+			if (outPort != null)
+				outPort.deactivate();
 			if (ep != null) {
 				ep.waitForShutdown();
 			}
@@ -179,7 +178,13 @@ public class Router extends FilterObservable {
 		ep.removeSubscription(sub);
 	}
 
-	public void deliver(RSBEvent e) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see rsb.transport.EventHandler#deliver(rsb.RSBEvent)
+	 */
+	@Override
+	public void handle(RSBEvent e) {
 		// TODO add config checks as preconditions
 		ep.fire(e);
 	}
