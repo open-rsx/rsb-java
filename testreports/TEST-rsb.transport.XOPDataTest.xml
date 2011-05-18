@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="blutstein" name="rsb.transport.XOPDataTest" tests="9" time="0.412" timestamp="2011-05-18T12:26:29">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="pbuf.lib" value="/usr/share/java/protobuf.jar" />
+    <property name="env.SESSION_MANAGER" value="local/blutstein:@/tmp/.ICE-unix/2259,unix/blutstein:/tmp/.ICE-unix/2259" />
+    <property name="lib.dir" value="/homes/jwienke/nao/RSBJava/lib" />
+    <property name="env.LD_LIBRARY_PATH_modshare" value="/homes/jwienke/local/lucid/x86_64/lib/:3" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="env.LOADEDMODULES" value="cor:user" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler" />
+    <property name="env.PROMPT_COMMAND" value="history -a" />
+    <property name="env.PATH_modshare" value="/usr/sbin:1:/bin:1:/usr/games:1:/usr/bin:1:/usr/local/sbin:1:/homes/jwienke/local/lucid/x86_64/bin:3:/vol/cor/local/.global/bin:1:/vol/cor/local/x86_64_lucid/bin:1:/sbin:1:/vol/cor/local/x86_64_lucid/opt/thunderbird:1:/usr/local/bin:1" />
+    <property name="env.COLORFGBG" value="15;0" />
+    <property name="os.name" value="Linux" />
+    <property name="env.PYTHONPATH" value="/homes/jwienke/local/lucid/x86_64/lib/python2.6/site-packages:/homes/jwienke/local/lucid/x86_64/lib/python/site-packages" />
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/resources.jar:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/rt.jar:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/jsse.jar:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/jce.jar:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/charsets.jar:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/classes" />
+    <property name="env.PWD" value="/homes/jwienke/nao/RSBJava" />
+    <property name="env.XDG_SESSION_COOKIE" value="e796093bdafcb19a46ed98b94da6e630-1302784412.385407-780202594" />
+    <property name="TODAY" value="May 18 2011" />
+    <property name="env.MANPATH_modshare" value="/homes/jwienke/local/lucid/x86_64/man:3:/vol/cor/local/x86_64_lucid/man:1:/usr/share/man:1" />
+    <property name="env.LANG" value="en_US.UTF-8" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.home" value="/usr/share/ant" />
+    <property name="java.runtime.version" value="1.6.0_22-b04" />
+    <property name="dir.report.unittests.xml" value="testreports" />
+    <property name="env.DEFAULTS_PATH" value="/usr/share/gconf/kde.default.path" />
+    <property name="env.DISPLAY" value=":0" />
+    <property name="user.name" value="jwienke" />
+    <property name="env._" value="/usr/bin/ant" />
+    <property name="env.USER" value="jwienke" />
+    <property name="env.SHELL" value="/usr/local/bin/bash" />
+    <property name="env.KDE_MULTIHEAD" value="false" />
+    <property name="env.DESKTOP_SESSION" value="kde" />
+    <property name="env.XDG_DATA_DIRS" value="/usr/share:/usr/share:/usr/local/share" />
+    <property name="env.NLSPATH" value="/usr/dt/lib/nls/msg/%L/%N.cat" />
+    <property name="build.dir" value="/homes/jwienke/nao/RSBJava/build" />
+    <property name="env.PATH" value="/homes/jwienke/local/lucid/x86_64/bin:/vol/cor/local/.global/bin:/vol/cor/local/x86_64_lucid/bin:/vol/cor/local/x86_64_lucid/opt/thunderbird:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games" />
+    <property name="user.language" value="en" />
+    <property name="env.MODULEPATH" value="/vol/cor/local/.global/share/modulefiles:/homes/jwienke/.modulefiles:/vol/ai/share/modulefiles" />
+    <property name="env.GS_LIB" value="/homes/jwienke/.fonts" />
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/amd64" />
+    <property name="env.QT_PLUGIN_PATH" value="/homes/jwienke/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/" />
+    <property name="env._LMFILES_" value="/vol/cor/local/.global/share/modulefiles/cor:/homes/jwienke/.modulefiles/user" />
+    <property name="ant.project.name" value="RSBJava" />
+    <property name="DSTAMP" value="20110518" />
+    <property name="env.KDE_SESSION_UID" value="22549" />
+    <property name="java.version" value="1.6.0_22" />
+    <property name="env.KDE_FULL_SESSION" value="true" />
+    <property name="user.timezone" value="" />
+    <property name="env.DBUS_SESSION_BUS_ADDRESS" value="unix:abstract=/tmp/dbus-BopHuhoDeG,guid=b4f9123bd4ac9f9512dea10d4da6e99d" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="env.SSH_AGENT_PID" value="2161" />
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/endorsed" />
+    <property name="install.dir" value="/homes/jwienke/local/lucid/x86_64/lib/java" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="sun.jnu.encoding" value="UTF-8" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="env.SHLVL" value="1" />
+    <property name="env.CUPS_SERVER" value="cups" />
+    <property name="file.separator" value="/" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="env.XCURSOR_THEME" value="oxy-white" />
+    <property name="java.class.version" value="50.0" />
+    <property name="src" value="/homes/jwienke/nao/RSBJava/spread-4.0.0;src;rsb-xml" />
+    <property name="env.GDMSESSION" value="kde" />
+    <property name="env.GDM_KEYBOARD_LAYOUT" value="us" />
+    <property name="env.KDE_SESSION_VERSION" value="4" />
+    <property name="user.country" value="US" />
+    <property name="env.GNOME_KEYRING_PID" value="2094" />
+    <property name="java.home" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre" />
+    <property name="dist.dir" value="/homes/jwienke/nao/RSBJava/dist" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="ant.file.RSBJava" value="/homes/jwienke/nao/RSBJava/build.xml" />
+    <property name="os.version" value="2.6.35-25-generic" />
+    <property name="env.LOGNAME" value="jwienke" />
+    <property name="ant.file" value="/homes/jwienke/nao/RSBJava/build.xml" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.version" value="17.1-b03" />
+    <property name="env.LANGUAGE" value="" />
+    <property name="ant.library.dir" value="/usr/share/ant/lib" />
+    <property name="env.PKG_CONFIG_PATH_modshare" value="/homes/jwienke/local/lucid/x86_64/lib/pkgconfig:3:/vol/cor/local/x86_64_lucid/lib/pkgconfig:1" />
+    <property name="env.TERM" value="xterm" />
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="env.MANPATH" value="/homes/jwienke/local/lucid/x86_64/man:/vol/cor/local/x86_64_lucid/man:/usr/share/man:/usr/share/man" />
+    <property name="env.GDM_LANG" value="en_US.UTF-8" />
+    <property name="xom.lib" value="/homes/jwienke/nao/RSBJava/lib/xom-1.1.jar" />
+    <property name="user.home" value="/homes/jwienke" />
+    <property name="env.MODULEPATH_modshare" value="/vol/cor/local/.global/share/modulefiles:1:/homes/jwienke/.modulefiles:2:/vol/ai/share/modulefiles:2" />
+    <property name="env.prefix" value="/homes/jwienke/local/lucid/x86_64" />
+    <property name="env.OLDPWD" value="/homes/jwienke/nao" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="env.WINDOWID" value="46137421" />
+    <property name="test.dir" value="/homes/jwienke/nao/RSBJava/build/test" />
+    <property name="java.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/amd64/server:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/amd64:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/../lib/amd64:/homes/jwienke/local/lucid/x86_64/lib/:/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib" />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="spread.daemon" value="/homes/jwienke/local/lucid/x86_64/sbin/spread" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="ant.version" value="Apache Ant version 1.7.1 compiled on September 8 2010" />
+    <property name="java.class.path" value="/usr/share/java/protobuf.jar:/homes/jwienke/nao/RSBJava/lib/xom-1.1.jar:/homes/jwienke/nao/RSBJava/lib/junit4-4.8.1.jar:/homes/jwienke/nao/RSBJava/lib/hamcrest-core.jar:/homes/jwienke/nao/RSBJava/build/classes:/homes/jwienke/nao/RSBJava/build/test:/usr/share/java/ant-launcher-1.7.1.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-junit.jar" />
+    <property name="env.KONSOLE_DBUS_SESSION" value="/Sessions/10" />
+    <property name="TSTAMP" value="1426" />
+    <property name="env.XFILESEARCHPATH" value="/usr/dt/app-defaults/%L/Dt" />
+    <property name="env._LMFILES__modshare" value="/vol/cor/local/.global/share/modulefiles/cor:1:/homes/jwienke/.modulefiles/user:3" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="env.MODULESHOME" value="/vol/ai/lib/modules-tcl" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="env.GTK_RC_FILES" value="/etc/gtk/gtkrc:/homes/jwienke/.gtkrc::/homes/jwienke/.kde/share/config/gtkrc" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="env.HOME" value="/homes/jwienke" />
+    <property name="env.LD_LIBRARY_PATH" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/amd64/server:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/amd64:/usr/lib/jvm/java-6-sun-1.6.0.22/jre/../lib/amd64:/homes/jwienke/local/lucid/x86_64/lib/" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="env.LS_COLORS" value="rs=0:di=01;34:ln=01;36:hl=44;37:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="env.SSH_AUTH_SOCK" value="/tmp/ssh-tdywVi2112/agent.2112" />
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="os.arch" value="amd64" />
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-6-sun-1.6.0.22/jre/lib/ext:/usr/java/packages/lib/ext" />
+    <property name="user.dir" value="/homes/jwienke/nao/RSBJava" />
+    <property name="env.XAUTHORITY" value="/var/run/gdm/auth-for-jwienke-mKpbUb/database" />
+    <property name="env.MANDATORY_PATH" value="/usr/share/gconf/kde.mandatory.path" />
+    <property name="env.PS1" value="\u@\h:\w$ " />
+    <property name="pbuf.protopath" value="/homes/jwienke/local/lucid/x86_64/share/rsbprotocol" />
+    <property name="line.separator" value="
+" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="env.GTK2_RC_FILES" value="/etc/gtk-2.0/gtkrc:/homes/jwienke/.gtkrc-2.0:/homes/jwienke/.gtkrc-2.0-kde4:/homes/jwienke/.kde/share/config/gtkrc-2.0" />
+    <property name="env.EDITOR" value="nano" />
+    <property name="basedir" value="/homes/jwienke/nao/RSBJava" />
+    <property name="ant.java.version" value="1.6" />
+    <property name="env.LOADEDMODULES_modshare" value="cor:1:user:3" />
+    <property name="ant.core.lib" value="/usr/share/ant/lib/ant.jar" />
+    <property name="env.USERNAME" value="jwienke" />
+    <property name="file.encoding" value="UTF-8" />
+    <property name="env.PKG_CONFIG_PATH" value="/homes/jwienke/local/lucid/x86_64/lib/pkgconfig:/vol/cor/local/x86_64_lucid/lib/pkgconfig" />
+    <property name="env.KONSOLE_DBUS_SERVICE" value=":1.59" />
+    <property name="pbuf.protoc" value="/usr/bin/protoc" />
+    <property name="java.specification.version" value="1.6" />
+    <property name="env.PYTHONPATH_modshare" value="/homes/jwienke/local/lucid/x86_64/lib/python2.6/site-packages:3:/homes/jwienke/local/lucid/x86_64/lib/python/site-packages:3" />
+    <property name="env.GNOME_KEYRING_CONTROL" value="/tmp/keyring-i0uctt" />
+    <property name="env.PROFILEHOME" value="" />
+    <property name="env.XDG_CONFIG_DIRS" value="/etc/xdg/xdg-kde:/etc/xdg" />
+    <property name="env.NETBOOT_CLASS" value="cor" />
+  </properties>
+  <testcase classname="rsb.transport.XOPDataTest" name="testXOPDataString" time="0.041" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testAddBinary" time="0.0030" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testXOPData" time="0.0010" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testSetDoc" time="0.0" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testNonXML" time="0.0010" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testGetDocumentAsText" time="0.0" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testAssign" time="0.0010" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testDOMDocument" time="0.041" />
+  <testcase classname="rsb.transport.XOPDataTest" name="testEquals" time="0.0070" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[[Fatal Error] :1:1: Content is not allowed in prolog.
+[Fatal Error] :1:1: Content is not allowed in prolog.
+[Fatal Error] :1:1: Content is not allowed in prolog.
+]]></system-err>
+</testsuite>

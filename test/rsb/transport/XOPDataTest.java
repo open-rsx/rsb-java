@@ -3,50 +3,53 @@
  */
 package rsb.transport;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import nu.xom.Document;
 import nu.xom.Nodes;
 
 import org.junit.Test;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import rsb.xml.SyntaxException;
-import rsb.xml.ValidationFailedException;
-
-import static org.junit.Assert.*;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class XOPDataTest {
 
 	String newline = System.getProperty("line.separator");
-	final String input ="<?xml version=\"1.0\"?>"+newline+"<testnode />"+newline;
+	final String input = "<?xml version=\"1.0\"?>" + newline + "<testnode />"
+			+ newline;
+
 	/**
-	 * Test method for {@link net.sf.xcf.transport.XOPData#XOPData(java.lang.String)}.
+	 * Test method for
+	 * {@link net.sf.xcf.transport.XOPData#XOPData(java.lang.String)}.
+	 * 
+	 * @throws SyntaxException
 	 */
 	@Test
-	public void testXOPDataString() {
+	public void testXOPDataString() throws SyntaxException {
 		XOPData xop;
+		// FIXME this fails under windows, probably because of different
+		// newline handling
+		// Suggestion: use an XOPData to parse the xml string and get an
+		// adequate string from getDocumentAsString()
+		xop = XOPData.fromString(input);
+		assertEquals(input, xop.getDocumentAsText());
+
 		try {
-			// FIXME this fails under windows, probably because of different newline handling
-			// Suggestion: use an XOPData to parse the xml string and get an adequate string from getDocumentAsString()
-			xop = XOPData.fromString(input);
-			assertEquals(input, xop.getDocumentAsText());
-		} catch (SyntaxException e) {
-			e.printStackTrace();
-			fail("SyntaxException: "+ e.getMessage());
-		}
-		
-		try {	
 			xop = XOPData.fromString("test");
 		} catch (SyntaxException e) {
 			assertTrue(true);
@@ -61,7 +64,7 @@ public class XOPDataTest {
 			xop = XOPData.fromString(input);
 		} catch (SyntaxException e) {
 			e.printStackTrace();
-			fail("SyntaxException: "+ e.getMessage());
+			fail("SyntaxException: " + e.getMessage());
 		}
 		// TODO move URI as parameter in Attachment and
 		// change XOP Data accordingly
@@ -70,7 +73,7 @@ public class XOPDataTest {
 		a.setValue(b);
 		xop.addAttachment("Byte Array", a);
 	}
-	
+
 	/**
 	 * Test method for {@link net.sf.xcf.transport.XOPData#XOPData()}.
 	 */
@@ -82,19 +85,19 @@ public class XOPDataTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.xcf.transport.XOPData#setDocument(java.lang.String)}.
+	 * Test method for
+	 * {@link net.sf.xcf.transport.XOPData#setDocument(java.lang.String)}.
+	 * 
+	 * @throws SyntaxException
 	 */
 	@Test
-	public void testSetDoc() {
+	public void testSetDoc() throws SyntaxException {
 		XOPData xop = new XOPData();
-		try {
-			xop.setDocument(input);
-		}		catch (SyntaxException e) {
-			e.printStackTrace();
-			fail("SyntaxException: "+ e.getMessage());
-		}	
-		// FIXME this fails under windows, probably because of different newline handling
-		// Suggestion: use an XOPData to parse the xml string and get an adequate string from getDocumentAsString()
+		xop.setDocument(input);
+		// FIXME this fails under windows, probably because of different newline
+		// handling
+		// Suggestion: use an XOPData to parse the xml string and get an
+		// adequate string from getDocumentAsString()
 		assertEquals(input, xop.getDocumentAsText());
 	}
 
@@ -113,93 +116,70 @@ public class XOPDataTest {
 			fail("Expected SyntaxException not thrown...");
 		} catch (Exception e) {
 			assertTrue(e instanceof SyntaxException);
-		}	
+		}
 	}
-	
-	
+
 	/**
 	 * Test method for {@link net.sf.xcf.transport.XOPData#getDocumentAsText()}.
+	 * 
+	 * @throws SyntaxException
 	 */
 	@Test
-	public void testGetDocumentAsText() {
+	public void testGetDocumentAsText() throws SyntaxException {
 		XOPData xop;
-		try {
-			// FIXME this fails under windows, probably because of different newline handling
-			// Suggestion: use an XOPData to parse the xml string and get an adequate string from getDocumentAsString()
-			xop = XOPData.fromString(input);
-			assertEquals(input, xop.getDocumentAsText());
-		} catch (SyntaxException e) {
-			e.printStackTrace();
-			fail("SyntaxException: "+ e.getMessage());
-		}
-		
+		// FIXME this fails under windows, probably because of different
+		// newline handling
+		// Suggestion: use an XOPData to parse the xml string and get an
+		// adequate string from getDocumentAsString()
+		xop = XOPData.fromString(input);
+		assertEquals(input, xop.getDocumentAsText());
 	}
-	
+
 	@Test
-	public void testAssign() {
-		try {
-			XOPData xop1 = XOPData.fromString("<?xml version=\"1.0\"?>\n<TESTNODE />\n");
-			XOPData xop2 = new XOPData();
-			xop2.assign(xop1);
-			assertSame(xop1.doc, xop2.doc);
-			assertSame(xop1.attachments, xop2.attachments);
-		} catch (SyntaxException e) {
-			fail("Caught SyntaxException trying to create XOPData from test string");
-		}
+	public void testAssign() throws SyntaxException {
+		XOPData xop1 = XOPData
+				.fromString("<?xml version=\"1.0\"?>\n<TESTNODE />\n");
+		XOPData xop2 = new XOPData();
+		xop2.assign(xop1);
+		assertSame(xop1.doc, xop2.doc);
+		assertSame(xop1.attachments, xop2.attachments);
 	}
-	
+
 	@Test
-	public void testDOMDocument() {
-		try {
-			// from DOM to XOM
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			StringReader reader = new StringReader("<?xml version=\"1.0\"?>\n<NODE />\n");
-			InputSource is = new InputSource(reader);
-			org.w3c.dom.Document document = builder.parse(is);
-			XOPData xop = new XOPData(document);
-			Document doc = xop.getDocument();
-			Nodes ns = doc.query("/NODE");
-			assertEquals(1, ns.size());
-			ns = doc.query("//*");
-			assertEquals(1, ns.size());
-			// from XOM to DOM
-			XOPData xop2 = XOPData.fromString("<?xml version=\"1.0\"?>\n<NODE />\n");
-			org.w3c.dom.Document doc2 = xop2.getDocumentAsDOM(builder.getDOMImplementation());
-			assertEquals("NODE", doc2.getDocumentElement().getNodeName());
-			assertEquals(0, doc2.getDocumentElement().getChildNodes().getLength());
-		} catch (ParserConfigurationException e) {
-			fail("Caught ParserConfigurationException");
-		} catch (SAXException e) {
-			fail("Caught SAXException");
-		} catch (IOException e) {
-			fail("Caught IOException");
-		} catch (SyntaxException e) {
-			fail("Caught SyntaxException");
-		}
+	public void testDOMDocument() throws Throwable {
+		// from DOM to XOM
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		StringReader reader = new StringReader(
+				"<?xml version=\"1.0\"?>\n<NODE />\n");
+		InputSource is = new InputSource(reader);
+		org.w3c.dom.Document document = builder.parse(is);
+		XOPData xop = new XOPData(document);
+		Document doc = xop.getDocument();
+		Nodes ns = doc.query("/NODE");
+		assertEquals(1, ns.size());
+		ns = doc.query("//*");
+		assertEquals(1, ns.size());
+		// from XOM to DOM
+		XOPData xop2 = XOPData
+				.fromString("<?xml version=\"1.0\"?>\n<NODE />\n");
+		org.w3c.dom.Document doc2 = xop2.getDocumentAsDOM(builder
+				.getDOMImplementation());
+		assertEquals("NODE", doc2.getDocumentElement().getNodeName());
+		assertEquals(0, doc2.getDocumentElement().getChildNodes().getLength());
 	}
-	
 
 	@Test
 	public void testEquals() throws SyntaxException {
-		String xml1 =
-			"<?xml version=\"1.0\"?>" +
-			"<node1 attr1=\"val1\">" +
-			"  <node2 attr2=\"val2\"/>" +
-			"  <node3 attr3=\"val3\"/>" +
-			"</node1>";
-		String xml2 =
-			"<?xml version=\"1.0\"?>" +
-			"<node1 attr1=\"val1\">" +
-			"  <node2 attr2=\"val2\"></node2>" +
-			"  <node3 attr3=\"val3\"/>" +
-			"</node1>";
-		String xml3 =
-			"<?xml version=\"1.0\"?>" +
-			"<node1 attr1=\"val1\">" +
-			"  <node3 attr3=\"val3\"/>" +
-			"  <node2 attr3=\"val2\"/>" +
-			"</node1>";
+		String xml1 = "<?xml version=\"1.0\"?>" + "<node1 attr1=\"val1\">"
+				+ "  <node2 attr2=\"val2\"/>" + "  <node3 attr3=\"val3\"/>"
+				+ "</node1>";
+		String xml2 = "<?xml version=\"1.0\"?>" + "<node1 attr1=\"val1\">"
+				+ "  <node2 attr2=\"val2\"></node2>"
+				+ "  <node3 attr3=\"val3\"/>" + "</node1>";
+		String xml3 = "<?xml version=\"1.0\"?>" + "<node1 attr1=\"val1\">"
+				+ "  <node3 attr3=\"val3\"/>" + "  <node2 attr3=\"val2\"/>"
+				+ "</node1>";
 		XOPData xop1 = XOPData.fromString(xml1);
 		XOPData xop2 = XOPData.fromString(xml2);
 		XOPData xop3 = XOPData.fromString(xml3);
@@ -211,7 +191,7 @@ public class XOPDataTest {
 		byte[] data1 = new byte[1000];
 		byte[] data2 = new byte[1000];
 		byte[] data3 = new byte[1000];
-		for(int i=0; i<1000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			byte b = (byte) Math.round(Math.random() * 255);
 			data1[i] = b;
 			data2[i] = b;
@@ -236,5 +216,5 @@ public class XOPDataTest {
 		xop2.addAttachment("attachment", a3);
 		assertFalse(xop1.equals(xop2));
 	}
-	
+
 }

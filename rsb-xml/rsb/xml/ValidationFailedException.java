@@ -27,9 +27,6 @@ public class ValidationFailedException extends RSBException {
 		return invalidData;
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3632658303152950377L;
 
 }

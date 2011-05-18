@@ -29,12 +29,13 @@ import rsb.util.Holder;
 
 /**
  * @author swrede
- *
  */
 public class StringConverterTest {
 
 	/**
-	 * Test method for {@link rsb.transport.convert.StringConverter#serialize(java.lang.String, java.lang.Object)}.
+	 * Test method for
+	 * {@link rsb.transport.convert.StringConverter#serialize(java.lang.String, java.lang.Object)}
+	 * .
 	 */
 	@Test
 	public void testSerialize() {
@@ -45,7 +46,9 @@ public class StringConverterTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.transport.convert.StringConverter#deserialize(java.lang.String, rsb.util.Holder)}.
+	 * Test method for
+	 * {@link rsb.transport.convert.StringConverter#deserialize(java.lang.String, rsb.util.Holder)}
+	 * .
 	 */
 	@Test
 	public void testDeserialize() {
@@ -54,7 +57,7 @@ public class StringConverterTest {
 		Holder<String> buf = c.serialize("string", s1);
 		assertNotNull(buf);
 		Object o = c.deserialize("string", buf.value).value;
-		String s2 = (String) o; 		
+		String s2 = (String) o;
 		assertTrue(s2.equals(s1));
 	}
 

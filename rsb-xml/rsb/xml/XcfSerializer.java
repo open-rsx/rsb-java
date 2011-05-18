@@ -13,12 +13,11 @@ import nu.xom.Serializer;
 
 /**
  * @author rgaertne
- *
  */
 public class XcfSerializer extends Serializer {
 
 	private String xmldecl = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
-	
+
 	/**
 	 * @param arg0
 	 */
@@ -34,21 +33,18 @@ public class XcfSerializer extends Serializer {
 	public XcfSerializer(OutputStream arg0, String arg1)
 			throws UnsupportedEncodingException {
 		super(arg0, arg1);
-		xmldecl = "<?xml version=\"1.0\" encoding=\""+getEncoding()+"\" standalone=\"no\"?>";
+		xmldecl = "<?xml version=\"1.0\" encoding=\"" + getEncoding()
+				+ "\" standalone=\"no\"?>";
 	}
-
 
 	// TODO is there need for this methods?
-	/*public String getXmldecl() {
-		return xmldecl;
-	}
-
-	public void setXmldecl(String xmldecl) {
-		this.xmldecl = xmldecl;
-	}
-*/    /**
-     * Writes XML declaration followed by a line break.
-     */
+	/*
+	 * public String getXmldecl() { return xmldecl; }
+	 * 
+	 * public void setXmldecl(String xmldecl) { this.xmldecl = xmldecl; }
+	 *//**
+	 * Writes XML declaration followed by a line break.
+	 */
 	public void writeXMLDeclaration() {
 		try {
 			this.writeRaw(xmldecl);
@@ -58,7 +54,7 @@ public class XcfSerializer extends Serializer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static String createXML(Document doc) {
 		String result = null;
 		try {

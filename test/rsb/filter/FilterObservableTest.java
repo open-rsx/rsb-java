@@ -26,7 +26,7 @@ import org.junit.Test;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class FilterObservableTest {
 
@@ -38,37 +38,41 @@ public class FilterObservableTest {
 
 		@Override
 		public void notify(IdentityFilter e, FilterAction a) {
-			notified_id = true;			
+			notified_id = true;
 		}
 
 		@Override
 		public void notify(TypeFilter e, FilterAction a) {
-			notified_tf = true;			
+			notified_tf = true;
 		}
 
 		@Override
 		public void notify(ScopeFilter e, FilterAction a) {
-			notified_sf = true;			
+			notified_sf = true;
 		}
 
 		@Override
 		public void notify(AbstractFilter e, FilterAction a) {
-			notified_af=true;			
+			notified_af = true;
 		}
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.FilterObservable#addObserver(rsb.filter.FilterObserver)}.
+	 * Test method for
+	 * {@link rsb.filter.FilterObservable#addObserver(rsb.filter.FilterObserver)}
+	 * .
 	 */
 	@Test
 	public void testAddObserver() {
 		FilterObservable fo = new FilterObservable();
 		fo.addObserver(new TestObserver());
-		assertTrue(fo.observers.size()==1);		
+		assertTrue(fo.observers.size() == 1);
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.FilterObservable#removeObserver(rsb.filter.FilterObserver)}.
+	 * Test method for
+	 * {@link rsb.filter.FilterObservable#removeObserver(rsb.filter.FilterObserver)}
+	 * .
 	 */
 	@Test
 	public void testRemoveObserver() {
@@ -76,11 +80,13 @@ public class FilterObservableTest {
 		TestObserver to = new TestObserver();
 		fo.addObserver(to);
 		fo.removeObserver(to);
-		assertTrue(fo.observers.size()==0);	
+		assertTrue(fo.observers.size() == 0);
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.FilterObservable#notifyObservers(rsb.filter.AbstractFilter, rsb.filter.FilterAction)}.
+	 * Test method for
+	 * {@link rsb.filter.FilterObservable#notifyObservers(rsb.filter.AbstractFilter, rsb.filter.FilterAction)}
+	 * .
 	 */
 	@Test
 	public void testNotifyObservers() {
@@ -88,8 +94,10 @@ public class FilterObservableTest {
 		TestObserver to = new TestObserver();
 		fo.addObserver(to);
 		fo.notifyObservers((Filter) new ScopeFilter("blub"), FilterAction.ADD);
-		fo.notifyObservers((Filter) new IdentityFilter("blub", IdentityFilter.Type.RECEIVER_IDENTITY), FilterAction.ADD);
-		fo.notifyObservers((Filter) new TypeFilter(this.getClass()), FilterAction.ADD);
+		fo.notifyObservers((Filter) new IdentityFilter("blub",
+				IdentityFilter.Type.RECEIVER_IDENTITY), FilterAction.ADD);
+		fo.notifyObservers((Filter) new TypeFilter(this.getClass()),
+				FilterAction.ADD);
 		assertTrue(to.notified_sf);
 		assertTrue(to.notified_tf);
 		assertTrue(to.notified_id);
@@ -105,7 +113,7 @@ public class FilterObservableTest {
 		TestObserver to = new TestObserver();
 		fo.addObserver(to);
 		fo.clearObservers();
-		assertTrue(fo.observers.size()==0);	
+		assertTrue(fo.observers.size() == 0);
 	}
 
 }

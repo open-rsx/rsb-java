@@ -26,14 +26,13 @@ import org.jaxen.NamespaceContext;
 
 /**
  * @author swrede
- *
  */
 public class RSBNamespaceContext implements NamespaceContext {
 
 	// TODO improve this class...
-	
+
 	String p, u;
-	
+
 	public RSBNamespaceContext(String prefix, String uri) {
 		this.p = prefix;
 		this.u = uri;

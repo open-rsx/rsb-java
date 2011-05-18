@@ -30,24 +30,25 @@ import rsb.event.Subscription;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class SubscriptionTest {
 
 	private RSBEventListener<RSBEvent> getHandler() {
-		RSBEventListener<RSBEvent> l = new RSBEventListener<RSBEvent>() {			
-			
+		RSBEventListener<RSBEvent> l = new RSBEventListener<RSBEvent>() {
+
 			@Override
-			public void handleEvent(RSBEvent e) {				
+			public void handleEvent(RSBEvent e) {
 				// blub
 			}
-			
+
 		};
 		return l;
-	}	
-	
+	}
+
 	/**
-	 * Test method for {@link rsb.event.Subscription#appendHandler(rsb.event.RSBEventListener)}.
+	 * Test method for
+	 * {@link rsb.event.Subscription#appendHandler(rsb.event.RSBEventListener)}.
 	 */
 	@Test
 	public void testAppendHandler() {
@@ -58,7 +59,8 @@ public class SubscriptionTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.Subscription#appendFilter(rsb.filter.Filter)}.
+	 * Test method for
+	 * {@link rsb.event.Subscription#appendFilter(rsb.filter.Filter)}.
 	 */
 	@Test
 	public void testAppendFilter() {
@@ -98,7 +100,7 @@ public class SubscriptionTest {
 		ScopeFilter sf = new ScopeFilter("rsb://blub");
 		Subscription s = new Subscription();
 		s.appendFilter(sf);
-		assertTrue(s.length()==1);
+		assertTrue(s.length() == 1);
 	}
 
 	/**

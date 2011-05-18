@@ -30,12 +30,13 @@ import rsb.util.Holder;
 
 /**
  * @author swrede
- *
  */
 public class ByteBufferConverterTest {
 
 	/**
-	 * Test method for {@link rsb.transport.convert.ByteBufferConverter#serialize(java.lang.String, java.lang.Object)}.
+	 * Test method for
+	 * {@link rsb.transport.convert.ByteBufferConverter#serialize(java.lang.String, java.lang.Object)}
+	 * .
 	 */
 	@Test
 	public void testSerialize() {
@@ -46,16 +47,18 @@ public class ByteBufferConverterTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.transport.convert.ByteBufferConverter#deserialize(java.lang.String, rsb.util.Holder)}.
+	 * Test method for
+	 * {@link rsb.transport.convert.ByteBufferConverter#deserialize(java.lang.String, rsb.util.Holder)}
+	 * .
 	 */
 	@Test
 	public void testDeserialize() {
 		ByteBufferConverter c = new ByteBufferConverter();
 		String s1 = "testcase";
 		Holder<ByteBuffer> buf = c.serialize("string", s1);
-		assertNotNull(buf);		
+		assertNotNull(buf);
 		String s2 = (String) c.deserialize("string", buf.value).value;
-		assertTrue(s1.equals(s2));		
-	}	
-	
+		assertTrue(s1.equals(s2));
+	}
+
 }

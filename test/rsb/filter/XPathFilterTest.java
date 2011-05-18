@@ -20,18 +20,17 @@
  */
 package rsb.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import rsb.RSBEvent;
-import rsb.transport.XOPData;
-import rsb.xml.SyntaxException;
 import rsb.xml.XPath;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class XPathFilterTest {
 

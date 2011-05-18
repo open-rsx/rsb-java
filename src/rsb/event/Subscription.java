@@ -10,47 +10,46 @@ import java.util.List;
 import rsb.RSBEvent;
 import rsb.filter.Filter;
 
-
 /**
  * @author swrede
- *
  */
 public class Subscription {
 
 	ArrayList<Filter> filters = new ArrayList<Filter>();
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	ArrayList<RSBListener> handler = new ArrayList<RSBListener>();
 
-    @SuppressWarnings("unchecked")
-	public Subscription appendHandler(RSBListener l) {
-    	handler.add(l);
-    	return this;
+	public Subscription appendHandler(
+			@SuppressWarnings("rawtypes") RSBListener l) {
+		handler.add(l);
+		return this;
 	}
-    
-    public Subscription appendFilter(Filter f) {
-    	filters.add(f);
-    	return this;
-	}    
-    
-    @SuppressWarnings("unchecked")
+
+	public Subscription appendFilter(Filter f) {
+		filters.add(f);
+		return this;
+	}
+
+	@SuppressWarnings("rawtypes")
 	public Iterator<RSBListener> getHandlerIterator() {
-    	Iterator<RSBListener> it = handler.iterator();
+		Iterator<RSBListener> it = handler.iterator();
 		return it;
 	}
 
-    public Iterator<Filter> getFilterIterator() {
-    	Iterator<Filter> it = filters.iterator();
+	public Iterator<Filter> getFilterIterator() {
+		Iterator<Filter> it = filters.iterator();
 		return it;
-	}    
-    
+	}
+
 	public int length() {
 		return filters.size();
-	}	
-	
+	}
+
 	public boolean match(RSBEvent e) {
-		for (Filter f: filters) {
+		for (Filter f : filters) {
 			e = f.transform(e);
-			if (e==null) return false;			
+			if (e == null)
+				return false;
 		}
 		return true;
 	}
@@ -60,19 +59,20 @@ public class Subscription {
 	}
 
 	public void dispatch(RSBEvent e) {
-		for (RSBListener<RSBEvent> l: handler) {
+		for (RSBListener<RSBEvent> l : handler) {
 			try {
 				l.internalNotify(e);
 			} catch (Exception ex) {
-				// TODO add logger, re-throw exception to user-specified exception handler 
+				// TODO add logger, re-throw exception to user-specified
+				// exception handler
 				ex.printStackTrace();
-			}			
-		}		
+			}
+		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public List<RSBListener> getHandlers() {
 		return handler;
 	}
-	
+
 }

@@ -2,9 +2,6 @@ package rsb.xml;
 
 public class SchemaNotFoundException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2746977341273609362L;
 
 	public SchemaNotFoundException(String message) {
@@ -17,6 +14,6 @@ public class SchemaNotFoundException extends RuntimeException {
 
 	public SchemaNotFoundException(Throwable cause) {
 		super(cause);
-	}	
-	
+	}
+
 }

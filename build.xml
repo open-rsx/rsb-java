@@ -4,14 +4,18 @@
     </description>
 
 	<!-- set global properties for this build -->
+	<property file="build.properties" />
+	<property environment="env" />
 	<property name="src" location="spread-4.0.0;src;rsb-xml" />
 	<property name="build.dir" location="build" />
 	<property name="dist.dir" location="dist" />
-	<property name="test.dir" location="build/test" />
+	<property name="test.dir" location="${build.dir}/test" />
 	<property name="lib.dir" location="lib" />
-	<property file="build.properties" />
-	<property environment="env" />
+	<property name="xom.lib" location="${lib.dir}/xom-1.1.jar" />
+	<property name="pbuf.protoc" location="/usr/bin/protoc" />
+	<property name="pbuf.lib" location="${lib.dir}/protobuf-java-2.3.0.jar" />
 	<property name="install.dir" location="${env.prefix}/lib/java" />
+	<property name="dir.report.unittests.xml" location="." />
 
 	<!-- set up ant-contrib -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -27,8 +31,12 @@
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.dir}/classes" />
-		<mkdir dir="${build.dir}/test" />
+		<mkdir dir="${test.dir}" />
+		<mkdir dir="${dir.report.unittests.xml}" />
 		<!-- Create library classpath -->
+		<echo message="Using xom: ${xom.lib}" />
+		<echo message="Using pbuf: ${pbuf.lib}" />
+		<echo message="Test report dir: ${dir.report.unittests.xml}" />
 		<path id="compile.classpath">
 			<pathelement path="${classpath}" />
 			<pathelement location="${pbuf.lib}/" />

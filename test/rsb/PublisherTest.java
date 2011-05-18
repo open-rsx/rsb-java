@@ -30,7 +30,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class PublisherTest {
 
@@ -45,40 +45,47 @@ public class PublisherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#Publisher(java.lang.String, rsb.transport.TransportFactory)}.
+	 * Test method for
+	 * {@link rsb.Publisher#Publisher(java.lang.String, rsb.transport.TransportFactory)}
+	 * .
 	 */
 	@Test
 	public void testPublisherStringTransportFactory() {
-		Publisher<String> p = new Publisher<String>("x",TransportFactory.getInstance());
+		Publisher<String> p = new Publisher<String>("x",
+				TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getURI(), "x");
 		assertNotNull(p.transportFactory);
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#Publisher(java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link rsb.Publisher#Publisher(java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	public void testPublisherStringString() {
-		Publisher<String> p = new Publisher<String>("x","XMLString");
+		Publisher<String> p = new Publisher<String>("x", "XMLString");
 		assertNotNull(p);
 		assertEquals(p.getURI(), "x");
 		assertEquals(p.typeinfo, "XMLString");
 		assertNotNull(p.transportFactory);
-	}		
-	
+	}
+
 	/**
-	 * Test method for {@link rsb.Publisher#Publisher(java.lang.String, java.lang.String, rsb.transport.TransportFactory)}.
+	 * Test method for
+	 * {@link rsb.Publisher#Publisher(java.lang.String, java.lang.String, rsb.transport.TransportFactory)}
+	 * .
 	 */
 	@Test
 	public void testPublisherStringStringTransportFactory() {
-		Publisher<String> p = new Publisher<String>("x","XMLString",TransportFactory.getInstance());
+		Publisher<String> p = new Publisher<String>("x", "XMLString",
+				TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getURI(), "x");
 		assertEquals(p.typeinfo, "XMLString");
 		assertNotNull(p.transportFactory);
-	}	
-	
+	}
+
 	/**
 	 * Test method for {@link rsb.Publisher#getURI()}.
 	 */
@@ -90,34 +97,26 @@ public class PublisherTest {
 
 	/**
 	 * Test method for {@link rsb.Publisher#activate()}.
+	 * 
+	 * @throws InitializeException
 	 */
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testActivate() {
+	public void testActivate() throws InitializeException {
 		Publisher<String> p = new Publisher<String>("rsb://informer/example");
-		try {
-			p.activate();
-		} catch (InitializeException e) {
-			e.printStackTrace();
-			fail("Initialization exception!");
-		}
+		p.activate();
 		assertTrue(p.state instanceof PublisherStateActive);
 	}
 
 	/**
 	 * Test method for {@link rsb.Publisher#deactivate()}.
+	 * 
+	 * @throws InitializeException
 	 */
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testDeactivate() {
+	public void testDeactivate() throws InitializeException {
 		Publisher<String> p = new Publisher<String>("rsb://informer/example");
-		try {
-			p.activate();
-		} catch (InitializeException e) {
-			e.printStackTrace();
-			fail("Initialization exception!");
-		}
-		assertTrue(p.state instanceof PublisherStateActive);		
+		p.activate();
+		assertTrue(p.state instanceof PublisherStateActive);
 		p.deactivate();
 		assertTrue(p.state instanceof PublisherStateInactive);
 	}
@@ -126,42 +125,35 @@ public class PublisherTest {
 		assertTrue(e.type.equals("string"));
 		assertTrue(e.data.equals("Hello World!"));
 		assertNotNull(e.getId());
-		assertTrue(e.getUri().equals("rsb://informer/example"));		
-	}	
-	
-	/**
-	 * Test method for {@link rsb.Publisher#send(rsb.RSBEvent)}.
-	 */
-	@Test
-	public void testSendRSBEvent() {
-		Publisher<String> p = new Publisher<String>("rsb://informer/example");
-		try {
-			p.activate();
-		} catch (InitializeException e) {
-			e.printStackTrace();
-			fail("Initialization exception!");
-		}
-		RSBEvent e = p.send(new RSBEvent("string","Hello World!"));
-		testEvent(e);
+		assertTrue(e.getUri().equals("rsb://informer/example"));
 	}
-	
 
 	/**
 	 * Test method for {@link rsb.Publisher#send(rsb.RSBEvent)}.
+	 * 
+	 * @throws InitializeException
 	 */
 	@Test
-	public void testSendT() {
+	public void testSendRSBEvent() throws InitializeException {
 		Publisher<String> p = new Publisher<String>("rsb://informer/example");
-		try {
-			p.activate();
-		} catch (InitializeException e) {
-			e.printStackTrace();
-			fail("Initialization exception!");
-		}
+		p.activate();
+		RSBEvent e = p.send(new RSBEvent("string", "Hello World!"));
+		testEvent(e);
+	}
+
+	/**
+	 * Test method for {@link rsb.Publisher#send(rsb.RSBEvent)}.
+	 * 
+	 * @throws InitializeException
+	 */
+	@Test
+	public void testSendT() throws InitializeException {
+		Publisher<String> p = new Publisher<String>("rsb://informer/example");
+		p.activate();
 		RSBEvent e = p.send("Hello World!");
 		testEvent(e);
-	}	
-	
-	// TODO add testcase for unknown data type 
+	}
+
+	// TODO add testcase for unknown data type
 
 }

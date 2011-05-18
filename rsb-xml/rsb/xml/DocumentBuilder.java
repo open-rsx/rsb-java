@@ -13,32 +13,35 @@ import nu.xom.ValidityException;
 
 /**
  * @author rgaertne
- *
+ * 
  */
 public class DocumentBuilder {
-    private static ThreadLocal<WeakReference<Builder>> builderRef = new ThreadLocal<WeakReference<Builder>>();
-    
+
+	private static ThreadLocal<WeakReference<Builder>> builderRef = new ThreadLocal<WeakReference<Builder>>();
+
 	/**
 	 * Creates a nu.xom.Document from given XML string.
+	 * 
 	 * @param xml
-	 * @return XOM Document instance 
+	 * @return XOM Document instance
 	 */
-	public static Document createDocument(String xml) throws ValidityException, ParsingException {
-		WeakReference wref = (WeakReference)builderRef.get();
-                Builder parser;
-		if(wref == null || (parser = (Builder)wref.get()) == null) {
-                    parser = new Builder();
-                    builderRef.set(new WeakReference<Builder>(parser));
-                }
-                
-                Document doc = null;
+	public static Document createDocument(String xml) throws ValidityException,
+			ParsingException {
+		WeakReference<Builder> wref = builderRef.get();
+		Builder parser;
+		if (wref == null || (parser = wref.get()) == null) {
+			parser = new Builder();
+			builderRef.set(new WeakReference<Builder>(parser));
+		}
+
+		Document doc = null;
 		try {
-			doc = parser.build(xml,"");
+			doc = parser.build(xml, "");
 		} catch (IOException e) {
 			e.printStackTrace();
-			assert(false);
+			assert (false);
 		}
-		return doc; 
+		return doc;
 	}
-	
+
 }

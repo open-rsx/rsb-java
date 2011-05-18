@@ -27,21 +27,23 @@ import rsb.xml.SyntaxException;
 
 /**
  * @author swrede
- *
  */
 public class XMLInformer {
 
 	/**
 	 * @param args
-	 * @throws InitializeException 
-	 * @throws InterruptedException 
-	 * @throws SyntaxException 
+	 * @throws InitializeException
+	 * @throws InterruptedException
+	 * @throws SyntaxException
 	 */
-	public static void main(String[] args) throws InitializeException, InterruptedException, SyntaxException {
+	public static void main(String[] args) throws InitializeException,
+			InterruptedException, SyntaxException {
 		Publisher<String> p = new Publisher<String>("rsb://example/informer");
 		p.activate();
 		for (int i = 0; i < 100; i++) {
-			XOPData xop = XOPData.fromString("<message val=\"Hello World!\" nr=\""+i+"\"/>");			
+			XOPData xop = XOPData
+					.fromString("<message val=\"Hello World!\" nr=\"" + i
+							+ "\"/>");
 			p.send(xop.getDocumentAsText());
 		}
 		p.deactivate();

@@ -28,7 +28,7 @@ import rsb.RSBEvent;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class ScopeFilterTest {
 
@@ -41,9 +41,9 @@ public class ScopeFilterTest {
 		e.ensureId();
 		e.setUri("rsb://images");
 		ScopeFilter sf = new ScopeFilter("rsb://images");
-		assertTrue(sf.transform(e)!=null);
+		assertTrue(sf.transform(e) != null);
 		e.setUri("rsb://nomatch");
-		assertTrue(sf.transform(e)==null);
+		assertTrue(sf.transform(e) == null);
 	}
 
 	/**
@@ -54,17 +54,18 @@ public class ScopeFilterTest {
 		RSBEvent e = new RSBEvent();
 		e.ensureId();
 		// TODO actually, we need a mock object to test this correctly
-		//      setting the URI to another name than the scope filters
-		//      configuration is just to check here whether the white-
-		//      listing really works
+		// setting the URI to another name than the scope filters
+		// configuration is just to check here whether the white-
+		// listing really works
 		e.setUri("rsb://images/justfortesting");
 		ScopeFilter sf = new ScopeFilter("rsb://images");
 		sf.skip(e.getId());
-		assertTrue(sf.transform(e)!=null);
+		assertTrue(sf.transform(e) != null);
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.ScopeFilter#ScopeFilter(java.lang.String)}.
+	 * Test method for
+	 * {@link rsb.filter.ScopeFilter#ScopeFilter(java.lang.String)}.
 	 */
 	@Test
 	public void testScopeFilter() {

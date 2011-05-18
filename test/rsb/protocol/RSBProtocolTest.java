@@ -11,21 +11,21 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import rsb.protocol.NotificationPB.Notification;
 
-
 /**
  * @author swrede
- *
+ * 
  */
 public class RSBProtocolTest {
-	
+
 	@Test
 	public void testNotification() {
-		Notification n1 = Notification.newBuilder().setId("1").setWireSchema("String").setScope("blub").build();
+		Notification n1 = Notification.newBuilder().setId("1")
+				.setWireSchema("String").setScope("blub").build();
 		byte[] b = n1.toByteArray();
 		Notification n2 = null;
 		try {
 			n2 = Notification.parseFrom(b);
-		} catch (InvalidProtocolBufferException e) {			
+		} catch (InvalidProtocolBufferException e) {
 			e.printStackTrace();
 			fail("InvalidProtocolBufferException");
 		}

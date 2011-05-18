@@ -1,21 +1,17 @@
 package rsb;
+
 /**
  * 
  */
 
-
 /**
- * Superclass of all RSB exceptions that may be used in 
- * handlers that catch all RSB-related exceptions. 
+ * Superclass of all RSB exceptions that may be used in handlers that catch all
+ * RSB-related exceptions.
  * 
  * @author swrede
- *
  */
-public class RSBException extends Exception  {
+public class RSBException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5223250815059688771L;
 
 	/**

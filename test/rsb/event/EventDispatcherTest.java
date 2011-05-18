@@ -20,9 +20,8 @@
  */
 package rsb.event;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -30,7 +29,7 @@ import rsb.RSBEvent;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class EventDispatcherTest {
 
@@ -42,7 +41,7 @@ public class EventDispatcherTest {
 		}
 
 		@Override
-		public void handleEvent(RSBEvent e) {				
+		public void handleEvent(RSBEvent e) {
 			notified = true;
 		}
 	}
@@ -58,16 +57,18 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#EventDispatcher(int, int, int)}.
+	 * Test method for
+	 * {@link rsb.event.EventProcessor#EventDispatcher(int, int, int)}.
 	 */
 	@Test
 	public final void testEventDispatcherIntIntInt() {
-		EventProcessor ed = new EventProcessor(1,3, 100);
-		assertNotNull(ed);		
+		EventProcessor ed = new EventProcessor(1, 3, 100);
+		assertNotNull(ed);
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#addSubscription(rsb.event.Subscription)}.
+	 * Test method for
+	 * {@link rsb.event.EventProcessor#addSubscription(rsb.event.Subscription)}.
 	 */
 	@Test
 	public final void testAddSubscription() {
@@ -78,7 +79,9 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#removeSubscription(rsb.event.Subscription)}.
+	 * Test method for
+	 * {@link rsb.event.EventProcessor#removeSubscription(rsb.event.Subscription)}
+	 * .
 	 */
 	@Test
 	public final void testRemoveSubscription() {
@@ -86,14 +89,14 @@ public class EventDispatcherTest {
 		Subscription s = new Subscription();
 		ed.addSubscription(s);
 		ed.removeSubscription(s);
-		assertTrue(ed.subscriptions.size()==0);
+		assertTrue(ed.subscriptions.size() == 0);
 	}
 
 	private RSBEventListener<RSBEvent> getHandler() {
 		RSBEventListener<RSBEvent> l = new TestListener();
 		return l;
-	}	
-	
+	}
+
 	/**
 	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.RSBEvent)}.
 	 */
@@ -104,7 +107,7 @@ public class EventDispatcherTest {
 		TestListener l = (TestListener) getHandler();
 		s.appendHandler(l);
 		ed.addSubscription(s);
-		ed.fire(new RSBEvent());		
+		ed.fire(new RSBEvent());
 		ed.waitForShutdown();
 		assertTrue(l.isNotified());
 	}
