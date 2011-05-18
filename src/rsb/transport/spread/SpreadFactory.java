@@ -31,17 +31,6 @@ import rsb.transport.convert.ByteBufferConverter;
  */
 public class SpreadFactory extends TransportFactory {
 
-	private SpreadWrapper sw = null;
-
-	SpreadWrapper getSpreadWrapper() {
-		if (sw == null) {
-			synchronized (SpreadFactory.class) {
-				sw = new SpreadWrapper();
-			}
-		}
-		return sw;
-	}
-
 	@Override
 	public Port createPort(EventHandler handler) {
 		// TODO check port multiplicity

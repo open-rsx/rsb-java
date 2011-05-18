@@ -115,8 +115,6 @@ public class SpreadWrapper implements RSBObject {
 
 	private State status = State.DEACTIVATED;
 
-	// TODO better name needed for this variable, check Spread doc
-	String name;
 	String privGrpId;
 	SpreadConnection conn;
 	private Deque<SpreadGroup> groups = new ArrayDeque<SpreadGroup>();
@@ -126,7 +124,6 @@ public class SpreadWrapper implements RSBObject {
 	private boolean useTcpNoDelay = true;
 
 	/** random number generator for connection names */
-	private Random r = new Random();
 	boolean shutdown = false;
 
 	private boolean connectionLost = false;
@@ -170,7 +167,6 @@ public class SpreadWrapper implements RSBObject {
 				.getByName(spreadhost) : null;
 		this.port = port;
 		this.useTcpNoDelay = props.getPropertyAsBool("Spread.TcpNoDelay");
-		makeConnection("sp-", true, false);
 	}
 
 	// TODO think about prefixes and factory methods
@@ -180,7 +176,6 @@ public class SpreadWrapper implements RSBObject {
 				.getByName(spreadhost) : null;
 		this.port = port;
 		this.useTcpNoDelay = props.getPropertyAsBool("Spread.TcpNoDelay");
-		makeConnection("sp-", false, true);
 	}
 
 	public void join(String group) throws SpreadException {
@@ -234,7 +229,6 @@ public class SpreadWrapper implements RSBObject {
 		SpreadException ex = null;
 		String hostmsg = "";
 		for (int i = 0; i < 50; i++) {
-			name = prefix + r.nextInt(999999);
 			try {
 				// if spreadhost is null, a connection to localhost is tried
 				conn = new SpreadConnection();
@@ -243,16 +237,20 @@ public class SpreadWrapper implements RSBObject {
 				} else {
 					hostmsg = spreadhost.getHostName();
 				}
-				conn.connect(spreadhost, port, name, false, mship);
+				conn.connect(spreadhost, port, null, false, mship);
 				conn.setTcpNoDelay(this.useTcpNoDelay);
 				log.fine("Connected to " + spreadhost + ":" + port
-						+ ". Name = " + name);
+						+ ". Name = " + conn.getPrivateGroup().toString());
 				privGrpId = conn.getPrivateGroup().toString();
+				System.err
+						.println("%%%%%%%%%%%%%%%%% Current connection group id: "
+								+ privGrpId);
 				// instantiate our own listener thread
 				log.fine("Spread connection's private group id is: "
 						+ privGrpId);
 				return;
 			} catch (SpreadException e) {
+				e.printStackTrace();
 				ex = e;
 			}
 			log.info("reoccuring SpreadException during connect to daemon: "
@@ -324,6 +322,7 @@ public class SpreadWrapper implements RSBObject {
 						grp.leave();
 					} catch (SpreadException e) {
 						// this should not happen
+						assert (false);
 						e.printStackTrace();
 					}
 					it.remove();
@@ -350,17 +349,16 @@ public class SpreadWrapper implements RSBObject {
 		return false;
 	}
 
-	/**
-	 * Returns name used for connection to spread daemon
-	 * 
-	 * @return
-	 */
-	public String getName() {
-		return name;
-	}
-
 	public String getPrivateGroup() {
 		return privGrpId;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (status == State.ACTIVATED) {
+			System.exit(1);
+		}
+		super.finalize();
 	}
 
 }

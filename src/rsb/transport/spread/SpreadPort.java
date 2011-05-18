@@ -85,7 +85,7 @@ public class SpreadPort extends AbstractPort {
 			spread.activate();
 		}
 		receiver.setPriority(Thread.NORM_PRIORITY + 2);
-		receiver.setName("ReceiverTask [name=" + spread.getName() + ",grp="
+		receiver.setName("ReceiverTask [grp="
 				+ spread.getPrivateGroup() + "]");
 		receiver.start();
 	}

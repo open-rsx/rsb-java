@@ -8,10 +8,12 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import rsb.event.RSBDataListener;
 import rsb.transport.TransportFactory;
+import rsb.transport.spread.SpreadWrapper;
 
 /**
  * User-level test for RSBJava.
@@ -20,9 +22,27 @@ import rsb.transport.TransportFactory;
  */
 public class UserLevelTest {
 
-	@Test(timeout = 30000)
+	@Test(timeout = 15000)
 	public void roundtrip() throws Throwable {
 
+//		Runnable r = new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				SpreadWrapper wrapper = new SpreadWrapper();
+//				try {
+//					wrapper.activate();
+//				} catch (InitializeException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				// wrapper.deactivate();
+//			}
+//		};
+//		new Thread(r).start();
+//		
+//		Thread.sleep(30);
+		
 		LogManager.getLogManager().getLogger("").setLevel(Level.FINEST);
 		for (Handler h : LogManager.getLogManager().getLogger("").getHandlers()) {
 			h.setLevel(Level.FINEST);
@@ -58,7 +78,6 @@ public class UserLevelTest {
 			System.err.println("Sent message '" + message + "' with hash "
 					+ message.hashCode());
 		}
-		publisher.deactivate();
 
 		// wait for receiving all events that were sent
 		synchronized (receivedMessages) {
@@ -67,10 +86,23 @@ public class UserLevelTest {
 			}
 		}
 
-		sub.deactivate();
-
 		assertEquals(sentMessages, receivedMessages);
+
+		System.err
+				.println("************************************************************************************************");
+
+		publisher.deactivate();
+		sub.deactivate();
 
 	}
 
+//	@Before
+//	public void XXXaaaa() throws Throwable {
+//
+//		SpreadWrapper wrapper = new SpreadWrapper();
+//		wrapper.activate();
+//		// wrapper.deactivate();
+//
+//	}
+	
 }

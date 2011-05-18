@@ -37,70 +37,74 @@ import rsb.transport.TransportFactory;
  * @author swrede
  * @author rgaertne
  * @author jschaefe
- *
  */
 public class Publisher<T> implements RSBObject {
-	
-	private final static Logger log = Logger.getLogger(Publisher.class.getName()); 
 
-	/* publisher's name within it's scope */
+	private final static Logger log = Logger.getLogger(Publisher.class
+			.getName());
+
+	/** publisher's name within it's scope */
 	protected String uri;
 
-	/* state variable for publisher instance */
+	/** state variable for publisher instance */
 	protected PublisherState<T> state;
 
-	/* transport factory object */
+	/** transport factory object */
 	protected TransportFactory transportFactory;
-	
-	/* default data type for this publisher */
-	protected String typeinfo; 
-	
-	/* transport router */
+
+	/** default data type for this publisher */
+	protected String typeinfo;
+
+	/** transport router */
 	protected Router router;
 
 	protected class PublisherStateInactive extends PublisherState<T> {
 
 		protected PublisherStateInactive(Publisher<T> ctx) {
 			super(ctx);
-			log.fine("Publisher state activated: [URI:" + uri + ",State:Inactive,Type:" + typeinfo +"]");
+			log.fine("Publisher state activated: [URI:" + uri
+					+ ",State:Inactive,Type:" + typeinfo + "]");
 		}
-		
+
 		protected void activate() throws InitializeException {
 			router.activate();
-			p.state = new PublisherStateActive(p);			
-			log.info("Publisher activated: [URI:" + uri + ",Type:" + typeinfo +"]");
+			p.state = new PublisherStateActive(p);
+			log.info("Publisher activated: [URI:" + uri + ",Type:" + typeinfo
+					+ "]");
 		}
-		
+
 	}
-	
+
 	protected class PublisherStateActive extends PublisherState<T> {
 
 		protected PublisherStateActive(Publisher<T> ctx) {
 			super(ctx);
-		 	log.fine("Publisher state activated: [URI:" + uri + ",State:Active,Type:" + typeinfo +"]"); 	
+			log.fine("Publisher state activated: [URI:" + uri
+					+ ",State:Active,Type:" + typeinfo + "]");
 		}
-		
+
 		protected void deactivate() {
 			router.deactivate();
 			p.state = new PublisherStateInactive(p);
-			log.info("Publisher deactivated: [URI:" + uri + ",Type:" + typeinfo +"]");
+			log.info("Publisher deactivated: [URI:" + uri + ",Type:" + typeinfo
+					+ "]");
 		}
 
-		protected RSBEvent send(RSBEvent e) {		
+		protected RSBEvent send(RSBEvent e) {
 			e.setUri(uri);
 			e.ensureId();
 			router.publishSync(e);
 			return e;
 		}
-		
+
 		protected RSBEvent send(T d) {
-			RSBEvent e = new RSBEvent(typeinfo,(Object) d);
+			RSBEvent e = new RSBEvent(typeinfo, (Object) d);
 			e.setUri(uri);
 			e.ensureId();
 			router.publishSync(e);
 			return e;
-		}		
-		
+		}
+
 	}
 
 	private void initMembers(String u, String t, TransportFactory tfac) {
@@ -108,57 +112,56 @@ public class Publisher<T> implements RSBObject {
 		this.transportFactory = tfac;
 		this.uri = u;
 		this.typeinfo = t;
-		router = new Router(transportFactory,PortConfiguration.OUT);
-		log.fine("New publisher instance created: [URI:" + uri + ",State:Inactive,Type:" + typeinfo +"]"); 		
+		router = new Router(transportFactory, PortConfiguration.OUT);
+		log.fine("New publisher instance created: [URI:" + uri
+				+ ",State:Inactive,Type:" + typeinfo + "]");
 	}
 
-	public Publisher(String u) {		 
+	public Publisher(String u) {
 		initMembers(u, "string", TransportFactory.getInstance());
 	}
-	
-	public Publisher(String u, TransportFactory tfac) {		 
+
+	public Publisher(String u, TransportFactory tfac) {
 		initMembers(u, "string", tfac);
-	}	
-	
-	public Publisher(String u, String t) {		 
+	}
+
+	public Publisher(String u, String t) {
 		initMembers(u, t, TransportFactory.getInstance());
-	}	
-	
+	}
+
 	public Publisher(String u, String t, TransportFactory tfac) {
 		initMembers(u, t, tfac);
 	}
 
 	/**
 	 * Returns URI of the publisher
+	 * 
 	 * @return URI of Publisher as a String
 	 */
 	public String getURI() {
 		return uri;
 	}
-	
+
 	public synchronized void activate() throws InitializeException {
 		state.activate();
 	}
-	
+
 	public synchronized void deactivate() {
 		state.deactivate();
 	}
-	
+
 	/**
-	 * Send an RSBEvent to all subscribed participants 
+	 * Send an RSBEvent to all subscribed participants
 	 */
 	public synchronized RSBEvent send(RSBEvent e) {
 		return state.send(e);
 	}
 
 	/**
-	 * Send data (of type <T>) to all subscribed participants 
+	 * Send data (of type <T>) to all subscribed participants
 	 */
 	public synchronized RSBEvent send(T d) {
 		return state.send(d);
 	}
-	
-	
-}
-	
 
+}

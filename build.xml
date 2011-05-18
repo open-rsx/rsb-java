@@ -1,4 +1,4 @@
-<project name="RSBJava" default="dist" basedir=".">
+<project name="RSBJava" default="dist">
 	<description>
         Build file for Java Bindings of Robotics Service Bus Middleware
     </description>
@@ -88,21 +88,22 @@
 	</target>
 
 	<target name="test" depends="test-compile" description="JUnit tests">
-		<forget >
+		<forget>
 			<exec executable="${spread.daemon}">
-				<arg line="-n localhost -c ./etc/spread.conf" />
+				<arg line="-n localhost -c ${basedir}/etc/spread.conf" />
 			</exec>
 		</forget>
 
-		<sleep seconds="3"/>
-		
+		<sleep seconds="3" />
+
 		<junit printsummary="yes" haltonfailure="false">
 			<formatter type="xml" />
 			<formatter type="plain" usefile="false" />
 			<classpath refid="test.classpath" />
 			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
 				<fileset dir="test">
-					<include name="**/*Test*.java" />
+					<include name="**/*UserLevelTest*.java" />
+					<!-- <include name="**/*PublisherTest*.java" /> -->
 				</fileset>
 			</batchtest>
 		</junit>
