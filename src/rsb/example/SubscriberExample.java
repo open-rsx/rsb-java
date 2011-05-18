@@ -36,7 +36,6 @@ import rsb.transport.TransportFactory;
  */
 public class SubscriberExample {
 
-	// TODO move this to a test case
 	static AtomicInteger counter1 = new AtomicInteger(0);
 	static AtomicInteger counter2 = new AtomicInteger(0);
 	static Object l = new Object();
