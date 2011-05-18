@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -67,6 +66,8 @@ public class UserLevelTest {
 				receivedMessages.wait();
 			}
 		}
+
+		sub.deactivate();
 
 		assertEquals(sentMessages, receivedMessages);
 

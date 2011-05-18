@@ -67,6 +67,9 @@ class ReceiverTask extends Thread {
 				&& !Thread.currentThread().isInterrupted()) {
 			try {
 				SpreadMessage sm = spread.conn.receive();
+				log.fine("Message received from spread, message type: "
+						+ sm.isRegular() + ", data = "
+						+ new String(sm.getData()));
 				// TODO check whether membership messages shall be handled
 				// similar to data messages and be converted into events
 				// TODO evaluate return value
