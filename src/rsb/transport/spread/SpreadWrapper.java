@@ -242,9 +242,6 @@ public class SpreadWrapper implements RSBObject {
 				log.fine("Connected to " + spreadhost + ":" + port
 						+ ". Name = " + conn.getPrivateGroup().toString());
 				privGrpId = conn.getPrivateGroup().toString();
-				System.err
-						.println("%%%%%%%%%%%%%%%%% Current connection group id: "
-								+ privGrpId);
 				// instantiate our own listener thread
 				log.fine("Spread connection's private group id is: "
 						+ privGrpId);

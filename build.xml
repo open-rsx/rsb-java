@@ -94,16 +94,15 @@
 			</exec>
 		</forget>
 
-		<sleep seconds="3" />
+		<sleep seconds="10" />
 
-		<junit printsummary="yes" haltonfailure="false">
+		<junit printsummary="yes" haltonfailure="true">
 			<formatter type="xml" />
 			<formatter type="plain" usefile="false" />
 			<classpath refid="test.classpath" />
 			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
 				<fileset dir="test">
-					<include name="**/*UserLevelTest*.java" />
-					<!-- <include name="**/*PublisherTest*.java" /> -->
+					<include name="**/*Test*.java" />
 				</fileset>
 			</batchtest>
 		</junit>
