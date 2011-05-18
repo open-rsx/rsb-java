@@ -24,16 +24,21 @@ import rsb.RSBEvent;
 
 /**
  * @author swrede
- *
+ * 
  */
 public abstract class RSBDataListener<V> implements RSBListener<RSBEvent> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void internalNotify(RSBEvent e) {		
-		handleEvent((V) e.getData());
+	public void internalNotify(RSBEvent e) {
+		try {
+			handleEvent((V) e.getData());
+		} catch (RuntimeException ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
 	}
 
 	public abstract void handleEvent(V d);
-	
+
 }
