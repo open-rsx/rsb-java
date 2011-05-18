@@ -88,15 +88,14 @@
 	</target>
 
 	<target name="test" depends="test-compile" description="JUnit tests">
-		<forget>
+		<forget >
 			<exec executable="${spread.daemon}">
 				<arg line="-n localhost -c ./etc/spread.conf" />
 			</exec>
 		</forget>
 
-		<waitfor maxwait="3" maxwaitunit="second" checkevery="100" checkeveryunit="millisecond">
-			<socket server="localhost" port="4910" />
-		</waitfor>
+		<sleep seconds="3"/>
+		
 		<junit printsummary="yes" haltonfailure="false">
 			<formatter type="xml" />
 			<formatter type="plain" usefile="false" />
