@@ -47,6 +47,8 @@ public class UserLevelTest {
 			String message = "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
 			publisher.send(message);
 			sentMessages.add(message);
+			System.out.println("Sent message '" + message + "' with hash "
+					+ message.hashCode());
 		}
 		publisher.deactivate();
 
