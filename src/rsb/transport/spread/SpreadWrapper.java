@@ -25,7 +25,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import rsb.InitializeException;

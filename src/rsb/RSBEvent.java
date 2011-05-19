@@ -24,24 +24,25 @@ import rsb.event.EventId;
 
 /**
  * @author swrede
- *
- * Basic event structure exchanged between RSB ports. It is a combination 
- * of metadata and the actual data to publish / subscribe to as payload.
+ * 
+ *         Basic event structure exchanged between RSB ports. It is a
+ *         combination of metadata and the actual data to publish / subscribe to
+ *         as payload.
  */
 public class RSBEvent {
-	
-	EventId id;
-	String type;
-	String uri;
-	Object data;
-	
+
+	private EventId id;
+	private String type;
+	private String uri;
+	private Object data;
+
 	// TODO move event creation into factory?
 	// TODO add Meta-data support
 	// e.getMetadata().setSenderUri(uri);
 	// e.getMetadata().setReceiverUri(receiverUri);
 	// e.getMetadata().setCreatedAt(now);
-    // e.getMetadata().setUpdatedAt(now);
-		
+	// e.getMetadata().setUpdatedAt(now);
+
 	/**
 	 * @param type
 	 * @param data
@@ -53,10 +54,10 @@ public class RSBEvent {
 	}
 
 	public RSBEvent(String type) {
-		this.type=type;
+		this.type = type;
 	}
 
-	public RSBEvent() {	
+	public RSBEvent() {
 	}
 
 	/**
@@ -67,7 +68,8 @@ public class RSBEvent {
 	}
 
 	/**
-	 * @param type the type to set
+	 * @param type
+	 *            the type to set
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -81,7 +83,8 @@ public class RSBEvent {
 	}
 
 	/**
-	 * @param data the data to set
+	 * @param data
+	 *            the data to set
 	 */
 	public void setData(Object data) {
 		this.data = data;
@@ -95,7 +98,8 @@ public class RSBEvent {
 	}
 
 	/**
-	 * @param uri the uri to set
+	 * @param uri
+	 *            the uri to set
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
@@ -103,29 +107,46 @@ public class RSBEvent {
 
 	public void setId(EventId id) {
 		this.id = id;
-	}	
+	}
 
 	public EventId getId() {
 		return id;
 	}
-	
+
 	public EventId generateId() {
 		id = EventId.generateId();
 		return id;
 	}
-	
+
 	public boolean hasId() {
-		return (id!=null) ? true : false;
-	}		
-	
+		return (id != null) ? true : false;
+	}
+
 	public EventId ensureId() {
 		if (!hasId()) {
 			generateId();
 		}
 		return id;
-	}		
-	
-	public String toString() {
-		return "RSBEvent[id="+id.toString()+",uri="+uri+",t="+type+"]";
 	}
+
+	public String toString() {
+		return "RSBEvent[id=" + id.toString() + ", uri=" + uri + ", t=" + type
+				+ "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return id.toString().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof RSBEvent)) {
+			return false;
+		}
+		RSBEvent other = (RSBEvent) obj;
+		return id.equals(other.id) && uri.equals(other.uri)
+				&& type.equals(other.type) && data.equals(other.data);
+	}
+
 }

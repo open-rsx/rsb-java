@@ -48,6 +48,7 @@ public class SpreadPort extends AbstractPort {
 
 	private ReceiverTask receiver;
 	private EventHandler eventHandler;
+	private static final int MAX_MSG_SIZE = 100000;
 
 	private final static Logger log = Logger.getLogger(SpreadPort.class
 			.getName());
@@ -85,8 +86,7 @@ public class SpreadPort extends AbstractPort {
 			spread.activate();
 		}
 		receiver.setPriority(Thread.NORM_PRIORITY + 2);
-		receiver.setName("ReceiverTask [grp="
-				+ spread.getPrivateGroup() + "]");
+		receiver.setName("ReceiverTask [grp=" + spread.getPrivateGroup() + "]");
 		receiver.start();
 	}
 
@@ -118,35 +118,72 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	public void push(RSBEvent e) {
+
+		// convert data
 		// TODO deal with missing converter
-		AbstractConverter<ByteBuffer> c = converters.get(e.getType());
-		Notification.Builder nb = Notification.newBuilder();
-		Attachment.Builder ab = Attachment.newBuilder();
-		nb.setId(e.getId().toString());
-		nb.setWireSchema(e.getType());
-		nb.setScope(e.getUri());
-		// copy-from ByteBuffer seems to be available only with gpb 2.3 version
-		// nb.setData(ab.setBinary(ByteString.copyFrom(bb)).setLength(bb.array().length));
-		Holder<ByteBuffer> bb = c.serialize("string", e.getData());
-		ab.setBinary(ByteString.copyFrom(bb.value.array()));
-		ab.setLength(bb.value.limit());
-		nb.setData(ab.build());
-		Notification n = nb.build();
-		log.fine("push called, sending message on port infrastructure: [eid="
-				+ e.getId().toString() + "]");
-		// log.info("push called, sending message on port infrastructure: " +
-		// (String) e.getData());
-		// TODO remove data message
-		DataMessage dm = new DataMessage();
-		try {
-			dm.setData(n.toByteArray());
-		} catch (SerializeException e1) {
-			// TODO think about reasonable error handling
-			e1.printStackTrace();
+		AbstractConverter<ByteBuffer> converter = converters.get(e.getType());
+		Holder<ByteBuffer> convertedDataBuffer = converter.serialize("string",
+				e.getData());
+		int dataSize = convertedDataBuffer.value.limit();
+
+		// find out how many messages are required to send the data
+		int requiredParts = 1;
+		if (dataSize > 0) {
+			requiredParts = (int) Math.ceil((float) dataSize
+					/ (float) MAX_MSG_SIZE);
 		}
-		dm.addGroup(e.getUri());
-		boolean sent = spread.send(dm);
-		assert(sent);
+
+		// send all parts
+		for (int part = 0; part < requiredParts; ++part) {
+
+			Notification.Builder notificationBuilder = Notification
+					.newBuilder();
+
+			// notification metadata
+			notificationBuilder.setId(e.getId().toString());
+			notificationBuilder.setWireSchema(e.getType());
+			notificationBuilder.setScope(e.getUri());
+
+			// data fragmentation
+			int fragmentSize = MAX_MSG_SIZE;
+			if (part == requiredParts - 1) {
+				fragmentSize = dataSize % MAX_MSG_SIZE;
+			}
+			ByteString dataPart = ByteString.copyFrom(
+					convertedDataBuffer.value.array(), part * MAX_MSG_SIZE,
+					fragmentSize);
+			if (part != requiredParts - 1) {
+				assert dataPart.size() == MAX_MSG_SIZE;
+			}
+			Attachment.Builder attachmentBuilder = Attachment.newBuilder();
+			attachmentBuilder.setBinary(dataPart);
+			attachmentBuilder.setLength(dataPart.size());
+			notificationBuilder.setData(attachmentBuilder.build());
+			notificationBuilder.setDataPart(part);
+			notificationBuilder.setNumDataParts(requiredParts);
+
+			// build final notification
+			Notification notification = notificationBuilder.build();
+			log.fine("push called, sending message fragment " + (part + 1)
+					+ "/" + requiredParts + " on port infrastructure: [eid="
+					+ e.getId().toString() + "]");
+
+			// send message on spread
+			// TODO remove data message
+			DataMessage dm = new DataMessage();
+			try {
+				dm.setData(notification.toByteArray());
+			} catch (SerializeException e1) {
+				// TODO think about reasonable error handling
+				e1.printStackTrace();
+			}
+			dm.addGroup(e.getUri());
+
+			boolean sent = spread.send(dm);
+			assert (sent);
+
+		}
+
 	}
 
 	private void joinSpreadGroup(String hash) {

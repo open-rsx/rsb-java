@@ -50,6 +50,8 @@ class ReceiverTask extends Thread {
 
 	private Map<String, AbstractConverter<ByteBuffer>> converters;
 
+	private AssemblyPool pool = new AssemblyPool();
+
 	/**
 	 * @param spreadWrapper
 	 * @param converters
@@ -75,9 +77,6 @@ class ReceiverTask extends Thread {
 				// TODO evaluate return value
 				DataMessage dm = smc.process(sm);
 				if (dm != null) {
-					// TODO discuss whether we want to deserialize here or in
-					// the router
-					// for now, we deserialize here
 					log.fine("Notification reveived by ReceiverTask");
 					RSBEvent e = convertNotification(dm);
 					if (e != null) {
@@ -106,31 +105,38 @@ class ReceiverTask extends Thread {
 		log.fine("Listener thread stopped");
 	}
 
-	// TODO think about wheter this could actually be a regular converter call
+	// TODO think about whether this could actually be a regular converter call
 	private RSBEvent convertNotification(DataMessage dm) {
-		Notification n = null;
+
 		try {
-			n = Notification.parseFrom(dm.getData().array());
+
+			Notification n = Notification.parseFrom(dm.getData().array());
+			ByteBuffer joinedData = pool.insert(n);
+
+			if (joinedData != null) {
+
+				log.fine("decoding notification");
+				RSBEvent e = new RSBEvent(n.getWireSchema());
+				e.setUri(n.getScope());
+				e.setId(new EventId(n.getId()));
+				// user data conversion
+				// why not do this lazy after / in the filtering?
+				// TODO deal with missing converters, errors
+				AbstractConverter<ByteBuffer> c = converters.get(e.getType());
+				e.setData(c.deserialize(e.getType(), joinedData).value);
+				log.finest("returning event with id: " + e.getId());
+
+				return e;
+
+			} else {
+				return null;
+			}
+
 		} catch (InvalidProtocolBufferException e1) {
 			e1.printStackTrace();
 			// TODO throw exception
+			return null;
 		}
-		if (n != null) {
-			log.fine("decoding notification");
-			RSBEvent e = new RSBEvent(n.getWireSchema());
-			e.setUri(n.getScope());
-			e.setId(new EventId(n.getId()));
-			// user data conversion
-			// why not do this lazy after / in the filtering?
-			// TODO deal with missing converters, errors
-			AbstractConverter<ByteBuffer> c = converters.get(e.getType());
-			ByteBuffer bb = ByteBuffer.wrap(n.getData().getBinary()
-					.toByteArray());
-			e.setData(c.deserialize(e.getType(), bb).value);
-			log.finest("returning event with id: " + e.getId());
-			return e;
-		}
-		return null;
 
 	}
 

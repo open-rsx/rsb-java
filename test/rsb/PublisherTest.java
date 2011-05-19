@@ -27,7 +27,6 @@ import org.junit.Test;
 import rsb.Publisher.PublisherStateActive;
 import rsb.Publisher.PublisherStateInactive;
 import rsb.transport.TransportFactory;
-import rsb.transport.spread.SpreadWrapper;
 
 /**
  * @author swrede
@@ -123,8 +122,8 @@ public class PublisherTest {
 	}
 
 	private void testEvent(RSBEvent e) {
-		assertTrue(e.type.equals("string"));
-		assertTrue(e.data.equals("Hello World!"));
+		assertTrue(e.getType().equals("string"));
+		assertTrue(e.getData().equals("Hello World!"));
 		assertNotNull(e.getId());
 		assertTrue(e.getUri().equals("rsb://informer/example"));
 	}
@@ -154,7 +153,7 @@ public class PublisherTest {
 		RSBEvent e = p.send("Hello World!");
 		testEvent(e);
 	}
-	
+
 	// TODO add testcase for unknown data type
 
 }
