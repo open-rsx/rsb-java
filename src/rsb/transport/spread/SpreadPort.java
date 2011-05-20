@@ -22,6 +22,7 @@ package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -178,7 +179,12 @@ public class SpreadPort extends AbstractPort {
 				// TODO think about reasonable error handling
 				e1.printStackTrace();
 			}
-			dm.addGroup(e.getScope().toString());
+			
+			// send to all super scopes
+			List<Scope> scopes = e.getScope().superScopes(true);
+			for (Scope scope : scopes) {
+				dm.addGroup(scope.toString());
+			}
 
 			boolean sent = spread.send(dm);
 			assert (sent);
