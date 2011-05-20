@@ -23,12 +23,12 @@ public abstract class PublisherState<T> {
 		throw new InvalidStateException("publisher not activated");
 	}
 	
-	protected RSBEvent send(RSBEvent e) {
+	protected Event send(Event e) {
 		log.warning("invalid state exception during call to send");
 		throw new InvalidStateException("publisher not activated");
 	}
 	
-	protected RSBEvent send(T d) {
+	protected Event send(T d) {
 		log.warning("invalid state exception during call to send");
 		throw new InvalidStateException("publisher not activated");
 	}	

@@ -24,7 +24,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import rsb.RSBEvent;
+import rsb.Event;
+import rsb.Scope;
 
 /**
  * @author swrede
@@ -33,16 +34,16 @@ import rsb.RSBEvent;
 public class ScopeFilterTest {
 
 	/**
-	 * Test method for {@link rsb.filter.ScopeFilter#transform(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.filter.ScopeFilter#transform(rsb.Event)}.
 	 */
 	@Test
 	public void testTransform() {
-		RSBEvent e = new RSBEvent();
+		Event e = new Event();
 		e.ensureId();
-		e.setUri("rsb://images");
-		ScopeFilter sf = new ScopeFilter("rsb://images");
+		e.setScope(new Scope("/images"));
+		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
 		assertTrue(sf.transform(e) != null);
-		e.setUri("rsb://nomatch");
+		e.setScope(new Scope("/nomatch"));
 		assertTrue(sf.transform(e) == null);
 	}
 
@@ -51,14 +52,14 @@ public class ScopeFilterTest {
 	 */
 	@Test
 	public void testSkipEventId() {
-		RSBEvent e = new RSBEvent();
+		Event e = new Event();
 		e.ensureId();
 		// TODO actually, we need a mock object to test this correctly
-		// setting the URI to another name than the scope filters
+		// setting the Scope to another name than the scope filters
 		// configuration is just to check here whether the white-
 		// listing really works
-		e.setUri("rsb://images/justfortesting");
-		ScopeFilter sf = new ScopeFilter("rsb://images");
+		e.setScope(new Scope("/images/justfortesting"));
+		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
 		sf.skip(e.getId());
 		assertTrue(sf.transform(e) != null);
 	}
@@ -69,17 +70,17 @@ public class ScopeFilterTest {
 	 */
 	@Test
 	public void testScopeFilter() {
-		ScopeFilter sf = new ScopeFilter("rsb://images");
+		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
 		assertNotNull(sf);
 	}
 
 	/**
-	 * Test method for {@link rsb.filter.ScopeFilter#getUri()}.
+	 * Test method for {@link rsb.filter.ScopeFilter#getScope()}.
 	 */
 	@Test
-	public void testGetUri() {
-		ScopeFilter sf = new ScopeFilter("rsb://images");
-		assertTrue(sf.getUri().equals("rsb://images"));
+	public void testGetScope() {
+		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
+		assertTrue(sf.getScope().equals(new Scope("/images")));
 	}
 
 	/**
@@ -87,10 +88,10 @@ public class ScopeFilterTest {
 	 */
 	@Test
 	public void testEqualsFilter() {
-		ScopeFilter sf1 = new ScopeFilter("rsb://images");
-		ScopeFilter sf2 = new ScopeFilter("rsb://images");
+		ScopeFilter sf1 = new ScopeFilter(new Scope("/images"));
+		ScopeFilter sf2 = new ScopeFilter(new Scope("/images"));
 		assertTrue(sf1.equals(sf2));
-		sf2.setUri("rsb://nope");
+		sf2.setScope(new Scope("/nope"));
 		assertFalse(sf1.equals(sf2));
 	}
 

@@ -20,7 +20,7 @@
  */
 package rsb.event;
 
-import rsb.RSBEvent;
+import rsb.Event;
 
 /**
  * RSB uses an event listener mechanism to deal with the various events raised
@@ -35,10 +35,10 @@ import rsb.RSBEvent;
  * asynchronously. 
  * 
  * @author swrede
- * @see RSBEvent
+ * @see Event
  */
  
-public abstract class RSBEventListener<T extends RSBEvent> implements RSBListener<T> {
+public abstract class RSBEventListener<T extends Event> implements RSBListener<T> {
 
 	public void internalNotify(T e) {
 		handleEvent(e);

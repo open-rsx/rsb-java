@@ -19,8 +19,8 @@ public class UserLevelTest {
 
 	@Test(timeout = 15000)
 	public void roundtrip() throws Throwable {
-		
-		final String scope = "/example/informer";
+
+		final Scope scope = new Scope("/example/informer");
 
 		// set up a receiver for events
 		final Set<String> receivedMessages = new HashSet<String>();

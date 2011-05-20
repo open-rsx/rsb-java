@@ -44,7 +44,7 @@ public class Publisher<T> implements RSBObject {
 			.getName());
 
 	/** publisher's name within it's scope */
-	protected String uri;
+	protected Scope scope;
 
 	/** state variable for publisher instance */
 	protected PublisherState<T> state;
@@ -62,14 +62,14 @@ public class Publisher<T> implements RSBObject {
 
 		protected PublisherStateInactive(Publisher<T> ctx) {
 			super(ctx);
-			log.fine("Publisher state activated: [URI:" + uri
+			log.fine("Publisher state activated: [Scope:" + scope
 					+ ",State:Inactive,Type:" + typeinfo + "]");
 		}
 
 		protected void activate() throws InitializeException {
 			router.activate();
 			p.state = new PublisherStateActive(p);
-			log.info("Publisher activated: [URI:" + uri + ",Type:" + typeinfo
+			log.info("Publisher activated: [Scope:" + scope + ",Type:" + typeinfo
 					+ "]");
 		}
 
@@ -79,27 +79,27 @@ public class Publisher<T> implements RSBObject {
 
 		protected PublisherStateActive(Publisher<T> ctx) {
 			super(ctx);
-			log.fine("Publisher state activated: [URI:" + uri
+			log.fine("Publisher state activated: [Scope:" + scope
 					+ ",State:Active,Type:" + typeinfo + "]");
 		}
 
 		protected void deactivate() {
 			router.deactivate();
 			p.state = new PublisherStateInactive(p);
-			log.info("Publisher deactivated: [URI:" + uri + ",Type:" + typeinfo
-					+ "]");
+			log.info("Publisher deactivated: [Scope:" + scope + ",Type:"
+					+ typeinfo + "]");
 		}
 
-		protected RSBEvent send(RSBEvent e) {
-			e.setUri(uri);
+		protected Event send(Event e) {
+			e.setScope(scope);
 			e.ensureId();
 			router.publishSync(e);
 			return e;
 		}
 
-		protected RSBEvent send(T d) {
-			RSBEvent e = new RSBEvent(typeinfo, (Object) d);
-			e.setUri(uri);
+		protected Event send(T d) {
+			Event e = new Event(typeinfo, (Object) d);
+			e.setScope(scope);
 			e.ensureId();
 			router.publishSync(e);
 			return e;
@@ -107,39 +107,39 @@ public class Publisher<T> implements RSBObject {
 
 	}
 
-	private void initMembers(String u, String t, TransportFactory tfac) {
+	private void initMembers(Scope u, String t, TransportFactory tfac) {
 		state = new PublisherStateInactive(this);
 		this.transportFactory = tfac;
-		this.uri = u;
+		this.scope = u;
 		this.typeinfo = t;
 		router = new Router(transportFactory, PortConfiguration.OUT);
-		log.fine("New publisher instance created: [URI:" + uri
+		log.fine("New publisher instance created: [Scope:" + scope
 				+ ",State:Inactive,Type:" + typeinfo + "]");
 	}
 
-	public Publisher(String u) {
-		initMembers(u, "string", TransportFactory.getInstance());
+	public Publisher(Scope scope) {
+		initMembers(scope, "string", TransportFactory.getInstance());
 	}
 
-	public Publisher(String u, TransportFactory tfac) {
-		initMembers(u, "string", tfac);
+	public Publisher(Scope scope, TransportFactory tfac) {
+		initMembers(scope, "string", tfac);
 	}
 
-	public Publisher(String u, String t) {
-		initMembers(u, t, TransportFactory.getInstance());
+	public Publisher(Scope scope, String t) {
+		initMembers(scope, t, TransportFactory.getInstance());
 	}
 
-	public Publisher(String u, String t, TransportFactory tfac) {
-		initMembers(u, t, tfac);
+	public Publisher(Scope scope, String t, TransportFactory tfac) {
+		initMembers(scope, t, tfac);
 	}
 
 	/**
-	 * Returns URI of the publisher
+	 * Returns the scope of the publisher
 	 * 
-	 * @return URI of Publisher as a String
+	 * @return scope of Publisher as a String
 	 */
-	public String getURI() {
-		return uri;
+	public Scope getScope() {
+		return scope;
 	}
 
 	public synchronized void activate() throws InitializeException {
@@ -153,14 +153,14 @@ public class Publisher<T> implements RSBObject {
 	/**
 	 * Send an RSBEvent to all subscribed participants
 	 */
-	public synchronized RSBEvent send(RSBEvent e) {
+	public synchronized Event send(Event e) {
 		return state.send(e);
 	}
 
 	/**
 	 * Send data (of type <T>) to all subscribed participants
 	 */
-	public synchronized RSBEvent send(T d) {
+	public synchronized Event send(T d) {
 		return state.send(d);
 	}
 

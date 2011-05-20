@@ -23,17 +23,16 @@ package rsb;
 import rsb.event.EventId;
 
 /**
- * @author swrede
+ * Basic event structure exchanged between RSB ports. It is a combination of
+ * metadata and the actual data to publish / subscribe to as payload.
  * 
- *         Basic event structure exchanged between RSB ports. It is a
- *         combination of metadata and the actual data to publish / subscribe to
- *         as payload.
+ * @author swrede
  */
-public class RSBEvent {
+public class Event {
 
 	private EventId id;
 	private String type;
-	private String uri;
+	private Scope scope;
 	private Object data;
 
 	// TODO move event creation into factory?
@@ -47,17 +46,16 @@ public class RSBEvent {
 	 * @param type
 	 * @param data
 	 */
-	public RSBEvent(String type, Object data) {
-		super();
+	public Event(String type, Object data) {
 		this.type = type;
 		this.data = data;
 	}
 
-	public RSBEvent(String type) {
+	public Event(String type) {
 		this.type = type;
 	}
 
-	public RSBEvent() {
+	public Event() {
 	}
 
 	/**
@@ -91,18 +89,18 @@ public class RSBEvent {
 	}
 
 	/**
-	 * @return the uri
+	 * @return the scope
 	 */
-	public String getUri() {
-		return uri;
+	public Scope getScope() {
+		return scope;
 	}
 
 	/**
-	 * @param uri
-	 *            the uri to set
+	 * @param scope
+	 *            the scope to set
 	 */
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setScope(Scope scope) {
+		this.scope = scope;
 	}
 
 	public void setId(EventId id) {
@@ -130,8 +128,8 @@ public class RSBEvent {
 	}
 
 	public String toString() {
-		return "RSBEvent[id=" + id.toString() + ", uri=" + uri + ", t=" + type
-				+ "]";
+		return "RSBEvent[id=" + id.toString() + ", scope=" + scope + ", type ="
+				+ type + "]";
 	}
 
 	@Override
@@ -141,11 +139,11 @@ public class RSBEvent {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof RSBEvent)) {
+		if (!(obj instanceof Event)) {
 			return false;
 		}
-		RSBEvent other = (RSBEvent) obj;
-		return id.equals(other.id) && uri.equals(other.uri)
+		Event other = (Event) obj;
+		return id.equals(other.id) && scope.equals(other.scope)
 				&& type.equals(other.type) && data.equals(other.data);
 	}
 

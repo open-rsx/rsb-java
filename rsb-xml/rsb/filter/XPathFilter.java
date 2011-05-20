@@ -7,7 +7,7 @@ package rsb.filter;
 
 import java.util.logging.Logger;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.transport.XOPData;
 import rsb.xml.SyntaxException;
 import rsb.xml.XPath;
@@ -27,7 +27,7 @@ public class XPathFilter extends AbstractFilter {
 	}
 
 	@Override
-	public RSBEvent transform(RSBEvent e) {
+	public Event transform(Event e) {
 		// TODO introduce XML Type to make this faster and more robust
 		XOPData xop = null;
 		try {

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.xml.XPath;
 
 /**
@@ -35,14 +35,14 @@ import rsb.xml.XPath;
 public class XPathFilterTest {
 
 	/**
-	 * Test method for {@link rsb.filter.XPathFilter#transform(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.filter.XPathFilter#transform(rsb.Event)}.
 	 */
 	@Test
 	public void testTransform() {
 		String xml[] = new String[2];
 		xml[0] = "<msg nr=\"1\"/>";
 		xml[1] = "<msg nr=\"2\"/>";
-		RSBEvent e = new RSBEvent("string");
+		Event e = new Event("string");
 		e.setData(xml[0]);
 		XPathFilter xpf = new XPathFilter(new XPath("/msg[@nr=\"1\"]"));
 		assertNotNull(xpf.transform(e));

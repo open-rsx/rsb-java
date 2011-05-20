@@ -5,7 +5,7 @@
 
 package rsb.filter;
 
-import rsb.RSBEvent;
+import rsb.Event;
 
 
 /**
@@ -23,7 +23,7 @@ public interface Filter {
 	 * @param e the event to be transformed
 	 * @return the transformed event or null
 	 */
-    public RSBEvent transform(RSBEvent e);
+    public Event transform(Event e);
     
     /**
      * tell this MTF to skip any event matching the specified ID it encounters.

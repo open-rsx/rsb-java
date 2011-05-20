@@ -22,23 +22,26 @@ package rsb.example;
 
 import rsb.InitializeException;
 import rsb.Publisher;
+import rsb.Scope;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class Informer {
 
 	/**
 	 * @param args
-	 * @throws InitializeException 
-	 * @throws InterruptedException 
+	 * @throws InitializeException
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws InitializeException, InterruptedException {
-		Publisher<String> p = new Publisher<String>("rsb://example/informer");
+	public static void main(String[] args) throws InitializeException,
+			InterruptedException {
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/example/informer"));
 		p.activate();
 		for (int i = 0; i < 100; i++) {
-			p.send("<message val=\"Hello World!\" nr=\""+i+"\"/>");
+			p.send("<message val=\"Hello World!\" nr=\"" + i + "\"/>");
 		}
 		p.deactivate();
 	}

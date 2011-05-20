@@ -5,76 +5,80 @@ package rsb.filter;
 
 import java.util.logging.Logger;
 
-import rsb.RSBEvent;
+import rsb.Event;
+import rsb.Scope;
 import rsb.event.EventId;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class ScopeFilter extends AbstractFilter {
 
 	protected static Logger log = Logger.getLogger(ScopeFilter.class.getName());
 
-	// TODO Add Scope Support once we defined the URI scheme
+	private Scope scope;
 
-	String uri;
-	
-	public ScopeFilter(String uri) {
+	public ScopeFilter(Scope scope) {
 		super("ScopeFilter");
-		this.uri = uri;
+		this.scope = scope;
 	}
-	
-	/*
+
+	/**
 	 * Helper method for double dispatch of Filter registrations
 	 */
 	public void dispachToObserver(FilterObserver o, FilterAction a) {
 		o.notify(this, a);
-	}	
+	}
 
-	public void setUri(String u) {
-		this.uri = u;		
+	public void setScope(Scope scope) {
+		this.scope = scope;
 	}
-	
-	public String getUri() {
-		return this.uri;
+
+	public Scope getScope() {
+		return this.scope;
 	}
-	
+
 	public void skip(EventId id) {
-		log.info("Event with ID " + id + " will not be matched by ScopeFilter as this was already done by network layer!");
+		log.info("Event with ID "
+				+ id
+				+ " will not be matched by ScopeFilter as this was already done by network layer!");
 		super.skip(id);
 	}
 
 	@Override
 	public boolean equals(Filter that) {
 		return that instanceof ScopeFilter
-		&& uri.equals(((ScopeFilter) that).getUri());
+				&& scope.equals(((ScopeFilter) that).getScope());
 	}
 
 	@Override
-	public RSBEvent transform(RSBEvent e) {
-		// TODO implement real scoping, currently it is solely an equality test on the publisher's URI
-		//      as subscription URI in the ScopeFilter and PublisherURI must match. 
-    	log.fine("ScopeFilter with scope " + uri + " received event to transform.");
-    	if(e.getUri()!=null)
-    		log.fine("  Event's receiver URI = " + e.getUri());
-    	boolean matches = false;
-    	String evtId = e.getId().toString();
-    	if(mustSkip(evtId)) {
-    		log.fine("event with ID " + evtId + " whitelisted in ScopeFilter!");
-    		matches = true;
-    		skipped(evtId);
-    	} else {
-    		//matches = (scope.isParentScopeOf(e.getMetadata().getReceiverUri()));
-    		matches = uri.equals(e.getUri());
-    	}
-    	if (matches) {
-    		log.fine("ScopeFilter matched successfully!");
-    	} else {
-    		log.fine("ScopeFilter rejected event!");
-    	}
-   		return matches ? e : null;
+	public Event transform(Event e) {
+		// TODO implement real scoping, currently it is solely an equality test
+		// on the publisher's Scope
+		// as subscription Scope in the ScopeFilter and PublisherScope must match.
+		log.fine("ScopeFilter with scope " + scope
+				+ " received event to transform.");
+		if (e.getScope() != null) {
+			log.fine("  Event's receiver Scope = " + e.getScope());
+		}
+		boolean matches = false;
+		String evtId = e.getId().toString();
+		if (mustSkip(evtId)) {
+			log.fine("event with ID " + evtId + " whitelisted in ScopeFilter!");
+			matches = true;
+			skipped(evtId);
+		} else {
+			// matches =
+			// (scope.isParentScopeOf(e.getMetadata().getReceiverScope()));
+			matches = scope.equals(e.getScope());
+		}
+		if (matches) {
+			log.fine("ScopeFilter matched successfully!");
+		} else {
+			log.fine("ScopeFilter rejected event!");
+		}
+		return matches ? e : null;
 	}
-
 
 }

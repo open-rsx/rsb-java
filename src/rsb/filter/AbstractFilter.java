@@ -3,7 +3,7 @@ package rsb.filter;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.event.EventId;
 
 
@@ -21,7 +21,7 @@ public abstract class AbstractFilter implements Filter {
         this.type=type;
     }
 
-	public RSBEvent transform(RSBEvent e) {
+	public Event transform(Event e) {
 		log.info("transform method matched event");
 		// always matches, just returns original event
 		return e;

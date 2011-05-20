@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.filter.Filter;
 
 /**
@@ -45,7 +45,7 @@ public class Subscription {
 		return filters.size();
 	}
 
-	public boolean match(RSBEvent e) {
+	public boolean match(Event e) {
 		for (Filter f : filters) {
 			e = f.transform(e);
 			if (e == null)
@@ -58,8 +58,8 @@ public class Subscription {
 		return filters;
 	}
 
-	public void dispatch(RSBEvent e) {
-		for (RSBListener<RSBEvent> l : handler) {
+	public void dispatch(Event e) {
+		for (RSBListener<Event> l : handler) {
 			try {
 				l.internalNotify(e);
 			} catch (Exception ex) {

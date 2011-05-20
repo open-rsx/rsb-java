@@ -26,8 +26,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import rsb.InitializeException;
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.RSBException;
+import rsb.Scope;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.protocol.AttachmentPB.Attachment;
@@ -103,11 +104,11 @@ public class SpreadPort extends AbstractPort {
 		switch (a) {
 		case ADD:
 			// TODO add reference handling from xcf4j
-			joinSpreadGroup(e.getUri());
+			joinSpreadGroup(e.getScope());
 			break;
 		case REMOVE:
 			// TODO add reference handling from xcf4j
-			leaveSpreadGroup(e.getUri());
+			leaveSpreadGroup(e.getScope());
 			break;
 		case UPDATE:
 			log.info("Update of ScopeFilter requested on SpreadSport");
@@ -117,7 +118,7 @@ public class SpreadPort extends AbstractPort {
 		}
 	}
 
-	public void push(RSBEvent e) {
+	public void push(Event e) {
 
 		// convert data
 		// TODO deal with missing converter
@@ -142,7 +143,7 @@ public class SpreadPort extends AbstractPort {
 			// notification metadata
 			notificationBuilder.setId(e.getId().toString());
 			notificationBuilder.setWireSchema(e.getType());
-			notificationBuilder.setScope(e.getUri());
+			notificationBuilder.setScope(e.getScope().toString());
 
 			// data fragmentation
 			int fragmentSize = MAX_MSG_SIZE;
@@ -177,7 +178,7 @@ public class SpreadPort extends AbstractPort {
 				// TODO think about reasonable error handling
 				e1.printStackTrace();
 			}
-			dm.addGroup(e.getUri());
+			dm.addGroup(e.getScope().toString());
 
 			boolean sent = spread.send(dm);
 			assert (sent);
@@ -186,12 +187,11 @@ public class SpreadPort extends AbstractPort {
 
 	}
 
-	private void joinSpreadGroup(String hash) {
+	private void joinSpreadGroup(Scope scope) {
 		if (spread.isActivated()) {
 			// join group
 			try {
-				spread.join(hash);
-
+				spread.join(scope.toString());
 			} catch (SpreadException e) {
 				// TODO how to handle this exception
 				e.printStackTrace();
@@ -201,9 +201,9 @@ public class SpreadPort extends AbstractPort {
 		}
 	}
 
-	private void leaveSpreadGroup(String hash) {
+	private void leaveSpreadGroup(Scope scope) {
 		if (spread.isActivated()) {
-			spread.leave(hash);
+			spread.leave(scope.toString());
 		} else {
 			log.severe("Couldn't remove group filter, spread inactive.");
 		}

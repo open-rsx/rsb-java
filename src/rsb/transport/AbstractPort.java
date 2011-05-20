@@ -4,7 +4,7 @@
  */
 package rsb.transport;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.filter.AbstractFilterObserver;
 
 /**
@@ -14,7 +14,7 @@ import rsb.filter.AbstractFilterObserver;
 public abstract class AbstractPort extends AbstractFilterObserver implements
 		Port {
 
-	public void push(RSBEvent e) {
+	public void push(Event e) {
 	}
 
 }

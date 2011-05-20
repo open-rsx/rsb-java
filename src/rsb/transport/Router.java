@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.InitializeException;
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.RSBException;
 import rsb.event.EventProcessor;
 import rsb.event.Subscription;
@@ -128,13 +128,13 @@ public class Router extends FilterObservable implements EventHandler {
 	 * @param e
 	 *            The RSBEvent to be published
 	 */
-	public void publish(RSBEvent e) {
+	public void publish(Event e) {
 		// TODO add config checks as preconditions
 		// send event async
 		throw new RuntimeException("Router::publish method not implemented!");
 	}
 
-	public void publishSync(RSBEvent e) {
+	public void publishSync(Event e) {
 		// TODO add config checks as preconditions
 		// send event sync?
 		log.fine("Router publishing new event to port: [EventID:"
@@ -184,7 +184,7 @@ public class Router extends FilterObservable implements EventHandler {
 	 * @see rsb.transport.EventHandler#deliver(rsb.RSBEvent)
 	 */
 	@Override
-	public void handle(RSBEvent e) {
+	public void handle(Event e) {
 		// TODO add config checks as preconditions
 		ep.fire(e);
 	}

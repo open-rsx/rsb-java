@@ -27,7 +27,8 @@ import java.util.logging.Logger;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import rsb.RSBEvent;
+import rsb.Event;
+import rsb.Scope;
 import rsb.event.EventId;
 import rsb.protocol.NotificationPB.Notification;
 import rsb.transport.AbstractConverter;
@@ -78,7 +79,7 @@ class ReceiverTask extends Thread {
 				DataMessage dm = smc.process(sm);
 				if (dm != null) {
 					log.fine("Notification reveived by ReceiverTask");
-					RSBEvent e = convertNotification(dm);
+					Event e = convertNotification(dm);
 					if (e != null) {
 						// dispatch event
 						eventHandler.handle(e);
@@ -106,7 +107,7 @@ class ReceiverTask extends Thread {
 	}
 
 	// TODO think about whether this could actually be a regular converter call
-	private RSBEvent convertNotification(DataMessage dm) {
+	private Event convertNotification(DataMessage dm) {
 
 		try {
 
@@ -116,8 +117,8 @@ class ReceiverTask extends Thread {
 			if (joinedData != null) {
 
 				log.fine("decoding notification");
-				RSBEvent e = new RSBEvent(n.getWireSchema());
-				e.setUri(n.getScope());
+				Event e = new Event(n.getWireSchema());
+				e.setScope(new Scope(n.getScope()));
 				e.setId(new EventId(n.getId()));
 				// user data conversion
 				// why not do this lazy after / in the filtering?

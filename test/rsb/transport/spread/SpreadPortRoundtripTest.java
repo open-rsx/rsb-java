@@ -12,7 +12,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import rsb.RSBEvent;
+import rsb.Event;
+import rsb.Scope;
 import rsb.event.EventId;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
@@ -47,12 +48,12 @@ public class SpreadPortRoundtripTest {
 		SpreadPort outPort = new SpreadPort(outWrapper, null);
 		outPort.addConverter("string", new ByteBufferConverter());
 
-		final List<RSBEvent> receivedEvents = new ArrayList<RSBEvent>();
+		final List<Event> receivedEvents = new ArrayList<Event>();
 		SpreadWrapper inWrapper = new SpreadWrapper();
 		SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
 
 			@Override
-			public void handle(RSBEvent e) {
+			public void handle(Event e) {
 				synchronized (receivedEvents) {
 					receivedEvents.add(e);
 					receivedEvents.notify();
@@ -65,7 +66,7 @@ public class SpreadPortRoundtripTest {
 		inPort.activate();
 		outPort.activate();
 
-		final String scope = "/a/test/scope";
+		final Scope scope = new Scope("/a/test/scope");
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
 		StringBuilder builder = new StringBuilder();
@@ -73,10 +74,10 @@ public class SpreadPortRoundtripTest {
 			builder.append('c');
 		}
 
-		RSBEvent event = new RSBEvent("string");
+		Event event = new Event("string");
 		event.setId(new EventId());
 		event.setData(builder.toString());
-		event.setUri(scope);
+		event.setScope(scope);
 
 		outPort.push(event);
 

@@ -22,6 +22,7 @@ package rsb.example;
 
 import rsb.InitializeException;
 import rsb.Publisher;
+import rsb.Scope;
 import rsb.transport.XOPData;
 import rsb.xml.SyntaxException;
 
@@ -38,7 +39,8 @@ public class XMLInformer {
 	 */
 	public static void main(String[] args) throws InitializeException,
 			InterruptedException, SyntaxException {
-		Publisher<String> p = new Publisher<String>("rsb://example/informer");
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/example/informer"));
 		p.activate();
 		for (int i = 0; i < 100; i++) {
 			XOPData xop = XOPData

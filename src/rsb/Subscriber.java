@@ -70,13 +70,13 @@ public class Subscriber implements RSBObject {
 
 	protected static Logger log = Logger.getLogger(Subscriber.class.getName());
 
-	/* URI of subscriber */
-	protected String subscriberUri;
+	/** scope of subscriber */
+	protected Scope subscriberScope;
 
-	/* URI of publisher */
-	protected String publisherUri;
+	/** scope of publisher */
+	protected Scope publisherScope;
 
-	/* class state variable */
+	/** class state variable */
 	protected SubscriberState state;
 
 	protected ErrorHandler errorHandler;
@@ -87,11 +87,11 @@ public class Subscriber implements RSBObject {
 	/* router to access transport layer */
 	Router router;
 
-	public Subscriber(String su, String pu) {
+	public Subscriber(Scope su, Scope pu) {
 		initMembers(su, pu, TransportFactory.getInstance());
 	}
 
-	public Subscriber(String su, String pu, TransportFactory tfac) {
+	public Subscriber(Scope su, Scope pu, TransportFactory tfac) {
 		initMembers(su, pu, tfac);
 	}
 
@@ -100,19 +100,19 @@ public class Subscriber implements RSBObject {
 	 * @param pu
 	 * @param tfac
 	 */
-	protected void initMembers(String su, String pu, TransportFactory tfac) {
+	protected void initMembers(Scope su, Scope pu, TransportFactory tfac) {
 		this.state = new SubscriberStateInactive(this);
 		this.transportFactory = tfac;
 		this.router = new Router(tfac, PortConfiguration.IN);
 		errorHandler = new DefaultErrorHandler(log);
-		this.subscriberUri = su;
-		this.publisherUri = pu;
+		this.subscriberScope = su;
+		this.publisherScope = pu;
 
-		// set own URI (configured scope + publisher name)
+		// set own Scope (configured scope + publisher name)
 		// this.uri = new
 		// XcfUri(Configurator.getInstance().getReferenceLocalUri(publisherName));
-		log.info("New subscriber instance: [sURI=" + subscriberUri + ",pURI="
-				+ publisherUri + "]");
+		log.info("New subscriber instance: [sScope=" + subscriberScope
+				+ ",pScope=" + publisherScope + "]");
 	}
 
 	public void activate() throws InitializeException, NotFoundException {
@@ -133,8 +133,8 @@ public class Subscriber implements RSBObject {
 	 */
 	public Subscription addListener(@SuppressWarnings("rawtypes") RSBListener l) {
 		Subscription sub = new Subscription();
-		log.info("subscribing new listener to url: " + publisherUri);
-		sub.appendFilter(new ScopeFilter(publisherUri));
+		log.info("subscribing new listener to url: " + publisherScope);
+		sub.appendFilter(new ScopeFilter(publisherScope));
 		sub.appendHandler(l);
 		// sub.append(new IdentityFilter(publisherUri,
 		// IdentityFilter.Type.SENDER_IDENTITY));
@@ -197,8 +197,8 @@ public class Subscriber implements RSBObject {
 		errorHandler = handler;
 	}
 
-	public String getPublisherUri() {
-		return publisherUri;
+	public Scope getPublisherScope() {
+		return publisherScope;
 	}
 
 }

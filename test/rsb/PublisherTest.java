@@ -39,9 +39,10 @@ public class PublisherTest {
 	 */
 	@Test
 	public void testPublisherString() {
-		Publisher<String> p = new Publisher<String>("rsb://informer/example");
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/informer/example"));
 		assertNotNull(p);
-		assertEquals(p.getURI(), "rsb://informer/example");
+		assertEquals(p.getScope(), new Scope("/informer/example"));
 	}
 
 	/**
@@ -51,10 +52,10 @@ public class PublisherTest {
 	 */
 	@Test
 	public void testPublisherStringTransportFactory() {
-		Publisher<String> p = new Publisher<String>("x",
+		Publisher<String> p = new Publisher<String>(new Scope("/x"),
 				TransportFactory.getInstance());
 		assertNotNull(p);
-		assertEquals(p.getURI(), "x");
+		assertEquals(p.getScope(), new Scope("/x"));
 		assertNotNull(p.transportFactory);
 	}
 
@@ -64,9 +65,10 @@ public class PublisherTest {
 	 */
 	@Test
 	public void testPublisherStringString() {
-		Publisher<String> p = new Publisher<String>("x", "XMLString");
+		Publisher<String> p = new Publisher<String>(new Scope("/x"),
+				"XMLString");
 		assertNotNull(p);
-		assertEquals(p.getURI(), "x");
+		assertEquals(p.getScope(), new Scope("/x"));
 		assertEquals(p.typeinfo, "XMLString");
 		assertNotNull(p.transportFactory);
 	}
@@ -78,21 +80,22 @@ public class PublisherTest {
 	 */
 	@Test
 	public void testPublisherStringStringTransportFactory() {
-		Publisher<String> p = new Publisher<String>("x", "XMLString",
-				TransportFactory.getInstance());
+		Publisher<String> p = new Publisher<String>(new Scope("/x"),
+				"XMLString", TransportFactory.getInstance());
 		assertNotNull(p);
-		assertEquals(p.getURI(), "x");
+		assertEquals(p.getScope(), new Scope("/x"));
 		assertEquals(p.typeinfo, "XMLString");
 		assertNotNull(p.transportFactory);
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#getURI()}.
+	 * Test method for {@link rsb.Publisher#getScope()}.
 	 */
 	@Test
-	public void testGetURI() {
-		Publisher<String> p = new Publisher<String>("rsb://informer/example");
-		assertEquals(p.getURI(), "rsb://informer/example");
+	public void testGetScope() {
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/informer/example"));
+		assertEquals(p.getScope(), new Scope("/informer/example"));
 	}
 
 	/**
@@ -102,7 +105,7 @@ public class PublisherTest {
 	 */
 	@Test
 	public void testActivate() throws Throwable {
-		Publisher<String> p = new Publisher<String>("activate");
+		Publisher<String> p = new Publisher<String>(new Scope("/activate"));
 		p.activate();
 		assertTrue(p.state instanceof PublisherStateActive);
 	}
@@ -114,43 +117,46 @@ public class PublisherTest {
 	 */
 	@Test
 	public void testDeactivate() throws InitializeException {
-		Publisher<String> p = new Publisher<String>("rsb://informer/example");
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/informer/example"));
 		p.activate();
 		assertTrue(p.state instanceof PublisherStateActive);
 		p.deactivate();
 		assertTrue(p.state instanceof PublisherStateInactive);
 	}
 
-	private void testEvent(RSBEvent e) {
+	private void testEvent(Event e) {
 		assertTrue(e.getType().equals("string"));
 		assertTrue(e.getData().equals("Hello World!"));
 		assertNotNull(e.getId());
-		assertTrue(e.getUri().equals("rsb://informer/example"));
+		assertTrue(e.getScope().equals(new Scope("/informer/example")));
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#send(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.Publisher#send(rsb.Event)}.
 	 * 
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testSendRSBEvent() throws InitializeException {
-		Publisher<String> p = new Publisher<String>("rsb://informer/example");
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/informer/example"));
 		p.activate();
-		RSBEvent e = p.send(new RSBEvent("string", "Hello World!"));
+		Event e = p.send(new Event("string", "Hello World!"));
 		testEvent(e);
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#send(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.Publisher#send(rsb.Event)}.
 	 * 
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testSendT() throws InitializeException {
-		Publisher<String> p = new Publisher<String>("rsb://informer/example");
+		Publisher<String> p = new Publisher<String>(new Scope(
+				"/informer/example"));
 		p.activate();
-		RSBEvent e = p.send("Hello World!");
+		Event e = p.send("Hello World!");
 		testEvent(e);
 	}
 

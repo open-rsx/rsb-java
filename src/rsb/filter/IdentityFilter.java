@@ -5,7 +5,7 @@
 
 package rsb.filter;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.event.EventId;
 
 /**
@@ -75,7 +75,7 @@ public class IdentityFilter extends AbstractFilter {
 	}
 
 	@Override
-	public RSBEvent transform(RSBEvent e) {
+	public Event transform(Event e) {
 		// TODO add implementation
 		// currently, this is not supported due to lack of metadata
 		return e;

@@ -22,13 +22,13 @@ package rsb.event;
 
 import java.util.EventListener;
 
-import rsb.RSBEvent;
+import rsb.Event;
 
 /**
  * @author swrede
  *
  */
-public interface RSBListener<T extends RSBEvent> extends EventListener {
+public interface RSBListener<T extends Event> extends EventListener {
 
     public void internalNotify(T e);
     

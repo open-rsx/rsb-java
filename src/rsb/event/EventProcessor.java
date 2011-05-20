@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.RSBEvent;
+import rsb.Event;
 
 /**
  * @author swrede
@@ -66,7 +66,7 @@ public class EventProcessor extends ThreadPoolExecutor {
 		subscriptions.remove(s);
 	}
 
-	public void fire(RSBEvent e) {
+	public void fire(Event e) {
 		int count = 0;
 		for (Subscription s : subscriptions) {
 			count++;

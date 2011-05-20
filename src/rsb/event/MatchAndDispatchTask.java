@@ -22,7 +22,7 @@ package rsb.event;
 
 import java.util.concurrent.Callable;
 
-import rsb.RSBEvent;
+import rsb.Event;
 
 /**
  * @author swrede
@@ -30,10 +30,10 @@ import rsb.RSBEvent;
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
-	RSBEvent e;
+	Event e;
 	Subscription s;
 	
-	MatchAndDispatchTask(Subscription s, RSBEvent e) {
+	MatchAndDispatchTask(Subscription s, Event e) {
 		this.e = e;
 	    this.s = s;
 	}

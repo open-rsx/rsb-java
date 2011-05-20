@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rsb.RSBEvent;
+import rsb.Event;
 
 /**
  * @author swrede
@@ -33,7 +33,7 @@ import rsb.RSBEvent;
  */
 public class EventDispatcherTest {
 
-	private final class TestListener extends RSBEventListener<RSBEvent> {
+	private final class TestListener extends RSBEventListener<Event> {
 		boolean notified = false;
 
 		public boolean isNotified() {
@@ -41,7 +41,7 @@ public class EventDispatcherTest {
 		}
 
 		@Override
-		public void handleEvent(RSBEvent e) {
+		public void handleEvent(Event e) {
 			notified = true;
 		}
 	}
@@ -92,13 +92,13 @@ public class EventDispatcherTest {
 		assertTrue(ed.subscriptions.size() == 0);
 	}
 
-	private RSBEventListener<RSBEvent> getHandler() {
-		RSBEventListener<RSBEvent> l = new TestListener();
+	private RSBEventListener<Event> getHandler() {
+		RSBEventListener<Event> l = new TestListener();
 		return l;
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.Event)}.
 	 * @throws InterruptedException 
 	 */
 	@Test
@@ -108,7 +108,7 @@ public class EventDispatcherTest {
 		TestListener l = (TestListener) getHandler();
 		s.appendHandler(l);
 		ed.addSubscription(s);
-		ed.fire(new RSBEvent());
+		ed.fire(new Event());
 		ed.waitForShutdown();
 		assertTrue(l.isNotified());
 	}

@@ -24,6 +24,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import rsb.Scope;
+
 /**
  * @author swrede
  * 
@@ -93,7 +95,8 @@ public class FilterObservableTest {
 		FilterObservable fo = new FilterObservable();
 		TestObserver to = new TestObserver();
 		fo.addObserver(to);
-		fo.notifyObservers((Filter) new ScopeFilter("blub"), FilterAction.ADD);
+		fo.notifyObservers((Filter) new ScopeFilter(new Scope("/blub")),
+				FilterAction.ADD);
 		fo.notifyObservers((Filter) new IdentityFilter("blub",
 				IdentityFilter.Type.RECEIVER_IDENTITY), FilterAction.ADD);
 		fo.notifyObservers((Filter) new TypeFilter(this.getClass()),

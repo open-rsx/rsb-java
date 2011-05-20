@@ -24,7 +24,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import rsb.RSBEvent;
+import rsb.Event;
+import rsb.Scope;
 import rsb.event.RSBEventListener;
 import rsb.event.Subscription;
 
@@ -34,11 +35,11 @@ import rsb.event.Subscription;
  */
 public class SubscriptionTest {
 
-	private RSBEventListener<RSBEvent> getHandler() {
-		RSBEventListener<RSBEvent> l = new RSBEventListener<RSBEvent>() {
+	private RSBEventListener<Event> getHandler() {
+		RSBEventListener<Event> l = new RSBEventListener<Event>() {
 
 			@Override
-			public void handleEvent(RSBEvent e) {
+			public void handleEvent(Event e) {
 				// blub
 			}
 
@@ -52,7 +53,7 @@ public class SubscriptionTest {
 	 */
 	@Test
 	public void testAppendHandler() {
-		RSBEventListener<RSBEvent> el = getHandler();
+		RSBEventListener<Event> el = getHandler();
 		Subscription s = new Subscription();
 		s.appendHandler(el);
 		assertTrue(s.getHandlers().contains(el));
@@ -64,7 +65,7 @@ public class SubscriptionTest {
 	 */
 	@Test
 	public void testAppendFilter() {
-		ScopeFilter sf = new ScopeFilter("rsb://blub");
+		ScopeFilter sf = new ScopeFilter(new Scope("/blub"));
 		Subscription s = new Subscription();
 		s.appendFilter(sf);
 		assertTrue(s.getFilter().contains(sf));
@@ -75,7 +76,7 @@ public class SubscriptionTest {
 	 */
 	@Test
 	public void testGetHandlerIterator() {
-		RSBEventListener<RSBEvent> el = getHandler();
+		RSBEventListener<Event> el = getHandler();
 		Subscription s = new Subscription();
 		s.appendHandler(el);
 		assertTrue(s.getHandlerIterator().next().equals(el));
@@ -86,7 +87,7 @@ public class SubscriptionTest {
 	 */
 	@Test
 	public void testGetFilterIterator() {
-		ScopeFilter sf = new ScopeFilter("rsb://blub");
+		ScopeFilter sf = new ScopeFilter(new Scope("/blub"));
 		Subscription s = new Subscription();
 		s.appendFilter(sf);
 		assertTrue(s.getFilterIterator().next().equals(sf));
@@ -97,23 +98,23 @@ public class SubscriptionTest {
 	 */
 	@Test
 	public void testLength() {
-		ScopeFilter sf = new ScopeFilter("rsb://blub");
+		ScopeFilter sf = new ScopeFilter(new Scope("/blub"));
 		Subscription s = new Subscription();
 		s.appendFilter(sf);
 		assertTrue(s.length() == 1);
 	}
 
 	/**
-	 * Test method for {@link rsb.event.Subscription#match(rsb.RSBEvent)}.
+	 * Test method for {@link rsb.event.Subscription#match(rsb.Event)}.
 	 */
 	@Test
 	public void testMatch() {
-		ScopeFilter sf = new ScopeFilter("rsb://blub");
+		ScopeFilter sf = new ScopeFilter(new Scope("/blub"));
 		Subscription s = new Subscription();
 		s.appendFilter(sf);
-		RSBEvent e = new RSBEvent();
+		Event e = new Event();
 		e.ensureId();
-		e.setUri("rsb://blub");
+		e.setScope(new Scope("/blub"));
 		assertTrue(s.match(e));
 	}
 

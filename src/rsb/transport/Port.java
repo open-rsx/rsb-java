@@ -3,7 +3,7 @@
  */
 package rsb.transport;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.RSBObject;
 import rsb.filter.FilterObserver;
 
@@ -12,7 +12,7 @@ import rsb.filter.FilterObserver;
  */
 public interface Port extends RSBObject, FilterObserver {
 
-	public void push(RSBEvent e);
+	public void push(Event e);
 
 	public String getType();
 

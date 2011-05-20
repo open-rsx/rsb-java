@@ -5,7 +5,7 @@
 
 package rsb.filter;
 
-import rsb.RSBEvent;
+import rsb.Event;
 import rsb.event.EventId;
 
 /**
@@ -39,7 +39,7 @@ public class TypeFilter extends AbstractFilter {
 	}
 
 	@Override
-	public RSBEvent transform(RSBEvent e) {
+	public Event transform(Event e) {
 		// check skip
 		String evtId = e.getId().toString();
 		if (mustSkip(evtId)) {
