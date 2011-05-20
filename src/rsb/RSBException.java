@@ -1,10 +1,6 @@
 package rsb;
 
 /**
- * 
- */
-
-/**
  * Superclass of all RSB exceptions that may be used in handlers that catch all
  * RSB-related exceptions.
  * 
