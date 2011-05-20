@@ -27,7 +27,7 @@ import rsb.Event;
 import rsb.Scope;
 import rsb.Subscriber;
 import rsb.event.RSBDataListener;
-import rsb.event.RSBEventListener;
+import rsb.event.EventListener;
 import rsb.naming.NotFoundException;
 import rsb.transport.TransportFactory;
 
@@ -50,7 +50,7 @@ public class SubscriberExample {
 		Subscriber sub = new Subscriber(new Scope("/example/informer"),
 				new Scope("/example/informer"), TransportFactory.getInstance());
 		sub.activate();
-		sub.addListener(new RSBEventListener<Event>() {
+		sub.addListener(new EventListener<Event>() {
 
 			@Override
 			public void handleEvent(Event e) {

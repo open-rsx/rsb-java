@@ -138,7 +138,7 @@ public class PublisherTest {
 	 * @throws InitializeException
 	 */
 	@Test
-	public void testSendRSBEvent() throws InitializeException {
+	public void testSendEvent() throws InitializeException {
 		Publisher<String> p = new Publisher<String>(new Scope(
 				"/informer/example"));
 		p.activate();

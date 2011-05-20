@@ -69,8 +69,8 @@ public class Publisher<T> implements RSBObject {
 		protected void activate() throws InitializeException {
 			router.activate();
 			p.state = new PublisherStateActive(p);
-			log.info("Publisher activated: [Scope:" + scope + ",Type:" + typeinfo
-					+ "]");
+			log.info("Publisher activated: [Scope:" + scope + ",Type:"
+					+ typeinfo + "]");
 		}
 
 	}
@@ -151,7 +151,7 @@ public class Publisher<T> implements RSBObject {
 	}
 
 	/**
-	 * Send an RSBEvent to all subscribed participants
+	 * Send an {@link Event} to all subscribed participants
 	 */
 	public synchronized Event send(Event e) {
 		return state.send(e);

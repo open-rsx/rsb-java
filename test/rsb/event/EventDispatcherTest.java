@@ -33,7 +33,7 @@ import rsb.Event;
  */
 public class EventDispatcherTest {
 
-	private final class TestListener extends RSBEventListener<Event> {
+	private final class TestListener extends EventListener<Event> {
 		boolean notified = false;
 
 		public boolean isNotified() {
@@ -92,8 +92,8 @@ public class EventDispatcherTest {
 		assertTrue(ed.subscriptions.size() == 0);
 	}
 
-	private RSBEventListener<Event> getHandler() {
-		RSBEventListener<Event> l = new TestListener();
+	private EventListener<Event> getHandler() {
+		EventListener<Event> l = new TestListener();
 		return l;
 	}
 

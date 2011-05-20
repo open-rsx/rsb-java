@@ -24,7 +24,7 @@ import rsb.Event;
 
 /**
  * RSB uses an event listener mechanism to deal with the various events raised
- * by the framework's basic communication patterns. RSBEventListener is the
+ * by the framework's basic communication patterns. EventListener is the
  * topmost interface in the listener hierarchy. There are specialized listener
  * (and event) types for Publish/Subscribe, Server/RemoteServer and the
  * ActiveMemory. In Publish/Subscribe PublishEvents are raised whenever the
@@ -38,7 +38,7 @@ import rsb.Event;
  * @see Event
  */
  
-public abstract class RSBEventListener<T extends Event> implements RSBListener<T> {
+public abstract class EventListener<T extends Event> implements RSBListener<T> {
 
 	public void internalNotify(T e) {
 		handleEvent(e);

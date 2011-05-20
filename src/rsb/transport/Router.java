@@ -123,10 +123,10 @@ public class Router extends FilterObservable implements EventHandler {
 	}
 
 	/**
-	 * Publish an RSBEvent over the event bus.
+	 * Publish an {@link Event} over the event bus.
 	 * 
 	 * @param e
-	 *            The RSBEvent to be published
+	 *            The {@link Event} to be published
 	 */
 	public void publish(Event e) {
 		// TODO add config checks as preconditions
@@ -181,7 +181,7 @@ public class Router extends FilterObservable implements EventHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see rsb.transport.EventHandler#deliver(rsb.RSBEvent)
+	 * @see rsb.transport.EventHandler#deliver(rsb.Event)
 	 */
 	@Override
 	public void handle(Event e) {

@@ -128,7 +128,7 @@ public class Event {
 	}
 
 	public String toString() {
-		return "RSBEvent[id=" + id.toString() + ", scope=" + scope + ", type ="
+		return "Event[id=" + id.toString() + ", scope=" + scope + ", type ="
 				+ type + "]";
 	}
 
