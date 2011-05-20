@@ -258,6 +258,17 @@ public class SpreadWrapper implements RSBObject {
 	}
 
 	public boolean send(DataMessage msg) {
+
+		// check group names for length
+		for (String group : msg.getGroups()) {
+			if (group.length() > 31) {
+				throw new IllegalArgumentException(
+						"Group with name '"
+								+ group
+								+ "' is too long for spread, only 31 characters are allowed.");
+			}
+		}
+
 		// TODO check whether we should rethrow the exceptions
 		if (conn != null) {
 			checkConnection();

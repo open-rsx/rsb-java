@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -111,4 +110,25 @@ public class SpreadPortTest {
 		outPort.deactivate();
 
 	}
+
+	@Test
+	public void longGroupNames() throws Throwable {
+
+		SpreadWrapper outWrapper = new SpreadWrapper();
+		SpreadPort outPort = new SpreadPort(outWrapper, null);
+		outPort.addConverter("string", new ByteBufferConverter());
+		outPort.activate();
+
+		Event event = new Event("string");
+		event.setId(new EventId());
+		event.setData("a test string");
+		event.setScope(new Scope(
+				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
+
+		outPort.push(event);
+
+		outPort.deactivate();
+
+	}
+
 }

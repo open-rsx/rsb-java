@@ -21,6 +21,8 @@
 package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +121,37 @@ public class SpreadPort extends AbstractPort {
 		}
 	}
 
+	/**
+	 * Creates the md5 hashed spread group names.
+	 * 
+	 * @param scope
+	 *            scope to create group name
+	 * @return trunkated md5 hash to fit into spread group
+	 */
+	private String spreadGroupName(Scope scope) {
+
+		try {
+
+			MessageDigest digest = MessageDigest.getInstance("md5");
+			digest.reset();
+			digest.update(scope.toString().getBytes());
+			byte[] sum = digest.digest();
+			assert sum.length == 16;
+
+			StringBuilder hexString = new StringBuilder();
+			for (int i = 0; i < sum.length - 1; i++) {
+				hexString.append(Integer.toHexString(0xFF & sum[i]));
+			}
+
+			return hexString.toString();
+
+		} catch (NoSuchAlgorithmException e) {
+			assert false : "There must be an md5 algorith available";
+			throw new RuntimeException("Unable to find md5 algorithm", e);
+		}
+
+	}
+
 	public void push(Event e) {
 
 		// convert data
@@ -179,11 +212,11 @@ public class SpreadPort extends AbstractPort {
 				// TODO think about reasonable error handling
 				e1.printStackTrace();
 			}
-			
+
 			// send to all super scopes
 			List<Scope> scopes = e.getScope().superScopes(true);
 			for (Scope scope : scopes) {
-				dm.addGroup(scope.toString());
+				dm.addGroup(spreadGroupName(scope));
 			}
 
 			boolean sent = spread.send(dm);
@@ -197,7 +230,7 @@ public class SpreadPort extends AbstractPort {
 		if (spread.isActivated()) {
 			// join group
 			try {
-				spread.join(scope.toString());
+				spread.join(spreadGroupName(scope));
 			} catch (SpreadException e) {
 				// TODO how to handle this exception
 				e.printStackTrace();
@@ -209,7 +242,7 @@ public class SpreadPort extends AbstractPort {
 
 	private void leaveSpreadGroup(Scope scope) {
 		if (spread.isActivated()) {
-			spread.leave(scope.toString());
+			spread.leave(spreadGroupName(scope));
 		} else {
 			log.severe("Couldn't remove group filter, spread inactive.");
 		}
