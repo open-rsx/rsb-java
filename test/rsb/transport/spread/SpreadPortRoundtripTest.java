@@ -13,7 +13,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import rsb.Event;
+import rsb.QualityOfServiceSpec;
 import rsb.Scope;
+import rsb.QualityOfServiceSpec.Ordering;
+import rsb.QualityOfServiceSpec.Reliability;
 import rsb.event.EventId;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
@@ -46,6 +49,8 @@ public class SpreadPortRoundtripTest {
 
 		SpreadWrapper outWrapper = new SpreadWrapper();
 		SpreadPort outPort = new SpreadPort(outWrapper, null);
+		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
+				Ordering.ORDERED, Reliability.RELIABLE));
 		outPort.addConverter("string", new ByteBufferConverter());
 
 		final List<Event> receivedEvents = new ArrayList<Event>();

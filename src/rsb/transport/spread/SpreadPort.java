@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import rsb.InitializeException;
 import rsb.Event;
+import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.filter.FilterAction;
@@ -57,6 +58,36 @@ public class SpreadPort extends AbstractPort {
 	private final static Logger log = Logger.getLogger(SpreadPort.class
 			.getName());
 
+	private interface QoSHandler {
+		void apply(DataMessage message) throws SerializeException;
+	}
+
+	private class UnreliableHandler implements QoSHandler {
+		@Override
+		public void apply(DataMessage message) throws SerializeException {
+			message.getSpreadMessage().setUnreliable();
+		}
+	}
+
+	private class ReliableHandler implements QoSHandler {
+		@Override
+		public void apply(DataMessage message) throws SerializeException {
+			message.getSpreadMessage().setReliable();
+		}
+	}
+
+	private class FifoHandler implements QoSHandler {
+		@Override
+		public void apply(DataMessage message) throws SerializeException {
+			message.getSpreadMessage().setFifo();
+		}
+	}
+
+	/**
+	 * The message service type used for sending messages via spread.
+	 */
+	private QoSHandler spreadServiceHandler;
+
 	/**
 	 * Protocol for optimization based on registered filters: TypeFilter: Some
 	 * types may be received via special spread groups, e.g. SystemEvents. Port
@@ -81,6 +112,7 @@ public class SpreadPort extends AbstractPort {
 	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
 		spread = sw;
 		this.eventHandler = eventHandler;
+		setQualityOfServiceSpec(new QualityOfServiceSpec());
 	}
 
 	public void activate() throws InitializeException {
@@ -208,15 +240,24 @@ public class SpreadPort extends AbstractPort {
 			DataMessage dm = new DataMessage();
 			try {
 				dm.setData(notification.toByteArray());
-			} catch (SerializeException e1) {
-				// TODO think about reasonable error handling
-				e1.printStackTrace();
+			} catch (SerializeException ex) {
+				throw new RuntimeException(
+						"Unable to set binary data for a spread message.", ex);
 			}
 
 			// send to all super scopes
 			List<Scope> scopes = e.getScope().superScopes(true);
 			for (Scope scope : scopes) {
 				dm.addGroup(spreadGroupName(scope));
+			}
+
+			// apply QoS
+			try {
+				spreadServiceHandler.apply(dm);
+			} catch (SerializeException ex) {
+				throw new RuntimeException(
+						"Unable to apply quality of service settings for a spread message.",
+						ex);
 			}
 
 			boolean sent = spread.send(dm);
@@ -232,8 +273,10 @@ public class SpreadPort extends AbstractPort {
 			try {
 				spread.join(spreadGroupName(scope));
 			} catch (SpreadException e) {
-				// TODO how to handle this exception
-				e.printStackTrace();
+				throw new RuntimeException(
+						"Unable to join spread group for scope '" + scope
+								+ "' with hash '" + spreadGroupName(scope)
+								+ "'.", e);
 			}
 		} else {
 			log.severe("Couldn't set up network filter, spread inactive.");
@@ -256,8 +299,7 @@ public class SpreadPort extends AbstractPort {
 		try {
 			receiver.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -268,5 +310,26 @@ public class SpreadPort extends AbstractPort {
 
 	public void addConverter(String s, ByteBufferConverter bbc) {
 		converters.put(s, bbc);
+	}
+
+	@Override
+	public void setQualityOfServiceSpec(QualityOfServiceSpec qos) {
+
+		if (qos.getReliability() == QualityOfServiceSpec.Reliability.UNRELIABLE
+				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.UNORDERED) {
+			spreadServiceHandler = new UnreliableHandler();
+		} else if (qos.getReliability() == QualityOfServiceSpec.Reliability.UNRELIABLE
+				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.ORDERED) {
+			spreadServiceHandler = new FifoHandler();
+		} else if (qos.getReliability() == QualityOfServiceSpec.Reliability.RELIABLE
+				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.UNORDERED) {
+			spreadServiceHandler = new ReliableHandler();
+		} else if (qos.getReliability() == QualityOfServiceSpec.Reliability.RELIABLE
+				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.ORDERED) {
+			spreadServiceHandler = new FifoHandler();
+		} else {
+			assert false;
+		}
+
 	}
 }

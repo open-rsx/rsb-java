@@ -30,6 +30,9 @@ import java.util.Map;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.QualityOfServiceSpec;
+import rsb.QualityOfServiceSpec.Ordering;
+import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
 import rsb.event.EventId;
 import rsb.filter.FilterAction;
@@ -47,6 +50,8 @@ public class SpreadPortTest {
 
 		SpreadWrapper outWrapper = new SpreadWrapper();
 		SpreadPort outPort = new SpreadPort(outWrapper, null);
+		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
+				Ordering.ORDERED, Reliability.RELIABLE));
 		outPort.addConverter("string", new ByteBufferConverter());
 		outPort.activate();
 
@@ -116,6 +121,7 @@ public class SpreadPortTest {
 
 		SpreadWrapper outWrapper = new SpreadWrapper();
 		SpreadPort outPort = new SpreadPort(outWrapper, null);
+		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
 		outPort.addConverter("string", new ByteBufferConverter());
 		outPort.activate();
 

@@ -33,7 +33,6 @@ public class SpreadFactory extends TransportFactory {
 
 	@Override
 	public Port createPort(EventHandler handler) {
-		// TODO check port multiplicity
 		SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler);
 		sp.addConverter("string", new ByteBufferConverter());
 		return sp;
