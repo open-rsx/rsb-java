@@ -39,9 +39,9 @@ import spread.SpreadGroup;
  * This class encapsulates and manages a connection to the spread daemon.
  * Thereby, it maintains the membership information for this connection and
  * evaluates and enqueues all sorts of spread messages.
- * 
+ *
  * @author swrede
- * 
+ *
  */
 public class SpreadWrapper implements RSBObject {
 
@@ -129,11 +129,11 @@ public class SpreadWrapper implements RSBObject {
 
 	/*
 	 * Create a new Manager, assuming a spread daemon on localhost, port 4803.
-	 * 
+	 *
 	 * @param name Name for this manager
 	 */
 	public SpreadWrapper() {
-		port = props.getPropertyAsInt("Spread.Port");
+		port = props.getPropertyAsInt("transport.spread.port");
 		try {
 			// TODO refactor this to use a doman object SpreadHost (also for
 			// connection checks and so on...
@@ -141,18 +141,18 @@ public class SpreadWrapper implements RSBObject {
 			// may occur
 			// TODO e.g., if we can't resolve the inetaddress, this coudl
 			// already fail in the properties parsing
-			setSpreadhost(props.getProperty("Spread.Host"));
+			setSpreadhost(props.getProperty("transport.spread.host"));
 		} catch (RSBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		useTcpNoDelay = props.getPropertyAsBool("Spread.TcpNoDelay");
+		useTcpNoDelay = props.getPropertyAsBool("transport.spread.tcpnodelay");
 	}
 
 	/**
 	 * Create a new Manager using the specified connection data for the Spread
 	 * network.
-	 * 
+	 *
 	 * @param name
 	 *            Name for this manager
 	 * @param spreadhost
@@ -215,7 +215,7 @@ public class SpreadWrapper implements RSBObject {
 	 * Create a new SpreadConnection. Generates a new name randomly, using the
 	 * specified prefix. To allow for name collisions, try a couple of times
 	 * before giving up.
-	 * 
+	 *
 	 * @param prefix
 	 *            prefix to use in name, should be short
 	 * @param mship
