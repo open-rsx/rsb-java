@@ -216,7 +216,7 @@ public class Properties {
 	    String key = it.next();
 	    if (key.startsWith("RSB_")) {
 		try {
-		    setProperty(key.replace("_", "."), env.get(key));
+		    setProperty(key.substring(4).replace("_", ".").toLowerCase(), env.get(key));
 		} catch(InvalidPropertyException ex) {
 		    System.err.println("An exception occurred reading configuration from environment: " + ex.getMessage());
 		}
