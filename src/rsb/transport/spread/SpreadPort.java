@@ -171,7 +171,7 @@ public class SpreadPort extends AbstractPort {
 			assert sum.length == 16;
 
 			StringBuilder hexString = new StringBuilder();
-			for (int i = 0; i < sum.length - 1; i++) {
+			for (int i = 0; i < sum.length; i++) {
 			    String s = Integer.toHexString(0xFF & sum[i]);
 			    if (s.length() == 1) {
 				s = '0' + s;
@@ -179,7 +179,7 @@ public class SpreadPort extends AbstractPort {
 			    hexString.append(s);
 			}
 
-			return hexString.toString();
+			return hexString.toString().substring(0, 31);
 
 		} catch (NoSuchAlgorithmException e) {
 			assert false : "There must be an md5 algorith available";
