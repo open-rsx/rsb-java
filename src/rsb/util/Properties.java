@@ -164,7 +164,7 @@ public class Properties {
 	return singleton;
     }
 
-    protected void loadFile(String fn) throws IOException {
+    public void loadFile(String fn) throws IOException {
 	BufferedReader reader
 	    = new BufferedReader(new InputStreamReader(new FileInputStream(fn)));
 	String section = "";
