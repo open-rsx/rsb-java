@@ -109,8 +109,8 @@ public class SpreadPort extends AbstractPort {
 	 * @param eventHandler
 	 *            if <code>null</code>, no receiving of events will be done
 	 */
-	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
-		spread = sw;
+    public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
+	spread = sw;
 		this.eventHandler = eventHandler;
 		setQualityOfServiceSpec(new QualityOfServiceSpec());
 	}
@@ -128,7 +128,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -155,12 +155,12 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 * 
+	 *
 	 * @param scope
 	 *            scope to create group name
 	 * @return trunkated md5 hash to fit into spread group
 	 */
-	private String spreadGroupName(Scope scope) {
+    private String spreadGroupName(Scope scope) {
 
 		try {
 
@@ -172,7 +172,11 @@ public class SpreadPort extends AbstractPort {
 
 			StringBuilder hexString = new StringBuilder();
 			for (int i = 0; i < sum.length - 1; i++) {
-				hexString.append(Integer.toHexString(0xFF & sum[i]));
+			    String s = Integer.toHexString(0xFF & sum[i]);
+			    if (s.length() == 1) {
+				s = '0' + s;
+			    }
+			    hexString.append(s);
 			}
 
 			return hexString.toString();
