@@ -66,9 +66,8 @@ public class ScopeFilter extends AbstractFilter {
 			matches = true;
 			skipped(evtId);
 		} else {
-			// matches =
-			// (scope.isParentScopeOf(e.getMetadata().getReceiverScope()));
-			matches = scope.isSuperScopeOf(e.getScope());
+		    matches = (scope.equal(e.getScope())
+			       || scope.isSuperScopeOf(e.getScope()));
 		}
 		if (matches) {
 			log.fine("ScopeFilter matched successfully!");
