@@ -218,7 +218,7 @@ public class SpreadPort extends AbstractPort {
 			// data fragmentation
 			int fragmentSize = MAX_MSG_SIZE;
 			if (part == requiredParts - 1) {
-				fragmentSize = dataSize % MAX_MSG_SIZE;
+			    fragmentSize = dataSize - MAX_MSG_SIZE * part;
 			}
 			ByteString dataPart = ByteString.copyFrom(
 					convertedDataBuffer.value.array(), part * MAX_MSG_SIZE,
