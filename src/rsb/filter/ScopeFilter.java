@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package rsb.filter;
 
@@ -11,7 +11,7 @@ import rsb.event.EventId;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class ScopeFilter extends AbstractFilter {
 
@@ -54,9 +54,6 @@ public class ScopeFilter extends AbstractFilter {
 
 	@Override
 	public Event transform(Event e) {
-		// TODO implement real scoping, currently it is solely an equality test
-		// on the publisher's Scope
-		// as subscription Scope in the ScopeFilter and PublisherScope must match.
 		log.fine("ScopeFilter with scope " + scope
 				+ " received event to transform.");
 		if (e.getScope() != null) {
@@ -71,7 +68,7 @@ public class ScopeFilter extends AbstractFilter {
 		} else {
 			// matches =
 			// (scope.isParentScopeOf(e.getMetadata().getReceiverScope()));
-			matches = scope.equals(e.getScope());
+			matches = scope.isSuperScopeOf(e.getScope());
 		}
 		if (matches) {
 			log.fine("ScopeFilter matched successfully!");
