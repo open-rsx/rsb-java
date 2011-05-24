@@ -90,7 +90,7 @@ public class Properties {
 
     protected static Properties singleton = null;
 
-    protected Properties() {
+    public Properties() {
 	resetDefaults();
     }
 
