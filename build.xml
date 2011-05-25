@@ -1,7 +1,11 @@
 <project name="RSBJava" default="dist">
+
 	<description>
         Build file for Java Bindings of Robotics Service Bus Middleware
     </description>
+
+	<property name="version" value="0.2.0" />
+	<property name="jarname" value="RSBJava-${version}.jar" />
 
 	<!-- set global properties for this build -->
 	<property file="build.properties" />
@@ -82,9 +86,13 @@
 	<target name="dist" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}/lib" />
-
-		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-		<jar jarfile="${dist.dir}/lib/RSBJava-${DSTAMP}.jar" basedir="${build.dir}/classes" />
+		<jar jarfile="${dist.dir}/lib/${jarname}" basedir="${build.dir}/classes">
+			<manifest>
+				<attribute name="Implementation-Vendor" value="CoR-Lab Bielefeld University" />
+				<attribute name="Implementation-Title" value="RSBJava" />
+				<attribute name="Implementation-Version" value="${version}" />
+			</manifest>
+		</jar>
 	</target>
 
 	<target name="test" depends="test-compile" description="JUnit tests">
@@ -120,8 +128,8 @@
 	<target name="install" depends="dist">
 		<echo message="Installing to ${install.dir}." />
 		<mkdir dir="${install.dir}" />
-		<copy file="${dist.dir}/lib/RSBJava-${DSTAMP}.jar" todir="${install.dir}" />
-		<symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/RSBJava-${DSTAMP}.jar" overwrite="true" />
+		<copy file="${dist.dir}/lib/${jarname}" todir="${install.dir}" />
+		<symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/${jarname}" overwrite="true" />
 	</target>
-</project>
 
+</project>
