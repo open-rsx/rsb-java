@@ -156,6 +156,7 @@
 
 		<junit printsummary="yes" haltonfailure="false">
 
+			<formatter type="xml" />
 			<formatter type="plain" usefile="false" />
 
 			<classpath location="${instrumented.dir}" />
