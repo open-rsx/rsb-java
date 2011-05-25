@@ -31,8 +31,10 @@ import java.util.logging.Logger;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.QualityOfServiceSpec;
+import rsb.QualityOfServiceSpec.Ordering;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.QualityOfServiceSpec.Reliability;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.protocol.AttachmentPB.Attachment;
@@ -42,6 +44,8 @@ import rsb.transport.AbstractPort;
 import rsb.transport.EventHandler;
 import rsb.transport.convert.ByteBufferConverter;
 import rsb.util.Holder;
+import rsb.util.InvalidPropertyException;
+import rsb.util.Properties;
 import spread.SpreadException;
 
 import com.google.protobuf.ByteString;
@@ -109,10 +113,25 @@ public class SpreadPort extends AbstractPort {
 	 * @param eventHandler
 	 *            if <code>null</code>, no receiving of events will be done
 	 */
-    public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
-	spread = sw;
+	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
+		spread = sw;
 		this.eventHandler = eventHandler;
-		setQualityOfServiceSpec(new QualityOfServiceSpec());
+
+		// TODO initial hack to get QoS from properties, replace this with a
+		// real participant config
+		Ordering ordering = new QualityOfServiceSpec().getOrdering();
+		try {
+			ordering = Ordering.valueOf(Properties.getInstance().getProperty(
+					"qualityofservice.ordering"));
+		} catch (InvalidPropertyException e) {
+		}
+		Reliability reliability = new QualityOfServiceSpec().getReliability();
+		try {
+			reliability = Reliability.valueOf(Properties.getInstance()
+					.getProperty("qualityofservice.reliability"));
+		} catch (InvalidPropertyException e) {
+		}
+		setQualityOfServiceSpec(new QualityOfServiceSpec(ordering, reliability));
 	}
 
 	public void activate() throws InitializeException {
@@ -128,7 +147,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -155,12 +174,12 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 *
+	 * 
 	 * @param scope
 	 *            scope to create group name
 	 * @return trunkated md5 hash to fit into spread group
 	 */
-    private String spreadGroupName(Scope scope) {
+	private String spreadGroupName(Scope scope) {
 
 		try {
 
@@ -172,11 +191,11 @@ public class SpreadPort extends AbstractPort {
 
 			StringBuilder hexString = new StringBuilder();
 			for (int i = 0; i < sum.length; i++) {
-			    String s = Integer.toHexString(0xFF & sum[i]);
-			    if (s.length() == 1) {
-				s = '0' + s;
-			    }
-			    hexString.append(s);
+				String s = Integer.toHexString(0xFF & sum[i]);
+				if (s.length() == 1) {
+					s = '0' + s;
+				}
+				hexString.append(s);
 			}
 
 			return hexString.toString().substring(0, 31);
@@ -218,7 +237,7 @@ public class SpreadPort extends AbstractPort {
 			// data fragmentation
 			int fragmentSize = MAX_MSG_SIZE;
 			if (part == requiredParts - 1) {
-			    fragmentSize = dataSize - MAX_MSG_SIZE * part;
+				fragmentSize = dataSize - MAX_MSG_SIZE * part;
 			}
 			ByteString dataPart = ByteString.copyFrom(
 					convertedDataBuffer.value.array(), part * MAX_MSG_SIZE,
