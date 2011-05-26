@@ -27,7 +27,7 @@ import rsb.InitializeException;
 import rsb.Event;
 import rsb.RSBException;
 import rsb.event.EventProcessor;
-import rsb.event.Subscription;
+import rsb.event.Handler;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
@@ -124,7 +124,7 @@ public class Router extends FilterObservable implements EventHandler {
 
 	/**
 	 * Publish an {@link Event} over the event bus.
-	 * 
+	 *
 	 * @param e
 	 *            The {@link Event} to be published
 	 */
@@ -158,29 +158,29 @@ public class Router extends FilterObservable implements EventHandler {
 		}
 	}
 
-	/**
-	 * Subscribes a listener to all events that pass it's filter chain.
-	 */
-	public void subscribe(Subscription sub) {
-		// TODO add config checks as preconditions
-		for (Filter f : sub.getFilter()) {
-			notifyObservers(f, FilterAction.ADD);
-		}
-		ep.addSubscription(sub);
+
+        public void addFilter(Filter filter) {
+	        notifyObservers(filter, FilterAction.ADD);
+		ep.addFilter(filter);
 	}
 
-	// public void unsubscribe(Subscription sub, XcfEventListener sink) {
-	// epi.remove(sub, sink);
-	// }
-	//
-	public void unsubscribe(Subscription sub) {
-		// TODO add config checks as preconditions
-		ep.removeSubscription(sub);
+
+        public void removeFilter(Filter filter) {
+	        notifyObservers(filter, FilterAction.REMOVE);
+		ep.removeFilter(filter);
+	}
+
+	public void addHandler(Handler handler) {
+		ep.addHandler(handler);
+	}
+
+	public void removeHandler(Handler handler) {
+		ep.removeHandler(handler);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rsb.transport.EventHandler#deliver(rsb.Event)
 	 */
 	@Override

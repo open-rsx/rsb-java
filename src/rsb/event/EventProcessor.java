@@ -27,12 +27,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
 
 import rsb.Event;
+import rsb.filter.Filter;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class EventProcessor extends ThreadPoolExecutor {
 
@@ -41,7 +43,11 @@ public class EventProcessor extends ThreadPoolExecutor {
 	// TODO refactor to use ThreadPoolExecutor as delegate, not as derived class
 
 	Logger log = Logger.getLogger(EventProcessor.class.getName());
-	ConcurrentLinkedQueue<Subscription> subscriptions = new ConcurrentLinkedQueue<Subscription>();
+
+        ArrayList<Filter> filters = new ArrayList<Filter>();
+
+        @SuppressWarnings("rawtypes")
+	ArrayList<Handler> handlers = new ArrayList<Handler>();
 
 	public EventProcessor() {
 		super(1, 1, 60, TimeUnit.SECONDS,
@@ -58,20 +64,28 @@ public class EventProcessor extends ThreadPoolExecutor {
 		this.prestartAllCoreThreads();
 	}
 
-	public void addSubscription(Subscription s) {
-		subscriptions.add(s);
+	public void addFilter(Filter filter) {
+		filters.add(filter);
 	}
 
-	public void removeSubscription(Subscription s) {
-		subscriptions.remove(s);
+	public void removeFilter(Filter filter) {
+	        filters.remove(filter);
 	}
 
-	public void fire(Event e) {
+	public void addHandler(Handler handler) {
+		handlers.add(handler);
+	}
+
+	public void removeHandler(Handler handler) {
+		handlers.remove(handler);
+	}
+
+	public void fire(Event event) {
 		int count = 0;
-		for (Subscription s : subscriptions) {
+		for (Handler handler : handlers) {
 			count++;
 			try {
-				this.submit(new MatchAndDispatchTask(s, e));
+			    this.submit(new MatchAndDispatchTask(handler, filters, event));
 			} catch (RejectedExecutionException ex) {
 				log.log(Level.SEVERE,
 						"ExecutorService rejected event matching", ex);
@@ -79,8 +93,6 @@ public class EventProcessor extends ThreadPoolExecutor {
 
 		}
 		log.fine("Dispatched event to " + count + " subscriptions");
-		// Future<Boolean> result = this.submit( new MatchAndDispatchTask(s, e)
-		// );
 	}
 
 	/**

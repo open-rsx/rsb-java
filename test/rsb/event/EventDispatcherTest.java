@@ -68,28 +68,28 @@ public class EventDispatcherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.event.EventProcessor#addSubscription(rsb.event.Subscription)}.
+	 * {@link rsb.event.EventProcessor#addHandler(rsb.event.Handler)}.
 	 */
 	@Test
-	public final void testAddSubscription() {
+	public final void testAddHandler() {
 		EventProcessor ed = new EventProcessor();
-		Subscription s = new Subscription();
-		ed.addSubscription(s);
-		assertTrue(ed.subscriptions.contains(s));
+		TestHandler h = new TestHandler();
+		ed.addHandler(h);
+		assertTrue(ed.handlers.contains(h));
 	}
 
 	/**
 	 * Test method for
-	 * {@link rsb.event.EventProcessor#removeSubscription(rsb.event.Subscription)}
+	 * {@link rsb.event.EventProcessor#removeHandler(rsb.event.Handler)}
 	 * .
 	 */
 	@Test
 	public final void testRemoveSubscription() {
 		EventProcessor ed = new EventProcessor();
-		Subscription s = new Subscription();
-		ed.addSubscription(s);
-		ed.removeSubscription(s);
-		assertTrue(ed.subscriptions.size() == 0);
+		TestHandler h = new TestHandler();
+		ed.addHandler(h);
+		ed.removeHandler(h);
+		assertTrue(ed.handlers.size() == 0);
 	}
 
 	private EventHandler<Event> getHandler() {
@@ -104,10 +104,8 @@ public class EventDispatcherTest {
 	@Test
 	public final void testFire() throws InterruptedException {
 		EventProcessor ed = new EventProcessor();
-		Subscription s = new Subscription();
 		TestHandler l = (TestHandler) getHandler();
-		s.appendHandler(l);
-		ed.addSubscription(s);
+		ed.addHandler(l);
 		ed.fire(new Event());
 		ed.waitForShutdown();
 		assertTrue(l.isNotified());

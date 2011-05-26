@@ -21,8 +21,10 @@
 package rsb.event;
 
 import java.util.concurrent.Callable;
+import java.util.List;
 
 import rsb.Event;
+import rsb.filter.Filter;
 
 /**
  * @author swrede
@@ -30,21 +32,38 @@ import rsb.Event;
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
-	Event e;
-	Subscription s;
-	
-	MatchAndDispatchTask(Subscription s, Event e) {
-		this.e = e;
-	    this.s = s;
+	Handler handler;
+	List<Filter> filters;
+	Event event;
+
+	MatchAndDispatchTask(Handler handler, List<Filter> filters, Event event) {
+	    this.handler = handler;
+	    this.filters = filters;
+	    this.event = event;
 	}
-	
+
 	@Override
 	public Boolean call() throws Exception {
-		if (s.match(e)) {
-			s.dispatch(e);
+		if (match(event)) {
+		        try {
+		                handler.internalNotify(event);
+		        } catch (Exception ex) {
+				// TODO add logger, re-throw exception to user-specified
+				// exception handler
+				ex.printStackTrace();
+			}
 			return true;
-		} 
+		}
 		return false;
+	}
+
+	public boolean match(Event event) {
+		for (Filter filter : filters) {
+			event = filter.transform(event);
+			if (event == null)
+				return false;
+		}
+		return true;
 	}
 
 }

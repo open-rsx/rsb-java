@@ -36,7 +36,7 @@ public class UserLevelTest {
 					receivedMessages.notify();
 				}
 			}
-		});
+		    }, true);
 
 		// send events
 		Set<String> sentMessages = new HashSet<String>();

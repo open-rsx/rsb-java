@@ -21,9 +21,12 @@
 package rsb;
 
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
 
 import rsb.event.Handler;
-import rsb.event.Subscription;
+import rsb.filter.Filter;
 import rsb.filter.ScopeFilter;
 import rsb.naming.NotFoundException;
 import rsb.transport.PortConfiguration;
@@ -85,6 +88,11 @@ public class Listener implements RSBObject {
 	/* router to access transport layer */
 	Router router;
 
+	ArrayList<Filter> filters = new ArrayList<Filter>();
+
+        @SuppressWarnings("rawtypes")
+	ArrayList<Handler> handlers = new ArrayList<Handler>();
+
 	public Listener(Scope scope) {
 		initMembers(scope, TransportFactory.getInstance());
 	}
@@ -108,10 +116,36 @@ public class Listener implements RSBObject {
 
 	public void activate() throws InitializeException, NotFoundException {
 		state.activate();
+		router.addFilter(new ScopeFilter(scope)); // TODO probably breaks re-activation
 	}
 
 	public void deactivate() {
 		state.deactivate();
+	}
+
+	public List<Filter> getFilters() {
+		return filters;
+	}
+
+	public Iterator<Filter> getFilterIterator() {
+		Iterator<Filter> it = filters.iterator();
+		return it;
+	}
+
+	public void addFilter(Filter filter) {
+		filters.add(filter);
+		router.addFilter(filter);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Handler> getHandlers() {
+		return handlers;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Iterator<Handler> getHandlerIterator() {
+		Iterator<Handler> it = handlers.iterator();
+		return it;
 	}
 
 	/**
@@ -121,28 +155,32 @@ public class Listener implements RSBObject {
 	 *
 	 * @param handler
 	 *            the handler instance to be registered
+	 * @param wait
+	 *            if set to @c true, this method will return only
+	 *            after the handler has completely been installed
+	 *            and will receive the next available
+	 *            message. Otherwise it may return earlier.
 	 */
-	public Subscription addHandler(@SuppressWarnings("rawtypes") Handler handler) {
-		Subscription sub = new Subscription();
-		log.info("subscribing new listener to scope: " + scope);
-		sub.appendFilter(new ScopeFilter(scope));
-		sub.appendHandler(handler);
-		// sub.append(new IdentityFilter(publisherUri,
-		// IdentityFilter.Type.SENDER_IDENTITY));
-		router.subscribe(sub);
-		return sub;
+        public void addHandler(@SuppressWarnings("rawtypes") Handler handler,
+			       boolean wait) {
+	        handlers.add(handler);
+		router.addHandler(handler);
 	}
 
 	/**
 	 * Remove an event listener from this Listener.
 	 *
-	 * @param l
+	 * @param handler
 	 *            the listener instance to be removed.
-	 * @return true if the instance was found and removed
+	 * @param wait
+	 *            if set to @c true, this method will return only
+	 *            after the handler has been completely removed
+	 *            from the event processing and will not be called
+	 *            anymore from this listener.
 	 */
-	public boolean remove(Subscription sub) {
-		router.unsubscribe(sub);
-		return true;
+        public void removeHandler(Handler handler, boolean wait) {
+	        handlers.remove(handler);
+	        router.removeHandler(handler);
 	}
 
 	public void setErrorHandler(ErrorHandler handler) {

@@ -67,7 +67,7 @@ public class SubscriberExample {
 				}
 			}
 
-		});
+		    }, true);
 		sub.addHandler(new DataHandler<String>() {
 
 			@Override
@@ -94,7 +94,7 @@ public class SubscriberExample {
 				}
 			}
 
-		});
+		    }, true);
 		while (!allEventsDelivered()) {
 			synchronized (l) {
 				l.wait();
