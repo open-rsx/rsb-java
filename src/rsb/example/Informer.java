@@ -21,12 +21,11 @@
 package rsb.example;
 
 import rsb.InitializeException;
-import rsb.Publisher;
 import rsb.Scope;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class Informer {
 
@@ -37,7 +36,7 @@ public class Informer {
 	 */
 	public static void main(String[] args) throws InitializeException,
 			InterruptedException {
-		Publisher<String> p = new Publisher<String>(new Scope(
+	    rsb.Informer<String> p = new rsb.Informer<String>(new Scope(
 				"/example/informer"));
 		p.activate();
 		for (int i = 0; i < 100; i++) {

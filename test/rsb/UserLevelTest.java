@@ -12,7 +12,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * User-level test for RSBJava.
- * 
+ *
  * @author jwienke
  */
 public class UserLevelTest {
@@ -24,10 +24,10 @@ public class UserLevelTest {
 
 		// set up a receiver for events
 		final Set<String> receivedMessages = new HashSet<String>();
-		Subscriber sub = new Subscriber(scope, scope,
+		Listener listener = new Listener(scope,
 				TransportFactory.getInstance());
-		sub.activate();
-		sub.addListener(new RSBDataListener<String>() {
+		listener.activate();
+		listener.addListener(new RSBDataListener<String>() {
 
 			@Override
 			public void handleEvent(String d) {
@@ -40,11 +40,11 @@ public class UserLevelTest {
 
 		// send events
 		Set<String> sentMessages = new HashSet<String>();
-		Publisher<String> publisher = new Publisher<String>(scope);
-		publisher.activate();
+		Informer<String> informer = new Informer<String>(scope);
+		informer.activate();
 		for (int i = 0; i < 100; ++i) {
 			String message = "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
-			publisher.send(message);
+			informer.send(message);
 			sentMessages.add(message);
 		}
 
@@ -57,8 +57,8 @@ public class UserLevelTest {
 
 		assertEquals(sentMessages, receivedMessages);
 
-		publisher.deactivate();
-		sub.deactivate();
+		informer.deactivate();
+		listener.deactivate();
 
 	}
 

@@ -29,25 +29,25 @@ import rsb.transport.TransportFactory;
 /**
  * This class offers a method to send messages to any registered Subscribers.
  * 1:m-communication (called Publish-Subscribe) is one of the basic
- * communication patterns offered by RSB. Each Publisher instance must be given
+ * communication patterns offered by RSB. Each Informer instance must be given
  * a unique name which is used by Subscriber instances to connect to the
- * Publisher. The Publisher also offers a method to retrieve all Subscribers
+ * Informer. The Informer also offers a method to retrieve all Subscribers
  * currently registered at the instance.
- * 
+ *
  * @author swrede
  * @author rgaertne
  * @author jschaefe
  */
-public class Publisher<T> implements RSBObject {
+public class Informer<T> implements RSBObject {
 
-	private final static Logger log = Logger.getLogger(Publisher.class
+	private final static Logger log = Logger.getLogger(Informer.class
 			.getName());
 
 	/** publisher's name within it's scope */
 	protected Scope scope;
 
 	/** state variable for publisher instance */
-	protected PublisherState<T> state;
+	protected InformerState<T> state;
 
 	/** transport factory object */
 	protected TransportFactory transportFactory;
@@ -58,35 +58,35 @@ public class Publisher<T> implements RSBObject {
 	/** transport router */
 	protected Router router;
 
-	protected class PublisherStateInactive extends PublisherState<T> {
+	protected class InformerStateInactive extends InformerState<T> {
 
-		protected PublisherStateInactive(Publisher<T> ctx) {
+		protected InformerStateInactive(Informer<T> ctx) {
 			super(ctx);
-			log.fine("Publisher state activated: [Scope:" + scope
+			log.fine("Informer state activated: [Scope:" + scope
 					+ ",State:Inactive,Type:" + typeinfo + "]");
 		}
 
 		protected void activate() throws InitializeException {
 			router.activate();
-			p.state = new PublisherStateActive(p);
-			log.info("Publisher activated: [Scope:" + scope + ",Type:"
+			p.state = new InformerStateActive(p);
+			log.info("Informer activated: [Scope:" + scope + ",Type:"
 					+ typeinfo + "]");
 		}
 
 	}
 
-	protected class PublisherStateActive extends PublisherState<T> {
+	protected class InformerStateActive extends InformerState<T> {
 
-		protected PublisherStateActive(Publisher<T> ctx) {
+		protected InformerStateActive(Informer<T> ctx) {
 			super(ctx);
-			log.fine("Publisher state activated: [Scope:" + scope
+			log.fine("Informer state activated: [Scope:" + scope
 					+ ",State:Active,Type:" + typeinfo + "]");
 		}
 
 		protected void deactivate() {
 			router.deactivate();
-			p.state = new PublisherStateInactive(p);
-			log.info("Publisher deactivated: [Scope:" + scope + ",Type:"
+			p.state = new InformerStateInactive(p);
+			log.info("Informer deactivated: [Scope:" + scope + ",Type:"
 					+ typeinfo + "]");
 		}
 
@@ -108,7 +108,7 @@ public class Publisher<T> implements RSBObject {
 	}
 
 	private void initMembers(Scope u, String t, TransportFactory tfac) {
-		state = new PublisherStateInactive(this);
+		state = new InformerStateInactive(this);
 		this.transportFactory = tfac;
 		this.scope = u;
 		this.typeinfo = t;
@@ -117,26 +117,26 @@ public class Publisher<T> implements RSBObject {
 				+ ",State:Inactive,Type:" + typeinfo + "]");
 	}
 
-	public Publisher(Scope scope) {
+	public Informer(Scope scope) {
 		initMembers(scope, "string", TransportFactory.getInstance());
 	}
 
-	public Publisher(Scope scope, TransportFactory tfac) {
+	public Informer(Scope scope, TransportFactory tfac) {
 		initMembers(scope, "string", tfac);
 	}
 
-	public Publisher(Scope scope, String t) {
+	public Informer(Scope scope, String t) {
 		initMembers(scope, t, TransportFactory.getInstance());
 	}
 
-	public Publisher(Scope scope, String t, TransportFactory tfac) {
+	public Informer(Scope scope, String t, TransportFactory tfac) {
 		initMembers(scope, t, tfac);
 	}
 
 	/**
 	 * Returns the scope of the publisher
-	 * 
-	 * @return scope of Publisher as a String
+	 *
+	 * @return scope of Informer as a String
 	 */
 	public Scope getScope() {
 		return scope;

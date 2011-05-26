@@ -24,22 +24,22 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import rsb.Publisher.PublisherStateActive;
-import rsb.Publisher.PublisherStateInactive;
+import rsb.Informer.InformerStateActive;
+import rsb.Informer.InformerStateInactive;
 import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
- * 
+ *
  */
-public class PublisherTest {
+public class InformerTest {
 
 	/**
-	 * Test method for {@link rsb.Publisher#Publisher(java.lang.String)}.
+	 * Test method for {@link rsb.Informer#Informer(java.lang.String)}.
 	 */
 	@Test
-	public void testPublisherString() {
-		Publisher<String> p = new Publisher<String>(new Scope(
+	public void testInformerString() {
+		Informer<String> p = new Informer<String>(new Scope(
 				"/informer/example"));
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/informer/example"));
@@ -47,12 +47,12 @@ public class PublisherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.Publisher#Publisher(java.lang.String, rsb.transport.TransportFactory)}
+	 * {@link rsb.Informer#Informer(java.lang.String, rsb.transport.TransportFactory)}
 	 * .
 	 */
 	@Test
-	public void testPublisherStringTransportFactory() {
-		Publisher<String> p = new Publisher<String>(new Scope("/x"),
+	public void testInformerStringTransportFactory() {
+		Informer<String> p = new Informer<String>(new Scope("/x"),
 				TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/x"));
@@ -61,11 +61,11 @@ public class PublisherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.Publisher#Publisher(java.lang.String, java.lang.String)}.
+	 * {@link rsb.Informer#Informer(java.lang.String, java.lang.String)}.
 	 */
 	@Test
-	public void testPublisherStringString() {
-		Publisher<String> p = new Publisher<String>(new Scope("/x"),
+	public void testInformerStringString() {
+		Informer<String> p = new Informer<String>(new Scope("/x"),
 				"XMLString");
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/x"));
@@ -75,12 +75,12 @@ public class PublisherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.Publisher#Publisher(java.lang.String, java.lang.String, rsb.transport.TransportFactory)}
+	 * {@link rsb.Informer#Informer(java.lang.String, java.lang.String, rsb.transport.TransportFactory)}
 	 * .
 	 */
 	@Test
-	public void testPublisherStringStringTransportFactory() {
-		Publisher<String> p = new Publisher<String>(new Scope("/x"),
+	public void testInformerStringStringTransportFactory() {
+		Informer<String> p = new Informer<String>(new Scope("/x"),
 				"XMLString", TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/x"));
@@ -89,40 +89,40 @@ public class PublisherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#getScope()}.
+	 * Test method for {@link rsb.Informer#getScope()}.
 	 */
 	@Test
 	public void testGetScope() {
-		Publisher<String> p = new Publisher<String>(new Scope(
+		Informer<String> p = new Informer<String>(new Scope(
 				"/informer/example"));
 		assertEquals(p.getScope(), new Scope("/informer/example"));
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#activate()}.
-	 * 
+	 * Test method for {@link rsb.Informer#activate()}.
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testActivate() throws Throwable {
-		Publisher<String> p = new Publisher<String>(new Scope("/activate"));
+		Informer<String> p = new Informer<String>(new Scope("/activate"));
 		p.activate();
-		assertTrue(p.state instanceof PublisherStateActive);
+		assertTrue(p.state instanceof InformerStateActive);
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#deactivate()}.
-	 * 
+	 * Test method for {@link rsb.Informer#deactivate()}.
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testDeactivate() throws InitializeException {
-		Publisher<String> p = new Publisher<String>(new Scope(
+		Informer<String> p = new Informer<String>(new Scope(
 				"/informer/example"));
 		p.activate();
-		assertTrue(p.state instanceof PublisherStateActive);
+		assertTrue(p.state instanceof InformerStateActive);
 		p.deactivate();
-		assertTrue(p.state instanceof PublisherStateInactive);
+		assertTrue(p.state instanceof InformerStateInactive);
 	}
 
 	private void testEvent(Event e) {
@@ -133,13 +133,13 @@ public class PublisherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#send(rsb.Event)}.
-	 * 
+	 * Test method for {@link rsb.Informer#send(rsb.Event)}.
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testSendEvent() throws InitializeException {
-		Publisher<String> p = new Publisher<String>(new Scope(
+		Informer<String> p = new Informer<String>(new Scope(
 				"/informer/example"));
 		p.activate();
 		Event e = p.send(new Event("string", "Hello World!"));
@@ -147,13 +147,13 @@ public class PublisherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.Publisher#send(rsb.Event)}.
-	 * 
+	 * Test method for {@link rsb.Informer#send(rsb.Event)}.
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testSendT() throws InitializeException {
-		Publisher<String> p = new Publisher<String>(new Scope(
+		Informer<String> p = new Informer<String>(new Scope(
 				"/informer/example"));
 		p.activate();
 		Event e = p.send("Hello World!");

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.Scope;
-import rsb.Subscriber;
+import rsb.Listener;
 import rsb.event.RSBDataListener;
 import rsb.event.EventListener;
 import rsb.naming.NotFoundException;
@@ -33,7 +33,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class SubscriberExample {
 
@@ -47,8 +47,8 @@ public class SubscriberExample {
 
 	public static void main(String[] args) throws InitializeException,
 			NotFoundException, InterruptedException {
-		Subscriber sub = new Subscriber(new Scope("/example/informer"),
-				new Scope("/example/informer"), TransportFactory.getInstance());
+		Listener sub = new Listener(new Scope("/example/informer"),
+					    TransportFactory.getInstance());
 		sub.activate();
 		sub.addListener(new EventListener<Event>() {
 

@@ -24,24 +24,24 @@ import java.util.logging.Logger;
 
 import rsb.naming.NotFoundException;
 
-public abstract class SubscriberState {
+public abstract class ListenerState {
 
-	protected static Logger log = Logger.getLogger(SubscriberState.class.getName());
-	
-	protected Subscriber s; 
-	
-	protected SubscriberState (Subscriber ctx) {
+	protected static Logger log = Logger.getLogger(InformerState.class.getName());
+
+	protected Listener s;
+
+	protected ListenerState (Listener ctx) {
 		s = ctx;
-	}	
-	
+	}
+
 	protected void activate() throws InitializeException, NotFoundException {
 		log.warning("invalid state exception during activate call");
 		throw new InvalidStateException("subscriber already activated");
 	}
-	
+
 	protected void deactivate() {
 		log.warning("invalid state exception during deactivate call");
 		throw new InvalidStateException("subscriber already deactivated");
 	}
-	
+
 }
