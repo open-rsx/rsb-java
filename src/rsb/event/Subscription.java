@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package rsb.event;
 
@@ -17,10 +17,10 @@ public class Subscription {
 
 	ArrayList<Filter> filters = new ArrayList<Filter>();
 	@SuppressWarnings("rawtypes")
-	ArrayList<RSBListener> handler = new ArrayList<RSBListener>();
+	ArrayList<Handler> handler = new ArrayList<Handler>();
 
 	public Subscription appendHandler(
-			@SuppressWarnings("rawtypes") RSBListener l) {
+			@SuppressWarnings("rawtypes") Handler l) {
 		handler.add(l);
 		return this;
 	}
@@ -31,8 +31,8 @@ public class Subscription {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Iterator<RSBListener> getHandlerIterator() {
-		Iterator<RSBListener> it = handler.iterator();
+	public Iterator<Handler> getHandlerIterator() {
+		Iterator<Handler> it = handler.iterator();
 		return it;
 	}
 
@@ -59,7 +59,7 @@ public class Subscription {
 	}
 
 	public void dispatch(Event e) {
-		for (RSBListener<Event> l : handler) {
+		for (Handler<Event> l : handler) {
 			try {
 				l.internalNotify(e);
 			} catch (Exception ex) {
@@ -71,7 +71,7 @@ public class Subscription {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<RSBListener> getHandlers() {
+	public List<Handler> getHandlers() {
 		return handler;
 	}
 

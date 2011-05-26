@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import rsb.event.RSBDataListener;
+import rsb.event.DataHandler;
 import rsb.transport.TransportFactory;
 
 /**
@@ -27,7 +27,7 @@ public class UserLevelTest {
 		Listener listener = new Listener(scope,
 				TransportFactory.getInstance());
 		listener.activate();
-		listener.addListener(new RSBDataListener<String>() {
+		listener.addHandler(new DataHandler<String>() {
 
 			@Override
 			public void handleEvent(String d) {

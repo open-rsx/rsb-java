@@ -26,17 +26,17 @@ import org.junit.Test;
 
 import rsb.Event;
 import rsb.Scope;
-import rsb.event.EventListener;
+import rsb.event.EventHandler;
 import rsb.event.Subscription;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class SubscriptionTest {
 
-	private EventListener<Event> getHandler() {
-		EventListener<Event> l = new EventListener<Event>() {
+	private EventHandler<Event> getHandler() {
+		EventHandler<Event> l = new EventHandler<Event>() {
 
 			@Override
 			public void handleEvent(Event e) {
@@ -49,11 +49,11 @@ public class SubscriptionTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.event.Subscription#appendHandler(rsb.event.EventListener)}.
+	 * {@link rsb.event.Subscription#appendHandler(rsb.event.EventHandler)}.
 	 */
 	@Test
 	public void testAppendHandler() {
-		EventListener<Event> el = getHandler();
+		EventHandler<Event> el = getHandler();
 		Subscription s = new Subscription();
 		s.appendHandler(el);
 		assertTrue(s.getHandlers().contains(el));
@@ -76,7 +76,7 @@ public class SubscriptionTest {
 	 */
 	@Test
 	public void testGetHandlerIterator() {
-		EventListener<Event> el = getHandler();
+		EventHandler<Event> el = getHandler();
 		Subscription s = new Subscription();
 		s.appendHandler(el);
 		assertTrue(s.getHandlerIterator().next().equals(el));

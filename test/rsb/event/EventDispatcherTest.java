@@ -29,11 +29,11 @@ import rsb.Event;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class EventDispatcherTest {
 
-	private final class TestListener extends EventListener<Event> {
+	private final class TestHandler extends EventHandler<Event> {
 		boolean notified = false;
 
 		public boolean isNotified() {
@@ -92,20 +92,20 @@ public class EventDispatcherTest {
 		assertTrue(ed.subscriptions.size() == 0);
 	}
 
-	private EventListener<Event> getHandler() {
-		EventListener<Event> l = new TestListener();
+	private EventHandler<Event> getHandler() {
+		EventHandler<Event> l = new TestHandler();
 		return l;
 	}
 
 	/**
 	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.Event)}.
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	@Test
 	public final void testFire() throws InterruptedException {
 		EventProcessor ed = new EventProcessor();
 		Subscription s = new Subscription();
-		TestListener l = (TestListener) getHandler();
+		TestHandler l = (TestHandler) getHandler();
 		s.appendHandler(l);
 		ed.addSubscription(s);
 		ed.fire(new Event());

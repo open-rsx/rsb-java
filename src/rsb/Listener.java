@@ -22,7 +22,7 @@ package rsb;
 
 import java.util.logging.Logger;
 
-import rsb.event.RSBListener;
+import rsb.event.Handler;
 import rsb.event.Subscription;
 import rsb.filter.ScopeFilter;
 import rsb.naming.NotFoundException;
@@ -119,22 +119,19 @@ public class Listener implements RSBObject {
 	 * about incoming events. All received events will be send to
 	 * the registered listeners.
 	 *
-	 * @param l
-	 *            the listener instance to be registered
+	 * @param handler
+	 *            the handler instance to be registered
 	 */
-	public Subscription addListener(@SuppressWarnings("rawtypes") RSBListener l) {
+	public Subscription addHandler(@SuppressWarnings("rawtypes") Handler handler) {
 		Subscription sub = new Subscription();
 		log.info("subscribing new listener to scope: " + scope);
 		sub.appendFilter(new ScopeFilter(scope));
-		sub.appendHandler(l);
+		sub.appendHandler(handler);
 		// sub.append(new IdentityFilter(publisherUri,
 		// IdentityFilter.Type.SENDER_IDENTITY));
 		router.subscribe(sub);
 		return sub;
 	}
-
-	// TODO add addListener with content-based filtering options aka
-	// Subscription object
 
 	/**
 	 * Remove an event listener from this Listener.

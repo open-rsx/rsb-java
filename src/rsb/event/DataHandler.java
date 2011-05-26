@@ -24,9 +24,9 @@ import rsb.Event;
 
 /**
  * @author swrede
- * 
+ *
  */
-public abstract class RSBDataListener<V> implements RSBListener<Event> {
+public abstract class DataHandler<V> implements Handler<Event> {
 
 	@SuppressWarnings("unchecked")
 	@Override

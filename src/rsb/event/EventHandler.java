@@ -32,18 +32,18 @@ import rsb.Event;
  * a CallbackEvent (respectively a OneWayCallbackEvent for methods that do not
  * return anything) is raised by the Server whenever a RemoteServer calls a
  * method. The Memory raises various events, e.g. when a query returns results
- * asynchronously. 
- * 
+ * asynchronously.
+ *
  * @author swrede
  * @see Event
  */
- 
-public abstract class EventListener<T extends Event> implements RSBListener<T> {
+
+public abstract class EventHandler<T extends Event> implements Handler<T> {
 
 	public void internalNotify(T e) {
 		handleEvent(e);
-	};	
-    
+	};
+
 	public abstract void handleEvent(T e);
-	
+
 }

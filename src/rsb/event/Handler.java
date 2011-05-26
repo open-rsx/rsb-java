@@ -28,8 +28,8 @@ import rsb.Event;
  * @author swrede
  *
  */
-public interface RSBListener<T extends Event> extends EventListener {
+public interface Handler<T extends Event> extends EventListener {
 
     public void internalNotify(T e);
-    
+
 }
