@@ -20,6 +20,7 @@
 	<property name="pbuf.lib" location="${lib.dir}/protobuf-java-2.3.0.jar" />
 	<property name="install.dir" location="${env.prefix}/lib/java" />
 	<property name="dir.report.unittests.xml" location="testreports" />
+	<property name="dir.doc" location="doc" />
 	<property name="cobertura.dir" value="${lib.dir}" />
 	<property name="cobertura.out.dir" value="coverage" />
 	<property name="instrumented.dir" value="${build.dir}/instrumented" />
@@ -41,6 +42,7 @@
 		<mkdir dir="${instrumented.dir}" />
 		<mkdir dir="${cobertura.out.dir}" />
 		<mkdir dir="${dir.report.unittests.xml}" />
+		<mkdir dir="${dir.doc}" />
 		<echo message="Using xom: ${xom.lib}" />
 		<echo message="Using pbuf: ${pbuf.lib}" />
 		<echo message="Test report dir: ${dir.report.unittests.xml}" />
@@ -192,6 +194,7 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${cobertura.out.dir}" />
 		<delete file="cobertura.ser" />
+		<delete dir="${dir.doc}" />
 	</target>
 
 	<target name="install" depends="dist">
@@ -199,6 +202,18 @@
 		<mkdir dir="${install.dir}" />
 		<copy file="${dist.dir}/lib/${jarname}" todir="${install.dir}" />
 		<symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/${jarname}" overwrite="true" />
+	</target>
+
+	<target name="javadoc">
+		<javadoc excludepackagenames="org.test.supercsv.mock" access="public" destdir="${dir.doc}" author="true" version="true" use="true">
+
+			<fileset dir="." defaultexcludes="yes">
+				<exclude name="**/*" />
+				<include name="src/**/*.java" />
+				<include name="rsb-xml/**/*.java" />
+			</fileset>
+
+		</javadoc>
 	</target>
 
 </project>
