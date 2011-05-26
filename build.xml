@@ -204,11 +204,11 @@
 		<symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/${jarname}" overwrite="true" />
 	</target>
 
-	<target name="javadoc">
-		<javadoc excludepackagenames="org.test.supercsv.mock" access="public" destdir="${dir.doc}" author="true" version="true" use="true">
+	<target name="doc">
+		<javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true">
 
 			<fileset dir="." defaultexcludes="yes">
-				<exclude name="**/*" />
+				<exclude name="**/jaxen/**/*" />
 				<include name="src/**/*.java" />
 				<include name="rsb-xml/**/*.java" />
 			</fileset>
