@@ -165,7 +165,7 @@ public class SpreadWrapper implements RSBObject {
 		this.spreadhost = spreadhost != null ? InetAddress
 				.getByName(spreadhost) : null;
 		this.port = port;
-		this.useTcpNoDelay = props.getPropertyAsBool("Spread.TcpNoDelay");
+		this.useTcpNoDelay = props.getPropertyAsBool("transport.spread.tcpnodelay");
 	}
 
 	// TODO think about prefixes and factory methods
@@ -174,7 +174,7 @@ public class SpreadWrapper implements RSBObject {
 		this.spreadhost = spreadhost != null ? InetAddress
 				.getByName(spreadhost) : null;
 		this.port = port;
-		this.useTcpNoDelay = props.getPropertyAsBool("Spread.TcpNoDelay");
+		this.useTcpNoDelay = props.getPropertyAsBool("transport.spread.tcpnodelay");
 	}
 
 	public void join(String group) throws SpreadException {
