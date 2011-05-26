@@ -37,10 +37,10 @@ import rsb.transport.TransportFactory;
  * This class implements the receiving part of the Inform-Listen (n:m)
  * communication pattern offered by RSB. Upon creation the Listener
  * instance has to be provided with the scope of the channel to listen
- * to. Listener uses the common event handling mechanisms to process
- * incoming messages. Each time a message is received from an
- * Informer, a PublishEvent is raised and passed to all event Handlers
- * associated to the Listener.
+ * to. The Listener uses the common event handling mechanisms to
+ * process incoming events - in particular filtering of incoming
+ * events. Each time a event is received from an Informer, an Event
+ * object is dispatched to all Handlers associated to the Listener.
  *
  * @author swrede
  * @author jschaefe

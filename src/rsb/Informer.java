@@ -27,12 +27,9 @@ import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
 /**
- * This class offers a method to send messages to any registered Subscribers.
- * 1:m-communication (called Publish-Subscribe) is one of the basic
- * communication patterns offered by RSB. Each Informer instance must be given
- * a unique name which is used by Subscriber instances to connect to the
- * Informer. The Informer also offers a method to retrieve all Subscribers
- * currently registered at the instance.
+ * This class offers a method to publish events to channel, reaching
+ * all participating Listeners. This n:m-communication is one of the
+ * basic communication patterns offered by RSB.
  *
  * @author swrede
  * @author rgaertne
