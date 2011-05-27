@@ -205,7 +205,7 @@
 	</target>
 
 	<target name="doc">
-		<javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true">
+		<javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true" windowtitle="RSBJava">
 
 			<fileset dir="." defaultexcludes="yes">
 				<exclude name="**/jaxen/**/*" />
