@@ -73,13 +73,13 @@
 	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
 	<target name="protocol">
-		<exec executable="${pbuf.protoc}">
+		<apply executable="${pbuf.protoc}">
 			<arg value="--java_out=src" />
 			<arg value="--proto_path=${pbuf.protopath}" />
-			<arg value="${pbuf.protopath}/Attachment.proto" />
-			<arg value="${pbuf.protopath}/Notification.proto" />
-			<arg value="${pbuf.protopath}/introspection/PortStateChange.proto" />
-		</exec>
+			<fileset dir="${pbuf.protopath}" includes="*.proto"/>
+			<fileset dir="${pbuf.protopath}/introspection"
+				 includes="/PortStateChange.proto" />
+		</apply>
 	</target>
 
 	<target name="compile" depends="init, protocol" description="compile the source ">
