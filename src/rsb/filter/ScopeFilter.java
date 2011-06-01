@@ -6,7 +6,7 @@ package rsb.filter;
 import java.util.logging.Logger;
 
 import rsb.Event;
-import rsb.EventId;
+import rsb.Id;
 import rsb.Scope;
 
 /**
@@ -39,7 +39,7 @@ public class ScopeFilter extends AbstractFilter {
 		return this.scope;
 	}
 
-	public void skip(EventId id) {
+	public void skip(Id id) {
 		log.info("Event with ID "
 				+ id
 				+ " will not be matched by ScopeFilter as this was already done by network layer!");

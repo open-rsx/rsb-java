@@ -30,7 +30,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.EventId;
+import rsb.Id;
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
@@ -92,7 +92,7 @@ public class SpreadPortTest {
 
 		// send events
 		Event event = new Event("string");
-		event.setId(new EventId());
+		event.setId(new Id());
 		event.setData("a test string " + numEvents);
 		event.setScope(sendScope);
 
@@ -126,7 +126,7 @@ public class SpreadPortTest {
 		outPort.activate();
 
 		Event event = new Event("string");
-		event.setId(new EventId());
+		event.setId(new Id());
 		event.setData("a test string");
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));

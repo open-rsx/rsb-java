@@ -13,7 +13,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import rsb.Event;
-import rsb.EventId;
+import rsb.Id;
 import rsb.QualityOfServiceSpec;
 import rsb.Scope;
 import rsb.QualityOfServiceSpec.Ordering;
@@ -80,7 +80,7 @@ public class SpreadPortRoundtripTest {
 		}
 
 		Event event = new Event("string");
-		event.setId(new EventId());
+		event.setId(new Id());
 		event.setData(builder.toString());
 		event.setScope(scope);
 

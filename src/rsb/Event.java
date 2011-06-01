@@ -29,7 +29,7 @@ package rsb;
  */
 public class Event {
 
-	private EventId id;
+	private Id id;
 	private String type;
 	private Scope scope;
 	private Object data;
@@ -102,16 +102,16 @@ public class Event {
 		this.scope = scope;
 	}
 
-	public void setId(EventId id) {
+	public void setId(Id id) {
 		this.id = id;
 	}
 
-	public EventId getId() {
+	public Id getId() {
 		return id;
 	}
 
-	public EventId generateId() {
-		id = EventId.generateId();
+	public Id generateId() {
+		id = new Id();
 		return id;
 	}
 
@@ -119,7 +119,7 @@ public class Event {
 		return (id != null) ? true : false;
 	}
 
-	public EventId ensureId() {
+	public Id ensureId() {
 		if (!hasId()) {
 			generateId();
 		}

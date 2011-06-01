@@ -23,28 +23,31 @@ package rsb;
 import java.util.UUID;
 
 /**
- * This class serves as a Uniform Resource Name to identify events in an RSB
- * system. At present, the URN is based on an UUID that shall is unique for each
- * event instance.
+ * This class serves as a Uniform Resource Name to identify events and
+ * participants in an RSB system. At present, the URN is based on an UUID that
+ * shall is unique for each event instance.
  * 
  * @author swrede
+ * @author jwienke
  */
-public class EventId {
+public class Id {
 
-	UUID id;
+	private UUID id;
 
 	/**
-	 * 
+	 * Creates a new random id.
 	 */
-	public EventId() {
+	public Id() {
 		id = UUID.randomUUID();
 	}
 
-	public EventId(UUID u) {
-		this.id = u;
-	}
-
-	public EventId(byte[] bytes) {
+	/**
+	 * Creates an ID from a byte representation.
+	 * 
+	 * @param bytes
+	 *            byte representation of the id.
+	 */
+	public Id(byte[] bytes) {
 
 		assert bytes.length == 16;
 
@@ -58,22 +61,21 @@ public class EventId {
 
 	}
 
-	public EventId(String sid) {
-		// id = UUID.fromString(sid.substring(8));
+	/**
+	 * Parses an id from its string form generated with {@link #toString()}.
+	 * 
+	 * @param sid
+	 *            string representation
+	 * @throws IllegalArgumentException
+	 *             invalid string format
+	 */
+	public Id(String sid) {
 		id = UUID.fromString(sid);
 	}
 
+	@Override
 	public String toString() {
-		// return "rsb:eid:"+id.toString();
 		return id.toString();
-	}
-
-	public static EventId generateId() {
-		return new EventId();
-	}
-
-	public UUID get() {
-		return id;
 	}
 
 	/**
@@ -105,10 +107,11 @@ public class EventId {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof EventId)) {
+		if (!(obj instanceof Id)) {
 			return false;
 		}
-		EventId id = (EventId) obj;
+		Id id = (Id) obj;
 		return this.id.equals(id.id);
 	}
+
 }

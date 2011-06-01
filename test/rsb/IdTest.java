@@ -22,80 +22,48 @@ package rsb;
 
 import static org.junit.Assert.*;
 
-import java.util.UUID;
-
 import org.junit.Test;
 
-import rsb.EventId;
+import rsb.Id;
 
 /**
  * @author swrede
  * 
  */
-public class EventIdTest {
+public class IdTest {
 
 	/**
-	 * Test method for {@link rsb.EventId#EventId()}.
+	 * Test method for {@link rsb.Id#EventId()}.
 	 */
 	@Test
 	public void testEventId() {
-		EventId id = EventId.generateId();
-		assertNotNull(id.id);
+		new Id();
 	}
 
 	/**
-	 * Test method for {@link rsb.EventId#EventId(java.util.UUID)}.
-	 */
-	@Test
-	public void testEventIdUUID() {
-		UUID uuid = UUID.randomUUID();
-		EventId id = new EventId(uuid);
-		assertTrue(uuid.compareTo(id.id) == 0);
-	}
-
-	/**
-	 * Test method for {@link rsb.EventId#EventId(java.lang.String)}.
+	 * Test method for {@link rsb.Id#EventId(java.lang.String)}.
 	 */
 	@Test
 	public void testEventIdString() {
-		EventId id = EventId.generateId();
+		Id id = new Id();
 		String s = id.toString();
-		EventId id2 = new EventId(s);
+		Id id2 = new Id(s);
 		assertTrue(id.equals(id2));
 	}
 
 	/**
-	 * Test method for {@link rsb.EventId#toString()}.
+	 * Test method for {@link rsb.Id#toString()}.
 	 */
 	@Test
 	public void testToString() {
-		EventId id = EventId.generateId();
+		Id id = new Id();
 		String s = id.toString();
-		// assertTrue(s.equals("rsb:eid:"+id.id.toString()));
-		assertTrue(s.equals(id.id.toString()));
-	}
-
-	/**
-	 * Test method for {@link rsb.EventId#generateId()}.
-	 */
-	@Test
-	public void testGenerateId() {
-		EventId id = EventId.generateId();
-		assertNotNull(id.id);
-	}
-
-	/**
-	 * Test method for {@link rsb.EventId#get()}.
-	 */
-	@Test
-	public void testGet() {
-		EventId id = EventId.generateId();
-		assertNotNull(id.get());
+		assertTrue(s.length() > 0);
 	}
 
 	@Test
 	public void testToByteArray() {
-		EventId id = new EventId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
+		Id id = new Id("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
 
 		byte[] data = new byte[16];
 
@@ -142,8 +110,8 @@ public class EventIdTest {
 		data[14] = (byte) 150;
 		data[15] = (byte) 29;
 
-		assertEquals(new EventId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"),
-				new EventId(data));
+		assertEquals(new Id("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"), new Id(
+				data));
 
 	}
 
