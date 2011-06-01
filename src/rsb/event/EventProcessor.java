@@ -21,7 +21,6 @@
 package rsb.event;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +33,7 @@ import rsb.filter.Filter;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class EventProcessor extends ThreadPoolExecutor {
 
@@ -44,10 +43,8 @@ public class EventProcessor extends ThreadPoolExecutor {
 
 	Logger log = Logger.getLogger(EventProcessor.class.getName());
 
-        ArrayList<Filter> filters = new ArrayList<Filter>();
-
-        @SuppressWarnings("rawtypes")
-	ArrayList<Handler> handlers = new ArrayList<Handler>();
+	ArrayList<Filter> filters = new ArrayList<Filter>();
+	ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
 
 	public EventProcessor() {
 		super(1, 1, 60, TimeUnit.SECONDS,
@@ -69,23 +66,23 @@ public class EventProcessor extends ThreadPoolExecutor {
 	}
 
 	public void removeFilter(Filter filter) {
-	        filters.remove(filter);
+		filters.remove(filter);
 	}
 
-	public void addHandler(Handler handler) {
+	public void addHandler(Handler<Event> handler) {
 		handlers.add(handler);
 	}
 
-	public void removeHandler(Handler handler) {
+	public void removeHandler(Handler<Event> handler) {
 		handlers.remove(handler);
 	}
 
 	public void fire(Event event) {
 		int count = 0;
-		for (Handler handler : handlers) {
+		for (Handler<Event> handler : handlers) {
 			count++;
 			try {
-			    this.submit(new MatchAndDispatchTask(handler, filters, event));
+				this.submit(new MatchAndDispatchTask(handler, filters, event));
 			} catch (RejectedExecutionException ex) {
 				log.log(Level.SEVERE,
 						"ExecutorService rejected event matching", ex);

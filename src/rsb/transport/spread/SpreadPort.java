@@ -37,8 +37,7 @@ import rsb.Scope;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
-import rsb.protocol.AttachmentPB.Attachment;
-import rsb.protocol.NotificationPB.Notification;
+import rsb.protocol.Protocol.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
 import rsb.transport.EventHandler;
@@ -230,9 +229,12 @@ public class SpreadPort extends AbstractPort {
 					.newBuilder();
 
 			// notification metadata
-			notificationBuilder.setId(e.getId().toString());
-			notificationBuilder.setWireSchema(e.getType());
-			notificationBuilder.setScope(e.getScope().toString());
+			notificationBuilder.setId(ByteString.copyFrom(e.getId()
+					.toByteArray()));
+			notificationBuilder.setWireSchema(ByteString.copyFromUtf8(e
+					.getType()));
+			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
+					.toString()));
 
 			// data fragmentation
 			int fragmentSize = MAX_MSG_SIZE;
@@ -245,10 +247,7 @@ public class SpreadPort extends AbstractPort {
 			if (part != requiredParts - 1) {
 				assert dataPart.size() == MAX_MSG_SIZE;
 			}
-			Attachment.Builder attachmentBuilder = Attachment.newBuilder();
-			attachmentBuilder.setBinary(dataPart);
-			attachmentBuilder.setLength(dataPart.size());
-			notificationBuilder.setData(attachmentBuilder.build());
+			notificationBuilder.setData(dataPart);
 			notificationBuilder.setDataPart(part);
 			notificationBuilder.setNumDataParts(requiredParts);
 

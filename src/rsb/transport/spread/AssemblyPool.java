@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.google.protobuf.ByteString;
 
-import rsb.protocol.NotificationPB.Notification;
+import rsb.protocol.Protocol.Notification;
 
 /**
  * A class that assembles fragmented messages received over spread in form of
@@ -45,7 +45,7 @@ public class AssemblyPool {
 	private class Assembly {
 
 		private Map<Integer, Notification> notifications = new HashMap<Integer, Notification>();
-		private String id = null;
+		private ByteString id = null;
 		private int requiredParts = 0;
 
 		public Assembly(Notification initialNotification) {
@@ -67,8 +67,7 @@ public class AssemblyPool {
 				for (int part = 0; part < requiredParts; ++part) {
 					assert notifications.containsKey(part);
 
-					ByteString currentData = notifications.get(part).getData()
-							.getBinary();
+					ByteString currentData = notifications.get(part).getData();
 					stream.write(currentData.toByteArray(), 0,
 							currentData.size());
 
@@ -83,7 +82,7 @@ public class AssemblyPool {
 
 	}
 
-	private Map<String, Assembly> assemblies = new HashMap<String, Assembly>();
+	private Map<ByteString, Assembly> assemblies = new HashMap<ByteString, Assembly>();
 
 	/**
 	 * Adds a new message to the assembly pool and joins the data of all
@@ -98,11 +97,10 @@ public class AssemblyPool {
 
 		assert notification.getNumDataParts() > 0;
 		if (notification.getNumDataParts() == 1) {
-			return ByteBuffer.wrap(notification.getData().getBinary()
-					.toByteArray());
+			return ByteBuffer.wrap(notification.getData().toByteArray());
 		}
 
-		String id = notification.getId();
+		ByteString id = notification.getId();
 		if (!assemblies.containsKey(id)) {
 			assemblies.put(id, new Assembly(notification));
 			return null;

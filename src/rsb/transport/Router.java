@@ -124,7 +124,7 @@ public class Router extends FilterObservable implements EventHandler {
 
 	/**
 	 * Publish an {@link Event} over the event bus.
-	 *
+	 * 
 	 * @param e
 	 *            The {@link Event} to be published
 	 */
@@ -158,29 +158,27 @@ public class Router extends FilterObservable implements EventHandler {
 		}
 	}
 
-
-        public void addFilter(Filter filter) {
-	        notifyObservers(filter, FilterAction.ADD);
+	public void addFilter(Filter filter) {
+		notifyObservers(filter, FilterAction.ADD);
 		ep.addFilter(filter);
 	}
 
-
-        public void removeFilter(Filter filter) {
-	        notifyObservers(filter, FilterAction.REMOVE);
+	public void removeFilter(Filter filter) {
+		notifyObservers(filter, FilterAction.REMOVE);
 		ep.removeFilter(filter);
 	}
 
-	public void addHandler(Handler handler) {
+	public void addHandler(Handler<Event> handler) {
 		ep.addHandler(handler);
 	}
 
-	public void removeHandler(Handler handler) {
+	public void removeHandler(Handler<Event> handler) {
 		ep.removeHandler(handler);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see rsb.transport.EventHandler#deliver(rsb.Event)
 	 */
 	@Override

@@ -30,7 +30,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import rsb.Event;
 import rsb.Scope;
 import rsb.event.EventId;
-import rsb.protocol.NotificationPB.Notification;
+import rsb.protocol.Protocol.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.EventHandler;
 import spread.SpreadException;
@@ -117,9 +117,9 @@ class ReceiverTask extends Thread {
 			if (joinedData != null) {
 
 				log.fine("decoding notification");
-				Event e = new Event(n.getWireSchema());
-				e.setScope(new Scope(n.getScope()));
-				e.setId(new EventId(n.getId()));
+				Event e = new Event(n.getWireSchema().toStringUtf8());
+				e.setScope(new Scope(n.getScope().toStringUtf8()));
+				e.setId(new EventId(n.getId().toByteArray()));
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
@@ -140,5 +140,4 @@ class ReceiverTask extends Thread {
 		}
 
 	}
-
 }

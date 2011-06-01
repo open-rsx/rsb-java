@@ -28,7 +28,7 @@ import org.junit.Test;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class EventIdTest {
 
@@ -48,7 +48,7 @@ public class EventIdTest {
 	public void testEventIdUUID() {
 		UUID uuid = UUID.randomUUID();
 		EventId id = new EventId(uuid);
-		assertTrue(uuid.compareTo(id.id)==0);
+		assertTrue(uuid.compareTo(id.id) == 0);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class EventIdTest {
 	public void testToString() {
 		EventId id = EventId.generateId();
 		String s = id.toString();
-		//assertTrue(s.equals("rsb:eid:"+id.id.toString()));		
+		// assertTrue(s.equals("rsb:eid:"+id.id.toString()));
 		assertTrue(s.equals(id.id.toString()));
 	}
 
@@ -88,7 +88,61 @@ public class EventIdTest {
 	@Test
 	public void testGet() {
 		EventId id = EventId.generateId();
-		assertNotNull(id.get());		
+		assertNotNull(id.get());
+	}
+
+	@Test
+	public void testToByteArray() {
+		EventId id = new EventId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
+
+		byte[] data = new byte[16];
+
+		data[0] = (byte) 42;
+		data[1] = (byte) 75;
+		data[2] = (byte) 137;
+		data[3] = (byte) 223;
+		data[4] = (byte) 213;
+		data[5] = (byte) 162;
+		data[6] = (byte) 70;
+		data[7] = (byte) 113;
+		data[8] = (byte) 175;
+		data[9] = (byte) 46;
+		data[10] = (byte) 126;
+		data[11] = (byte) 127;
+		data[12] = (byte) 127;
+		data[13] = (byte) 248;
+		data[14] = (byte) 150;
+		data[15] = (byte) 29;
+
+		assertArrayEquals(data, id.toByteArray());
+
+	}
+
+	@Test
+	public void testFromByteArray() {
+
+		byte[] data = new byte[16];
+
+		data[0] = (byte) 42;
+		data[1] = (byte) 75;
+		data[2] = (byte) 137;
+		data[3] = (byte) 223;
+		data[4] = (byte) 213;
+		data[5] = (byte) 162;
+		data[6] = (byte) 70;
+		data[7] = (byte) 113;
+		data[8] = (byte) 175;
+		data[9] = (byte) 46;
+		data[10] = (byte) 126;
+		data[11] = (byte) 127;
+		data[12] = (byte) 127;
+		data[13] = (byte) 248;
+		data[14] = (byte) 150;
+		data[15] = (byte) 29;
+
+		assertEquals(new EventId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"),
+				new EventId(data));
+
 	}
 
 }

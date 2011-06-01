@@ -28,26 +28,26 @@ import rsb.filter.Filter;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
-	Handler handler;
+	Handler<Event> handler;
 	List<Filter> filters;
 	Event event;
 
-	MatchAndDispatchTask(Handler handler, List<Filter> filters, Event event) {
-	    this.handler = handler;
-	    this.filters = filters;
-	    this.event = event;
+	MatchAndDispatchTask(Handler<Event> handler, List<Filter> filters, Event event) {
+		this.handler = handler;
+		this.filters = filters;
+		this.event = event;
 	}
 
 	@Override
 	public Boolean call() throws Exception {
 		if (match(event)) {
-		        try {
-		                handler.internalNotify(event);
-		        } catch (Exception ex) {
+			try {
+				handler.internalNotify(event);
+			} catch (Exception ex) {
 				// TODO add logger, re-throw exception to user-specified
 				// exception handler
 				ex.printStackTrace();

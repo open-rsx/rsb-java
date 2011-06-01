@@ -35,13 +35,13 @@ import rsb.transport.TransportFactory;
 
 /**
  * This class implements the receiving part of the Inform-Listen (n:m)
- * communication pattern offered by RSB. Upon creation the Listener
- * instance has to be provided with the scope of the channel to listen
- * to. The Listener uses the common event handling mechanisms to
- * process incoming events - in particular filtering of incoming
- * events. Each time a event is received from an Informer, an Event
- * object is dispatched to all Handlers associated to the Listener.
- *
+ * communication pattern offered by RSB. Upon creation the Listener instance has
+ * to be provided with the scope of the channel to listen to. The Listener uses
+ * the common event handling mechanisms to process incoming events - in
+ * particular filtering of incoming events. Each time a event is received from
+ * an Informer, an Event object is dispatched to all Handlers associated to the
+ * Listener.
+ * 
  * @author swrede
  * @author jschaefe
  */
@@ -89,9 +89,7 @@ public class Listener implements RSBObject {
 	Router router;
 
 	ArrayList<Filter> filters = new ArrayList<Filter>();
-
-        @SuppressWarnings("rawtypes")
-	ArrayList<Handler> handlers = new ArrayList<Handler>();
+	ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
 
 	public Listener(Scope scope) {
 		initMembers(scope, TransportFactory.getInstance());
@@ -116,7 +114,8 @@ public class Listener implements RSBObject {
 
 	public void activate() throws InitializeException, NotFoundException {
 		state.activate();
-		router.addFilter(new ScopeFilter(scope)); // TODO probably breaks re-activation
+		router.addFilter(new ScopeFilter(scope)); // TODO probably breaks
+													// re-activation
 	}
 
 	public void deactivate() {
@@ -137,50 +136,44 @@ public class Listener implements RSBObject {
 		router.addFilter(filter);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public List<Handler> getHandlers() {
+	public List<Handler<Event>> getHandlers() {
 		return handlers;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Iterator<Handler> getHandlerIterator() {
-		Iterator<Handler> it = handlers.iterator();
+	public Iterator<Handler<Event>> getHandlerIterator() {
+		Iterator<Handler<Event>> it = handlers.iterator();
 		return it;
 	}
 
 	/**
-	 * Register an event handler on this Listener to be notified
-	 * about incoming events. All received events will be send to
-	 * the registered listeners.
-	 *
+	 * Register an event handler on this Listener to be notified about incoming
+	 * events. All received events will be send to the registered listeners.
+	 * 
 	 * @param handler
 	 *            the handler instance to be registered
 	 * @param wait
-	 *            if set to @c true, this method will return only
-	 *            after the handler has completely been installed
-	 *            and will receive the next available
-	 *            message. Otherwise it may return earlier.
+	 *            if set to @c true, this method will return only after the
+	 *            handler has completely been installed and will receive the
+	 *            next available message. Otherwise it may return earlier.
 	 */
-        public void addHandler(@SuppressWarnings("rawtypes") Handler handler,
-			       boolean wait) {
-	        handlers.add(handler);
+	public void addHandler(Handler<Event> handler, boolean wait) {
+		handlers.add(handler);
 		router.addHandler(handler);
 	}
 
 	/**
 	 * Remove an event listener from this Listener.
-	 *
+	 * 
 	 * @param handler
 	 *            the listener instance to be removed.
 	 * @param wait
-	 *            if set to @c true, this method will return only
-	 *            after the handler has been completely removed
-	 *            from the event processing and will not be called
-	 *            anymore from this listener.
+	 *            if set to @c true, this method will return only after the
+	 *            handler has been completely removed from the event processing
+	 *            and will not be called anymore from this listener.
 	 */
-        public void removeHandler(Handler handler, boolean wait) {
-	        handlers.remove(handler);
-	        router.removeHandler(handler);
+	public void removeHandler(Handler<Event> handler, boolean wait) {
+		handlers.remove(handler);
+		router.removeHandler(handler);
 	}
 
 	public void setErrorHandler(ErrorHandler handler) {
