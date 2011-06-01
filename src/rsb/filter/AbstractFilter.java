@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import rsb.Event;
-import rsb.event.EventId;
+import rsb.EventId;
 
 
 public abstract class AbstractFilter implements Filter {
@@ -30,7 +30,7 @@ public abstract class AbstractFilter implements Filter {
 	/**
 	 * skip this filter for any event with the specified ID. This will cause the
 	 * MTF to successfully transform the event without applying any checks.
-	 * @see net.sf.xcf.dtm.Element#skip(net.sf.xcf.event.EventId)
+	 * @see net.sf.xcf.dtm.Element#skip(net.rsb.event.EventId)
 	 */
 	public void skip(EventId id) {
 		skip(id.toString());

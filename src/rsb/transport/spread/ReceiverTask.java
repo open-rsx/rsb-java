@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import rsb.Event;
+import rsb.EventId;
 import rsb.Scope;
-import rsb.event.EventId;
 import rsb.protocol.Protocol.Notification;
 import rsb.transport.AbstractConverter;
 import rsb.transport.EventHandler;

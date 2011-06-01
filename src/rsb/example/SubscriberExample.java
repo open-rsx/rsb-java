@@ -22,12 +22,12 @@ package rsb.example;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rsb.DataHandler;
+import rsb.EventHandler;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.Scope;
 import rsb.Listener;
-import rsb.event.EventHandler;
-import rsb.event.DataHandler;
 import rsb.naming.NotFoundException;
 import rsb.transport.TransportFactory;
 

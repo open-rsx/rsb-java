@@ -23,11 +23,11 @@ package rsb.transport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.Handler;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.RSBException;
-import rsb.event.EventProcessor;
-import rsb.event.Handler;
+import rsb.eventprocessing.EventProcessor;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;

@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import rsb.event.DataHandler;
 import rsb.transport.TransportFactory;
 
 /**

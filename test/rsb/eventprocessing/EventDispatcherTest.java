@@ -18,7 +18,7 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb.eventprocessing;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.EventHandler;
+import rsb.eventprocessing.EventProcessor;
 
 /**
  * @author swrede
@@ -47,7 +49,7 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#EventDispatcher()}.
+	 * Test method for {@link rsb.eventprocessing.EventProcessor#EventDispatcher()}.
 	 */
 	@Test
 	public final void testEventDispatcher() {
@@ -58,7 +60,7 @@ public class EventDispatcherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.event.EventProcessor#EventDispatcher(int, int, int)}.
+	 * {@link rsb.eventprocessing.EventProcessor#EventDispatcher(int, int, int)}.
 	 */
 	@Test
 	public final void testEventDispatcherIntIntInt() {
@@ -68,7 +70,7 @@ public class EventDispatcherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.event.EventProcessor#addHandler(rsb.event.Handler)}.
+	 * {@link rsb.eventprocessing.EventProcessor#addHandler(rsb.event.Handler)}.
 	 */
 	@Test
 	public final void testAddHandler() {
@@ -80,7 +82,7 @@ public class EventDispatcherTest {
 
 	/**
 	 * Test method for
-	 * {@link rsb.event.EventProcessor#removeHandler(rsb.event.Handler)}
+	 * {@link rsb.eventprocessing.EventProcessor#removeHandler(rsb.event.Handler)}
 	 * .
 	 */
 	@Test
@@ -98,7 +100,7 @@ public class EventDispatcherTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventProcessor#fire(rsb.Event)}.
+	 * Test method for {@link rsb.eventprocessing.EventProcessor#fire(rsb.Event)}.
 	 * @throws InterruptedException
 	 */
 	@Test

@@ -6,7 +6,7 @@
 package rsb.filter;
 
 import rsb.Event;
-import rsb.event.EventId;
+import rsb.EventId;
 
 /**
  * 

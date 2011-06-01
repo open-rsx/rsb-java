@@ -18,7 +18,7 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb;
 
 import java.util.UUID;
 

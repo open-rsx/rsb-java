@@ -18,13 +18,15 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb;
 
 import static org.junit.Assert.*;
 
 import java.util.UUID;
 
 import org.junit.Test;
+
+import rsb.EventId;
 
 /**
  * @author swrede
@@ -33,7 +35,7 @@ import org.junit.Test;
 public class EventIdTest {
 
 	/**
-	 * Test method for {@link rsb.event.EventId#EventId()}.
+	 * Test method for {@link rsb.EventId#EventId()}.
 	 */
 	@Test
 	public void testEventId() {
@@ -42,7 +44,7 @@ public class EventIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventId#EventId(java.util.UUID)}.
+	 * Test method for {@link rsb.EventId#EventId(java.util.UUID)}.
 	 */
 	@Test
 	public void testEventIdUUID() {
@@ -52,7 +54,7 @@ public class EventIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventId#EventId(java.lang.String)}.
+	 * Test method for {@link rsb.EventId#EventId(java.lang.String)}.
 	 */
 	@Test
 	public void testEventIdString() {
@@ -63,7 +65,7 @@ public class EventIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventId#toString()}.
+	 * Test method for {@link rsb.EventId#toString()}.
 	 */
 	@Test
 	public void testToString() {
@@ -74,7 +76,7 @@ public class EventIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventId#generateId()}.
+	 * Test method for {@link rsb.EventId#generateId()}.
 	 */
 	@Test
 	public void testGenerateId() {
@@ -83,7 +85,7 @@ public class EventIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.event.EventId#get()}.
+	 * Test method for {@link rsb.EventId#get()}.
 	 */
 	@Test
 	public void testGet() {

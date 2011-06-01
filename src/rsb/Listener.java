@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 
-import rsb.event.Handler;
 import rsb.filter.Filter;
 import rsb.filter.ScopeFilter;
 import rsb.naming.NotFoundException;

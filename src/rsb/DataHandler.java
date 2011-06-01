@@ -18,9 +18,8 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb;
 
-import rsb.Event;
 
 /**
  * @author swrede

@@ -18,12 +18,13 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb.eventprocessing;
 
 import java.util.concurrent.Callable;
 import java.util.List;
 
 import rsb.Event;
+import rsb.Handler;
 import rsb.filter.Filter;
 
 /**

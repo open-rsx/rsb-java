@@ -6,8 +6,8 @@ package rsb.filter;
 import java.util.logging.Logger;
 
 import rsb.Event;
+import rsb.EventId;
 import rsb.Scope;
-import rsb.event.EventId;
 
 /**
  * @author swrede

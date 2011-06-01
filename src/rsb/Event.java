@@ -20,7 +20,6 @@
  */
 package rsb;
 
-import rsb.event.EventId;
 
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of

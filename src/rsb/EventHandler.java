@@ -18,9 +18,8 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb;
 
-import rsb.Event;
 
 /**
  * RSB uses an event listener mechanism to deal with the various events raised

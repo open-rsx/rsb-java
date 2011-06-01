@@ -18,11 +18,10 @@
  *
  * ============================================================
  */
-package rsb.event;
+package rsb;
 
 import java.util.EventListener;
 
-import rsb.Event;
 
 /**
  * @author swrede

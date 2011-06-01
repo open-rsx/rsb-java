@@ -30,11 +30,11 @@ import java.util.Map;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.EventId;
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
-import rsb.event.EventId;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
