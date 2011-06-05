@@ -91,7 +91,7 @@
 	</target>
 
 	<target name="test-compile" depends="compile">
-		<javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test">
+		<javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test" debug="on" deprecation="on">
 			<classpath refid="test.classpath" />
 		</javac>
 		<copy todir="${test.dir}">
