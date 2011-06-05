@@ -22,11 +22,12 @@
 package rsb;
 
 import java.util.Set;
+import java.util.HashMap;
 
 /**
  * Framework-supplied meta data attached to each event that give information
  * e.g. about timing issues.
- * 
+ *
  * @author jwienke
  */
 public class MetaData {
@@ -36,6 +37,8 @@ public class MetaData {
 	private long sendTime = 0;
 	private long receiveTime = 0;
 	private long deliverTime = 0;
+	private HashMap<String, Long> userTimes = new HashMap<String, Long>();
+	private HashMap<String, String> userInfos = new HashMap<String, String>();
 
 	public Id getSenderId() {
 		return senderId;
@@ -79,27 +82,47 @@ public class MetaData {
 	}
 
 	public Set<String> userTimeKeys() {
+		return userTimes.keySet();
 	}
 
 	public boolean hasUserTime(String key) {
+		return userTimes.containsKey(key);
 	}
 
 	public long getUserTime(String key) {
+		return userTimes.get(key);
 	}
 
 	public void setUserTime(String key, long time) {
+		userTimes.put(key, time);
 	}
 
 	public Set<String> userInfoKeys() {
+		return userInfos.keySet();
 	}
 
 	public boolean hasUserInfo(String key) {
+		return userInfos.containsKey(key);
 	}
 
 	public String getUserInfo(String key) {
+		return userInfos.get(key);
 	}
 
 	public void setUserInfo(String key, String value) {
+		userInfos.put(key, value);
+	}
+
+	public String toString() {
+		return "MetaData["
+			+ "sender = " + senderId
+			+ ", create = %s " + createTime
+			+ ", send = %s" + sendTime
+			+ ", receive = %s" + receiveTime
+			+ ", deliver = %s" + deliverTime
+			+ ", userTimes = %s" + userTimes
+			+ ", userInfos = %s" + userInfos
+			+ "]";
 	}
 
 }
