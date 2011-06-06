@@ -131,6 +131,10 @@ public class MetaDataTest {
 	public void testComparison() {
 
 		MetaData meta1 = new MetaData();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
 		MetaData meta2 = new MetaData();
 		assertFalse(meta1.equals(meta2)); // distinct times + no UUIDs
 		meta2.setCreateTime(meta1.getCreateTime());
