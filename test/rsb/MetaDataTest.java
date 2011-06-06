@@ -6,7 +6,7 @@ import org.junit.Test;
 
 /**
  * Test for {@link MetaData}.
- * 
+ *
  * @author jwienke
  */
 public class MetaDataTest {
@@ -15,8 +15,8 @@ public class MetaDataTest {
 	public void testConstruction() {
 
 		MetaData meta = new MetaData();
-		assertTrue(meta.getCreateTime() >= System.nanoTime() / 1000 - 100000);
-		assertTrue(meta.getCreateTime() <= System.nanoTime() / 1000);
+		assertTrue(meta.getCreateTime() >= System.currentTimeMillis() * 1000 - 100000);
+		assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
 		assertEquals(0, meta.getReceiveTime());
 		assertEquals(0, meta.getDeliverTime());
 		assertEquals(0, meta.getSendTime());
@@ -41,14 +41,14 @@ public class MetaDataTest {
 		meta.setReceiveTime(0);
 		meta.setDeliverTime(0);
 
-		assertTrue(meta.getCreateTime() > System.nanoTime() / 1000 - 100000);
-		assertTrue(meta.getCreateTime() <= System.nanoTime() / 1000);
-		assertTrue(meta.getSendTime() > System.nanoTime() / 1000 - 100000);
-		assertTrue(meta.getSendTime() <= System.nanoTime() / 1000);
-		assertTrue(meta.getReceiveTime() > System.nanoTime() / 1000 - 100000);
-		assertTrue(meta.getReceiveTime() <= System.nanoTime() / 1000);
-		assertTrue(meta.getDeliverTime() > System.nanoTime() / 1000 - 100000);
-		assertTrue(meta.getDeliverTime() <= System.nanoTime() / 1000);
+		assertTrue(meta.getCreateTime() > System.currentTimeMillis() * 1000 - 100000);
+		assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
+		assertTrue(meta.getSendTime() > System.currentTimeMillis() * 1000 - 100000);
+		assertTrue(meta.getSendTime() <= System.currentTimeMillis() * 1000);
+		assertTrue(meta.getReceiveTime() > System.currentTimeMillis() * 1000 - 100000);
+		assertTrue(meta.getReceiveTime() <= System.currentTimeMillis() * 1000);
+		assertTrue(meta.getDeliverTime() > System.currentTimeMillis() * 1000 - 100000);
+		assertTrue(meta.getDeliverTime() <= System.currentTimeMillis() * 1000);
 
 	}
 
@@ -96,8 +96,8 @@ public class MetaDataTest {
 		String autoKey = "auto";
 		meta.setUserTime(autoKey, 0);
 
-		assertTrue(meta.getUserTime(autoKey) > System.nanoTime() / 1000 - 100000);
-		assertTrue(meta.getUserTime(autoKey) <= System.nanoTime() / 1000);
+		assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis() * 1000 - 100000);
+		assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis() * 1000);
 
 	}
 
@@ -135,7 +135,7 @@ public class MetaDataTest {
 		assertFalse(meta1.equals(meta2)); // distinct times + no UUIDs
 		meta2.setCreateTime(meta1.getCreateTime());
 		assertTrue(meta1.equals(meta2));
-		
+
 		meta1.setSenderId(new Id());
 		assertFalse(meta1.equals(meta2));
 		assertFalse(meta2.equals(meta1));

@@ -182,9 +182,9 @@ public class SpreadPortTest {
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
 		// send event
-		long beforeSend = System.nanoTime() / 1000;
+		long beforeSend = System.currentTimeMillis() * 1000;
 		outPort.push(event);
-		long afterSend = System.nanoTime() / 1000;
+		long afterSend = System.currentTimeMillis() * 1000;
 
 		assertTrue(event.getMetaData().getSendTime() >= beforeSend);
 		assertTrue(event.getMetaData().getSendTime() <= afterSend);
@@ -202,7 +202,7 @@ public class SpreadPortTest {
 			assertTrue(receivedEvent.getMetaData().getReceiveTime() >= receivedEvent
 					.getMetaData().getSendTime());
 			assertTrue(receivedEvent.getMetaData().getReceiveTime() <= System
-					.nanoTime() / 1000);
+					.currentTimeMillis() * 1000);
 
 			// now adapt this time to use the normal equals method for comparing
 			// all other fields

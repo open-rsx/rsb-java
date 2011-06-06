@@ -30,7 +30,7 @@ import rsb.eventprocessing.EventProcessor;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class EventProcessorTest {
 
@@ -95,7 +95,7 @@ public class EventProcessorTest {
 	/**
 	 * Test method for
 	 * {@link rsb.eventprocessing.EventProcessor#fire(rsb.Event)}.
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -103,11 +103,11 @@ public class EventProcessorTest {
 		EventProcessor ed = new EventProcessor();
 		TestHandler l = (TestHandler) getHandler();
 		ed.addHandler(l);
-		long beforeFire = System.nanoTime() / 1000;
+		long beforeFire = System.currentTimeMillis() * 1000;
 		Event event = new Event();
 		ed.fire(event);
 		ed.waitForShutdown();
-		long afterShutdown = System.nanoTime() / 1000;
+		long afterShutdown = System.currentTimeMillis() * 1000;
 		assertTrue(l.isNotified());
 		assertSame(event, l.event);
 		assertTrue(event.getMetaData().getDeliverTime() >= beforeFire);
