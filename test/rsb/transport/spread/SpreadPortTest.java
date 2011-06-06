@@ -20,13 +20,15 @@
  */
 package rsb.transport.spread;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Event;
@@ -45,15 +47,28 @@ import rsb.transport.convert.ByteBufferConverter;
  */
 public class SpreadPortTest {
 
-	@Test(timeout = 10000)
-	public void hierarchicalSending() throws Throwable {
+	private SpreadWrapper outWrapper;
+	private SpreadPort outPort;
 
-		SpreadWrapper outWrapper = new SpreadWrapper();
-		SpreadPort outPort = new SpreadPort(outWrapper, null);
+	@Before
+	public void setUp() throws Throwable {
+
+		outWrapper = new SpreadWrapper();
+		outPort = new SpreadPort(outWrapper, null);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
 		outPort.addConverter("string", new ByteBufferConverter());
 		outPort.activate();
+
+	}
+
+	@After
+	public void tearDown() throws Throwable {
+		outPort.deactivate();
+	}
+
+	@Test(timeout = 10000)
+	public void hierarchicalSending() throws Throwable {
 
 		final Scope sendScope = new Scope("/this/is/a/hierarchy");
 
@@ -95,6 +110,7 @@ public class SpreadPortTest {
 		event.setId(new Id());
 		event.setData("a test string " + numEvents);
 		event.setScope(sendScope);
+		event.getMetaData().setSenderId(new Id());
 
 		outPort.push(event);
 
@@ -104,7 +120,14 @@ public class SpreadPortTest {
 				while (receivedEventsByScope.get(scope).size() != 1) {
 					receivedEventsByScope.wait();
 				}
-				assertEquals(event, receivedEventsByScope.get(scope).get(0));
+
+				Event receivedEvent = receivedEventsByScope.get(scope).get(0);
+
+				// normalize times as they are not important for this test
+				event.getMetaData().setReceiveTime(
+						receivedEvent.getMetaData().getReceiveTime());
+
+				assertEquals(event, receivedEvent);
 			}
 		}
 
@@ -112,29 +135,86 @@ public class SpreadPortTest {
 		for (SpreadPort inPort : inPorts) {
 			inPort.deactivate();
 		}
-		outPort.deactivate();
 
 	}
 
 	@Test
 	public void longGroupNames() throws Throwable {
 
-		SpreadWrapper outWrapper = new SpreadWrapper();
-		SpreadPort outPort = new SpreadPort(outWrapper, null);
-		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
-		outPort.addConverter("string", new ByteBufferConverter());
-		outPort.activate();
-
 		Event event = new Event("string");
 		event.setId(new Id());
 		event.setData("a test string");
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
+		event.getMetaData().setSenderId(new Id());
 
 		outPort.push(event);
 
-		outPort.deactivate();
+	}
 
+	@Test(timeout = 10000)
+	public void sendMetaData() throws Throwable {
+
+		// create an event to send
+		final Scope scope = new Scope("/a/test/scope/again");
+		Event event = new Event("string");
+		event.setId(new Id());
+		event.setData("a test string");
+		event.setScope(scope);
+		event.getMetaData().setSenderId(new Id());
+
+		// create a receiver to wait for event
+		final List<Event> receivedEvents = new ArrayList<Event>();
+		SpreadWrapper inWrapper = new SpreadWrapper();
+		SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+
+			@Override
+			public void handle(Event e) {
+				synchronized (receivedEvents) {
+					receivedEvents.add(e);
+					receivedEvents.notify();
+				}
+			}
+
+		});
+		inPort.addConverter("string", new ByteBufferConverter());
+		inPort.activate();
+		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
+
+		// send event
+		long beforeSend = System.nanoTime() / 1000;
+		outPort.push(event);
+		long afterSend = System.nanoTime() / 1000;
+
+		assertTrue(event.getMetaData().getSendTime() >= beforeSend);
+		assertTrue(event.getMetaData().getSendTime() <= afterSend);
+
+		// wait for receiving the event
+		synchronized (receivedEvents) {
+			while (receivedEvents.size() != 1) {
+				receivedEvents.wait();
+			}
+
+			Event receivedEvent = receivedEvents.get(0);
+
+			// first check that there is a receive time in the event
+			assertTrue(receivedEvent.getMetaData().getReceiveTime() >= beforeSend);
+			assertTrue(receivedEvent.getMetaData().getReceiveTime() >= receivedEvent
+					.getMetaData().getSendTime());
+			assertTrue(receivedEvent.getMetaData().getReceiveTime() <= System
+					.nanoTime() / 1000);
+
+			// now adapt this time to use the normal equals method for comparing
+			// all other fields
+			event.getMetaData().setReceiveTime(
+					receivedEvent.getMetaData().getReceiveTime());
+			receivedEvent.getMetaData().setSendTime(
+					event.getMetaData().getSendTime());
+
+			assertEquals(event, receivedEvent);
+		}
+
+		inPort.deactivate();
 	}
 
 }

@@ -81,6 +81,7 @@ public class Informer<T> extends Participant {
 		protected Event send(Event e) {
 			e.setScope(getScope());
 			e.ensureId();
+			e.getMetaData().setSenderId(getId());
 			getRouter().publishSync(e);
 			return e;
 		}
@@ -89,6 +90,7 @@ public class Informer<T> extends Participant {
 			Event e = new Event(typeinfo, (Object) d);
 			e.setScope(getScope());
 			e.ensureId();
+			e.getMetaData().setSenderId(getId());
 			getRouter().publishSync(e);
 			return e;
 		}

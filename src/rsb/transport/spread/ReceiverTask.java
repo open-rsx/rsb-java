@@ -31,14 +31,22 @@ import rsb.Event;
 import rsb.Id;
 import rsb.Scope;
 import rsb.protocol.Protocol.Notification;
+import rsb.protocol.Protocol.UserInfo;
+import rsb.protocol.Protocol.UserTime;
 import rsb.transport.AbstractConverter;
 import rsb.transport.EventHandler;
 import spread.SpreadException;
 import spread.SpreadMessage;
 
+/**
+ * A task that continuously reads on a spread connection and decodes RSB
+ * notifications from it.
+ * 
+ * @author jwienke
+ */
 class ReceiverTask extends Thread {
 
-	Logger log = Logger.getLogger(ReceiverTask.class.getName());
+	private Logger log = Logger.getLogger(ReceiverTask.class.getName());
 
 	/**
 	 * SpreadConnection
@@ -126,6 +134,20 @@ class ReceiverTask extends Thread {
 				AbstractConverter<ByteBuffer> c = converters.get(e.getType());
 				e.setData(c.deserialize(e.getType(), joinedData).value);
 				log.finest("returning event with id: " + e.getId());
+
+				// metadata
+				e.getMetaData().setSenderId(
+						new Id(n.getMetaData().getSenderId().toByteArray()));
+				e.getMetaData().setCreateTime(n.getMetaData().getCreateTime());
+				e.getMetaData().setSendTime(n.getMetaData().getSendTime());
+				e.getMetaData().setReceiveTime(0);
+				for (UserInfo info : n.getMetaData().getUserInfosList()) {
+					e.getMetaData().setUserInfo(info.getKey(), info.getValue());
+				}
+				for (UserTime time : n.getMetaData().getUserTimesList()) {
+					e.getMetaData().setUserTime(time.getKey().toStringUtf8(),
+							time.getTimestamp());
+				}
 
 				return e;
 

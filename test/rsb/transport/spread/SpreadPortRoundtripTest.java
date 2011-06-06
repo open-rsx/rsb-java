@@ -83,6 +83,11 @@ public class SpreadPortRoundtripTest {
 		event.setId(new Id());
 		event.setData(builder.toString());
 		event.setScope(scope);
+		event.getMetaData().setSenderId(new Id());
+		event.getMetaData().setUserInfo("foo", "a long string");
+		event.getMetaData().setUserInfo("barbar", "a long string again");
+		event.getMetaData().setUserTime("asdasd", 324234);
+		event.getMetaData().setUserTime("xxx", 42);
 
 		outPort.push(event);
 
@@ -90,7 +95,14 @@ public class SpreadPortRoundtripTest {
 			while (receivedEvents.size() != 1) {
 				receivedEvents.wait();
 			}
-			assertEquals(event, receivedEvents.get(0));
+
+			Event receivedEvent = receivedEvents.get(0);
+
+			// normalize times as they are not important for this test
+			event.getMetaData().setReceiveTime(
+					receivedEvent.getMetaData().getReceiveTime());
+
+			assertEquals(event, receivedEvent);
 		}
 
 		inPort.deactivate();

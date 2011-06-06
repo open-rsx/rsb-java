@@ -80,6 +80,7 @@ public class EventProcessor extends ThreadPoolExecutor {
 
 	public void fire(Event event) {
 		int count = 0;
+		event.getMetaData().setDeliverTime(0);
 		for (Handler<Event> handler : handlers) {
 			count++;
 			try {

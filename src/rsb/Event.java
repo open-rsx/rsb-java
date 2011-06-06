@@ -20,7 +20,6 @@
  */
 package rsb;
 
-
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of
  * metadata and the actual data to publish / subscribe to as payload.
@@ -33,13 +32,9 @@ public class Event {
 	private String type;
 	private Scope scope;
 	private Object data;
+	private MetaData metaData = new MetaData(getId());
 
 	// TODO move event creation into factory?
-	// TODO add Meta-data support
-	// e.getMetadata().setSenderUri(uri);
-	// e.getMetadata().setReceiverUri(receiverUri);
-	// e.getMetadata().setCreatedAt(now);
-	// e.getMetadata().setUpdatedAt(now);
 
 	/**
 	 * @param type
@@ -126,9 +121,19 @@ public class Event {
 		return id;
 	}
 
+	/**
+	 * Returns a {@link MetaData} instance representing the meta data for this
+	 * event.
+	 * 
+	 * @return meta data of this event, not <code>null</code>
+	 */
+	public MetaData getMetaData() {
+		return metaData;
+	}
+
 	public String toString() {
-		return "Event[id=" + id.toString() + ", scope=" + scope + ", type ="
-				+ type + "]";
+		return "Event[id=" + id + ", scope=" + scope + ", type =" + type
+				+ ", metaData=" + metaData + "]";
 	}
 
 	@Override
@@ -142,8 +147,23 @@ public class Event {
 			return false;
 		}
 		Event other = (Event) obj;
-		return id.equals(other.id) && scope.equals(other.scope)
-				&& type.equals(other.type) && data.equals(other.data);
+		if (id == null ^ other.id == null) {
+			return false;
+		}
+		if (scope == null ^ other.scope == null) {
+			return false;
+		}
+		if (type == null ^ other.type == null) {
+			return false;
+		}
+		if (data == null ^ other.data == null) {
+			return false;
+		}
+		return (id == null || id.equals(other.id))
+				&& (scope == null || scope.equals(other.scope))
+				&& (type == null || type.equals(other.type))
+				&& (data == null || data.equals(other.data))
+				&& metaData.equals(other.metaData);
 	}
 
 }

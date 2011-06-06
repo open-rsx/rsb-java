@@ -37,7 +37,10 @@ import rsb.Scope;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
+import rsb.protocol.Protocol.MetaData;
 import rsb.protocol.Protocol.Notification;
+import rsb.protocol.Protocol.UserInfo;
+import rsb.protocol.Protocol.UserTime;
 import rsb.transport.AbstractConverter;
 import rsb.transport.AbstractPort;
 import rsb.transport.EventHandler;
@@ -104,8 +107,8 @@ public class SpreadPort extends AbstractPort {
 	 * way to optimize this on the Port
 	 */
 
-	SpreadWrapper spread = null;
-	Map<String, AbstractConverter<ByteBuffer>> converters = new HashMap<String, AbstractConverter<ByteBuffer>>();
+	private SpreadWrapper spread = null;
+	private Map<String, AbstractConverter<ByteBuffer>> converters = new HashMap<String, AbstractConverter<ByteBuffer>>();
 
 	/**
 	 * @param sw
@@ -176,7 +179,7 @@ public class SpreadPort extends AbstractPort {
 	 * 
 	 * @param scope
 	 *            scope to create group name
-	 * @return trunkated md5 hash to fit into spread group
+	 * @return truncated md5 hash to fit into spread group
 	 */
 	private String spreadGroupName(Scope scope) {
 
@@ -222,6 +225,8 @@ public class SpreadPort extends AbstractPort {
 					/ (float) MAX_MSG_SIZE);
 		}
 
+		e.getMetaData().setSendTime(0);
+
 		// send all parts
 		for (int part = 0; part < requiredParts; ++part) {
 
@@ -235,6 +240,25 @@ public class SpreadPort extends AbstractPort {
 					.getType()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
 					.toString()));
+
+			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
+			metaDataBuilder.setCreateTime(e.getMetaData().getCreateTime());
+			metaDataBuilder.setSendTime(e.getMetaData().getSendTime());
+			metaDataBuilder.setSenderId(ByteString.copyFrom(e.getMetaData()
+					.getSenderId().toByteArray()));
+			for (String key : e.getMetaData().userInfoKeys()) {
+				UserInfo.Builder infoBuilder = UserInfo.newBuilder();
+				infoBuilder.setKey(key);
+				infoBuilder.setValue(e.getMetaData().getUserInfo(key));
+				metaDataBuilder.addUserInfos(infoBuilder.build());
+			}
+			for (String key : e.getMetaData().userTimeKeys()) {
+				UserTime.Builder timeBuilder = UserTime.newBuilder();
+				timeBuilder.setKey(ByteString.copyFromUtf8(key));
+				timeBuilder.setTimestamp(e.getMetaData().getUserTime(key));
+				metaDataBuilder.addUserTimes(timeBuilder.build());
+			}
+			notificationBuilder.setMetaData(metaDataBuilder.build());
 
 			// data fragmentation
 			int fragmentSize = MAX_MSG_SIZE;

@@ -11,7 +11,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * User-level test for RSBJava.
- *
+ * 
  * @author jwienke
  */
 public class UserLevelTest {
@@ -23,19 +23,18 @@ public class UserLevelTest {
 
 		// set up a receiver for events
 		final Set<String> receivedMessages = new HashSet<String>();
-		Listener listener = new Listener(scope,
-				TransportFactory.getInstance());
+		Listener listener = new Listener(scope, TransportFactory.getInstance());
 		listener.activate();
-		listener.addHandler(new DataHandler<String>() {
+		listener.addHandler(new EventHandler<Event>() {
 
 			@Override
-			public void handleEvent(String d) {
+			public void handleEvent(Event e) {
 				synchronized (receivedMessages) {
-					receivedMessages.add(d);
+					receivedMessages.add((String) e.getData());
 					receivedMessages.notify();
 				}
 			}
-		    }, true);
+		}, true);
 
 		// send events
 		Set<String> sentMessages = new HashSet<String>();

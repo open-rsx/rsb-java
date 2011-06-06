@@ -20,8 +20,7 @@
  */
 package rsb.eventprocessing;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -31,12 +30,13 @@ import rsb.eventprocessing.EventProcessor;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class EventProcessorTest {
 
 	private final class TestHandler extends EventHandler<Event> {
 		boolean notified = false;
+		public Event event;
 
 		public boolean isNotified() {
 			return notified;
@@ -44,6 +44,7 @@ public class EventProcessorTest {
 
 		@Override
 		public void handleEvent(Event e) {
+			event = e;
 			notified = true;
 		}
 	}
@@ -93,7 +94,9 @@ public class EventProcessorTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.eventprocessing.EventProcessor#fire(rsb.Event)}.
+	 * Test method for
+	 * {@link rsb.eventprocessing.EventProcessor#fire(rsb.Event)}.
+	 * 
 	 * @throws InterruptedException
 	 */
 	@Test
@@ -101,9 +104,14 @@ public class EventProcessorTest {
 		EventProcessor ed = new EventProcessor();
 		TestHandler l = (TestHandler) getHandler();
 		ed.addHandler(l);
-		ed.fire(new Event());
+		long beforeFire = System.nanoTime() / 1000;
+		Event event = new Event();
+		ed.fire(event);
 		ed.waitForShutdown();
+		long afterShutdown = System.nanoTime() / 1000;
 		assertTrue(l.isNotified());
+		assertSame(event, l.event);
+		assertTrue(event.getMetaData().getDeliverTime() >= beforeFire);
+		assertTrue(event.getMetaData().getDeliverTime() <= afterShutdown);
 	}
-
 }

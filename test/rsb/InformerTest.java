@@ -121,11 +121,12 @@ public class InformerTest {
 		assertTrue(p.state instanceof InformerStateInactive);
 	}
 
-	private void testEvent(Event e) {
-		assertTrue(e.getType().equals("string"));
-		assertTrue(e.getData().equals("Hello World!"));
+	private void testEvent(Event e, Participant participant) {
+		assertEquals("string", e.getType());
+		assertEquals("Hello World!", e.getData());
 		assertNotNull(e.getId());
-		assertTrue(e.getScope().equals(new Scope("/informer/example")));
+		assertEquals(new Scope("/informer/example"), e.getScope());
+		assertEquals(participant.getId(), e.getMetaData().getSenderId());
 	}
 
 	/**
@@ -139,7 +140,7 @@ public class InformerTest {
 				new Scope("/informer/example"));
 		p.activate();
 		Event e = p.send(new Event("string", "Hello World!"));
-		testEvent(e);
+		testEvent(e, p);
 	}
 
 	/**
@@ -153,7 +154,7 @@ public class InformerTest {
 				new Scope("/informer/example"));
 		p.activate();
 		Event e = p.send("Hello World!");
-		testEvent(e);
+		testEvent(e, p);
 	}
 
 	// TODO add testcase for unknown data type

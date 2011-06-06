@@ -42,9 +42,28 @@ public class MetaData {
 	private Map<String, String> userInfos = new HashMap<String, String>();
 
 	/**
+	 * Creates a new {@link MetaData} instance with unspecified sender ID and
+	 * creation time now.
+	 */
+	public MetaData() {
+	}
+
+	/**
+	 * Creates a new {@link MetaData} instance with the specified sender ID and
+	 * creation time now.
+	 * 
+	 * @param senderId
+	 *            the id of the sender, not <code>null</code>
+	 */
+	public MetaData(Id senderId) {
+		assert senderId != null;
+		this.senderId = senderId;
+	}
+
+	/**
 	 * Returns the ID (a UUID) of the sending participant.
 	 * 
-	 * @return UUID
+	 * @return UUID, may be <code>null</code> if not specified
 	 */
 	public Id getSenderId() {
 		return senderId;
@@ -279,8 +298,7 @@ public class MetaData {
 			return false;
 		}
 		MetaData other = (MetaData) obj;
-		if ((senderId == null && other.senderId != null)
-				|| (senderId != null && other.senderId == null)) {
+		if (senderId == null ^ other.senderId == null) {
 			return false;
 		}
 		return (senderId == null || senderId.equals(other.senderId))
