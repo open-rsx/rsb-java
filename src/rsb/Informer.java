@@ -23,50 +23,41 @@ package rsb;
 import java.util.logging.Logger;
 
 import rsb.transport.PortConfiguration;
-import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
 /**
- * This class offers a method to publish events to channel, reaching
- * all participating Listeners. This n:m-communication is one of the
- * basic communication patterns offered by RSB.
- *
+ * This class offers a method to publish events to channel, reaching all
+ * participating Listeners. This n:m-communication is one of the basic
+ * communication patterns offered by RSB.
+ * 
  * @author swrede
  * @author rgaertne
  * @author jschaefe
+ * @author jwienke
  */
-public class Informer<T> implements RSBObject {
+public class Informer<T> extends Participant {
 
-	private final static Logger log = Logger.getLogger(Informer.class
-			.getName());
-
-	/** publisher's name within it's scope */
-	protected Scope scope;
+	private final static Logger log = Logger
+			.getLogger(Informer.class.getName());
 
 	/** state variable for publisher instance */
 	protected InformerState<T> state;
 
-	/** transport factory object */
-	protected TransportFactory transportFactory;
-
 	/** default data type for this publisher */
 	protected String typeinfo;
-
-	/** transport router */
-	protected Router router;
 
 	protected class InformerStateInactive extends InformerState<T> {
 
 		protected InformerStateInactive(Informer<T> ctx) {
 			super(ctx);
-			log.fine("Informer state activated: [Scope:" + scope
+			log.fine("Informer state activated: [Scope:" + getScope()
 					+ ",State:Inactive,Type:" + typeinfo + "]");
 		}
 
 		protected void activate() throws InitializeException {
-			router.activate();
+			getRouter().activate();
 			p.state = new InformerStateActive(p);
-			log.info("Informer activated: [Scope:" + scope + ",Type:"
+			log.info("Informer activated: [Scope:" + getScope() + ",Type:"
 					+ typeinfo + "]");
 		}
 
@@ -76,67 +67,59 @@ public class Informer<T> implements RSBObject {
 
 		protected InformerStateActive(Informer<T> ctx) {
 			super(ctx);
-			log.fine("Informer state activated: [Scope:" + scope
+			log.fine("Informer state activated: [Scope:" + getScope()
 					+ ",State:Active,Type:" + typeinfo + "]");
 		}
 
 		protected void deactivate() {
-			router.deactivate();
+			getRouter().deactivate();
 			p.state = new InformerStateInactive(p);
-			log.info("Informer deactivated: [Scope:" + scope + ",Type:"
+			log.info("Informer deactivated: [Scope:" + getScope() + ",Type:"
 					+ typeinfo + "]");
 		}
 
 		protected Event send(Event e) {
-			e.setScope(scope);
+			e.setScope(getScope());
 			e.ensureId();
-			router.publishSync(e);
+			getRouter().publishSync(e);
 			return e;
 		}
 
 		protected Event send(T d) {
 			Event e = new Event(typeinfo, (Object) d);
-			e.setScope(scope);
+			e.setScope(getScope());
 			e.ensureId();
-			router.publishSync(e);
+			getRouter().publishSync(e);
 			return e;
 		}
 
 	}
 
-	private void initMembers(Scope u, String t, TransportFactory tfac) {
+	private void initMembers(String t) {
 		state = new InformerStateInactive(this);
-		this.transportFactory = tfac;
-		this.scope = u;
 		this.typeinfo = t;
-		router = new Router(transportFactory, PortConfiguration.OUT);
-		log.fine("New publisher instance created: [Scope:" + scope
+		log.fine("New publisher instance created: [Scope:" + getScope()
 				+ ",State:Inactive,Type:" + typeinfo + "]");
 	}
 
 	public Informer(Scope scope) {
-		initMembers(scope, "string", TransportFactory.getInstance());
+		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+		initMembers("string");
 	}
 
 	public Informer(Scope scope, TransportFactory tfac) {
-		initMembers(scope, "string", tfac);
+		super(scope, tfac, PortConfiguration.OUT);
+		initMembers("string");
 	}
 
 	public Informer(Scope scope, String t) {
-		initMembers(scope, t, TransportFactory.getInstance());
+		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+		initMembers(t);
 	}
 
 	public Informer(Scope scope, String t, TransportFactory tfac) {
-		initMembers(scope, t, tfac);
-	}
-
-	/**
-	 * Returns the scope of the publisher
-	 *
-	 * @return scope of Informer as a String
-	 */
-	public Scope getScope() {
-		return scope;
+		super(scope, tfac, PortConfiguration.OUT);
+		initMembers(t);
 	}
 
 	public synchronized void activate() throws InitializeException {

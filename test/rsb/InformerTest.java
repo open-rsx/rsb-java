@@ -30,7 +30,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class InformerTest {
 
@@ -39,8 +39,8 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerString() {
-		Informer<String> p = new Informer<String>(new Scope(
-				"/informer/example"));
+		Informer<String> p = new Informer<String>(
+				new Scope("/informer/example"));
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/informer/example"));
 	}
@@ -56,7 +56,6 @@ public class InformerTest {
 				TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/x"));
-		assertNotNull(p.transportFactory);
 	}
 
 	/**
@@ -65,12 +64,10 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerStringString() {
-		Informer<String> p = new Informer<String>(new Scope("/x"),
-				"XMLString");
+		Informer<String> p = new Informer<String>(new Scope("/x"), "XMLString");
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/x"));
 		assertEquals(p.typeinfo, "XMLString");
-		assertNotNull(p.transportFactory);
 	}
 
 	/**
@@ -80,12 +77,11 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerStringStringTransportFactory() {
-		Informer<String> p = new Informer<String>(new Scope("/x"),
-				"XMLString", TransportFactory.getInstance());
+		Informer<String> p = new Informer<String>(new Scope("/x"), "XMLString",
+				TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getScope(), new Scope("/x"));
 		assertEquals(p.typeinfo, "XMLString");
-		assertNotNull(p.transportFactory);
 	}
 
 	/**
@@ -93,14 +89,14 @@ public class InformerTest {
 	 */
 	@Test
 	public void testGetScope() {
-		Informer<String> p = new Informer<String>(new Scope(
-				"/informer/example"));
+		Informer<String> p = new Informer<String>(
+				new Scope("/informer/example"));
 		assertEquals(p.getScope(), new Scope("/informer/example"));
 	}
 
 	/**
 	 * Test method for {@link rsb.Informer#activate()}.
-	 *
+	 * 
 	 * @throws InitializeException
 	 */
 	@Test
@@ -112,13 +108,13 @@ public class InformerTest {
 
 	/**
 	 * Test method for {@link rsb.Informer#deactivate()}.
-	 *
+	 * 
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testDeactivate() throws InitializeException {
-		Informer<String> p = new Informer<String>(new Scope(
-				"/informer/example"));
+		Informer<String> p = new Informer<String>(
+				new Scope("/informer/example"));
 		p.activate();
 		assertTrue(p.state instanceof InformerStateActive);
 		p.deactivate();
@@ -134,13 +130,13 @@ public class InformerTest {
 
 	/**
 	 * Test method for {@link rsb.Informer#send(rsb.Event)}.
-	 *
+	 * 
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testSendEvent() throws InitializeException {
-		Informer<String> p = new Informer<String>(new Scope(
-				"/informer/example"));
+		Informer<String> p = new Informer<String>(
+				new Scope("/informer/example"));
 		p.activate();
 		Event e = p.send(new Event("string", "Hello World!"));
 		testEvent(e);
@@ -148,13 +144,13 @@ public class InformerTest {
 
 	/**
 	 * Test method for {@link rsb.Informer#send(rsb.Event)}.
-	 *
+	 * 
 	 * @throws InitializeException
 	 */
 	@Test
 	public void testSendT() throws InitializeException {
-		Informer<String> p = new Informer<String>(new Scope(
-				"/informer/example"));
+		Informer<String> p = new Informer<String>(
+				new Scope("/informer/example"));
 		p.activate();
 		Event e = p.send("Hello World!");
 		testEvent(e);

@@ -22,22 +22,25 @@ package rsb;
 
 import java.util.logging.Logger;
 
+@SuppressWarnings("deprecation")
 public class DefaultErrorHandler implements ErrorHandler {
 
 	Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
-	
+
 	public DefaultErrorHandler(Logger l) {
 		log = l;
 	}
 
 	public void error(RSBException ex) {
 		// TODO unwrap root cause exception
-		log.severe("An error was reported to the ErrorHandler: " + ex.getMessage());
+		log.severe("An error was reported to the ErrorHandler: "
+				+ ex.getMessage());
 	}
 
 	public void warning(RSBException ex) {
 		// TODO unwrap root cause exception
-		log.severe("A warning was reported to the ErrorHandler: " + ex.getMessage());
+		log.severe("A warning was reported to the ErrorHandler: "
+				+ ex.getMessage());
 	}
 
 }

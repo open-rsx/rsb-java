@@ -20,23 +20,20 @@
  */
 package rsb;
 
-
 /**
  * RSB uses an event listener mechanism to deal with the various events raised
- * by the framework's basic communication patterns. EventListener is the
- * topmost interface in the listener hierarchy. There are specialized listener
- * (and event) types for Publish/Subscribe, Server/RemoteServer and the
- * ActiveMemory. In Publish/Subscribe PublishEvents are raised whenever the
- * Subscriber receives a message from the Publisher. In Server/RemoteServer
- * a CallbackEvent (respectively a OneWayCallbackEvent for methods that do not
- * return anything) is raised by the Server whenever a RemoteServer calls a
- * method. The Memory raises various events, e.g. when a query returns results
- * asynchronously.
- *
+ * by the framework's basic communication patterns. EventListener is the topmost
+ * interface in the listener hierarchy. There are specialized listener (and
+ * event) types for Publish/Subscribe, Server/RemoteServer and the ActiveMemory.
+ * In Publish/Subscribe PublishEvents are raised whenever the Subscriber
+ * receives a message from the Publisher. In Server/RemoteServer a CallbackEvent
+ * (respectively a OneWayCallbackEvent for methods that do not return anything)
+ * is raised by the Server whenever a RemoteServer calls a method. The Memory
+ * raises various events, e.g. when a query returns results asynchronously.
+ * 
  * @author swrede
  * @see Event
  */
-
 public abstract class EventHandler<T extends Event> implements Handler<T> {
 
 	public void internalNotify(T e) {

@@ -20,17 +20,21 @@
  */
 package rsb;
 
+/**
+ * @deprecated not yet designed
+ */
 public interface ErrorHandler {
 
-//public interface ConnectionErrorHandler extends ErrorHandler {
-//	public void handleError(ConnectionLostError ex);
-//}
-//
-//	public void connectionLost();
-//	public void lostConnectionToMemoryServer();
-//	
-	
+	// public interface ConnectionErrorHandler extends ErrorHandler {
+	// public void handleError(ConnectionLostError ex);
+	// }
+	//
+	// public void connectionLost();
+	// public void lostConnectionToMemoryServer();
+	//
+
 	public void error(RSBException ex);
+
 	public void warning(RSBException ex);
 
 }

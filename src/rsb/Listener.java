@@ -29,7 +29,6 @@ import rsb.filter.Filter;
 import rsb.filter.ScopeFilter;
 import rsb.naming.NotFoundException;
 import rsb.transport.PortConfiguration;
-import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
 /**
@@ -43,8 +42,9 @@ import rsb.transport.TransportFactory;
  * 
  * @author swrede
  * @author jschaefe
+ * @author jwienke
  */
-public class Listener implements RSBObject {
+public class Listener extends Participant {
 
 	protected class ListenerStateActive extends ListenerState {
 		public ListenerStateActive(Listener ctx) {
@@ -52,7 +52,7 @@ public class Listener implements RSBObject {
 		}
 
 		protected void deactivate() {
-			router.deactivate();
+			getRouter().deactivate();
 			s.state = new ListenerStateInactive(s);
 		}
 
@@ -65,7 +65,7 @@ public class Listener implements RSBObject {
 		}
 
 		protected void activate() throws InitializeException {
-			router.activate();
+			getRouter().activate();
 			s.state = new ListenerStateActive(s);
 		}
 
@@ -73,48 +73,39 @@ public class Listener implements RSBObject {
 
 	protected static Logger log = Logger.getLogger(Listener.class.getName());
 
-	/** scope of channel */
-	protected Scope scope;
-
 	/** class state variable */
-	protected ListenerState state;
+	private ListenerState state;
 
-	protected ErrorHandler errorHandler;
+	@SuppressWarnings({ "deprecation", "unused" })
+	private ErrorHandler errorHandler;
 
-	/* transport factory */
-	TransportFactory transportFactory;
-
-	/* router to access transport layer */
-	Router router;
-
-	ArrayList<Filter> filters = new ArrayList<Filter>();
-	ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
+	private ArrayList<Filter> filters = new ArrayList<Filter>();
+	private ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
 
 	public Listener(Scope scope) {
-		initMembers(scope, TransportFactory.getInstance());
+		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+		initMembers(scope);
 	}
 
 	public Listener(Scope scope, TransportFactory tfac) {
-		initMembers(scope, tfac);
+		super(scope, tfac, PortConfiguration.IN);
+		initMembers(scope);
 	}
 
 	/**
 	 * @param scope
 	 * @param tfac
 	 */
-	protected void initMembers(Scope scope, TransportFactory tfac) {
+	protected void initMembers(Scope scope) {
 		this.state = new ListenerStateInactive(this);
-		this.transportFactory = tfac;
-		this.router = new Router(tfac, PortConfiguration.IN);
 		errorHandler = new DefaultErrorHandler(log);
-		this.scope = scope;
 		log.info("New Listener instance: [scope=" + scope + "]");
 	}
 
 	public void activate() throws InitializeException, NotFoundException {
 		state.activate();
-		router.addFilter(new ScopeFilter(scope)); // TODO probably breaks
-													// re-activation
+		// TODO probably breaks re-activation
+		getRouter().addFilter(new ScopeFilter(getScope()));
 	}
 
 	public void deactivate() {
@@ -132,7 +123,7 @@ public class Listener implements RSBObject {
 
 	public void addFilter(Filter filter) {
 		filters.add(filter);
-		router.addFilter(filter);
+		getRouter().addFilter(filter);
 	}
 
 	public List<Handler<Event>> getHandlers() {
@@ -157,7 +148,7 @@ public class Listener implements RSBObject {
 	 */
 	public void addHandler(Handler<Event> handler, boolean wait) {
 		handlers.add(handler);
-		router.addHandler(handler);
+		getRouter().addHandler(handler);
 	}
 
 	/**
@@ -172,15 +163,14 @@ public class Listener implements RSBObject {
 	 */
 	public void removeHandler(Handler<Event> handler, boolean wait) {
 		handlers.remove(handler);
-		router.removeHandler(handler);
+		getRouter().removeHandler(handler);
 	}
 
+	/**
+	 * @deprecated not yet designed
+	 */
 	public void setErrorHandler(ErrorHandler handler) {
 		errorHandler = handler;
-	}
-
-	public Scope getScope() {
-		return scope;
 	}
 
 }
