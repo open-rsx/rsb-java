@@ -22,7 +22,6 @@ package rsb;
 
 /**
  * @author swrede
- * 
  */
 public interface RSBObject {
 

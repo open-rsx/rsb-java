@@ -33,7 +33,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class SubscriberExample {
 
@@ -48,9 +48,9 @@ public class SubscriberExample {
 	public static void main(String[] args) throws InitializeException,
 			NotFoundException, InterruptedException {
 		Listener sub = new Listener(new Scope("/example/informer"),
-					    TransportFactory.getInstance());
+				TransportFactory.getInstance());
 		sub.activate();
-		sub.addHandler(new EventHandler<Event>() {
+		sub.addHandler(new EventHandler() {
 
 			@Override
 			public void handleEvent(Event e) {
@@ -66,7 +66,7 @@ public class SubscriberExample {
 				}
 			}
 
-		    }, true);
+		}, true);
 		sub.addHandler(new DataHandler<String>() {
 
 			@Override
@@ -93,7 +93,7 @@ public class SubscriberExample {
 				}
 			}
 
-		    }, true);
+		}, true);
 		while (!allEventsDelivered()) {
 			synchronized (l) {
 				l.wait();

@@ -34,7 +34,7 @@ import rsb.eventprocessing.EventProcessor;
  */
 public class EventProcessorTest {
 
-	private final class TestHandler extends EventHandler<Event> {
+	private final class TestHandler extends EventHandler {
 		boolean notified = false;
 		public Event event;
 
@@ -88,9 +88,8 @@ public class EventProcessorTest {
 		assertTrue(ed.handlers.size() == 0);
 	}
 
-	private EventHandler<Event> getHandler() {
-		EventHandler<Event> l = new TestHandler();
-		return l;
+	private EventHandler getHandler() {
+		return new TestHandler();
 	}
 
 	/**

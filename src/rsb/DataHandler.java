@@ -20,10 +20,14 @@
  */
 package rsb;
 
-
 /**
+ * A handler that receives the user payload of an event by extracting the data
+ * and casting them to the specified type.
+ * 
  * @author swrede
- *
+ * @param <V>
+ *            the desired target data type of the user handler. The event
+ *            payload will be casted to this type
  */
 public abstract class DataHandler<V> implements Handler<Event> {
 
