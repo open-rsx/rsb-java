@@ -20,6 +20,7 @@
  */
 package rsb.example;
 
+import rsb.Factory;
 import rsb.InitializeException;
 import rsb.Informer;
 import rsb.Scope;
@@ -39,8 +40,8 @@ public class XMLInformer {
 	 */
 	public static void main(String[] args) throws InitializeException,
 			InterruptedException, SyntaxException {
-		Informer<String> p = new Informer<String>(new Scope(
-				"/example/informer"));
+		Informer<String> p = Factory.getInstance().createInformer(
+				new Scope("/example/informer"));
 		p.activate();
 		for (int i = 0; i < 100; i++) {
 			XOPData xop = XOPData

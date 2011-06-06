@@ -82,12 +82,12 @@ public class Listener extends Participant {
 	private ArrayList<Filter> filters = new ArrayList<Filter>();
 	private ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
 
-	public Listener(Scope scope) {
+	Listener(Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
 		initMembers(scope);
 	}
 
-	public Listener(Scope scope, TransportFactory tfac) {
+	Listener(Scope scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.IN);
 		initMembers(scope);
 	}

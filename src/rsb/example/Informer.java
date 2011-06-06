@@ -20,12 +20,13 @@
  */
 package rsb.example;
 
+import rsb.Factory;
 import rsb.InitializeException;
 import rsb.Scope;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class Informer {
 
@@ -36,8 +37,8 @@ public class Informer {
 	 */
 	public static void main(String[] args) throws InitializeException,
 			InterruptedException {
-	    rsb.Informer<String> p = new rsb.Informer<String>(new Scope(
-				"/example/informer"));
+		rsb.Informer<String> p = Factory.getInstance().createInformer(
+				new Scope("/example/informer"));
 		p.activate();
 		for (int i = 0; i < 100; i++) {
 			p.send("<message val=\"Hello World!\" nr=\"" + i + "\"/>");

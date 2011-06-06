@@ -104,22 +104,22 @@ public class Informer<T> extends Participant {
 				+ ",State:Inactive,Type:" + typeinfo + "]");
 	}
 
-	public Informer(Scope scope) {
+	Informer(Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
 		initMembers("string");
 	}
 
-	public Informer(Scope scope, TransportFactory tfac) {
+	Informer(Scope scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
 		initMembers("string");
 	}
 
-	public Informer(Scope scope, String t) {
+	Informer(Scope scope, String t) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
 		initMembers(t);
 	}
 
-	public Informer(Scope scope, String t, TransportFactory tfac) {
+	Informer(Scope scope, String t, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
 		initMembers(t);
 	}
