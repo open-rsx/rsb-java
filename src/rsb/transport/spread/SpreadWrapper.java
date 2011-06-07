@@ -39,9 +39,8 @@ import spread.SpreadGroup;
  * This class encapsulates and manages a connection to the spread daemon.
  * Thereby, it maintains the membership information for this connection and
  * evaluates and enqueues all sorts of spread messages.
- *
+ * 
  * @author swrede
- *
  */
 public class SpreadWrapper implements RSBObject {
 
@@ -73,7 +72,7 @@ public class SpreadWrapper implements RSBObject {
 	}
 
 	/**
-	 * @param spreadhost
+	 * @param spreadHostname
 	 *            the spreadhost to set
 	 * @throws RSBException
 	 */
@@ -127,10 +126,11 @@ public class SpreadWrapper implements RSBObject {
 
 	private boolean connectionLost = false;
 
-	/*
+	/**
 	 * Create a new Manager, assuming a spread daemon on localhost, port 4803.
-	 *
-	 * @param name Name for this manager
+	 * 
+	 * @param name
+	 *            Name for this manager
 	 */
 	public SpreadWrapper() {
 		port = props.getPropertyAsInt("transport.spread.port");
@@ -152,9 +152,7 @@ public class SpreadWrapper implements RSBObject {
 	/**
 	 * Create a new Manager using the specified connection data for the Spread
 	 * network.
-	 *
-	 * @param name
-	 *            Name for this manager
+	 * 
 	 * @param spreadhost
 	 *            hostname of the machine the spread daemon is running on
 	 * @param port
@@ -165,7 +163,8 @@ public class SpreadWrapper implements RSBObject {
 		this.spreadhost = spreadhost != null ? InetAddress
 				.getByName(spreadhost) : null;
 		this.port = port;
-		this.useTcpNoDelay = props.getPropertyAsBool("transport.spread.tcpnodelay");
+		this.useTcpNoDelay = props
+				.getPropertyAsBool("transport.spread.tcpnodelay");
 	}
 
 	// TODO think about prefixes and factory methods
@@ -174,7 +173,8 @@ public class SpreadWrapper implements RSBObject {
 		this.spreadhost = spreadhost != null ? InetAddress
 				.getByName(spreadhost) : null;
 		this.port = port;
-		this.useTcpNoDelay = props.getPropertyAsBool("transport.spread.tcpnodelay");
+		this.useTcpNoDelay = props
+				.getPropertyAsBool("transport.spread.tcpnodelay");
 	}
 
 	public void join(String group) throws SpreadException {
@@ -215,7 +215,7 @@ public class SpreadWrapper implements RSBObject {
 	 * Create a new SpreadConnection. Generates a new name randomly, using the
 	 * specified prefix. To allow for name collisions, try a couple of times
 	 * before giving up.
-	 *
+	 * 
 	 * @param prefix
 	 *            prefix to use in name, should be short
 	 * @param mship

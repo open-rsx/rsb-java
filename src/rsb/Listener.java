@@ -93,10 +93,9 @@ public class Listener extends Participant {
 	}
 
 	/**
-	 * @param scope
-	 * @param tfac
+	 * @param scope scope of this listener.
 	 */
-	protected void initMembers(Scope scope) {
+	private void initMembers(Scope scope) {
 		this.state = new ListenerStateInactive(this);
 		errorHandler = new DefaultErrorHandler(log);
 		log.info("New Listener instance: [scope=" + scope + "]");

@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 import rsb.Event;
 import rsb.Id;
 
-
+/**
+ * @author swrede
+ */
 public abstract class AbstractFilter implements Filter {
 
 	protected static Logger log = Logger.getLogger(AbstractFilter.class.getName());
@@ -30,7 +32,6 @@ public abstract class AbstractFilter implements Filter {
 	/**
 	 * skip this filter for any event with the specified ID. This will cause the
 	 * MTF to successfully transform the event without applying any checks.
-	 * @see net.sf.xcf.dtm.Element#skip(net.Id.event.EventId)
 	 */
 	public void skip(Id id) {
 		skip(id.toString());
