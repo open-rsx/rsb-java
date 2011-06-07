@@ -168,11 +168,11 @@ public class Router extends FilterObservable implements EventHandler {
 		ep.removeFilter(filter);
 	}
 
-	public void addHandler(Handler<Event> handler) {
+	public void addHandler(Handler handler) {
 		ep.addHandler(handler);
 	}
 
-	public void removeHandler(Handler<Event> handler) {
+	public void removeHandler(Handler handler) {
 		ep.removeHandler(handler);
 	}
 

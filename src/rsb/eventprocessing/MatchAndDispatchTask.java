@@ -33,11 +33,11 @@ import rsb.filter.Filter;
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
-	Handler<Event> handler;
-	List<Filter> filters;
-	Event event;
+	private Handler handler;
+	private List<Filter> filters;
+	private Event event;
 
-	MatchAndDispatchTask(Handler<Event> handler, List<Filter> filters, Event event) {
+	MatchAndDispatchTask(Handler handler, List<Filter> filters, Event event) {
 		this.handler = handler;
 		this.filters = filters;
 		this.event = event;

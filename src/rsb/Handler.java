@@ -28,6 +28,6 @@ import java.util.EventListener;
  * 
  * @author swrede
  */
-interface Handler extends EventListener {
+public interface Handler extends EventListener {
 	public void internalNotify(Event e);
 }

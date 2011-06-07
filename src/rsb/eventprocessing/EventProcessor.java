@@ -45,7 +45,7 @@ public class EventProcessor extends ThreadPoolExecutor {
 	Logger log = Logger.getLogger(EventProcessor.class.getName());
 
 	ArrayList<Filter> filters = new ArrayList<Filter>();
-	ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
+	ArrayList<Handler> handlers = new ArrayList<Handler>();
 
 	public EventProcessor() {
 		super(1, 1, 60, TimeUnit.SECONDS,
@@ -70,18 +70,18 @@ public class EventProcessor extends ThreadPoolExecutor {
 		filters.remove(filter);
 	}
 
-	public void addHandler(Handler<Event> handler) {
+	public void addHandler(Handler handler) {
 		handlers.add(handler);
 	}
 
-	public void removeHandler(Handler<Event> handler) {
+	public void removeHandler(Handler handler) {
 		handlers.remove(handler);
 	}
 
 	public void fire(Event event) {
 		int count = 0;
 		event.getMetaData().setDeliverTime(0);
-		for (Handler<Event> handler : handlers) {
+		for (Handler handler : handlers) {
 			count++;
 			try {
 				this.submit(new MatchAndDispatchTask(handler, filters, event));

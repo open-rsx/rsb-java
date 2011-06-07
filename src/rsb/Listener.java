@@ -80,7 +80,7 @@ public class Listener extends Participant {
 	private ErrorHandler errorHandler;
 
 	private ArrayList<Filter> filters = new ArrayList<Filter>();
-	private ArrayList<Handler<Event>> handlers = new ArrayList<Handler<Event>>();
+	private ArrayList<Handler> handlers = new ArrayList<Handler>();
 
 	Listener(Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
@@ -126,12 +126,12 @@ public class Listener extends Participant {
 		getRouter().addFilter(filter);
 	}
 
-	public List<Handler<Event>> getHandlers() {
+	public List<Handler> getHandlers() {
 		return handlers;
 	}
 
-	public Iterator<Handler<Event>> getHandlerIterator() {
-		Iterator<Handler<Event>> it = handlers.iterator();
+	public Iterator<Handler> getHandlerIterator() {
+		Iterator<Handler> it = handlers.iterator();
 		return it;
 	}
 
@@ -146,7 +146,7 @@ public class Listener extends Participant {
 	 *            handler has completely been installed and will receive the
 	 *            next available message. Otherwise it may return earlier.
 	 */
-	public void addHandler(Handler<Event> handler, boolean wait) {
+	public void addHandler(Handler handler, boolean wait) {
 		handlers.add(handler);
 		getRouter().addHandler(handler);
 	}
@@ -161,7 +161,7 @@ public class Listener extends Participant {
 	 *            handler has been completely removed from the event processing
 	 *            and will not be called anymore from this listener.
 	 */
-	public void removeHandler(Handler<Event> handler, boolean wait) {
+	public void removeHandler(Handler handler, boolean wait) {
 		handlers.remove(handler);
 		getRouter().removeHandler(handler);
 	}

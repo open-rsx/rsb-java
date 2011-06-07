@@ -29,7 +29,7 @@ package rsb;
  *            the desired target data type of the user handler. The event
  *            payload will be casted to this type
  */
-public abstract class DataHandler<V> implements Handler<Event> {
+public abstract class DataHandler<V> implements Handler {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -37,7 +37,6 @@ public abstract class DataHandler<V> implements Handler<Event> {
 		try {
 			handleEvent((V) e.getData());
 		} catch (RuntimeException ex) {
-			ex.printStackTrace();
 			throw ex;
 		}
 	}

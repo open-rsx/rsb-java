@@ -21,10 +21,13 @@
 package rsb;
 
 /**
+ * An interface for handlers that are interested in whole {@link Event}
+ * instances.
+ * 
  * @author swrede
  * @see Event
  */
-public abstract class EventHandler implements Handler<Event> {
+public abstract class EventHandler implements Handler {
 
 	public void internalNotify(Event e) {
 		handleEvent(e);
