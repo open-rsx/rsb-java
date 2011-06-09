@@ -148,7 +148,7 @@ public class Listener extends Participant {
 	 */
 	public void addHandler(Handler handler, boolean wait) {
 		handlers.add(handler);
-		getRouter().addHandler(handler);
+		getRouter().addHandler(handler, wait);
 	}
 
 	/**
@@ -167,7 +167,7 @@ public class Listener extends Participant {
 	public void removeHandler(Handler handler, boolean wait)
 			throws InterruptedException {
 		handlers.remove(handler);
-		getRouter().removeHandler(handler);
+		getRouter().removeHandler(handler, wait);
 	}
 
 	/**

@@ -169,12 +169,13 @@ public class Router extends FilterObservable implements EventHandler {
 		ep.removeFilter(filter);
 	}
 
-	public void addHandler(Handler handler) {
-		ep.addHandler(handler, true);
+	public void addHandler(Handler handler, boolean wait) {
+		ep.addHandler(handler, wait);
 	}
 
-	public void removeHandler(Handler handler) throws InterruptedException {
-		ep.removeHandler(handler, true);
+	public void removeHandler(Handler handler, boolean wait)
+			throws InterruptedException {
+		ep.removeHandler(handler, wait);
 	}
 
 	/*
