@@ -15,22 +15,22 @@ public abstract class InformerState<T> {
 
 	protected void activate() throws InitializeException {
 		log.warning("invalid state exception during activate call");
-		throw new InvalidStateException("publisher not activated");
+		throw new InvalidStateException("informer not activated");
 	}
 
 	protected void deactivate() {
 		log.warning("invalid state exception during deactivate call");
-		throw new InvalidStateException("publisher not activated");
+		throw new InvalidStateException("informer not activated");
 	}
 
 	protected Event send(Event e) {
 		log.warning("invalid state exception during call to send");
-		throw new InvalidStateException("publisher not activated");
+		throw new InvalidStateException("informer not activated");
 	}
 
 	protected Event send(T d) {
 		log.warning("invalid state exception during call to send");
-		throw new InvalidStateException("publisher not activated");
+		throw new InvalidStateException("informer not activated");
 	}
 
 }

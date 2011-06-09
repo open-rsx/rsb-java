@@ -139,7 +139,7 @@ public class SpreadPort extends AbstractPort {
 	public void activate() throws InitializeException {
 		receiver = new ReceiverTask(spread, eventHandler, converters);
 		// activate spread connection
-		if (!spread.isActivated()) {
+		if (!spread.isActive()) {
 			spread.activate();
 		}
 		receiver.setPriority(Thread.NORM_PRIORITY + 2);
@@ -314,7 +314,7 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	private void joinSpreadGroup(Scope scope) {
-		if (spread.isActivated()) {
+		if (spread.isActive()) {
 			// join group
 			try {
 				spread.join(spreadGroupName(scope));
@@ -330,7 +330,7 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	private void leaveSpreadGroup(Scope scope) {
-		if (spread.isActivated()) {
+		if (spread.isActive()) {
 			spread.leave(spreadGroupName(scope));
 		} else {
 			log.severe("Couldn't remove group filter, spread inactive.");
@@ -338,7 +338,7 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	public void deactivate() throws RSBException {
-		if (spread.isActivated()) {
+		if (spread.isActive()) {
 			log.fine("deactivating SpreadPort");
 			spread.deactivate();
 		}
@@ -377,5 +377,10 @@ public class SpreadPort extends AbstractPort {
 			assert false;
 		}
 
+	}
+
+	@Override
+	public boolean isActive() {
+		return spread.isActive();
 	}
 }

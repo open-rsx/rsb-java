@@ -79,20 +79,26 @@ public class Informer<T> extends Participant {
 		}
 
 		protected Event send(Event e) {
-			e.setScope(getScope());
+
+			if (!typeinfo.equals(e.getType())) {
+				throw new IllegalArgumentException(
+						"Event type must not be null.");
+			}
+			if (!getScope().equals(e.getScope())) {
+				throw new IllegalArgumentException(
+						"Event scope must not be null.");
+			}
+
 			e.ensureId();
 			e.getMetaData().setSenderId(getId());
 			getRouter().publishSync(e);
 			return e;
+			
 		}
 
 		protected Event send(T d) {
-			Event e = new Event(typeinfo, (Object) d);
-			e.setScope(getScope());
-			e.ensureId();
-			e.getMetaData().setSenderId(getId());
-			getRouter().publishSync(e);
-			return e;
+			Event e = new Event(getScope(), typeinfo, (Object) d);
+			return send(e);
 		}
 
 	}
@@ -133,17 +139,42 @@ public class Informer<T> extends Participant {
 	}
 
 	/**
-	 * Send an {@link Event} to all subscribed participants
+	 * Send an {@link Event} to all subscribed participants.
+	 * 
+	 * @param e
+	 *            the event to send
+	 * @return modified event with set timing information
+	 * @throws IllegalArgumentException
+	 *             if the event is not complete or does not match the type or
+	 *             scope settings of the informer
 	 */
 	public synchronized Event send(Event e) {
 		return state.send(e);
 	}
 
 	/**
-	 * Send data (of type <T>) to all subscribed participants
+	 * Send data (of type <T>) to all subscribed participants.
+	 * 
+	 * @param d
+	 *            data to send with default setting from the informer
+	 * @return generated event
 	 */
 	public synchronized Event send(T d) {
 		return state.send(d);
+	}
+
+	/**
+	 * Returns the string describing the type of data sent by this informer.
+	 * 
+	 * @return string declarator
+	 */
+	public String getTypeInfo() {
+		return typeinfo;
+	}
+
+	@Override
+	public boolean isActive() {
+		return state.getClass() == InformerStateActive.class;
 	}
 
 }

@@ -349,11 +349,9 @@ public class SpreadWrapper implements RSBObject {
 		status = State.ACTIVATED;
 	}
 
-	public boolean isActivated() {
-		if (status == State.ACTIVATED) {
-			return true;
-		}
-		return false;
+	@Override
+	public boolean isActive() {
+		return status == State.ACTIVATED;
 	}
 
 	public String getPrivateGroup() {

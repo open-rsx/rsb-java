@@ -22,6 +22,8 @@ package rsb;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Informer.InformerStateActive;
@@ -30,19 +32,32 @@ import rsb.transport.TransportFactory;
 
 /**
  * @author swrede
- * 
  */
 public class InformerTest {
+
+	private final Scope defaultScope = new Scope("/informer/example");
+	private Informer<String> informer;
+
+	@Before
+	public void setUp() throws Throwable {
+		informer = new Informer<String>(defaultScope);
+		informer.activate();
+	}
+
+	@After
+	public void tearDown() {
+		if (informer.isActive()) {
+			informer.deactivate();
+		}
+	}
 
 	/**
 	 * Test method for {@link rsb.Informer#Informer(java.lang.String)}.
 	 */
 	@Test
 	public void testInformerString() {
-		Informer<String> p = new Informer<String>(
-				new Scope("/informer/example"));
-		assertNotNull(p);
-		assertEquals(p.getScope(), new Scope("/informer/example"));
+		assertNotNull(informer);
+		assertEquals(informer.getScope(), defaultScope);
 	}
 
 	/**
@@ -52,10 +67,11 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerStringTransportFactory() {
-		Informer<String> p = new Informer<String>(new Scope("/x"),
+		final Scope scope = new Scope("/x");
+		Informer<String> p = new Informer<String>(scope,
 				TransportFactory.getInstance());
 		assertNotNull(p);
-		assertEquals(p.getScope(), new Scope("/x"));
+		assertEquals(p.getScope(), scope);
 	}
 
 	/**
@@ -64,10 +80,12 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerStringString() {
-		Informer<String> p = new Informer<String>(new Scope("/x"), "XMLString");
+		final Scope scope = new Scope("/x");
+		final String type = "XMLString";
+		Informer<String> p = new Informer<String>(scope, type);
 		assertNotNull(p);
-		assertEquals(p.getScope(), new Scope("/x"));
-		assertEquals(p.typeinfo, "XMLString");
+		assertEquals(p.getScope(), scope);
+		assertEquals(p.typeinfo, type);
 	}
 
 	/**
@@ -77,11 +95,13 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerStringStringTransportFactory() {
-		Informer<String> p = new Informer<String>(new Scope("/x"), "XMLString",
+		final Scope scope = new Scope("/x");
+		final String type = "XMLString";
+		Informer<String> p = new Informer<String>(scope, type,
 				TransportFactory.getInstance());
 		assertNotNull(p);
-		assertEquals(p.getScope(), new Scope("/x"));
-		assertEquals(p.typeinfo, "XMLString");
+		assertEquals(p.getScope(), scope);
+		assertEquals(p.typeinfo, type);
 	}
 
 	/**
@@ -89,9 +109,7 @@ public class InformerTest {
 	 */
 	@Test
 	public void testGetScope() {
-		Informer<String> p = new Informer<String>(
-				new Scope("/informer/example"));
-		assertEquals(p.getScope(), new Scope("/informer/example"));
+		assertEquals(informer.getScope(), defaultScope);
 	}
 
 	/**
@@ -101,9 +119,7 @@ public class InformerTest {
 	 */
 	@Test
 	public void testActivate() throws Throwable {
-		Informer<String> p = new Informer<String>(new Scope("/activate"));
-		p.activate();
-		assertTrue(p.state instanceof InformerStateActive);
+		assertTrue(informer.state instanceof InformerStateActive);
 	}
 
 	/**
@@ -113,12 +129,9 @@ public class InformerTest {
 	 */
 	@Test
 	public void testDeactivate() throws InitializeException {
-		Informer<String> p = new Informer<String>(
-				new Scope("/informer/example"));
-		p.activate();
-		assertTrue(p.state instanceof InformerStateActive);
-		p.deactivate();
-		assertTrue(p.state instanceof InformerStateInactive);
+		assertTrue(informer.state instanceof InformerStateActive);
+		informer.deactivate();
+		assertTrue(informer.state instanceof InformerStateInactive);
 	}
 
 	private void testEvent(Event e, Participant participant) {
@@ -136,11 +149,9 @@ public class InformerTest {
 	 */
 	@Test
 	public void testSendEvent() throws InitializeException {
-		Informer<String> p = new Informer<String>(
-				new Scope("/informer/example"));
-		p.activate();
-		Event e = p.send(new Event("string", "Hello World!"));
-		testEvent(e, p);
+		Event e = informer.send(new Event(defaultScope, "string",
+				"Hello World!"));
+		testEvent(e, informer);
 	}
 
 	/**
@@ -150,13 +161,43 @@ public class InformerTest {
 	 */
 	@Test
 	public void testSendT() throws InitializeException {
-		Informer<String> p = new Informer<String>(
-				new Scope("/informer/example"));
-		p.activate();
-		Event e = p.send("Hello World!");
-		testEvent(e, p);
+		Event e = informer.send("Hello World!");
+		testEvent(e, informer);
 	}
 
-	// TODO add testcase for unknown data type
+	@Test(expected = IllegalArgumentException.class)
+	public void testSendEventNullScope() throws Throwable {
+		Event e = new Event();
+		e.setType(informer.getTypeInfo());
+		e.setScope(null);
+		e.setData("foo");
+		informer.send(e);
+	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testSendEventWrongScope() throws Throwable {
+		Event e = new Event();
+		e.setType(informer.getTypeInfo());
+		e.setScope(defaultScope.concat(new Scope("/blubb")));
+		e.setData("foo");
+		informer.send(e);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testSendEventNullType() throws Throwable {
+		Event e = new Event();
+		e.setType(null);
+		e.setScope(defaultScope);
+		e.setData("foo");
+		informer.send(e);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testSendEventWrongType() throws Throwable {
+		Event e = new Event();
+		e.setType("wrong");
+		e.setScope(defaultScope);
+		e.setData("foo");
+		informer.send(e);
+	}
 }

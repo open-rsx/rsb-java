@@ -177,4 +177,9 @@ public class Listener extends Participant {
 		errorHandler = handler;
 	}
 
+	@Override
+	public boolean isActive() {
+		return state.getClass() == ListenerStateActive.class;
+	}
+
 }

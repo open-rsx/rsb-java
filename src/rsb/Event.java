@@ -40,7 +40,8 @@ public class Event {
 	 * @param type
 	 * @param data
 	 */
-	public Event(String type, Object data) {
+	public Event(Scope scope, String type, Object data) {
+		this.scope = scope;
 		this.type = type;
 		this.data = data;
 	}
