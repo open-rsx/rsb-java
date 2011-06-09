@@ -69,10 +69,12 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
 	}
 
 	public boolean match(Event event) {
-		for (Filter filter : filters) {
-			event = filter.transform(event);
-			if (event == null) {
-				return false;
+		synchronized (filters) {
+			for (Filter filter : filters) {
+				event = filter.transform(event);
+				if (event == null) {
+					return false;
+				}
 			}
 		}
 		return true;

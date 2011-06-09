@@ -26,7 +26,8 @@ import rsb.transport.EventHandler;
 
 /**
  * An interface for strategies that dispatch received events to {@link Handler}
- * s.
+ * s. Implementations have the task of freeing the caller of
+ * {@link #handle(rsb.Event)} to dispatch the event in its thread.
  * 
  * @author jwienke
  */

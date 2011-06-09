@@ -72,20 +72,24 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 		this.prestartAllCoreThreads();
 	}
 
+	@Override
 	public void addFilter(Filter filter) {
 		filters.add(filter);
 	}
 
+	@Override
 	public void removeFilter(Filter filter) {
 		filters.remove(filter);
 	}
 
+	@Override
 	public void addHandler(Handler handler, boolean wait) {
 		synchronized (handlerTasks) {
 			handlerTasks.put(handler, new HashSet<MatchAndDispatchTask>());
 		}
 	}
 
+	@Override
 	public void removeHandler(Handler handler, boolean wait)
 			throws InterruptedException {
 		synchronized (handlerTasks) {
@@ -98,6 +102,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 		}
 	}
 
+	@Override
 	public void handle(Event event) {
 		int count = 0;
 		event.getMetaData().setDeliverTime(0);
@@ -124,6 +129,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 	 * @throws InterruptedException
 	 *             thrown if waiting for shutdown was interrupted.
 	 */
+	@Override
 	public void shutdownAndWait() throws InterruptedException {
 		this.shutdown();
 		this.awaitTermination(10, TimeUnit.SECONDS);

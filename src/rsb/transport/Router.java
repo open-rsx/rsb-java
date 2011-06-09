@@ -27,12 +27,11 @@ import rsb.Handler;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.RSBException;
-import rsb.eventprocessing.UnorderedParallelEventReceivingStrategy;
+import rsb.eventprocessing.SingleThreadEventReceivingStrategy;
 import rsb.eventprocessing.EventReceivingStrategy;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
-import rsb.util.Properties;
 
 public class Router extends FilterObservable implements EventHandler {
 
@@ -112,15 +111,7 @@ public class Router extends FilterObservable implements EventHandler {
 	 * options.
 	 */
 	protected void setupEventProcessor() {
-		// extract parameters for ExecutorService from configuration
-		int cSize = Properties.getInstance().getPropertyAsInt(
-				"RSB.ThreadPool.Size");
-		int mSize = Properties.getInstance().getPropertyAsInt(
-				"RSB.ThreadPool.SizeMax");
-		int qSize = Properties.getInstance().getPropertyAsInt(
-				"RSB.ThreadPool.QueueSize");
-
-		ep = new UnorderedParallelEventReceivingStrategy(cSize, mSize, qSize);
+		ep = new SingleThreadEventReceivingStrategy();
 	}
 
 	/**
