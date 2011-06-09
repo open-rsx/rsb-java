@@ -26,35 +26,45 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import rsb.Event;
 import rsb.Handler;
 import rsb.filter.Filter;
 
 /**
- * @author swrede
+ * An {@link EventReceivingStrategy} that dispatches {@link Event}s using a
+ * thread pool but without any ordering guarantees.
  * 
+ * @author swrede
  */
-public class EventProcessor extends ThreadPoolExecutor {
+public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
+		implements EventReceivingStrategy {
 
 	// TODO add support for single threaded, queue receive, pull style, lazy
 	// evaluation
 	// TODO refactor to use ThreadPoolExecutor as delegate, not as derived class
 
-	Logger log = Logger.getLogger(EventProcessor.class.getName());
+	Logger log = Logger.getLogger(UnorderedParallelEventReceivingStrategy.class
+			.getName());
 
-	ArrayList<Filter> filters = new ArrayList<Filter>();
-	ArrayList<Handler> handlers = new ArrayList<Handler>();
+	private Set<Filter> filters = Collections
+			.synchronizedSet(new HashSet<Filter>());
+	private Map<Handler, Set<MatchAndDispatchTask>> handlerTasks = new HashMap<Handler, Set<MatchAndDispatchTask>>();
 
-	public EventProcessor() {
+	public UnorderedParallelEventReceivingStrategy() {
 		super(1, 1, 60, TimeUnit.SECONDS,
 				new ArrayBlockingQueue<Runnable>(1000));
 		log.fine("Creating ThreadPool with size: 1 (1)");
 		this.prestartAllCoreThreads();
 	}
 
-	public EventProcessor(int coreThreads, int maxThreads, int maxQueue) {
+	public UnorderedParallelEventReceivingStrategy(int coreThreads,
+			int maxThreads, int maxQueue) {
 		super(coreThreads, maxThreads, 60, TimeUnit.SECONDS,
 				new ArrayBlockingQueue<Runnable>(maxQueue));
 		log.fine("Creating ThreadPool with size: " + coreThreads + "("
@@ -70,26 +80,42 @@ public class EventProcessor extends ThreadPoolExecutor {
 		filters.remove(filter);
 	}
 
-	public void addHandler(Handler handler) {
-		handlers.add(handler);
+	public void addHandler(Handler handler, boolean wait) {
+		synchronized (handlerTasks) {
+			handlerTasks.put(handler, new HashSet<MatchAndDispatchTask>());
+		}
 	}
 
-	public void removeHandler(Handler handler) {
-		handlers.remove(handler);
+	public void removeHandler(Handler handler, boolean wait)
+			throws InterruptedException {
+		synchronized (handlerTasks) {
+			if (wait && handlerTasks.containsKey(handler)) {
+				while (!handlerTasks.get(handler).isEmpty()) {
+					handlerTasks.wait();
+				}
+			}
+			handlerTasks.remove(handler);
+		}
 	}
 
-	public void fire(Event event) {
+	public void handle(Event event) {
 		int count = 0;
 		event.getMetaData().setDeliverTime(0);
-		for (Handler handler : handlers) {
-			count++;
-			try {
-				this.submit(new MatchAndDispatchTask(handler, filters, event));
-			} catch (RejectedExecutionException ex) {
-				log.log(Level.SEVERE,
-						"ExecutorService rejected event matching", ex);
-			}
+		synchronized (handlerTasks) {
+			for (Handler handler : handlerTasks.keySet()) {
+				count++;
+				MatchAndDispatchTask task = new MatchAndDispatchTask(handler,
+						filters, event, handlerTasks);
+				try {
+					handlerTasks.get(handler).add(task);
+					this.submit(task);
+				} catch (RejectedExecutionException ex) {
+					handlerTasks.get(handler).remove(task);
+					log.log(Level.SEVERE,
+							"ExecutorService rejected event matching", ex);
+				}
 
+			}
 		}
 		log.fine("Dispatched event to " + count + " subscriptions");
 	}
@@ -98,8 +124,15 @@ public class EventProcessor extends ThreadPoolExecutor {
 	 * @throws InterruptedException
 	 *             thrown if waiting for shutdown was interrupted.
 	 */
-	public void waitForShutdown() throws InterruptedException {
+	public void shutdownAndWait() throws InterruptedException {
 		this.shutdown();
 		this.awaitTermination(10, TimeUnit.SECONDS);
 	}
+
+	Set<Handler> getHandlers() {
+		synchronized (handlerTasks) {
+			return handlerTasks.keySet();
+		}
+	}
+
 }

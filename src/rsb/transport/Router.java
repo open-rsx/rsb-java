@@ -27,7 +27,8 @@ import rsb.Handler;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.RSBException;
-import rsb.eventprocessing.EventProcessor;
+import rsb.eventprocessing.UnorderedParallelEventReceivingStrategy;
+import rsb.eventprocessing.EventReceivingStrategy;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.filter.FilterObservable;
@@ -39,7 +40,7 @@ public class Router extends FilterObservable implements EventHandler {
 
 	protected Port inPort;
 	protected Port outPort;
-	protected EventProcessor ep;
+	protected EventReceivingStrategy ep;
 	protected PortConfiguration config;
 
 	// protected EventProcessor epo;
@@ -119,7 +120,7 @@ public class Router extends FilterObservable implements EventHandler {
 		int qSize = Properties.getInstance().getPropertyAsInt(
 				"RSB.ThreadPool.QueueSize");
 
-		ep = new EventProcessor(cSize, mSize, qSize);
+		ep = new UnorderedParallelEventReceivingStrategy(cSize, mSize, qSize);
 	}
 
 	/**
@@ -149,7 +150,7 @@ public class Router extends FilterObservable implements EventHandler {
 			if (outPort != null)
 				outPort.deactivate();
 			if (ep != null) {
-				ep.waitForShutdown();
+				ep.shutdownAndWait();
 			}
 		} catch (RSBException e) {
 			log.log(Level.WARNING, "Error waiting for shutdown", e);
@@ -169,11 +170,11 @@ public class Router extends FilterObservable implements EventHandler {
 	}
 
 	public void addHandler(Handler handler) {
-		ep.addHandler(handler);
+		ep.addHandler(handler, true);
 	}
 
-	public void removeHandler(Handler handler) {
-		ep.removeHandler(handler);
+	public void removeHandler(Handler handler) throws InterruptedException {
+		ep.removeHandler(handler, true);
 	}
 
 	/*
@@ -184,7 +185,7 @@ public class Router extends FilterObservable implements EventHandler {
 	@Override
 	public void handle(Event e) {
 		// TODO add config checks as preconditions
-		ep.fire(e);
+		ep.handle(e);
 	}
 
 }

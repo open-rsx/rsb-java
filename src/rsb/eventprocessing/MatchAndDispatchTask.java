@@ -21,7 +21,8 @@
 package rsb.eventprocessing;
 
 import java.util.concurrent.Callable;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import rsb.Event;
 import rsb.Handler;
@@ -29,33 +30,42 @@ import rsb.filter.Filter;
 
 /**
  * @author swrede
- * 
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
 	private Handler handler;
-	private List<Filter> filters;
+	private Set<Filter> filters;
 	private Event event;
+	private Map<Handler, Set<MatchAndDispatchTask>> handlerTasks;
 
-	MatchAndDispatchTask(Handler handler, List<Filter> filters, Event event) {
+	MatchAndDispatchTask(Handler handler, Set<Filter> filters, Event event,
+			Map<Handler, Set<MatchAndDispatchTask>> handlerTasks) {
 		this.handler = handler;
 		this.filters = filters;
 		this.event = event;
+		this.handlerTasks = handlerTasks;
 	}
 
 	@Override
 	public Boolean call() throws Exception {
-		if (match(event)) {
-			try {
-				handler.internalNotify(event);
-			} catch (Exception ex) {
-				// TODO add logger, re-throw exception to user-specified
-				// exception handler
-				ex.printStackTrace();
+		try {
+			if (match(event)) {
+				try {
+					handler.internalNotify(event);
+				} catch (Throwable ex) {
+					// TODO add logger, re-throw exception to user-specified
+					// exception handler
+					ex.printStackTrace();
+				}
+				return true;
 			}
-			return true;
+			return false;
+		} finally {
+			synchronized (handlerTasks) {
+				handlerTasks.get(handler).remove(this);
+			}
+			handlerTasks.notifyAll();
 		}
-		return false;
 	}
 
 	public boolean match(Event event) {

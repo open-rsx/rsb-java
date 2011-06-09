@@ -93,7 +93,8 @@ public class Listener extends Participant {
 	}
 
 	/**
-	 * @param scope scope of this listener.
+	 * @param scope
+	 *            scope of this listener.
 	 */
 	private void initMembers(Scope scope) {
 		this.state = new ListenerStateInactive(this);
@@ -159,8 +160,12 @@ public class Listener extends Participant {
 	 *            if set to @c true, this method will return only after the
 	 *            handler has been completely removed from the event processing
 	 *            and will not be called anymore from this listener.
+	 * @throws InterruptedException
+	 *             thrown if the method is interrupted while waiting for the
+	 *             handler to be removed
 	 */
-	public void removeHandler(Handler handler, boolean wait) {
+	public void removeHandler(Handler handler, boolean wait)
+			throws InterruptedException {
 		handlers.remove(handler);
 		getRouter().removeHandler(handler);
 	}
