@@ -40,10 +40,9 @@ import rsb.transport.Converter;
  */
 public class StringConverter implements Converter<ByteBuffer> {
 
-	private final Charset charset;
-	private final String wireSchema;
-	private final ThreadLocal<CharsetEncoder> encoder;
-	private final ThreadLocal<CharsetDecoder> decoder;
+	private String wireSchema;
+	private ThreadLocal<CharsetEncoder> encoder;
+	private ThreadLocal<CharsetDecoder> decoder;
 
 	/**
 	 * Creates a converter for UTF-8 encoding with utf-8-string wire schema.
@@ -56,9 +55,11 @@ public class StringConverter implements Converter<ByteBuffer> {
 	 * Creates a converter that uses the specified encoding for strings.
 	 * 
 	 * @param encoding
-	 *            encoding for the data
+	 *            encoding name for the data
 	 * @param wireSchema
 	 *            wire schema of the serialized data
+	 * @throws IllegalArgumentException
+	 *             invalid encoding name
 	 */
 	public StringConverter(final String encoding, String wireSchema) {
 
@@ -67,7 +68,24 @@ public class StringConverter implements Converter<ByteBuffer> {
 					+ "' is not supported.");
 		}
 
-		this.charset = Charset.forName(encoding);
+		init(Charset.forName(encoding), wireSchema);
+
+	}
+
+	/**
+	 * Creates a converter that uses the specified charset for strings.
+	 * 
+	 * @param charset
+	 *            encoding for the data
+	 * @param wireSchema
+	 *            wire schema of the serialized data
+	 */
+	public StringConverter(Charset charset, String wireSchema) {
+		init(charset, wireSchema);
+	}
+
+	private void init(final Charset charset, String wireSchema) {
+
 		this.wireSchema = wireSchema;
 
 		encoder = new ThreadLocal<CharsetEncoder>() {
