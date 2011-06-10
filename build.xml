@@ -1,0 +1,219 @@
+<project name="RSBJava" default="dist">
+
+	<description>
+        Build file for Java Bindings of Robotics Service Bus Middleware
+    </description>
+
+	<property name="version" value="0.3.0" />
+	<property name="jarname" value="RSBJava-${version}.jar" />
+
+	<!-- set global properties for this build -->
+	<property file="build.properties" />
+	<property environment="env" />
+	<property name="src" location="spread-4.0.0;src;rsb-xml" />
+	<property name="build.dir" location="build" />
+	<property name="dist.dir" location="dist" />
+	<property name="test.dir" location="${build.dir}/test" />
+	<property name="lib.dir" location="lib" />
+	<property name="xom.lib" location="${lib.dir}/xom-1.1.jar" />
+	<property name="pbuf.protoc" location="/usr/bin/protoc" />
+	<property name="pbuf.lib" location="${lib.dir}/protobuf-java-2.3.0.jar" />
+	<property name="install.dir" location="${env.prefix}/lib/java" />
+	<property name="dir.report.unittests.xml" location="testreports" />
+	<property name="dir.doc" location="doc" />
+	<property name="cobertura.dir" value="${lib.dir}" />
+	<property name="cobertura.out.dir" value="coverage" />
+	<property name="instrumented.dir" value="${build.dir}/instrumented" />
+
+	<!-- set up ant-contrib -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="${lib.dir}/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${test.dir}" />
+		<mkdir dir="${instrumented.dir}" />
+		<mkdir dir="${cobertura.out.dir}" />
+		<mkdir dir="${dir.report.unittests.xml}" />
+		<mkdir dir="${dir.doc}" />
+		<echo message="Using xom: ${xom.lib}" />
+		<echo message="Using pbuf: ${pbuf.lib}" />
+		<echo message="Test report dir: ${dir.report.unittests.xml}" />
+	</target>
+
+	<!-- Create library classpath -->
+	<path id="compile.classpath">
+		<pathelement path="${classpath}" />
+		<pathelement location="${pbuf.lib}/" />
+		<pathelement location="${xom.lib}/" />
+	</path>
+	<!-- Create test classpath -->
+	<path id="test.classpath">
+		<path refid="compile.classpath" />
+		<pathelement location="${lib.dir}/junit4-4.8.1.jar" />
+		<pathelement location="${lib.dir}/hamcrest-core.jar" />
+		<pathelement location="${build.dir}/classes" />
+		<pathelement location="${test.dir}" />
+	</path>
+	<!-- Create cobertura classpath -->
+	<path id="cobertura.classpath">
+		<pathelement location="${lib.dir}/cobertura.jar" />
+		<pathelement location="${lib.dir}/asm-3.0.jar" />
+		<pathelement location="${lib.dir}/asm-tree-3.0.jar" />
+		<pathelement location="${lib.dir}/jakarta-oro-2.0.8.jar" />
+		<pathelement location="${lib.dir}/log4j-1.2.9.jar" />
+	</path>
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+	<target name="protocol">
+		<apply executable="${pbuf.protoc}">
+			<arg value="--java_out=src" />
+			<arg value="--proto_path=${pbuf.protopath}" />
+			<fileset dir="${pbuf.protopath}" includes="*.proto"/>
+			<fileset dir="${pbuf.protopath}/introspection"
+				 includes="/PortStateChange.proto" />
+		</apply>
+	</target>
+
+	<target name="compile" depends="init, protocol" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build.dir}/classes" debug="on" deprecation="on">
+			<compilerarg value="-Xlint" />
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="test-compile" depends="compile">
+		<javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test" debug="on" deprecation="on">
+			<classpath refid="test.classpath" />
+		</javac>
+		<copy todir="${test.dir}">
+			<fileset dir="test" excludes="**/*.java" />
+		</copy>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist.dir}/lib" />
+		<jar jarfile="${dist.dir}/lib/${jarname}" basedir="${build.dir}/classes">
+			<manifest>
+				<attribute name="Implementation-Vendor" value="CoR-Lab Bielefeld University" />
+				<attribute name="Implementation-Title" value="RSBJava" />
+				<attribute name="Implementation-Version" value="${version}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="test" depends="test-compile" description="JUnit tests">
+		<forget>
+			<exec executable="${spread.daemon}">
+				<arg line="-n localhost -c ${basedir}/etc/spread.conf" />
+			</exec>
+		</forget>
+
+		<sleep seconds="10" />
+
+		<junit printsummary="yes" haltonfailure="false">
+			<formatter type="xml" />
+			<formatter type="plain" usefile="false" />
+			<classpath refid="test.classpath" />
+			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
+				<fileset dir="test">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="coverage" depends="test-compile" description="JUnit tests">
+
+		<delete dir="${cobertura.out.dir}" />
+		<delete file="cobertura.ser" />
+
+		<!-- first instrument the source code -->
+		<cobertura-instrument todir="${instrumented.dir}">
+			<ignore regex="org.apache.log4j.*" />
+			<fileset dir="${build.dir}/classes">
+				<include name="**/*.class" />
+				<exclude name="rsb/protocol/**/*.class" />
+				<exclude name="org/**/*.class" />
+				<exclude name="spread/**/*.class" />
+			</fileset>
+		</cobertura-instrument>
+
+		<forget>
+			<exec executable="${spread.daemon}">
+				<arg line="-n localhost -c ${basedir}/etc/spread.conf" />
+			</exec>
+		</forget>
+
+		<sleep seconds="10" />
+
+		<junit printsummary="yes" haltonfailure="false">
+
+			<formatter type="xml" />
+			<formatter type="plain" usefile="false" />
+
+			<classpath location="${instrumented.dir}" />
+			<classpath refid="test.classpath" />
+			<classpath refid="cobertura.classpath" />
+
+			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
+				<fileset dir="test">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+
+		</junit>
+
+		<!-- generate cobvertura report -->
+		<cobertura-report format="xml" destdir="${cobertura.out.dir}">
+			<fileset dir="src">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="rsb-xml">
+				<include name="**/*.java" />
+			</fileset>
+		</cobertura-report>
+
+	</target>
+
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build.dir}" />
+		<delete dir="src/rsb/protocol" />
+		<delete dir="${test.dir}" />
+		<delete dir="${instrumented.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${cobertura.out.dir}" />
+		<delete file="cobertura.ser" />
+		<delete dir="${dir.doc}" />
+	</target>
+
+	<target name="install" depends="dist">
+		<echo message="Installing to ${install.dir}." />
+		<mkdir dir="${install.dir}" />
+		<copy file="${dist.dir}/lib/${jarname}" todir="${install.dir}" />
+		<symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/${jarname}" overwrite="true" />
+	</target>
+
+	<target name="doc">
+		<javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true" windowtitle="RSBJava">
+
+			<fileset dir="." defaultexcludes="yes">
+				<exclude name="**/jaxen/**/*" />
+				<include name="src/**/*.java" />
+				<include name="rsb-xml/**/*.java" />
+			</fileset>
+
+		</javadoc>
+	</target>
+
+</project>
