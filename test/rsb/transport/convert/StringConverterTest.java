@@ -23,9 +23,14 @@ package rsb.transport.convert;
 import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.util.LinkedList;
 
 import org.junit.Test;
 
+import rsb.transport.ConversionException;
 import rsb.transport.Converter.WireContents;
 import rsb.transport.convert.StringConverter;
 
@@ -51,7 +56,29 @@ public class StringConverterTest {
 		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
 				.getData();
 		String s2 = (String) o;
-		assertTrue(s2.equals(s1));
+		assertEquals(s1, s2);
+	}
+
+	@Test(expected = ConversionException.class)
+	public void serializationNotAStringError() throws Throwable {
+		StringConverter c = new StringConverter();
+		c.serialize("string", new LinkedList<Integer>());
+	}
+
+	@Test(expected = ConversionException.class)
+	public void serializationEncodingError() throws Throwable {
+		String withNonAscii = "đħħ←ŋæ¶æŧđ";
+		StringConverter c = new StringConverter("US-ASCII", "ascii-string");
+		c.serialize("string", withNonAscii);
+	}
+
+	@Test(expected = ConversionException.class)
+	public void deserializationEncodingError() throws Throwable {
+		String withNonAscii = "đħħ←ŋæ¶æŧđ";
+		CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
+		ByteBuffer buffer = encoder.encode(CharBuffer.wrap(withNonAscii));
+		StringConverter c = new StringConverter("US-ASCII", "ascii-string");
+		c.deserialize("ascii-string", buffer);
 	}
 
 }
