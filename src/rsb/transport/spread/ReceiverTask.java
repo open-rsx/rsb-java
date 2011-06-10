@@ -23,6 +23,7 @@ package rsb.transport.spread;
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -33,7 +34,9 @@ import rsb.Scope;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
+import rsb.transport.ConversionException;
 import rsb.transport.Converter;
+import rsb.transport.Converter.UserData;
 import rsb.transport.EventHandler;
 import spread.SpreadException;
 import spread.SpreadMessage;
@@ -125,14 +128,18 @@ class ReceiverTask extends Thread {
 			if (joinedData != null) {
 
 				log.fine("decoding notification");
-				Event e = new Event(n.getWireSchema().toStringUtf8());
+				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
 				e.setId(new Id(n.getId().toByteArray()));
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
-				Converter<ByteBuffer> c = converters.get(e.getType());
-				e.setData(c.deserialize(e.getType(), joinedData).value);
+				// TODO this selection is a real stub!!!!
+				Converter<ByteBuffer> c = converters.get("string");
+				UserData userData = c.deserialize(n.getWireSchema()
+						.toStringUtf8(), joinedData);
+				e.setData(userData.getData());
+				e.setType(userData.getTypeInfo());
 				log.finest("returning event with id: " + e.getId());
 
 				// metadata
@@ -155,9 +162,12 @@ class ReceiverTask extends Thread {
 				return null;
 			}
 
+			// TODO better error handling with callback object
 		} catch (InvalidProtocolBufferException e1) {
-			e1.printStackTrace();
-			// TODO throw exception
+			log.log(Level.SEVERE, "Error decoding protocol buffer", e1);
+			return null;
+		} catch (ConversionException e1) {
+			log.log(Level.SEVERE, "Error deserializing user data", e1);
 			return null;
 		}
 

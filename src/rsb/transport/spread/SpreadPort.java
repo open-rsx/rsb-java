@@ -41,11 +41,11 @@ import rsb.protocol.Protocol.MetaData;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
+import rsb.transport.ConversionException;
 import rsb.transport.Converter;
 import rsb.transport.AbstractPort;
+import rsb.transport.Converter.WireContents;
 import rsb.transport.EventHandler;
-import rsb.transport.convert.ByteBufferConverter;
-import rsb.util.Holder;
 import rsb.util.InvalidPropertyException;
 import rsb.util.Properties;
 import spread.SpreadException;
@@ -209,14 +209,15 @@ public class SpreadPort extends AbstractPort {
 
 	}
 
-	public void push(Event e) {
+	@Override
+	public void push(Event e) throws ConversionException {
 
 		// convert data
 		// TODO deal with missing converter
 		Converter<ByteBuffer> converter = converters.get(e.getType());
-		Holder<ByteBuffer> convertedDataBuffer = converter.serialize("string",
-				e.getData());
-		int dataSize = convertedDataBuffer.value.limit();
+		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
+				e.getType(), e.getData());
+		int dataSize = convertedDataBuffer.getSerialization().limit();
 
 		// find out how many messages are required to send the data
 		int requiredParts = 1;
@@ -236,8 +237,8 @@ public class SpreadPort extends AbstractPort {
 			// notification metadata
 			notificationBuilder.setId(ByteString.copyFrom(e.getId()
 					.toByteArray()));
-			notificationBuilder.setWireSchema(ByteString.copyFromUtf8(e
-					.getType()));
+			notificationBuilder.setWireSchema(ByteString
+					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
 					.toString()));
 
@@ -265,8 +266,8 @@ public class SpreadPort extends AbstractPort {
 			if (part == requiredParts - 1) {
 				fragmentSize = dataSize - MAX_MSG_SIZE * part;
 			}
-			ByteString dataPart = ByteString.copyFrom(
-					convertedDataBuffer.value.array(), part * MAX_MSG_SIZE,
+			ByteString dataPart = ByteString.copyFrom(convertedDataBuffer
+					.getSerialization().array(), part * MAX_MSG_SIZE,
 					fragmentSize);
 			if (part != requiredParts - 1) {
 				assert dataPart.size() == MAX_MSG_SIZE;
@@ -354,8 +355,8 @@ public class SpreadPort extends AbstractPort {
 		return "SpreadPort";
 	}
 
-	public void addConverter(String s, ByteBufferConverter bbc) {
-		converters.put(s, bbc);
+	public void addConverter(String typeInfo, Converter<ByteBuffer> converter) {
+		converters.put(typeInfo, converter);
 	}
 
 	@Override

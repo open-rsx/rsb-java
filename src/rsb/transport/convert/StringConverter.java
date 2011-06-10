@@ -20,43 +20,123 @@
  */
 package rsb.transport.convert;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
+
+import rsb.transport.ConversionException;
 import rsb.transport.Converter;
-import rsb.util.Holder;
 
 /**
+ * A converter with wire type {@link ByteBuffer} that is capable of handling
+ * strings with different encodings.
+ * 
  * @author swrede
- *
+ * @author jwienke
  */
-public class StringConverter implements Converter<String> {
+public class StringConverter implements Converter<ByteBuffer> {
 
-	// TODO throw exceptions instead returning null
-	
+	private final Charset charset;
+	private final String wireSchema;
+	private final ThreadLocal<CharsetEncoder> encoder;
+	private final ThreadLocal<CharsetDecoder> decoder;
+
 	/**
-	 * Converts Strings to String representations...
-	 * 
-	 * @param typeinfo name of type to be serialized
-	 * @param s object object to be serialized to String encoding
+	 * Creates a converter for UTF-8 encoding with utf-8-string wire schema.
 	 */
-	@Override
-	public Holder<String> serialize(String typeinfo, Object s) {
-		if (typeinfo.equals("string")) {
-			return new Holder<String>((String) s);
-		}
-		return null;
+	public StringConverter() {
+		this("UTF-8", "utf-8-string");
 	}
 
 	/**
-	 * Converts String representations to Strings...
+	 * Creates a converter that uses the specified encoding for strings.
 	 * 
-	 * @param typeinfo name of type to be deserialized
-	 * @param s string representation of object to be deserialized
+	 * @param encoding
+	 *            encoding for the data
+	 * @param wireSchema
+	 *            wire schema of the serialized data
 	 */
-	@Override
-	public Holder<Object> deserialize(String typeinfo, String s) {
-		if (typeinfo.equals("string")) {			
-			return new Holder<Object>(s);
+	public StringConverter(final String encoding, String wireSchema) {
+
+		if (!Charset.isSupported(encoding)) {
+			throw new IllegalArgumentException("Encoding '" + encoding
+					+ "' is not supported.");
 		}
-		return null;
-	}	
-	
+
+		this.charset = Charset.forName(encoding);
+		this.wireSchema = wireSchema;
+
+		encoder = new ThreadLocal<CharsetEncoder>() {
+
+			@Override
+			protected CharsetEncoder initialValue() {
+				CharsetEncoder encoder = charset.newEncoder();
+				encoder.onMalformedInput(CodingErrorAction.REPORT);
+				encoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+				return encoder;
+			}
+
+		};
+		decoder = new ThreadLocal<CharsetDecoder>() {
+
+			@Override
+			protected CharsetDecoder initialValue() {
+				CharsetDecoder decoder = charset.newDecoder();
+				decoder.onMalformedInput(CodingErrorAction.REPORT);
+				decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+				return decoder;
+			}
+
+		};
+
+	}
+
+	@Override
+	public WireContents<ByteBuffer> serialize(String typeInfo, Object data)
+			throws ConversionException {
+
+		try {
+
+			String string = (String) data;
+
+			ByteBuffer serialized = encoder.get().encode(
+					CharBuffer.wrap(string));
+			return new WireContents<ByteBuffer>(serialized, wireSchema);
+
+		} catch (ClassCastException e) {
+			throw new ConversionException(
+					"Input data for serializing must be strings.", e);
+		} catch (CharacterCodingException e) {
+			throw new ConversionException(
+					"Error serializing input data because of a charset problem.",
+					e);
+		}
+
+	}
+
+	@Override
+	public UserData deserialize(String wireSchema, ByteBuffer bytes)
+			throws ConversionException {
+
+		if (!wireSchema.equals(this.wireSchema)) {
+			throw new ConversionException("Unexpected wire schema '"
+					+ wireSchema + "', expected '" + this.wireSchema + "'.");
+		}
+
+		try {
+
+			String string = decoder.get().decode(bytes).toString();
+			return new UserData(string, "string");
+
+		} catch (CharacterCodingException e) {
+			throw new ConversionException(
+					"Error deserializing wire data because of a charset problem.",
+					e);
+		}
+
+	}
 }

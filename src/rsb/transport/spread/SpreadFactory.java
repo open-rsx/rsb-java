@@ -23,7 +23,7 @@ package rsb.transport.spread;
 import rsb.transport.EventHandler;
 import rsb.transport.Port;
 import rsb.transport.TransportFactory;
-import rsb.transport.convert.ByteBufferConverter;
+import rsb.transport.convert.StringConverter;
 
 /**
  * 
@@ -34,7 +34,7 @@ public class SpreadFactory extends TransportFactory {
 	@Override
 	public Port createPort(EventHandler handler) {
 		SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler);
-		sp.addConverter("string", new ByteBufferConverter());
+		sp.addConverter("string", new StringConverter());
 		return sp;
 	}
 

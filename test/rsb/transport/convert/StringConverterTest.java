@@ -22,41 +22,34 @@ package rsb.transport.convert;
 
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Test;
 
+import rsb.transport.Converter.WireContents;
 import rsb.transport.convert.StringConverter;
-import rsb.util.Holder;
 
 /**
  * @author swrede
  */
 public class StringConverterTest {
 
-	/**
-	 * Test method for
-	 * {@link rsb.transport.convert.StringConverter#serialize(java.lang.String, java.lang.Object)}
-	 * .
-	 */
 	@Test
-	public void testSerialize() {
+	public void serialize() throws Throwable {
 		StringConverter c = new StringConverter();
 		String s = "testcase";
-		Holder<String> buf = c.serialize("string", s);
+		WireContents<ByteBuffer> buf = c.serialize("string", s);
 		assertNotNull(buf);
 	}
 
-	/**
-	 * Test method for
-	 * {@link rsb.transport.convert.StringConverter#deserialize(java.lang.String, rsb.util.Holder)}
-	 * .
-	 */
 	@Test
-	public void testDeserialize() {
+	public void roundtrip() throws Throwable {
 		StringConverter c = new StringConverter();
 		String s1 = "testcase";
-		Holder<String> buf = c.serialize("string", s1);
+		WireContents<ByteBuffer> buf = c.serialize("string", s1);
 		assertNotNull(buf);
-		Object o = c.deserialize("string", buf.value).value;
+		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
+				.getData();
 		String s2 = (String) o;
 		assertTrue(s2.equals(s1));
 	}

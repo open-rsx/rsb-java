@@ -148,7 +148,7 @@ public class InformerTest {
 	 * @throws InitializeException
 	 */
 	@Test
-	public void testSendEvent() throws InitializeException {
+	public void testSendEvent() throws Throwable {
 		Event e = informer.send(new Event(defaultScope, "string",
 				"Hello World!"));
 		testEvent(e, informer);
@@ -160,7 +160,7 @@ public class InformerTest {
 	 * @throws InitializeException
 	 */
 	@Test
-	public void testSendT() throws InitializeException {
+	public void testSendT() throws Throwable {
 		Event e = informer.send("Hello World!");
 		testEvent(e, informer);
 	}
@@ -191,7 +191,7 @@ public class InformerTest {
 		e.setData("foo");
 		informer.send(e);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendEventWrongType() throws Throwable {
 		Event e = new Event();

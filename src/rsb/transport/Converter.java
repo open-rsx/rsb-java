@@ -20,8 +20,6 @@
  */
 package rsb.transport;
 
-import rsb.util.Holder;
-
 /**
  * This class represents a converter interface for a wire format T.
  * Implementations may support one or more domain types for (de-)serialization
@@ -29,11 +27,120 @@ import rsb.util.Holder;
  * parameter.
  * 
  * @author swrede
+ * @param <WireType>
+ *            the wire format to serialize on
  */
-public interface Converter<T> {
+public interface Converter<WireType> {
 
-	public Holder<T> serialize(String typeInfo, Object obj);
+	/**
+	 * A wrapper around the contents to be place on the wire.
+	 * 
+	 * @author jwienke
+	 * @param <WireType>
+	 *            serialization type of the wire contents
+	 */
+	public class WireContents<WireType> {
 
-	public Holder<Object> deserialize(String typeInfo, T buffer);
+		private WireType serialization;
+		private String wireSchema;
+
+		/**
+		 * Constructs a new wrapper around serialized data.
+		 * 
+		 * @param serialization
+		 *            the serialized data
+		 * @param wireSchema
+		 *            the wire schema identifier of the serialized data
+		 */
+		public WireContents(WireType serialization, String wireSchema) {
+			this.serialization = serialization;
+			this.wireSchema = wireSchema;
+		}
+
+		/**
+		 * Returns the contents for the wire in their serialized form.
+		 * 
+		 * @return serialized contents
+		 */
+		public WireType getSerialization() {
+			return serialization;
+		}
+
+		/**
+		 * Returns the identifier of the wire schema that was used to serialize
+		 * the contents.
+		 * 
+		 * @return wire schema identifier
+		 */
+		public String getWireSchema() {
+			return wireSchema;
+		}
+
+	}
+
+	/**
+	 * A wrapper around deserialized data that contains the unspecific
+	 * {@link Object} instance with a string describing its type.
+	 * 
+	 * @author jwienke
+	 */
+	public class UserData {
+
+		private Object data;
+		private String typeInfo;
+
+		public UserData(Object data, String typeInfo) {
+			this.data = data;
+			this.typeInfo = typeInfo;
+		}
+
+		/**
+		 * Returns the deserialized data.
+		 * 
+		 * @return deserialized data
+		 */
+		public Object getData() {
+			return data;
+		}
+
+		/**
+		 * String describing the type of the deserialized data.
+		 * 
+		 * @return
+		 */
+		public String getTypeInfo() {
+			return typeInfo;
+		}
+
+	}
+
+	/**
+	 * Serializes user data to a wire representation.
+	 * 
+	 * @param typeInfo
+	 *            programming language specific string describing the data to
+	 *            serialize
+	 * @param obj
+	 *            data to serialize
+	 * @return serialized data and generated wire schema
+	 * @throws ConversionException
+	 *             error converting the data
+	 */
+	public WireContents<WireType> serialize(String typeInfo, Object obj)
+			throws ConversionException;
+
+	/**
+	 * Deserializes the data from the wire.
+	 * 
+	 * @param wireSchema
+	 *            wire schema of the serialized data
+	 * @param buffer
+	 *            serialized data
+	 * @return deserialized data
+	 * @throws ConversionException
+	 *             error deserializing from the wire
+	 */
+	public UserData deserialize(String wireSchema, WireType buffer)
+			throws ConversionException;
 
 }

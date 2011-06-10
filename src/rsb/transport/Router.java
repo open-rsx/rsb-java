@@ -126,7 +126,7 @@ public class Router extends FilterObservable implements EventHandler {
 		throw new RuntimeException("Router::publish method not implemented!");
 	}
 
-	public void publishSync(Event e) {
+	public void publishSync(Event e) throws ConversionException {
 		// TODO add config checks as preconditions
 		// send event sync?
 		log.fine("Router publishing new event to port: [EventID:"

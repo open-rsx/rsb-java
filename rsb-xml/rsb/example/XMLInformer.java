@@ -38,8 +38,7 @@ public class XMLInformer {
 	 * @throws InterruptedException
 	 * @throws SyntaxException
 	 */
-	public static void main(String[] args) throws InitializeException,
-			InterruptedException, SyntaxException {
+	public static void main(String[] args) throws Throwable {
 		Informer<String> p = Factory.getInstance().createInformer(
 				new Scope("/example/informer"));
 		p.activate();

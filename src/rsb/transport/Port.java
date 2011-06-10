@@ -10,7 +10,7 @@ import rsb.filter.FilterObserver;
  */
 public interface Port extends RSBObject, FilterObserver {
 
-	public void push(Event e);
+	public void push(Event e) throws ConversionException;
 
 	public String getType();
 

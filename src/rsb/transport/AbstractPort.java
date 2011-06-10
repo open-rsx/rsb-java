@@ -10,7 +10,8 @@ import rsb.filter.AbstractFilterObserver;
 public abstract class AbstractPort extends AbstractFilterObserver implements
 		Port {
 
-	public void push(Event e) {
+	@Override
+	public void push(Event e) throws ConversionException {
 	}
 
 }

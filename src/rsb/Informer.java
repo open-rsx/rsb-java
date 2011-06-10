@@ -26,7 +26,7 @@ import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
 /**
- * This class offers a method to publish events to channel, reaching all
+ * This class offers a method to publish events to a channel, reaching all
  * participating Listeners. This n:m-communication is one of the basic
  * communication patterns offered by RSB.
  * 
@@ -78,7 +78,7 @@ public class Informer<T> extends Participant {
 					+ typeinfo + "]");
 		}
 
-		protected Event send(Event e) {
+		protected Event send(Event e) throws RSBException {
 
 			if (!typeinfo.equals(e.getType())) {
 				throw new IllegalArgumentException(
@@ -93,10 +93,10 @@ public class Informer<T> extends Participant {
 			e.getMetaData().setSenderId(getId());
 			getRouter().publishSync(e);
 			return e;
-			
+
 		}
 
-		protected Event send(T d) {
+		protected Event send(T d) throws RSBException {
 			Event e = new Event(getScope(), typeinfo, (Object) d);
 			return send(e);
 		}
@@ -144,11 +144,13 @@ public class Informer<T> extends Participant {
 	 * @param e
 	 *            the event to send
 	 * @return modified event with set timing information
+	 * @throws RSBException
+	 *             error sending event
 	 * @throws IllegalArgumentException
 	 *             if the event is not complete or does not match the type or
 	 *             scope settings of the informer
 	 */
-	public synchronized Event send(Event e) {
+	public synchronized Event send(Event e) throws RSBException {
 		return state.send(e);
 	}
 
@@ -158,8 +160,10 @@ public class Informer<T> extends Participant {
 	 * @param d
 	 *            data to send with default setting from the informer
 	 * @return generated event
+	 * @throws RSBException
+	 *             error sending event
 	 */
-	public synchronized Event send(T d) {
+	public synchronized Event send(T d) throws RSBException {
 		return state.send(d);
 	}
 

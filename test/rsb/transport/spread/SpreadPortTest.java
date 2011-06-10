@@ -40,7 +40,7 @@ import rsb.Scope;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
-import rsb.transport.convert.ByteBufferConverter;
+import rsb.transport.convert.StringConverter;
 
 /**
  * @author jwienke
@@ -57,7 +57,7 @@ public class SpreadPortTest {
 		outPort = new SpreadPort(outWrapper, null);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
-		outPort.addConverter("string", new ByteBufferConverter());
+		outPort.addConverter("string", new StringConverter());
 		outPort.activate();
 
 	}
@@ -93,7 +93,7 @@ public class SpreadPortTest {
 				}
 
 			});
-			inPort.addConverter("string", new ByteBufferConverter());
+			inPort.addConverter("string", new StringConverter());
 
 			inPort.activate();
 
@@ -177,7 +177,7 @@ public class SpreadPortTest {
 			}
 
 		});
-		inPort.addConverter("string", new ByteBufferConverter());
+		inPort.addConverter("string", new StringConverter());
 		inPort.activate();
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 

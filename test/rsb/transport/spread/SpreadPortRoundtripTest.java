@@ -21,7 +21,7 @@ import rsb.QualityOfServiceSpec.Reliability;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
-import rsb.transport.convert.ByteBufferConverter;
+import rsb.transport.convert.StringConverter;
 
 /**
  * Test for {@link SpreadPort}.
@@ -51,7 +51,7 @@ public class SpreadPortRoundtripTest {
 		SpreadPort outPort = new SpreadPort(outWrapper, null);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
-		outPort.addConverter("string", new ByteBufferConverter());
+		outPort.addConverter("string", new StringConverter());
 
 		final List<Event> receivedEvents = new ArrayList<Event>();
 		SpreadWrapper inWrapper = new SpreadWrapper();
@@ -66,7 +66,7 @@ public class SpreadPortRoundtripTest {
 			}
 
 		});
-		inPort.addConverter("string", new ByteBufferConverter());
+		inPort.addConverter("string", new StringConverter());
 
 		inPort.activate();
 		outPort.activate();
