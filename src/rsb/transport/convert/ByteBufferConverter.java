@@ -21,21 +21,21 @@
 package rsb.transport.convert;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 import rsb.transport.AbstractConverter;
 import rsb.util.Holder;
 
 /**
  * @author swrede
- *
  */
 public class ByteBufferConverter implements AbstractConverter<ByteBuffer> {
 
 	@Override
-	public Holder<Object> deserialize(String typeinfo,
-			ByteBuffer buffer) {
-		if (typeinfo.equals("string")) {			
-			return new Holder<Object>(new String(buffer.array()));
+	public Holder<Object> deserialize(String typeinfo, ByteBuffer buffer) {
+		if (typeinfo.equals("string")) {
+			return new Holder<Object>(new String(buffer.array(),
+					Charset.forName("US-ASCII")));
 		}
 		return null;
 	}
@@ -43,7 +43,8 @@ public class ByteBufferConverter implements AbstractConverter<ByteBuffer> {
 	@Override
 	public Holder<ByteBuffer> serialize(String typeinfo, Object s) {
 		if (typeinfo.equals("string")) {
-			ByteBuffer bb = ByteBuffer.wrap(((String) s).getBytes());
+			ByteBuffer bb = ByteBuffer.wrap(((String) s).getBytes(Charset
+					.forName("US-ASCII")));
 			return new Holder<ByteBuffer>(bb);
 		}
 		return null;
