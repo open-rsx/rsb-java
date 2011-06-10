@@ -14,6 +14,7 @@
 	<property name="build.dir" location="build" />
 	<property name="dist.dir" location="dist" />
 	<property name="test.dir" location="${build.dir}/test" />
+	<property name="examples.dir" location="${build.dir}/examples" />
 	<property name="lib.dir" location="lib" />
 	<property name="xom.lib" location="${lib.dir}/xom-1.1.jar" />
 	<property name="pbuf.protoc" location="/usr/bin/protoc" />
@@ -39,6 +40,7 @@
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.dir}/classes" />
 		<mkdir dir="${test.dir}" />
+		<mkdir dir="${examples.dir}" />
 		<mkdir dir="${instrumented.dir}" />
 		<mkdir dir="${cobertura.out.dir}" />
 		<mkdir dir="${dir.report.unittests.xml}" />
@@ -53,6 +55,11 @@
 		<pathelement path="${classpath}" />
 		<pathelement location="${pbuf.lib}/" />
 		<pathelement location="${xom.lib}/" />
+	</path>
+	<!-- Create examples classpath -->
+	<path id="examples.classpath">
+		<path refid="compile.classpath" />
+		<pathelement location="${build.dir}/classes" />
 	</path>
 	<!-- Create test classpath -->
 	<path id="test.classpath">
@@ -76,9 +83,8 @@
 		<apply executable="${pbuf.protoc}">
 			<arg value="--java_out=src" />
 			<arg value="--proto_path=${pbuf.protopath}" />
-			<fileset dir="${pbuf.protopath}" includes="*.proto"/>
-			<fileset dir="${pbuf.protopath}/introspection"
-				 includes="/PortStateChange.proto" />
+			<fileset dir="${pbuf.protopath}" includes="*.proto" />
+			<fileset dir="${pbuf.protopath}/introspection" includes="/PortStateChange.proto" />
 		</apply>
 	</target>
 
@@ -87,6 +93,11 @@
 		<javac srcdir="${src}" destdir="${build.dir}/classes" debug="on" deprecation="on">
 			<compilerarg value="-Xlint" />
 			<classpath refid="compile.classpath" />
+		</javac>
+		<!-- Compile the examples -->
+		<javac srcdir="examples" destdir="${examples.dir}" debug="on" deprecation="on">
+			<compilerarg value="-Xlint" />
+			<classpath refid="examples.classpath" />
 		</javac>
 	</target>
 

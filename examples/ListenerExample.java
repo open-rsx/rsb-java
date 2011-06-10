@@ -18,38 +18,41 @@
  *
  * ============================================================
  */
-package rsb.example;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rsb.DataHandler;
 import rsb.EventHandler;
 import rsb.Factory;
-import rsb.InitializeException;
 import rsb.Event;
 import rsb.Scope;
 import rsb.Listener;
-import rsb.naming.NotFoundException;
 
 /**
- * @author swrede
+ * An example that demonstrated how to receive events in java.
  * 
+ * @author swrede
  */
-public class SubscriberExample {
+public class ListenerExample {
 
 	static AtomicInteger counter1 = new AtomicInteger(0);
 	static AtomicInteger counter2 = new AtomicInteger(0);
 	static Object l = new Object();
 
-	private synchronized static boolean allEventsDelivered() {
-		return !((counter1.get() != 1200) || (counter2.get() != 1200));
-	}
+	public static void main(String[] args) throws Throwable {
 
-	public static void main(String[] args) throws InitializeException,
-			NotFoundException, InterruptedException {
-		Listener sub = Factory.getInstance().createListener(
-				new Scope("/example/informer"));
+		// get a factory instance to create new RSB domain objects
+		Factory factory = Factory.getInstance();
+
+		// create a Listener instance on the specified scope that will receive
+		// events and dispatches them asynchronously to all registered handlers
+		Listener sub = factory.createListener(new Scope("/example/informer"));
+
+		// activate the listener to be ready for work
 		sub.activate();
+
+		// add an EventHandler that will receive complete Event instances
+		// whenever they are received
 		sub.addHandler(new EventHandler() {
 
 			@Override
@@ -67,17 +70,14 @@ public class SubscriberExample {
 			}
 
 		}, true);
+
+		// add a DataHandler that is notified directly with the data grabbed
+		// from the received event
 		sub.addHandler(new DataHandler<String>() {
 
 			@Override
 			public void handleEvent(String e) {
 				try {
-					// try {
-					// Thread.sleep(1);
-					// } catch (InterruptedException e1) {
-					// // TODO Auto-generated catch block
-					// e1.printStackTrace();
-					// }
 					counter2.getAndIncrement();
 					if (counter2.get() % 100 == 0) {
 						System.out.println("Data received: " + e + " event # "
@@ -94,12 +94,22 @@ public class SubscriberExample {
 			}
 
 		}, true);
+
+		// wait that enough events are received
 		while (!allEventsDelivered()) {
 			synchronized (l) {
 				l.wait();
 				System.out.println("Wake-Up!!!");
 			}
 		}
+
+		// as there is no explicit removal model in java, always manually
+		// deactivate the listener if it is not needed anymore
 		sub.deactivate();
 	};
+
+	private synchronized static boolean allEventsDelivered() {
+		return !((counter1.get() != 1200) || (counter2.get() != 1200));
+	}
+
 }
