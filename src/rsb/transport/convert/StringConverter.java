@@ -31,7 +31,7 @@ public class StringConverter implements AbstractConverter<String> {
 
 	// TODO throw exceptions instead returning null
 	
-	/* 
+	/**
 	 * Converts Strings to String representations...
 	 * 
 	 * @param typeinfo name of type to be serialized
@@ -45,7 +45,7 @@ public class StringConverter implements AbstractConverter<String> {
 		return null;
 	}
 
-	/* 
+	/**
 	 * Converts String representations to Strings...
 	 * 
 	 * @param typeinfo name of type to be deserialized
