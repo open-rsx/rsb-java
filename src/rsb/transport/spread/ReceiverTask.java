@@ -33,7 +33,7 @@ import rsb.Scope;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
-import rsb.transport.AbstractConverter;
+import rsb.transport.Converter;
 import rsb.transport.EventHandler;
 import spread.SpreadException;
 import spread.SpreadMessage;
@@ -57,7 +57,7 @@ class ReceiverTask extends Thread {
 
 	private EventHandler eventHandler;
 
-	private Map<String, AbstractConverter<ByteBuffer>> converters;
+	private Map<String, Converter<ByteBuffer>> converters;
 
 	private AssemblyPool pool = new AssemblyPool();
 
@@ -66,7 +66,7 @@ class ReceiverTask extends Thread {
 	 * @param converters
 	 */
 	ReceiverTask(SpreadWrapper spreadWrapper, EventHandler r,
-			Map<String, AbstractConverter<ByteBuffer>> converters) {
+			Map<String, Converter<ByteBuffer>> converters) {
 		this.spread = spreadWrapper;
 		this.eventHandler = r;
 		this.converters = converters;
@@ -131,7 +131,7 @@ class ReceiverTask extends Thread {
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
-				AbstractConverter<ByteBuffer> c = converters.get(e.getType());
+				Converter<ByteBuffer> c = converters.get(e.getType());
 				e.setData(c.deserialize(e.getType(), joinedData).value);
 				log.finest("returning event with id: " + e.getId());
 

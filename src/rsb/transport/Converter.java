@@ -23,17 +23,17 @@ package rsb.transport;
 import rsb.util.Holder;
 
 /**
- * @author swrede
- *
- * AbstractConverter<T> represents a converter interface for 
- * a wire format T. Implementations may support one or more
- * domain types for (de-)serialization to T and back to a 
- * specific object type referenced through the typeinfo parameter.
+ * This class represents a converter interface for a wire format T.
+ * Implementations may support one or more domain types for (de-)serialization
+ * to T and back to a specific object type referenced through the typeinfo
+ * parameter.
  * 
+ * @author swrede
  */
-public interface AbstractConverter<T> {
-	
-	public Holder<T> serialize(String typeinfo, Object obj);
-	public Holder<Object> deserialize(String typeinfo, T buffer);	
+public interface Converter<T> {
+
+	public Holder<T> serialize(String typeInfo, Object obj);
+
+	public Holder<Object> deserialize(String typeInfo, T buffer);
 
 }

@@ -41,7 +41,7 @@ import rsb.protocol.Protocol.MetaData;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
-import rsb.transport.AbstractConverter;
+import rsb.transport.Converter;
 import rsb.transport.AbstractPort;
 import rsb.transport.EventHandler;
 import rsb.transport.convert.ByteBufferConverter;
@@ -108,7 +108,7 @@ public class SpreadPort extends AbstractPort {
 	 */
 
 	private SpreadWrapper spread = null;
-	private Map<String, AbstractConverter<ByteBuffer>> converters = new HashMap<String, AbstractConverter<ByteBuffer>>();
+	private Map<String, Converter<ByteBuffer>> converters = new HashMap<String, Converter<ByteBuffer>>();
 
 	/**
 	 * @param sw
@@ -213,7 +213,7 @@ public class SpreadPort extends AbstractPort {
 
 		// convert data
 		// TODO deal with missing converter
-		AbstractConverter<ByteBuffer> converter = converters.get(e.getType());
+		Converter<ByteBuffer> converter = converters.get(e.getType());
 		Holder<ByteBuffer> convertedDataBuffer = converter.serialize("string",
 				e.getData());
 		int dataSize = convertedDataBuffer.value.limit();

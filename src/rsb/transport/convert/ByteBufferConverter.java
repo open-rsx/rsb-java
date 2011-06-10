@@ -23,13 +23,13 @@ package rsb.transport.convert;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import rsb.transport.AbstractConverter;
+import rsb.transport.Converter;
 import rsb.util.Holder;
 
 /**
  * @author swrede
  */
-public class ByteBufferConverter implements AbstractConverter<ByteBuffer> {
+public class ByteBufferConverter implements Converter<ByteBuffer> {
 
 	@Override
 	public Holder<Object> deserialize(String typeinfo, ByteBuffer buffer) {

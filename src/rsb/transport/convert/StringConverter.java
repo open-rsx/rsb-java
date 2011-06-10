@@ -20,14 +20,14 @@
  */
 package rsb.transport.convert;
 
-import rsb.transport.AbstractConverter;
+import rsb.transport.Converter;
 import rsb.util.Holder;
 
 /**
  * @author swrede
  *
  */
-public class StringConverter implements AbstractConverter<String> {
+public class StringConverter implements Converter<String> {
 
 	// TODO throw exceptions instead returning null
 	
