@@ -35,7 +35,7 @@ public class StringConverter implements AbstractConverter<String> {
 	 * Converts Strings to String representations...
 	 * 
 	 * @param typeinfo name of type to be serialized
-	 * @param s object object to be serizalied to String encoding
+	 * @param s object object to be serialized to String encoding
 	 */
 	@Override
 	public Holder<String> serialize(String typeinfo, Object s) {
