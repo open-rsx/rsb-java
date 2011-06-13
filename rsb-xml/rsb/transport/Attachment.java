@@ -13,8 +13,8 @@ import java.io.Serializable;
 /**
  * Wraps binary data which can then be attached to {@link XOPData}.
  * 
- * @see XOPData.addAttachment(String, Attachment)
- * @see XOPData.getAttachment(String)
+ * @see XOPData#addAttachment(String, Attachment)
+ * @see XOPData#getAttachment(String)
  * @see XOPData
  * @author swrede
  */

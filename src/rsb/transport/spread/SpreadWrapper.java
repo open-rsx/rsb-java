@@ -128,9 +128,6 @@ public class SpreadWrapper implements RSBObject {
 
 	/**
 	 * Create a new Manager, assuming a spread daemon on localhost, port 4803.
-	 * 
-	 * @param name
-	 *            Name for this manager
 	 */
 	public SpreadWrapper() {
 		port = props.getPropertyAsInt("transport.spread.port");

@@ -106,7 +106,7 @@ public interface Converter<WireType> {
 		/**
 		 * String describing the type of the deserialized data.
 		 * 
-		 * @return
+		 * @return string type info
 		 */
 		public String getTypeInfo() {
 			return typeInfo;

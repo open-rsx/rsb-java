@@ -34,9 +34,9 @@ import nu.xom.converters.DOMConverter;
  * <code>String</code> and <code>org.w3c.dom.Document</code> representations of
  * <code>XML</code> documents.
  * </p>
- * @see Attachment 
+ * 
+ * @see Attachment
  * @author swrede
- *
  */
 public class XOPData {
 
