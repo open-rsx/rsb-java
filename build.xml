@@ -4,7 +4,7 @@
         Build file for Java Bindings of Robotics Service Bus Middleware
     </description>
 
-	<property name="version" value="0.3.0" />
+	<property name="version" value="0.4.0" />
 	<property name="jarname" value="RSBJava-${version}.jar" />
 
 	<!-- set global properties for this build -->
