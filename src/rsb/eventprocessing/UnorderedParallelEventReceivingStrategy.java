@@ -49,7 +49,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 	// evaluation
 	// TODO refactor to use ThreadPoolExecutor as delegate, not as derived class
 
-	Logger log = Logger.getLogger(UnorderedParallelEventReceivingStrategy.class
+	final static Logger LOG = Logger.getLogger(UnorderedParallelEventReceivingStrategy.class
 			.getName());
 
 	private Set<Filter> filters = Collections
@@ -59,7 +59,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 	public UnorderedParallelEventReceivingStrategy() {
 		super(1, 1, 60, TimeUnit.SECONDS,
 				new ArrayBlockingQueue<Runnable>(1000));
-		log.fine("Creating ThreadPool with size: 1 (1)");
+		LOG.fine("Creating ThreadPool with size: 1 (1)");
 		this.prestartAllCoreThreads();
 	}
 
@@ -67,7 +67,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 			int maxThreads, int maxQueue) {
 		super(coreThreads, maxThreads, 60, TimeUnit.SECONDS,
 				new ArrayBlockingQueue<Runnable>(maxQueue));
-		log.fine("Creating ThreadPool with size: " + coreThreads + "("
+		LOG.fine("Creating ThreadPool with size: " + coreThreads + "("
 				+ maxThreads + ") and queue size: " + maxQueue);
 		this.prestartAllCoreThreads();
 	}
@@ -116,13 +116,13 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
 					this.submit(task);
 				} catch (RejectedExecutionException ex) {
 					handlerTasks.get(handler).remove(task);
-					log.log(Level.SEVERE,
+					LOG.log(Level.SEVERE,
 							"ExecutorService rejected event matching", ex);
 				}
 
 			}
 		}
-		log.fine("Dispatched event to " + count + " subscriptions");
+		LOG.fine("Dispatched event to " + count + " subscriptions");
 	}
 
 	/**
