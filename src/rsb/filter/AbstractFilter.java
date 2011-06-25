@@ -11,7 +11,7 @@ import rsb.Id;
  */
 public abstract class AbstractFilter implements Filter {
 
-	protected static Logger log = Logger.getLogger(AbstractFilter.class.getName());
+	protected final static Logger LOG = Logger.getLogger(AbstractFilter.class.getName());
 	
 	/* stores whitelisted event ids registered by skip() */
 	protected HashSet<String> whitelist = new HashSet<String>();
@@ -24,7 +24,7 @@ public abstract class AbstractFilter implements Filter {
     }
 
 	public Event transform(Event e) {
-		log.info("transform method matched event");
+		LOG.info("transform method matched event");
 		// always matches, just returns original event
 		return e;
 	}
