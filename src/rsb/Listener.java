@@ -71,7 +71,7 @@ public class Listener extends Participant {
 
 	}
 
-	protected static Logger log = Logger.getLogger(Listener.class.getName());
+	protected final static Logger LOG = Logger.getLogger(Listener.class.getName());
 
 	/** class state variable */
 	private ListenerState state;
@@ -98,8 +98,8 @@ public class Listener extends Participant {
 	 */
 	private void initMembers(Scope scope) {
 		this.state = new ListenerStateInactive(this);
-		errorHandler = new DefaultErrorHandler(log);
-		log.info("New Listener instance: [scope=" + scope + "]");
+		errorHandler = new DefaultErrorHandler(LOG);
+		LOG.info("New Listener instance: [scope=" + scope + "]");
 	}
 
 	public void activate() throws InitializeException, NotFoundException {

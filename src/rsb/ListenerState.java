@@ -24,9 +24,17 @@ import java.util.logging.Logger;
 
 import rsb.naming.NotFoundException;
 
+/**
+ * Interface for State-pattern in the Listener class.
+ * Currently, just used for explicit de-/allocation
+ * of resources.
+ * 
+ * @author swrede
+ * 
+ */
 public abstract class ListenerState {
 
-	protected static Logger log = Logger.getLogger(InformerState.class.getName());
+	protected final static Logger LOG = Logger.getLogger(InformerState.class.getName());
 
 	protected Listener s;
 
@@ -35,12 +43,12 @@ public abstract class ListenerState {
 	}
 
 	protected void activate() throws InitializeException, NotFoundException {
-		log.warning("invalid state exception during activate call");
+		LOG.warning("invalid state exception during activate call");
 		throw new InvalidStateException("subscriber already activated");
 	}
 
 	protected void deactivate() {
-		log.warning("invalid state exception during deactivate call");
+		LOG.warning("invalid state exception during deactivate call");
 		throw new InvalidStateException("subscriber already deactivated");
 	}
 

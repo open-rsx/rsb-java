@@ -37,7 +37,7 @@ import rsb.transport.TransportFactory;
  */
 public class Informer<T> extends Participant {
 
-	private final static Logger log = Logger
+	private final static Logger LOG = Logger
 			.getLogger(Informer.class.getName());
 
 	/** state variable for publisher instance */
@@ -50,14 +50,14 @@ public class Informer<T> extends Participant {
 
 		protected InformerStateInactive(Informer<T> ctx) {
 			super(ctx);
-			log.fine("Informer state activated: [Scope:" + getScope()
+			LOG.fine("Informer state activated: [Scope:" + getScope()
 					+ ",State:Inactive,Type:" + typeinfo + "]");
 		}
 
 		protected void activate() throws InitializeException {
 			getRouter().activate();
 			p.state = new InformerStateActive(p);
-			log.info("Informer activated: [Scope:" + getScope() + ",Type:"
+			LOG.info("Informer activated: [Scope:" + getScope() + ",Type:"
 					+ typeinfo + "]");
 		}
 
@@ -67,14 +67,14 @@ public class Informer<T> extends Participant {
 
 		protected InformerStateActive(Informer<T> ctx) {
 			super(ctx);
-			log.fine("Informer state activated: [Scope:" + getScope()
+			LOG.fine("Informer state activated: [Scope:" + getScope()
 					+ ",State:Active,Type:" + typeinfo + "]");
 		}
 
 		protected void deactivate() {
 			getRouter().deactivate();
 			p.state = new InformerStateInactive(p);
-			log.info("Informer deactivated: [Scope:" + getScope() + ",Type:"
+			LOG.info("Informer deactivated: [Scope:" + getScope() + ",Type:"
 					+ typeinfo + "]");
 		}
 
@@ -106,7 +106,7 @@ public class Informer<T> extends Participant {
 	private void initMembers(String t) {
 		state = new InformerStateInactive(this);
 		this.typeinfo = t;
-		log.fine("New publisher instance created: [Scope:" + getScope()
+		LOG.fine("New publisher instance created: [Scope:" + getScope()
 				+ ",State:Inactive,Type:" + typeinfo + "]");
 	}
 
