@@ -10,13 +10,12 @@
 	<!-- set global properties for this build -->
 	<property file="build.properties" />
 	<property environment="env" />
-	<property name="src" location="spread-4.0.0;src;rsb-xml" />
+	<property name="src" location="spread-4.0.0;src" />
 	<property name="build.dir" location="build" />
 	<property name="dist.dir" location="dist" />
 	<property name="test.dir" location="${build.dir}/test" />
 	<property name="examples.dir" location="${build.dir}/examples" />
 	<property name="lib.dir" location="lib" />
-	<property name="xom.lib" location="${lib.dir}/xom-1.1.jar" />
 	<property name="pbuf.protoc" location="/usr/bin/protoc" />
 	<property name="pbuf.lib" location="${lib.dir}/protobuf-java-2.3.0.jar" />
 	<property name="install.dir" location="${env.prefix}/lib/java" />
@@ -45,7 +44,6 @@
 		<mkdir dir="${cobertura.out.dir}" />
 		<mkdir dir="${dir.report.unittests.xml}" />
 		<mkdir dir="${dir.doc}" />
-		<echo message="Using xom: ${xom.lib}" />
 		<echo message="Using pbuf: ${pbuf.lib}" />
 		<echo message="Test report dir: ${dir.report.unittests.xml}" />
 	</target>
@@ -54,7 +52,6 @@
 	<path id="compile.classpath">
 		<pathelement path="${classpath}" />
 		<pathelement location="${pbuf.lib}/" />
-		<pathelement location="${xom.lib}/" />
 	</path>
 	<!-- Create examples classpath -->
 	<path id="examples.classpath">
@@ -162,7 +159,6 @@
 			<fileset dir="${build.dir}/classes">
 				<include name="**/*.class" />
 				<exclude name="rsb/protocol/**/*.class" />
-				<exclude name="org/**/*.class" />
 				<exclude name="spread/**/*.class" />
 			</fileset>
 		</cobertura-instrument>
@@ -195,9 +191,6 @@
 		<!-- generate cobvertura report -->
 		<cobertura-report format="xml" destdir="${cobertura.out.dir}">
 			<fileset dir="src">
-				<include name="**/*.java" />
-			</fileset>
-			<fileset dir="rsb-xml">
 				<include name="**/*.java" />
 			</fileset>
 		</cobertura-report>
@@ -255,7 +248,6 @@
 			<fileset dir="." defaultexcludes="yes">
 				<exclude name="**/jaxen/**/*" />
 				<include name="src/**/*.java" />
-				<include name="rsb-xml/**/*.java" />
 			</fileset>
 
 		</javadoc>
