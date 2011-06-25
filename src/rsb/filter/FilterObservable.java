@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class FilterObservable {
 	
-	Logger log = Logger.getLogger(FilterObservable.class.getName());
+	final static Logger log = Logger.getLogger(FilterObservable.class.getName());
 
 	List<FilterObserver> observers = new ArrayList<FilterObserver>();
 	
