@@ -33,10 +33,10 @@ import rsb.filter.Filter;
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
-	private Handler handler;
-	private Set<Filter> filters;
-	private Event event;
-	private Map<Handler, Set<MatchAndDispatchTask>> handlerTasks;
+	private final Handler handler;
+	private final Set<Filter> filters;
+	private final Event event;
+	private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks;
 
 	MatchAndDispatchTask(Handler handler, Set<Filter> filters, Event event,
 			Map<Handler, Set<MatchAndDispatchTask>> handlerTasks) {
