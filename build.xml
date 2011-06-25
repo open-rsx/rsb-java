@@ -79,6 +79,14 @@
 	</path>
 	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
+	<!-- Create PMD classpath -->
+	<path id="pmd.classpath">
+		<pathelement location="${lib.dir}/pmd-4.2.5.jar" />
+		<pathelement location="${lib.dir}/jaxen-1.1.1.jar"/>
+		<pathelement location="${lib.dir}/asm-3.1.jar"/>			
+	</path>	
+	<taskdef name="pmd" classpathref="pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />	
+	
 	<target name="protocol">
 		<apply executable="${pbuf.protoc}">
 			<arg value="--java_out=src" />
@@ -196,6 +204,31 @@
 
 	</target>
 
+	<target name="pmd">		
+		<pmd shortFilenames="true">
+			<ruleset>basic</ruleset>
+			<ruleset>braces</ruleset>
+			<ruleset>clone</ruleset>
+			<ruleset>codesize</ruleset>
+			<ruleset>controversial</ruleset>
+			<ruleset>coupling</ruleset>
+			<ruleset>design</ruleset>
+			<ruleset>finalizers</ruleset>
+			<ruleset>imports</ruleset>
+			<ruleset>junit</ruleset>
+			<ruleset>logging-java</ruleset>
+			<ruleset>naming</ruleset>
+			<ruleset>optimizations</ruleset>
+			<ruleset>strings</ruleset>
+			<ruleset>typeresolution</ruleset>
+			<ruleset>unusedcode</ruleset>
+			<formatter type="html" toFile="pmd_report.html" toConsole="true" />
+			<fileset dir="./src">
+				<include name="**/*.java" />
+			</fileset>
+		</pmd>
+	</target>
+
 	<target name="clean" description="clean up">
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build.dir}" />
@@ -228,3 +261,4 @@
 	</target>
 
 </project>
+
