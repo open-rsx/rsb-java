@@ -24,7 +24,8 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("deprecation")
 public class DefaultErrorHandler implements ErrorHandler {
-
+	
+	@SuppressWarnings("PMD.LoggerIsNotStaticFinal")
 	Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
 
 	public DefaultErrorHandler(Logger l) {

@@ -25,7 +25,7 @@ package rsb;
  * 
  * @author jwienke
  */
-public class Factory {
+public final class Factory {
 
 	/**
 	 * The singleton instance.
