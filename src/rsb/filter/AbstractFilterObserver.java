@@ -28,14 +28,14 @@ import java.util.logging.Logger;
  */
 public class AbstractFilterObserver implements FilterObserver {
 
-	protected static Logger log = Logger.getLogger(AbstractFilterObserver.class.getCanonicalName());
+	protected final static Logger LOG = Logger.getLogger(AbstractFilterObserver.class.getCanonicalName());
 	
 	/* (non-Javadoc)
 	 * @see rsb.filter.FilterObserver#notify(rsb.filter.AbstractFilter, rsb.filter.FilterAction)
 	 */
 	@Override
 	public void notify(AbstractFilter e, FilterAction a) {
-		log.info("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
+		LOG.info("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
 	}
 
 	/* (non-Javadoc)
@@ -43,7 +43,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(ScopeFilter e, FilterAction a) {
-		log.info("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
+		LOG.info("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
 	}
 
 	/* (non-Javadoc)
@@ -51,7 +51,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(TypeFilter e, FilterAction a) {
-		log.info("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
+		LOG.info("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
 
 	}
 
@@ -60,7 +60,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(IdentityFilter e, FilterAction a) {
-		log.info("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
+		LOG.info("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
 	}
 
 }

@@ -47,7 +47,7 @@ public class XPathFilter extends AbstractFilter {
 	}
 
 	@Override
-	public boolean equals(Filter that) {
+	public boolean equals(Object that) {
 		return that instanceof XPathFilter
 				&& xpath.equals(((XPathFilter) that).xpath);
 	}

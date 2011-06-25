@@ -63,12 +63,12 @@ public class IdentityFilter extends AbstractFilter {
 	}	
 
 	public void skip(Id id) {
-		log.info("Event with ID " + id + " will not be matched by IdentityFilter as this was already done by network layer!");
+		LOG.info("Event with ID " + id + " will not be matched by IdentityFilter as this was already done by network layer!");
 		super.skip(id);
 	}
 
 	@Override
-	public boolean equals(Filter that) {
+	public boolean equals(Object that) {
 		return that instanceof IdentityFilter
 	       && uri.equals(((IdentityFilter) that).uri)
 	       && type == ((IdentityFilter) that).type;
