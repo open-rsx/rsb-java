@@ -18,7 +18,7 @@
  *
  * ============================================================
  */
-package rsb.transport.convert;
+package rsb.converter;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -29,7 +29,6 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 
 import rsb.transport.ConversionException;
-import rsb.transport.Converter;
 
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling

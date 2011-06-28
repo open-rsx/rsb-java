@@ -20,10 +20,10 @@
  */
 package rsb.transport.spread;
 
+import rsb.converter.StringConverter;
 import rsb.transport.EventHandler;
 import rsb.transport.Port;
 import rsb.transport.TransportFactory;
-import rsb.transport.convert.StringConverter;
 
 /**
  * 

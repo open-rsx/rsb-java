@@ -21,6 +21,7 @@
 package rsb.transport;
 
 import rsb.RSBException;
+import rsb.converter.Converter;
 
 /**
  * An exception that indicates a conversion error in a {@link Converter}.

@@ -18,10 +18,10 @@ import rsb.QualityOfServiceSpec;
 import rsb.Scope;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
+import rsb.converter.StringConverter;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
-import rsb.transport.convert.StringConverter;
 
 /**
  * Test for {@link SpreadPort}.
