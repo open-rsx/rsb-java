@@ -89,7 +89,6 @@ public class Informer<T> extends Participant {
 						"Event scope must not be null.");
 			}
 
-			e.ensureId();
 			e.getMetaData().setSenderId(getId());
 			getRouter().publishSync(e);
 			return e;

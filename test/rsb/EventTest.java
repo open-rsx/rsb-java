@@ -18,6 +18,7 @@ public class EventTest {
 
 		Event event1 = new Event();
 		Event event2 = new Event();
+		event2.setId(event1.getId());
 		event2.getMetaData()
 				.setCreateTime(event1.getMetaData().getCreateTime());
 		assertEquals(event1, event2);

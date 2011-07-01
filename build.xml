@@ -135,6 +135,9 @@
 			<formatter type="xml" />
 			<formatter type="plain" usefile="false" />
 			<classpath refid="test.classpath" />
+			<assertions>
+				<enable />
+			</assertions>
 			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
 				<fileset dir="test">
 					<include name="**/*Test*.java" />
@@ -176,6 +179,9 @@
 			<classpath refid="test.classpath" />
 			<classpath refid="cobertura.classpath" />
 
+			<assertions>
+				<enable />
+			</assertions>
 			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
 				<fileset dir="test">
 					<include name="**/*Test*.java" />
