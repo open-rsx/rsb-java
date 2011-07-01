@@ -158,7 +158,6 @@ public class SpreadPortTest {
 		// create an event to send
 		final Scope scope = new Scope("/a/test/scope/again");
 		Event event = new Event("string");
-		event.setId(new Id());
 		event.setData("a test string");
 		event.setScope(scope);
 		event.getMetaData().setSenderId(new Id());
@@ -181,6 +180,8 @@ public class SpreadPortTest {
 		inPort.activate();
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
+		Thread.sleep(500);
+		
 		// send event
 		long beforeSend = System.currentTimeMillis() * 1000;
 		outPort.push(event);

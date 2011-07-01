@@ -57,7 +57,7 @@ public class AssemblyPool {
 		}
 
 		public ByteBuffer add(Notification notification) {
-			assert notification.getId() == id;
+			assert notification.getId().equals(id);
 			assert !notifications.containsKey(notification.getDataPart());
 			notifications.put(notification.getDataPart(), notification);
 

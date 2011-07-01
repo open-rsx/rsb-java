@@ -28,11 +28,11 @@ package rsb;
  */
 public class Event {
 
-	private Id id;
+	private Id id = new Id();
 	private String type;
 	private Scope scope;
 	private Object data;
-	private MetaData metaData = new MetaData(getId());
+	private MetaData metaData = new MetaData();
 
 	// TODO move event creation into factory?
 
@@ -106,20 +106,8 @@ public class Event {
 		return id;
 	}
 
-	public Id generateId() {
-		id = new Id();
-		return id;
-	}
-
 	public boolean hasId() {
 		return (id != null) ? true : false;
-	}
-
-	public Id ensureId() {
-		if (!hasId()) {
-			generateId();
-		}
-		return id;
 	}
 
 	/**

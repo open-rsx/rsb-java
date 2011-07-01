@@ -39,7 +39,6 @@ public class ScopeFilterTest {
 	@Test
 	public void testTransform() {
 		Event e = new Event();
-		e.ensureId();
 		e.setScope(new Scope("/images"));
 		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
 		assertTrue(sf.transform(e) != null);
@@ -53,7 +52,6 @@ public class ScopeFilterTest {
 	@Test
 	public void testSkipEventId() {
 		Event e = new Event();
-		e.ensureId();
 		// TODO actually, we need a mock object to test this correctly
 		// setting the Scope to another name than the scope filters
 		// configuration is just to check here whether the white-
