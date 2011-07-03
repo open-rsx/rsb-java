@@ -17,7 +17,7 @@
 	<property name="examples.dir" location="${build.dir}/examples" />
 	<property name="lib.dir" location="lib" />
 	<property name="pbuf.protoc" location="/usr/bin/protoc" />
-	<property name="pbuf.lib" location="${lib.dir}/protobuf-java-2.3.0.jar" />
+	<property name="pbuf.lib" location="/usr/share/java/protobuf.jar" />
 	<property name="pbuf.protopath" location="${env.prefix}/share/RSBProtocol" />
 	<property name="install.dir" location="${env.prefix}/lib/java" />
 	<property name="dir.report.unittests.xml" location="testreports" />
@@ -81,10 +81,10 @@
 	<path id="pmd.classpath">
 		<pathelement location="${lib.dir}/pmd-4.2.5.jar" />
 		<pathelement location="${lib.dir}/jaxen-1.1.1.jar"/>
-		<pathelement location="${lib.dir}/asm-3.1.jar"/>			
-	</path>	
-	<taskdef name="pmd" classpathref="pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />	
-	
+		<pathelement location="${lib.dir}/asm-3.1.jar"/>
+	</path>
+	<taskdef name="pmd" classpathref="pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />
+
 	<target name="protocol">
 		<apply executable="${pbuf.protoc}">
 			<arg value="--java_out=src" />
@@ -204,7 +204,7 @@
 
 	</target>
 
-	<target name="pmd">		
+	<target name="pmd">
 		<pmd shortFilenames="true">
 			<ruleset>basic</ruleset>
 			<ruleset>braces</ruleset>
@@ -261,4 +261,3 @@
 	</target>
 
 </project>
-
