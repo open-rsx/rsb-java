@@ -68,11 +68,11 @@ public class ProtocolBufferConverterTest {
 	 * @throws ConversionException 
 	 */
 	public void testDeserialize() throws ConversionException {
-		assertNotNull(buffer);
+		assertNotNull(buffer);												  
 		UserData result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
 		Notification n = (Notification) result.getData();
 		Id resId = new Id(n.getId().toByteArray());
-		LOG.info("Expected Id: " + id + ", result Id: " + resId);
+		LOG.fine("Expected Id: " + id + ", result Id: " + resId);
 		assertEquals(id, resId);
 	}
 	

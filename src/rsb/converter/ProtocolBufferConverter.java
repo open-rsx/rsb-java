@@ -28,7 +28,7 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 	@Override
 	public UserData deserialize(String wireSchema,
 			ByteBuffer buffer) throws ConversionException {
-		assert(wireSchema == getWireSchema());
+		assert(wireSchema.contentEquals(getWireSchema()));
 		
 		MessageType result;
 		try {
@@ -42,7 +42,7 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 	}
 	
 	private String getWireSchema() {
-		LOG.info("Detected wire type: " + defaultInstance.getDescriptorForType().getFullName());
+		LOG.fine("Detected wire type: " + defaultInstance.getDescriptorForType().getFullName());
 		return "." + defaultInstance.getDescriptorForType().getFullName();
 	}
 
