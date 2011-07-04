@@ -43,7 +43,7 @@ public class StringConverterTest {
 	public void serialize() throws Throwable {
 		StringConverter c = new StringConverter();
 		String s = "testcase";
-		WireContents<ByteBuffer> buf = c.serialize("string", s);
+		WireContents<ByteBuffer> buf = c.serialize("String", s);
 		assertNotNull(buf);
 	}
 
@@ -51,7 +51,7 @@ public class StringConverterTest {
 	public void roundtrip() throws Throwable {
 		StringConverter c = new StringConverter();
 		String s1 = "testcase";
-		WireContents<ByteBuffer> buf = c.serialize("string", s1);
+		WireContents<ByteBuffer> buf = c.serialize("String", s1);
 		assertNotNull(buf);
 		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
 				.getData();
@@ -62,14 +62,14 @@ public class StringConverterTest {
 	@Test(expected = ConversionException.class)
 	public void serializationNotAStringError() throws Throwable {
 		StringConverter c = new StringConverter();
-		c.serialize("string", new LinkedList<Integer>());
+		c.serialize("String", new LinkedList<Integer>());
 	}
 
 	@Test(expected = ConversionException.class)
 	public void serializationEncodingError() throws Throwable {
 		String withNonAscii = "đħħ←ŋæ¶æŧđ";
 		StringConverter c = new StringConverter("US-ASCII", "ascii-string");
-		c.serialize("string", withNonAscii);
+		c.serialize("String", withNonAscii);
 	}
 
 	@Test(expected = ConversionException.class)

@@ -23,28 +23,29 @@ package rsb.transport.spread;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
-import rsb.InitializeException;
 import rsb.Event;
+import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
+import rsb.QualityOfServiceSpec.Reliability;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.QualityOfServiceSpec.Reliability;
 import rsb.converter.Converter;
 import rsb.converter.Converter.WireContents;
+import rsb.converter.ConverterSelectionStrategy;
+import rsb.converter.NoSuchConverterException;
+import rsb.converter.UnambiguousConverterMap;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.protocol.Protocol.MetaData;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
-import rsb.transport.ConversionException;
 import rsb.transport.AbstractPort;
+import rsb.transport.ConversionException;
 import rsb.transport.EventHandler;
 import rsb.util.InvalidPropertyException;
 import rsb.util.Properties;
@@ -108,16 +109,22 @@ public class SpreadPort extends AbstractPort {
 	 */
 
 	private SpreadWrapper spread = null;
-	private Map<String, Converter<ByteBuffer>> converters = new HashMap<String, Converter<ByteBuffer>>();
+	// TODO instantiate matching strategy, initially in the constructor, later per configuration
+	private ConverterSelectionStrategy<ByteBuffer> inStrategy;
+	private ConverterSelectionStrategy<ByteBuffer> outStrategy;
 
 	/**
 	 * @param sw
 	 * @param eventHandler
 	 *            if <code>null</code>, no receiving of events will be done
+	 * @param strategy 
+	 * @param outStrategy 
 	 */
-	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler) {
+	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler, ConverterSelectionStrategy<ByteBuffer> inStrategy, ConverterSelectionStrategy<ByteBuffer> outStrategy) {
 		spread = sw;
 		this.eventHandler = eventHandler;
+		this.inStrategy = inStrategy;
+		this.outStrategy = outStrategy;
 
 		// TODO initial hack to get QoS from properties, replace this with a
 		// real participant config
@@ -137,7 +144,7 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	public void activate() throws InitializeException {
-		receiver = new ReceiverTask(spread, eventHandler, converters);
+		receiver = new ReceiverTask(spread, eventHandler, inStrategy);
 		// activate spread connection
 		if (!spread.isActive()) {
 			spread.activate();
@@ -211,10 +218,14 @@ public class SpreadPort extends AbstractPort {
 
 	@Override
 	public void push(Event e) throws ConversionException {
-
+		Converter<ByteBuffer> converter = null;
 		// convert data
-		// TODO deal with missing converter
-		Converter<ByteBuffer> converter = converters.get(e.getType());
+		try {
+			converter = outStrategy.getConverter(e.getType());
+		} catch (NoSuchConverterException ex) {
+			log.warning(ex.getMessage());
+			return;
+		}		
 		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
 				e.getType(), e.getData());
 		int dataSize = convertedDataBuffer.getSerialization().limit();
@@ -353,10 +364,6 @@ public class SpreadPort extends AbstractPort {
 	@Override
 	public String getType() {
 		return "SpreadPort";
-	}
-
-	public void addConverter(String typeInfo, Converter<ByteBuffer> converter) {
-		converters.put(typeInfo, converter);
 	}
 
 	@Override

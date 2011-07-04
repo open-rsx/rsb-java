@@ -22,6 +22,7 @@ package rsb.transport.spread;
 
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
 import rsb.converter.StringConverter;
+import rsb.converter.UnambiguousConverterMap;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
@@ -53,13 +55,21 @@ public class SpreadPortTest {
 	@Before
 	public void setUp() throws Throwable {
 
-		outWrapper = new SpreadWrapper();
-		outPort = new SpreadPort(outWrapper, null);
+		outWrapper = new SpreadWrapper();	
+		outPort = new SpreadPort(outWrapper, null, getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
-		outPort.addConverter("string", new StringConverter());
 		outPort.activate();
 
+	}
+
+	/**
+	 * @return
+	 */
+	private UnambiguousConverterMap<ByteBuffer> getConverterStrategy(String key) {
+		UnambiguousConverterMap<ByteBuffer> strategy = new UnambiguousConverterMap<ByteBuffer>();
+		strategy.addConverter(key, new StringConverter());
+		return strategy;
 	}
 
 	@After
@@ -92,9 +102,8 @@ public class SpreadPortTest {
 					}
 				}
 
-			});
-			inPort.addConverter("string", new StringConverter());
-
+			},getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
+			
 			inPort.activate();
 
 			inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
@@ -106,7 +115,7 @@ public class SpreadPortTest {
 		int numEvents = 100;
 
 		// send events
-		Event event = new Event("string");
+		Event event = new Event("String");
 		event.setId(new Id());
 		event.setData("a test string " + numEvents);
 		event.setScope(sendScope);
@@ -141,7 +150,7 @@ public class SpreadPortTest {
 	@Test
 	public void longGroupNames() throws Throwable {
 
-		Event event = new Event("string");
+		Event event = new Event("String");
 		event.setId(new Id());
 		event.setData("a test string");
 		event.setScope(new Scope(
@@ -157,7 +166,7 @@ public class SpreadPortTest {
 
 		// create an event to send
 		final Scope scope = new Scope("/a/test/scope/again");
-		Event event = new Event("string");
+		Event event = new Event("String");
 		event.setData("a test string");
 		event.setScope(scope);
 		event.getMetaData().setSenderId(new Id());
@@ -175,8 +184,7 @@ public class SpreadPortTest {
 				}
 			}
 
-		});
-		inPort.addConverter("string", new StringConverter());
+		},getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
 		inPort.activate();
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 

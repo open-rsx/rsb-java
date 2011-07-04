@@ -22,7 +22,6 @@ package rsb.transport.spread;
 
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +32,7 @@ import rsb.Id;
 import rsb.Scope;
 import rsb.converter.Converter;
 import rsb.converter.Converter.UserData;
+import rsb.converter.ConverterSelectionStrategy;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
@@ -60,7 +60,7 @@ class ReceiverTask extends Thread {
 
 	private EventHandler eventHandler;
 
-	private Map<String, Converter<ByteBuffer>> converters;
+	private ConverterSelectionStrategy<ByteBuffer> converters;
 
 	private AssemblyPool pool = new AssemblyPool();
 
@@ -69,7 +69,7 @@ class ReceiverTask extends Thread {
 	 * @param converters
 	 */
 	ReceiverTask(SpreadWrapper spreadWrapper, EventHandler r,
-			Map<String, Converter<ByteBuffer>> converters) {
+			ConverterSelectionStrategy<ByteBuffer> converters) {
 		this.spread = spreadWrapper;
 		this.eventHandler = r;
 		this.converters = converters;
@@ -134,8 +134,7 @@ class ReceiverTask extends Thread {
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
-				// TODO this selection is a real stub!!!!
-				Converter<ByteBuffer> c = converters.get("string");
+				Converter<ByteBuffer> c = converters.getConverter(n.getWireSchema().toStringUtf8());
 				UserData userData = c.deserialize(n.getWireSchema()
 						.toStringUtf8(), joinedData);
 				e.setData(userData.getData());

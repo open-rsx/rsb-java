@@ -44,6 +44,8 @@ public class Informer<T> extends Participant {
 	protected InformerState<T> state;
 
 	/** default data type for this publisher */
+	// TODO automatic initialization of typeinfo required
+	// TODO use Class objects as type identifiers here and in the converters
 	protected String typeinfo;
 
 	protected class InformerStateInactive extends InformerState<T> {
@@ -111,12 +113,12 @@ public class Informer<T> extends Participant {
 
 	Informer(Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
-		initMembers("string");
+		initMembers("String");
 	}
 
 	Informer(Scope scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
-		initMembers("string");
+		initMembers("String");
 	}
 
 	Informer(Scope scope, String t) {

@@ -135,7 +135,7 @@ public class InformerTest {
 	}
 
 	private void testEvent(Event e, Participant participant) {
-		assertEquals("string", e.getType());
+		assertEquals("String", e.getType());
 		assertEquals("Hello World!", e.getData());
 		assertNotNull(e.getId());
 		assertEquals(new Scope("/informer/example"), e.getScope());
@@ -149,7 +149,7 @@ public class InformerTest {
 	 */
 	@Test
 	public void testSendEvent() throws Throwable {
-		Event e = informer.send(new Event(defaultScope, "string",
+		Event e = informer.send(new Event(defaultScope, "String",
 				"Hello World!"));
 		testEvent(e, informer);
 	}

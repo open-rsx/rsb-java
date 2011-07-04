@@ -46,6 +46,7 @@ public class Event {
 		this.data = data;
 	}
 
+	// TODO check if we want this or if a constructor argument describing the data is better
 	public Event(String type) {
 		this.type = type;
 	}

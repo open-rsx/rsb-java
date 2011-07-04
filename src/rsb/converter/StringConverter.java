@@ -147,7 +147,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 		try {
 
 			String string = decoder.get().decode(bytes).toString();
-			return new UserData(string, "string");
+			return new UserData(string, "String");
 
 		} catch (CharacterCodingException e) {
 			throw new ConversionException(

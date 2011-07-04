@@ -2,6 +2,7 @@ package rsb.transport.spread;
 
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +20,7 @@ import rsb.Scope;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.converter.StringConverter;
+import rsb.converter.UnambiguousConverterMap;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
@@ -48,10 +50,13 @@ public class SpreadPortRoundtripTest {
 	public void roundtrip() throws Throwable {
 
 		SpreadWrapper outWrapper = new SpreadWrapper();
-		SpreadPort outPort = new SpreadPort(outWrapper, null);
+		UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
+		inStrategy.addConverter("utf-8-string", new StringConverter());		
+		UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
+		outStrategy.addConverter("String", new StringConverter());
+		SpreadPort outPort = new SpreadPort(outWrapper, null,inStrategy,outStrategy);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-				Ordering.ORDERED, Reliability.RELIABLE));
-		outPort.addConverter("string", new StringConverter());
+				Ordering.ORDERED, Reliability.RELIABLE));		
 
 		final List<Event> receivedEvents = new ArrayList<Event>();
 		SpreadWrapper inWrapper = new SpreadWrapper();
@@ -65,8 +70,7 @@ public class SpreadPortRoundtripTest {
 				}
 			}
 
-		});
-		inPort.addConverter("string", new StringConverter());
+		},inStrategy,outStrategy);
 
 		inPort.activate();
 		outPort.activate();
@@ -79,7 +83,7 @@ public class SpreadPortRoundtripTest {
 			builder.append('c');
 		}
 
-		Event event = new Event("string");
+		Event event = new Event("String");
 		event.setId(new Id());
 		event.setData(builder.toString());
 		event.setScope(scope);
