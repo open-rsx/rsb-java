@@ -42,7 +42,7 @@ import com.google.protobuf.ByteString;
  */
 public class ProtocolBufferConverterTest {
 
-	Logger LOG = Logger.getLogger(ProtocolBufferConverterTest.class.getName());
+	final static Logger LOG = Logger.getLogger(ProtocolBufferConverterTest.class.getName());
 	
 	WireContents<ByteBuffer> buffer;
 	ProtocolBufferConverter<Protocol.Notification> converter = new ProtocolBufferConverter<Protocol.Notification>(Protocol.Notification.getDefaultInstance());
@@ -72,7 +72,7 @@ public class ProtocolBufferConverterTest {
 		UserData result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
 		Notification n = (Notification) result.getData();
 		Id resId = new Id(n.getId().toByteArray());
-		LOG.info("Expected Id: " + id + " , result Id: " + resId);
+		LOG.info("Expected Id: " + id + ", result Id: " + resId);
 		assertEquals(id, resId);
 	}
 	

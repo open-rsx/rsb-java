@@ -1,12 +1,15 @@
 package rsb.converter;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 
 public class ProtocolBufferConverter<MessageType extends Message> implements Converter<ByteBuffer> {
 
+	final static Logger LOG = Logger.getLogger(ProtocolBufferConverter.class.getName());  
+	
 	MessageType defaultInstance;
 	
 	public ProtocolBufferConverter(MessageType instance) {
@@ -39,7 +42,8 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 	}
 	
 	private String getWireSchema() {
-		return defaultInstance.getDescriptorForType().getFullName();
+		LOG.info("Detected wire type: " + defaultInstance.getDescriptorForType().getFullName());
+		return "." + defaultInstance.getDescriptorForType().getFullName();
 	}
 
 }
