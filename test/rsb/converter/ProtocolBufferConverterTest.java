@@ -20,24 +20,21 @@
  */
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.junit.Test;
-
-import com.google.protobuf.ByteString;
 
 import rsb.Id;
 import rsb.converter.Converter.UserData;
 import rsb.converter.Converter.WireContents;
 import rsb.protocol.Protocol;
-import rsb.protocol.Protocol.MetaData;
 import rsb.protocol.Protocol.Notification;
-import rsb.protocol.Protocol.UserInfo;
-import rsb.protocol.Protocol.UserTime;
+
+import com.google.protobuf.ByteString;
 
 /**
  * @author swrede
@@ -71,6 +68,7 @@ public class ProtocolBufferConverterTest {
 	 * @throws ConversionException 
 	 */
 	public void testDeserialize() throws ConversionException {
+		assertNotNull(buffer);
 		UserData result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
 		Notification n = (Notification) result.getData();
 		Id resId = new Id(n.getId().toByteArray());
