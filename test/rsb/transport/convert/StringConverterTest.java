@@ -30,9 +30,9 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
+import rsb.converter.ConversionException;
 import rsb.converter.StringConverter;
 import rsb.converter.Converter.WireContents;
-import rsb.transport.ConversionException;
 
 /**
  * @author swrede

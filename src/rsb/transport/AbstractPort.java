@@ -1,6 +1,7 @@
 package rsb.transport;
 
 import rsb.Event;
+import rsb.converter.ConversionException;
 import rsb.filter.AbstractFilterObserver;
 
 /**

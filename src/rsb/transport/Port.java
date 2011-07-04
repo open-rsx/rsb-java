@@ -3,6 +3,7 @@ package rsb.transport;
 import rsb.Event;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBObject;
+import rsb.converter.ConversionException;
 import rsb.filter.FilterObserver;
 
 /**

@@ -20,7 +20,6 @@
  */
 package rsb.converter;
 
-import rsb.transport.ConversionException;
 
 /**
  * This class represents a converter interface for a wire format T.

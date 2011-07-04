@@ -27,6 +27,7 @@ import rsb.Handler;
 import rsb.InitializeException;
 import rsb.Event;
 import rsb.RSBException;
+import rsb.converter.ConversionException;
 import rsb.eventprocessing.SingleThreadEventReceivingStrategy;
 import rsb.eventprocessing.EventReceivingStrategy;
 import rsb.filter.Filter;

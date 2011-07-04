@@ -28,7 +28,6 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 
-import rsb.transport.ConversionException;
 
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
