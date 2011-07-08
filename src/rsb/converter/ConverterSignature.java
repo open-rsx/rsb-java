@@ -30,6 +30,7 @@ public class ConverterSignature {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
+	@SuppressWarnings("PMD.AvoidFinalLocalVariable")
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -43,6 +44,7 @@ public class ConverterSignature {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@SuppressWarnings({"PMD.CyclomaticComplexity,PMD.OnlyOneReturn"})
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
