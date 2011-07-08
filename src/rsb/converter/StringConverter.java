@@ -38,7 +38,7 @@ import java.nio.charset.CodingErrorAction;
  */
 public class StringConverter implements Converter<ByteBuffer> {
 
-	private String wireSchema;
+	private ConverterSignature signature;
 	private ThreadLocal<CharsetEncoder> encoder;
 	private ThreadLocal<CharsetDecoder> decoder;
 
@@ -83,8 +83,9 @@ public class StringConverter implements Converter<ByteBuffer> {
 	}
 
 	private void init(final Charset charset, String wireSchema) {
-
-		this.wireSchema = wireSchema;
+		
+		// TODO replace by Java class object for type info
+		signature = new ConverterSignature(wireSchema, "String");
 
 		encoder = new ThreadLocal<CharsetEncoder>() {
 
@@ -121,7 +122,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
 			ByteBuffer serialized = encoder.get().encode(
 					CharBuffer.wrap(string));
-			return new WireContents<ByteBuffer>(serialized, wireSchema);
+			return new WireContents<ByteBuffer>(serialized, signature.getSchema());
 
 		} catch (ClassCastException e) {
 			throw new ConversionException(
@@ -135,18 +136,18 @@ public class StringConverter implements Converter<ByteBuffer> {
 	}
 
 	@Override
-	public UserData deserialize(String wireSchema, ByteBuffer bytes)
+	public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer bytes)
 			throws ConversionException {
 
-		if (!wireSchema.equals(this.wireSchema)) {
+		if (!wireSchema.equals(signature.getSchema())) {
 			throw new ConversionException("Unexpected wire schema '"
-					+ wireSchema + "', expected '" + this.wireSchema + "'.");
+					+ wireSchema + "', expected '" + signature.getSchema() + "'.");
 		}
 
 		try {
 
 			String string = decoder.get().decode(bytes).toString();
-			return new UserData(string, "String");
+			return new UserData<ByteBuffer>(string, "String");
 
 		} catch (CharacterCodingException e) {
 			throw new ConversionException(
@@ -154,5 +155,10 @@ public class StringConverter implements Converter<ByteBuffer> {
 					e);
 		}
 
+	}
+
+	@Override
+	public ConverterSignature getSignature() {
+		return signature;
 	}
 }

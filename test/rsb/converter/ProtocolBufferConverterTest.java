@@ -29,8 +29,6 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import rsb.Id;
-import rsb.converter.Converter.UserData;
-import rsb.converter.Converter.WireContents;
 import rsb.protocol.Protocol;
 import rsb.protocol.Protocol.Notification;
 
@@ -69,7 +67,7 @@ public class ProtocolBufferConverterTest {
 	 */
 	public void testDeserialize() throws ConversionException {
 		assertNotNull(buffer);												  
-		UserData result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
+		UserData<Notification> result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
 		Notification n = (Notification) result.getData();
 		Id resId = new Id(n.getId().toByteArray());
 		LOG.fine("Expected Id: " + id + ", result Id: " + resId);

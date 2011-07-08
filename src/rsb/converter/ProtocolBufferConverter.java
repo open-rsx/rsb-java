@@ -11,9 +11,12 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 	final static Logger LOG = Logger.getLogger(ProtocolBufferConverter.class.getName());  
 	
 	MessageType defaultInstance;
+	ConverterSignature signature;
 	
 	public ProtocolBufferConverter(MessageType instance) {
 		defaultInstance = instance;
+		LOG.info("Result of instance.getClass().getName() " + instance.getClass().getName());
+		signature = new ConverterSignature(getWireSchema(),instance.getClass().getName());
 	}
 	
 	@Override
@@ -26,7 +29,7 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public UserData deserialize(String wireSchema,
+	public UserData<MessageType> deserialize(String wireSchema,
 			ByteBuffer buffer) throws ConversionException {
 		assert(wireSchema.contentEquals(getWireSchema()));
 		
@@ -38,12 +41,17 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 					"Error deserializing wire data because of a protobuf problem.",
 					e);
 		}
-		return new UserData(result, result.getClass().getName());
+		return new UserData<MessageType>(result, result.getClass().getName());
 	}
 	
 	private String getWireSchema() {
 		LOG.fine("Detected wire type: " + defaultInstance.getDescriptorForType().getFullName());
 		return "." + defaultInstance.getDescriptorForType().getFullName();
+	}
+
+	@Override
+	public ConverterSignature getSignature() {
+		return signature;
 	}
 
 }

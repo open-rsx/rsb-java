@@ -32,8 +32,8 @@ import rsb.Id;
 import rsb.Scope;
 import rsb.converter.ConversionException;
 import rsb.converter.Converter;
-import rsb.converter.Converter.UserData;
 import rsb.converter.ConverterSelectionStrategy;
+import rsb.converter.UserData;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
@@ -135,8 +135,7 @@ class ReceiverTask extends Thread {
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
 				Converter<ByteBuffer> c = converters.getConverter(n.getWireSchema().toStringUtf8());
-				UserData userData = c.deserialize(n.getWireSchema()
-						.toStringUtf8(), joinedData);
+				UserData userData = c.deserialize(n.getWireSchema().toStringUtf8(), joinedData);
 				e.setData(userData.getData());
 				e.setType(userData.getTypeInfo());
 				log.finest("returning event with id: " + e.getId());

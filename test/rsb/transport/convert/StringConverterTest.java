@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import rsb.converter.ConversionException;
 import rsb.converter.StringConverter;
-import rsb.converter.Converter.WireContents;
+import rsb.converter.WireContents;
 
 /**
  * @author swrede
