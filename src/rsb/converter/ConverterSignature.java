@@ -30,7 +30,7 @@ public class ConverterSignature {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@SuppressWarnings("PMD.AvoidFinalLocalVariable")
+	@SuppressWarnings({"PMD.AvoidFinalLocalVariable","PMD.DataflowAnomalyAnalysis"})
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -44,10 +44,10 @@ public class ConverterSignature {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@SuppressWarnings({"PMD.CyclomaticComplexity,PMD.OnlyOneReturn"})
+	@SuppressWarnings({"PMD.OnlyOneReturn","PMD.CyclomaticComplexity"})
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj) {			
 			return true;
 		}
 		if (obj == null) {
