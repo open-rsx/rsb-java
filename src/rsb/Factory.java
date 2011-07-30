@@ -18,11 +18,15 @@
  *
  * ============================================================
  */
+
 package rsb;
+
+import rsb.patterns.LocalServer;
+import rsb.patterns.RemoteServer;
 
 /**
  * A factory for RSB client-level objects. This class is a Singleton.
- * 
+ *
  * @author jwienke
  */
 public final class Factory {
@@ -40,7 +44,7 @@ public final class Factory {
 
 	/**
 	 * Returns the one and only instance of this class.
-	 * 
+	 *
 	 * @return singleton factory instance
 	 */
 	public static Factory getInstance() {
@@ -49,7 +53,7 @@ public final class Factory {
 
 	/**
 	 * Creates a new informer instance.
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data sent by this informer
 	 * @param scope
@@ -64,7 +68,7 @@ public final class Factory {
 
 	/**
 	 * Creates a new informer instance.
-	 * 
+	 *
 	 * @param <T>
 	 *            type of the data sent by this informer
 	 * @param scope
@@ -77,7 +81,7 @@ public final class Factory {
 
 	/**
 	 * Creates a new listener instance.
-	 * 
+	 *
 	 * @param scope
 	 *            scope of the listener
 	 * @return new listener
@@ -85,5 +89,31 @@ public final class Factory {
 	public Listener createListener(Scope scope) {
 		return new Listener(scope);
 	}
+
+    /**
+     * Creates a new LocalServer object which exposes methods under
+     * the scope @a scope.
+     *
+     * @param scope
+     *            The scope under which methods of the LocalServer
+     *            object should be exposed.
+     * @return The new LocalServer object.
+     */
+    public LocalServer createLocalServer(Scope scope) {
+	return new LocalServer(scope);
+    }
+
+    /**
+     * Creates a new RemoteServer object which is suitable for calling
+     * methods provided by a remote server under the scope @a scope.
+     *
+     * @param scope
+     *            The scope under which a remote server provides its
+     *            methods.
+     * @return The new RemoteServer object.
+     */
+    public RemoteServer createRemoteServer(Scope scope) {
+	return new RemoteServer(scope);
+    }
 
 }
