@@ -21,15 +21,9 @@ public class LocalServer extends Server {
      * @param scope
      *            The common super-scope under which the methods of
      *            the newly created server should be provided.
-     * @param transportFactory
-     *            TODO
-     * @param portConfig
-     *            TODO
      */
-    public LocalServer(Scope	         scope,
-		       TransportFactory  transportFactory,
-		       PortConfiguration portConfig) {
-	super(scope, transportFactory, portConfig);
+    public LocalServer(Scope scope) {
+	super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
     }
 
 };
