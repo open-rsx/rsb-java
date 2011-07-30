@@ -1,18 +1,21 @@
 package rsb.patterns;
 
+import rsb.Scope;
+
+import rsb.transport.TransportFactory;
+import rsb.transport.PortConfiguration;
+
 /**
- * TODO(jmoringe): document
+ * Objects of this class associate a collection of method objects
+ * which are implemented by callback functions with a scope under
+ * which these methods are exposed for remote clients.
  *
- * Created:
- *
- * @author Jan Moringen
- * @version
- * @since
+ * @author jmoringe
  */
 public class LocalServer extends Server {
 
     /**
-     * Create a new LocalServer object that provides its methods under
+     * Create a new LocalServer object that exposes its methods under
      * the scope @a scope.
      *
      * @param scope

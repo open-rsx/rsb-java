@@ -35,17 +35,11 @@ public class RemoteServer extends Server {
 			   PortConfiguration portConfig,
 			   double            timeout) {
 	super(scope, transportFactory, portConfig);
+	this.timeout = timeout;
     }
 
     public double getTimeout() {
 	return timeout;
-    }
-
-    public boolean isActive() {
-	return true;
-    }
-
-    public void activate() {
     }
 
 };
