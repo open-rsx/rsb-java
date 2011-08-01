@@ -1,6 +1,7 @@
 package rsb.patterns;
 
 import rsb.Scope;
+import rsb.InitializeException;
 
 import rsb.transport.TransportFactory;
 import rsb.transport.PortConfiguration;
@@ -24,6 +25,10 @@ public class LocalServer extends Server {
      */
     public LocalServer(Scope scope) {
 	super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+    }
+
+    public void addMethod(String name, DataCallback<?, ?> callback) throws InitializeException {
+	new LocalMethod(this, name);
     }
 
 };
