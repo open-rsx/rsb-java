@@ -1,6 +1,7 @@
 package rsb.patterns;
 
 import java.util.HashMap;
+import java.util.Collection;
 
 import rsb.RSBException;
 import rsb.InvalidStateException;
@@ -47,14 +48,23 @@ public abstract class Server extends Participant {
 	}
     }
 
-    private ServerState state;
     private HashMap<String, Method> methods;
+    private ServerState             state;
 
     protected Server(Scope	       scope,
 		     TransportFactory  transportFactory,
 		     PortConfiguration portConfig) {
 	super(scope, transportFactory, portConfig);
 	state = new ServerStateInactive();
+    }
+
+    /**
+     * Return all methods of the server.
+     *
+     * @return A Collection containing all methods.
+     */
+    public Collection<Method> getMethods() {
+	return this.methods.values();
     }
 
     @Override
