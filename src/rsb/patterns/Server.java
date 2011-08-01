@@ -55,7 +55,8 @@ public abstract class Server extends Participant {
 		     TransportFactory  transportFactory,
 		     PortConfiguration portConfig) {
 	super(scope, transportFactory, portConfig);
-	state = new ServerStateInactive();
+	methods = new HashMap<String, Method>();
+	state   = new ServerStateInactive();
     }
 
     /**
