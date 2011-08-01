@@ -116,8 +116,8 @@ public class SpreadPort extends AbstractPort {
 	 * @param sw
 	 * @param eventHandler
 	 *            if <code>null</code>, no receiving of events will be done
-	 * @param strategy 
-	 * @param outStrategy 
+	 * @param strategy
+	 * @param outStrategy
 	 */
 	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler, ConverterSelectionStrategy<ByteBuffer> inStrategy, ConverterSelectionStrategy<ByteBuffer> outStrategy) {
 		spread = sw;
@@ -155,7 +155,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -182,7 +182,7 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 * 
+	 *
 	 * @param scope
 	 *            scope to create group name
 	 * @return truncated md5 hash to fit into spread group
@@ -224,7 +224,7 @@ public class SpreadPort extends AbstractPort {
 		} catch (NoSuchConverterException ex) {
 			log.warning(ex.getMessage());
 			return;
-		}		
+		}
 		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
 				e.getType(), e.getData());
 		int dataSize = convertedDataBuffer.getSerialization().limit();
@@ -245,8 +245,8 @@ public class SpreadPort extends AbstractPort {
 					.newBuilder();
 
 			// notification metadata
-			notificationBuilder.setId(ByteString.copyFrom(e.getId()
-					.toByteArray()));
+			/*notificationBuilder.setId(ByteString.copyFrom(e.getId()
+			  .toByteArray()));*/
 			notificationBuilder.setWireSchema(ByteString
 					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
@@ -255,12 +255,12 @@ public class SpreadPort extends AbstractPort {
 			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
 			metaDataBuilder.setCreateTime(e.getMetaData().getCreateTime());
 			metaDataBuilder.setSendTime(e.getMetaData().getSendTime());
-			metaDataBuilder.setSenderId(ByteString.copyFrom(e.getMetaData()
-					.getSenderId().toByteArray()));
+			/*metaDataBuilder.setSenderId(ByteString.copyFrom(e.getMetaData()
+			  .getSenderId().toByteArray()));*/
 			for (String key : e.getMetaData().userInfoKeys()) {
 				UserInfo.Builder infoBuilder = UserInfo.newBuilder();
-				infoBuilder.setKey(key);
-				infoBuilder.setValue(e.getMetaData().getUserInfo(key));
+				//infoBuilder.setKey(key);
+				//infoBuilder.setValue(e.getMetaData().getUserInfo(key));
 				metaDataBuilder.addUserInfos(infoBuilder.build());
 			}
 			for (String key : e.getMetaData().userTimeKeys()) {

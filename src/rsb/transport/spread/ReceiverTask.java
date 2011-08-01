@@ -44,7 +44,7 @@ import spread.SpreadMessage;
 /**
  * A task that continuously reads on a spread connection and decodes RSB
  * notifications from it.
- * 
+ *
  * @author jwienke
  */
 class ReceiverTask extends Thread {
@@ -130,7 +130,7 @@ class ReceiverTask extends Thread {
 				log.fine("decoding notification");
 				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
-				e.setId(new Id(n.getId().toByteArray()));
+				//e.setId(new Id(n.getId().toByteArray()));
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
@@ -141,13 +141,13 @@ class ReceiverTask extends Thread {
 				log.finest("returning event with id: " + e.getId());
 
 				// metadata
-				e.getMetaData().setSenderId(
-						new Id(n.getMetaData().getSenderId().toByteArray()));
+				/*e.getMetaData().setSenderId(
+				  new Id(n.getMetaData().getSenderId().toByteArray()));*/
 				e.getMetaData().setCreateTime(n.getMetaData().getCreateTime());
 				e.getMetaData().setSendTime(n.getMetaData().getSendTime());
 				e.getMetaData().setReceiveTime(0);
 				for (UserInfo info : n.getMetaData().getUserInfosList()) {
-					e.getMetaData().setUserInfo(info.getKey(), info.getValue());
+				    //e.getMetaData().setUserInfo(info.getKey(), info.getValue());
 				}
 				for (UserTime time : n.getMetaData().getUserTimesList()) {
 					e.getMetaData().setUserTime(time.getKey().toStringUtf8(),
