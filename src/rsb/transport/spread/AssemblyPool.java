@@ -32,14 +32,14 @@ import rsb.protocol.Protocol.Notification;
 /**
  * A class that assembles fragmented messages received over spread in form of
  * {@link Notification}s.
- * 
+ *
  * @author jwienke
  */
 public class AssemblyPool {
 
 	/**
 	 * Assembles a fragmented notification.
-	 * 
+	 *
 	 * @author jwienke
 	 */
 	private class Assembly {
@@ -50,14 +50,14 @@ public class AssemblyPool {
 
 		public Assembly(Notification initialNotification) {
 			assert (initialNotification.getNumDataParts() > 1);
-			id = initialNotification.getId();
+			//id = initialNotification.getId();
 			notifications.put(initialNotification.getDataPart(),
 					initialNotification);
 			requiredParts = initialNotification.getNumDataParts();
 		}
 
 		public ByteBuffer add(Notification notification) {
-			assert notification.getId().equals(id);
+		        //assert notification.getId().equals(id);
 			assert !notifications.containsKey(notification.getDataPart());
 			notifications.put(notification.getDataPart(), notification);
 
@@ -87,7 +87,7 @@ public class AssemblyPool {
 	/**
 	 * Adds a new message to the assembly pool and joins the data of all
 	 * notifications of the same event, if all fragments were received.
-	 * 
+	 *
 	 * @param notification
 	 *            newly received notification
 	 * @return joined data or <code>null</code> if not event was completed with
@@ -100,7 +100,7 @@ public class AssemblyPool {
 			return ByteBuffer.wrap(notification.getData().toByteArray());
 		}
 
-		ByteString id = notification.getId();
+		ByteString id = null; // = notification.getId();
 		if (!assemblies.containsKey(id)) {
 			assemblies.put(id, new Assembly(notification));
 			return null;
