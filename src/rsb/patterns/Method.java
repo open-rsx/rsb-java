@@ -1,5 +1,6 @@
 package rsb.patterns;
 
+import rsb.InvalidStateException;
 import rsb.RSBObject;
 import rsb.Listener;
 import rsb.Informer;
@@ -15,14 +16,57 @@ import rsb.Informer;
  */
 public abstract class Method implements RSBObject {
 
-    private Server   server;
-    private String   name;
-    private Informer informer;
-    private Listener listener;
+    protected class MethodState {
+	public MethodState activate() {
+	    throw new InvalidStateException("Method already activated.");
+	}
 
+	public MethodState deactivate() {
+	    throw new InvalidStateException("Method not activated.");
+	}
+    }
+
+    protected class MethodStateActive extends MethodState {
+	public MethodState deactivate() {
+	    // Deactivate informer and listener if necessary.
+	    if (informer != null) {
+		informer.deactivate();
+		informer = null;
+	    }
+	    if (listener != null) {
+		listener.deactivate();
+		listener = null;
+	    }
+	    return new MethodStateInactive();
+	}
+    }
+
+    protected class MethodStateInactive extends MethodState {
+	public MethodState activate() {
+	    return new MethodStateActive();
+	}
+    }
+
+    private Server	server;
+    private String	name;
+    private Informer	informer;
+    private Listener	listener;
+    private MethodState state;
+
+    /**
+     * Create a new Method object for the method named @a name
+     * provided by @a server.
+     *
+     * @param server
+     *            The remote or local server to which the method is
+     *            associated.
+     * @param name
+     *            The name of the method. Unique within a server.
+     */
     public Method(Server server, String name) {
 	this.server = server;
 	this.name   = name;
+	this.state  = new MethodStateInactive();
     }
 
     /**
@@ -52,7 +96,7 @@ public abstract class Method implements RSBObject {
      */
     public Informer getInformer() {
 	if (informer == null) {
-	    //informer = makeInformer();
+	    // TODO informer = makeInformer();
 	}
 	return informer;
     }
@@ -66,22 +110,24 @@ public abstract class Method implements RSBObject {
      */
     public Listener getListener() {
 	if (listener == null) {
-	    //listener = makeListener();
+	    // TODO listener = makeListener();
 	}
 	return listener;
     }
 
     @Override
+    public boolean isActive() {
+	return state.getClass() == MethodStateActive.class;
+    }
+
+    @Override
+    public void activate() {
+	state = state.activate();
+    }
+
+    @Override
     public void deactivate() {
-	// Deactivate informer and listener if necessary.
-	if (informer != null) {
-	    informer.deactivate();
-	    informer = null;
-	}
-	if (listener != null) {
-	    listener.deactivate();
-	    listener = null;
-	}
+	state = state.deactivate();
     }
 
     @Override
