@@ -20,17 +20,21 @@
  */
 package rsb;
 
+import java.lang.StringBuilder;
+import java.util.Formatter;
+
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of
  * metadata and the actual data to publish / subscribe to as payload.
- * 
+ *
  * @author swrede
  */
 public class Event {
 
-	private Id id = new Id();
+	private Id id = null;
 	private String type;
 	private Scope scope;
+        private long sequenceNumber;
 	private Object data;
 	private MetaData metaData = new MetaData();
 
@@ -99,22 +103,34 @@ public class Event {
 		this.scope = scope;
 	}
 
-	public void setId(Id id) {
-		this.id = id;
+        public long getSequenceNumber() {
+	        return sequenceNumber;
+	}
+
+        public void setSequenceNumber(long sequenceNumber) {
+	        this.sequenceNumber = sequenceNumber;
 	}
 
 	public Id getId() {
+	        if (id == null) {
+		        computeId();
+	        }
 		return id;
 	}
 
-	public boolean hasId() {
-		return (id != null) ? true : false;
-	}
+        private void computeId() {
+	        StringBuilder builder = new StringBuilder();
+	        Formatter formatter = new Formatter(builder);
+	        formatter.format("%08x", getSequenceNumber());
+	        // id = makeV5UUID(metaData.getSenderId(), builder.toString());
+	        id = metaData.getSenderId();
+		// TODO just pretend for now
+        }
 
 	/**
 	 * Returns a {@link MetaData} instance representing the meta data for this
 	 * event.
-	 * 
+	 *
 	 * @return meta data of this event, not <code>null</code>
 	 */
 	public MetaData getMetaData() {
@@ -122,8 +138,9 @@ public class Event {
 	}
 
 	public String toString() {
-		return "Event[id=" + id + ", scope=" + scope + ", type =" + type
-				+ ", metaData=" + metaData + "]";
+	        return "Event[id=" + getId() + ", scope=" + scope
+		    + ", seqnum=" + sequenceNumber + ", type =" + type
+		    + ", metaData=" + metaData + "]";
 	}
 
 	@Override
@@ -137,9 +154,6 @@ public class Event {
 			return false;
 		}
 		Event other = (Event) obj;
-		if (id == null ^ other.id == null) {
-			return false;
-		}
 		if (scope == null ^ other.scope == null) {
 			return false;
 		}
@@ -149,7 +163,7 @@ public class Event {
 		if (data == null ^ other.data == null) {
 			return false;
 		}
-		return (id == null || id.equals(other.id))
+		return (sequenceNumber == other.sequenceNumber)
 				&& (scope == null || scope.equals(other.scope))
 				&& (type == null || type.equals(other.type))
 				&& (data == null || data.equals(other.data))

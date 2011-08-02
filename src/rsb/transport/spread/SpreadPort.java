@@ -245,22 +245,21 @@ public class SpreadPort extends AbstractPort {
 					.newBuilder();
 
 			// notification metadata
-			/*notificationBuilder.setId(ByteString.copyFrom(e.getId()
-			  .toByteArray()));*/
+			notificationBuilder.setSequenceNumber((int) e.getSequenceNumber());
 			notificationBuilder.setWireSchema(ByteString
 					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
 					.toString()));
+			notificationBuilder.setSenderId(ByteString.copyFrom(e.getMetaData()
+			  .getSenderId().toByteArray()));
 
 			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
 			metaDataBuilder.setCreateTime(e.getMetaData().getCreateTime());
 			metaDataBuilder.setSendTime(e.getMetaData().getSendTime());
-			/*metaDataBuilder.setSenderId(ByteString.copyFrom(e.getMetaData()
-			  .getSenderId().toByteArray()));*/
 			for (String key : e.getMetaData().userInfoKeys()) {
 				UserInfo.Builder infoBuilder = UserInfo.newBuilder();
-				//infoBuilder.setKey(key);
-				//infoBuilder.setValue(e.getMetaData().getUserInfo(key));
+				infoBuilder.setKey(ByteString.copyFromUtf8(key));
+				infoBuilder.setValue(ByteString.copyFromUtf8(e.getMetaData().getUserInfo(key)));
 				metaDataBuilder.addUserInfos(infoBuilder.build());
 			}
 			for (String key : e.getMetaData().userTimeKeys()) {

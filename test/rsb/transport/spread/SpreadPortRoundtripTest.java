@@ -27,7 +27,7 @@ import rsb.transport.EventHandler;
 
 /**
  * Test for {@link SpreadPort}.
- * 
+ *
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
@@ -51,12 +51,12 @@ public class SpreadPortRoundtripTest {
 
 		SpreadWrapper outWrapper = new SpreadWrapper();
 		UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
-		inStrategy.addConverter("utf-8-string", new StringConverter());		
+		inStrategy.addConverter("utf-8-string", new StringConverter());
 		UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
 		outStrategy.addConverter("String", new StringConverter());
 		SpreadPort outPort = new SpreadPort(outWrapper, null,inStrategy,outStrategy);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-				Ordering.ORDERED, Reliability.RELIABLE));		
+				Ordering.ORDERED, Reliability.RELIABLE));
 
 		final List<Event> receivedEvents = new ArrayList<Event>();
 		SpreadWrapper inWrapper = new SpreadWrapper();
@@ -84,7 +84,7 @@ public class SpreadPortRoundtripTest {
 		}
 
 		Event event = new Event("String");
-		event.setId(new Id());
+		event.setSequenceNumber(0);
 		event.setData(builder.toString());
 		event.setScope(scope);
 		event.getMetaData().setSenderId(new Id());

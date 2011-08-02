@@ -55,7 +55,7 @@ public class SpreadPortTest {
 	@Before
 	public void setUp() throws Throwable {
 
-		outWrapper = new SpreadWrapper();	
+		outWrapper = new SpreadWrapper();
 		outPort = new SpreadPort(outWrapper, null, getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
@@ -103,7 +103,7 @@ public class SpreadPortTest {
 				}
 
 			},getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
-			
+
 			inPort.activate();
 
 			inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
@@ -116,7 +116,7 @@ public class SpreadPortTest {
 
 		// send events
 		Event event = new Event("String");
-		event.setId(new Id());
+		event.setSequenceNumber(0);
 		event.setData("a test string " + numEvents);
 		event.setScope(sendScope);
 		event.getMetaData().setSenderId(new Id());
@@ -151,7 +151,7 @@ public class SpreadPortTest {
 	public void longGroupNames() throws Throwable {
 
 		Event event = new Event("String");
-		event.setId(new Id());
+		event.setSequenceNumber(0);
 		event.setData("a test string");
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
@@ -189,7 +189,7 @@ public class SpreadPortTest {
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
 		Thread.sleep(500);
-		
+
 		// send event
 		long beforeSend = System.currentTimeMillis() * 1000;
 		outPort.push(event);

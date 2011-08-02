@@ -41,21 +41,21 @@ import com.google.protobuf.ByteString;
 public class ProtocolBufferConverterTest {
 
 	final static Logger LOG = Logger.getLogger(ProtocolBufferConverterTest.class.getName());
-	
+
 	WireContents<ByteBuffer> buffer;
 	ProtocolBufferConverter<Protocol.Notification> converter = new ProtocolBufferConverter<Protocol.Notification>(Protocol.Notification.getDefaultInstance());
-	Id id = new Id(); 
-	
+
 	/**
 	 * Test method for {@link rsb.converter.ProtocolBufferConverter#serialize(java.lang.String, java.lang.Object)}.
-	 * @throws ConversionException 
+	 * @throws ConversionException
 	 */
-	public void testSerialize() throws ConversionException {				
+	public void testSerialize() throws ConversionException {
 		Notification.Builder notificationBuilder = Notification.newBuilder();
 		// notification metadata
-		notificationBuilder.setId(ByteString.copyFrom(id.toByteArray()));
+		notificationBuilder.setSequenceNumber(0);
+		notificationBuilder.setSenderId(ByteString.copyFrom(new Id().toByteArray()));
 		notificationBuilder.setWireSchema(ByteString.copyFromUtf8("rsb.notification"));
-		notificationBuilder.setScope(ByteString.copyFromUtf8("rsb"));		
+		notificationBuilder.setScope(ByteString.copyFromUtf8("rsb"));
 
 		buffer = converter.serialize("",notificationBuilder.build());
 		assertNotNull(buffer);
@@ -63,17 +63,14 @@ public class ProtocolBufferConverterTest {
 
 	/**
 	 * Test method for {@link rsb.converter.ProtocolBufferConverter#deserialize(java.lang.String, java.nio.ByteBuffer)}.
-	 * @throws ConversionException 
+	 * @throws ConversionException
 	 */
 	public void testDeserialize() throws ConversionException {
-		assertNotNull(buffer);												  
+		assertNotNull(buffer);
 		UserData<Notification> result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
 		Notification n = (Notification) result.getData();
-		Id resId = new Id(n.getId().toByteArray());
-		LOG.fine("Expected Id: " + id + ", result Id: " + resId);
-		assertEquals(id, resId);
 	}
-	
+
 	@Test
 	public void testRoundtrip() throws ConversionException {
 		testSerialize();

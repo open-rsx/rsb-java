@@ -24,12 +24,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import rsb.Id;
 import rsb.Event;
 import rsb.Scope;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class ScopeFilterTest {
 
@@ -40,6 +41,7 @@ public class ScopeFilterTest {
 	public void testTransform() {
 		Event e = new Event();
 		e.setScope(new Scope("/images"));
+		e.getMetaData().setSenderId(new Id());
 		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
 		assertTrue(sf.transform(e) != null);
 		e.setScope(new Scope("/nomatch"));
@@ -57,6 +59,7 @@ public class ScopeFilterTest {
 		// configuration is just to check here whether the white-
 		// listing really works
 		e.setScope(new Scope("/images/justfortesting"));
+		e.getMetaData().setSenderId(new Id());
 		ScopeFilter sf = new ScopeFilter(new Scope("/images"));
 		sf.skip(e.getId());
 		assertTrue(sf.transform(e) != null);
