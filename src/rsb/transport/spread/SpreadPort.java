@@ -220,7 +220,7 @@ public class SpreadPort extends AbstractPort {
 		Converter<ByteBuffer> converter = null;
 		// convert data
 		try {
-			converter = outStrategy.getConverter(e.getType());
+			converter = outStrategy.getConverter(e.getType().getName());
 		} catch (NoSuchConverterException ex) {
 			log.warning(ex.getMessage());
 			return;
@@ -246,12 +246,12 @@ public class SpreadPort extends AbstractPort {
 
 			// notification metadata
 			notificationBuilder.setSequenceNumber((int) e.getSequenceNumber());
+			// System.out.println("Sequence number is:" + e.getSequenceNumber());
 			notificationBuilder.setWireSchema(ByteString
 					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
 					.toString()));
-			notificationBuilder.setSenderId(ByteString.copyFrom(e.getMetaData()
-			  .getSenderId().toByteArray()));
+			notificationBuilder.setSenderId(ByteString.copyFrom(e.getSenderId().toByteArray()));
 
 			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
 			metaDataBuilder.setCreateTime(e.getMetaData().getCreateTime());

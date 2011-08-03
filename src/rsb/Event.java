@@ -20,23 +20,23 @@
  */
 package rsb;
 
-import java.lang.StringBuilder;
-import java.util.Formatter;
-
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of
  * metadata and the actual data to publish / subscribe to as payload.
  *
  * @author swrede
  */
+// TODO check if we want to provide the type via a template parameter
+// Rationale: A single event can only hold a single type
 public class Event {
 
 	private Id id = null;
-	private String type;
+	private Class<?> type;
 	private Scope scope;
-        private long sequenceNumber;
+    private long sequenceNumber;
 	private Object data;
 	private MetaData metaData = new MetaData();
+	private ParticipantId senderId = null;
 
 	// TODO move event creation into factory?
 
@@ -44,14 +44,14 @@ public class Event {
 	 * @param type
 	 * @param data
 	 */
-	public Event(Scope scope, String type, Object data) {
+	public Event(Scope scope, Class<?> type, Object data) {
 		this.scope = scope;
 		this.type = type;
 		this.data = data;
 	}
 
-	// TODO check if we want this or if a constructor argument describing the data is better
-	public Event(String type) {
+
+	public Event(Class<?> type) {
 		this.type = type;
 	}
 
@@ -59,17 +59,17 @@ public class Event {
 	}
 
 	/**
-	 * @return the type
+	 * @return the Java type of the payload
 	 */
-	public String getType() {
+	public Class<?> getType() {
 		return type;
 	}
 
 	/**
 	 * @param type
-	 *            the type to set
+	 *            the Java type to set for the Event payload
 	 */
-	public void setType(String type) {
+	public void setType(Class<?> type) {
 		this.type = type;
 	}
 
@@ -94,7 +94,16 @@ public class Event {
 	public Scope getScope() {
 		return scope;
 	}
+	
 
+	public void setSenderId(ParticipantId id) {
+		this.senderId  = id;
+	}	
+	
+	public ParticipantId getSenderId() {
+		return senderId;
+	}
+	
 	/**
 	 * @param scope
 	 *            the scope to set
@@ -103,29 +112,20 @@ public class Event {
 		this.scope = scope;
 	}
 
-        public long getSequenceNumber() {
+    public long getSequenceNumber() {
 	        return sequenceNumber;
 	}
 
-        public void setSequenceNumber(long sequenceNumber) {
+    public void setSequenceNumber(long sequenceNumber) {
 	        this.sequenceNumber = sequenceNumber;
 	}
 
 	public Id getId() {
 	        if (id == null) {
-		        computeId();
+		        id = new Id(senderId, sequenceNumber);
 	        }
 		return id;
 	}
-
-        private void computeId() {
-	        StringBuilder builder = new StringBuilder();
-	        Formatter formatter = new Formatter(builder);
-	        formatter.format("%08x", getSequenceNumber());
-	        // id = makeV5UUID(metaData.getSenderId(), builder.toString());
-	        id = metaData.getSenderId();
-		// TODO just pretend for now
-        }
 
 	/**
 	 * Returns a {@link MetaData} instance representing the meta data for this
@@ -143,31 +143,85 @@ public class Event {
 		    + ", metaData=" + metaData + "]";
 	}
 
+
 	@Override
 	public int hashCode() {
-		return id.toString().hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result
+				+ ((metaData == null) ? 0 : metaData.hashCode());
+		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
+		result = prime * result
+				+ ((senderId == null) ? 0 : senderId.hashCode());
+		result = prime * result
+				+ (int) (sequenceNumber ^ (sequenceNumber >>> 32));
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Event)) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		Event other = (Event) obj;
-		if (scope == null ^ other.scope == null) {
+		if (data == null) {
+			if (other.data != null) {
+				return false;
+			}
+		} else if (!data.equals(other.data)) {
 			return false;
 		}
-		if (type == null ^ other.type == null) {
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
-		if (data == null ^ other.data == null) {
+		if (metaData == null) {
+			if (other.metaData != null) {
+				return false;
+			}
+		} else if (!metaData.equals(other.metaData)) {
 			return false;
 		}
-		return (sequenceNumber == other.sequenceNumber)
-				&& (scope == null || scope.equals(other.scope))
-				&& (type == null || type.equals(other.type))
-				&& (data == null || data.equals(other.data))
-				&& metaData.equals(other.metaData);
+		if (scope == null) {
+			if (other.scope != null) {
+				return false;
+			}
+		} else if (!scope.equals(other.scope)) {
+			return false;
+		}
+		if (senderId == null) {
+			if (other.senderId != null) {
+				return false;
+			}
+		} else if (!senderId.equals(other.senderId)) {
+			return false;
+		}
+		if (sequenceNumber != other.sequenceNumber) {
+			return false;
+		}
+		if (type == null) {
+			if (other.type != null) {
+				return false;
+			}
+		} else if (!type.equals(other.type)) {
+			return false;
+		}
+		return true;
 	}
+
+
 
 }

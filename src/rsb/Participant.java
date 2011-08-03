@@ -5,13 +5,17 @@ import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
 /**
- * Base class for all bus participants.
+ * Base class for all bus participants with an associated scope. 
+ * Mainly holds references to the router and configuration-level
+ * objects.
  * 
  * @author jwienke
+ * @author swrede
+ * 
  */
 public abstract class Participant implements RSBObject {
 
-	private Id id = new Id();
+	private ParticipantId id = new ParticipantId();
 	private Scope scope;
 	private TransportFactory transportFactory;
 	private Router router;
@@ -46,7 +50,7 @@ public abstract class Participant implements RSBObject {
 	 * 
 	 * @return the unique id of the participant
 	 */
-	public Id getId() {
+	public ParticipantId getId() {
 		return id;
 	}
 

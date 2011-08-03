@@ -33,7 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.Id;
+import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
@@ -56,7 +56,7 @@ public class SpreadPortTest {
 	public void setUp() throws Throwable {
 
 		outWrapper = new SpreadWrapper();
-		outPort = new SpreadPort(outWrapper, null, getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
+		outPort = new SpreadPort(outWrapper, null, getConverterStrategy("utf-8-string"),getConverterStrategy(String.class.getName()));
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
 		outPort.activate();
@@ -102,7 +102,7 @@ public class SpreadPortTest {
 					}
 				}
 
-			},getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
+			},getConverterStrategy("utf-8-string"),getConverterStrategy(String.class.getName()));
 
 			inPort.activate();
 
@@ -115,11 +115,11 @@ public class SpreadPortTest {
 		int numEvents = 100;
 
 		// send events
-		Event event = new Event("String");
+		Event event = new Event(String.class);
 		event.setSequenceNumber(0);
 		event.setData("a test string " + numEvents);
 		event.setScope(sendScope);
-		event.getMetaData().setSenderId(new Id());
+		event.setSenderId(new ParticipantId());
 
 		outPort.push(event);
 
@@ -150,13 +150,13 @@ public class SpreadPortTest {
 	@Test
 	public void longGroupNames() throws Throwable {
 
-		Event event = new Event("String");
+		Event event = new Event(String.class);
 		event.setSequenceNumber(0);
 		event.setData("a test string");
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
-		event.getMetaData().setSenderId(new Id());
-
+		event.setSenderId(new ParticipantId());
+		
 		outPort.push(event);
 
 	}
@@ -166,10 +166,10 @@ public class SpreadPortTest {
 
 		// create an event to send
 		final Scope scope = new Scope("/a/test/scope/again");
-		Event event = new Event("String");
+		Event event = new Event(String.class);
 		event.setData("a test string");
 		event.setScope(scope);
-		event.getMetaData().setSenderId(new Id());
+		event.setSenderId(new ParticipantId());
 
 		// create a receiver to wait for event
 		final List<Event> receivedEvents = new ArrayList<Event>();
@@ -184,7 +184,7 @@ public class SpreadPortTest {
 				}
 			}
 
-		},getConverterStrategy("utf-8-string"),getConverterStrategy("String"));
+		},getConverterStrategy("utf-8-string"),getConverterStrategy(String.class.getName()));
 		inPort.activate();
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 

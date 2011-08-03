@@ -47,6 +47,11 @@ package spread;
  */
 public class SpreadException extends Exception
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// Constructor.
 	///////////////
 	/**

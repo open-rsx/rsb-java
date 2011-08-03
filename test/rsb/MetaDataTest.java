@@ -25,14 +25,6 @@ public class MetaDataTest {
 	}
 
 	@Test
-	public void testSenderId() {
-		Id id = new Id();
-		MetaData meta = new MetaData();
-		meta.setSenderId(id);
-		assertEquals(id, meta.getSenderId());
-	}
-
-	@Test
 	public void testDefaultTimesAuto() {
 
 		MetaData meta = new MetaData();
@@ -140,19 +132,8 @@ public class MetaDataTest {
 		meta2.setCreateTime(meta1.getCreateTime());
 		assertTrue(meta1.equals(meta2));
 
-		meta1.setSenderId(new Id());
-		assertFalse(meta1.equals(meta2));
-		assertFalse(meta2.equals(meta1));
-
-		meta2.setSenderId(meta1.getSenderId());
-		assertEquals(meta1, meta2); // identical
-
-		meta1.setSenderId(new Id());
-		assertFalse(meta1.equals(meta2)); // distinct UUIDs, again
-
 		meta1 = new MetaData();
 		meta2 = new MetaData();
-		meta2.setSenderId(meta1.getSenderId());
 		meta2.setCreateTime(meta1.getCreateTime());
 		assertEquals(meta1, meta2);
 		meta2.setUserInfo("foo", "bar");

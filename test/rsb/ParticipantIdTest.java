@@ -24,20 +24,18 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import rsb.Id;
-
 /**
  * @author swrede
  * 
  */
-public class IdTest {
+public class ParticipantIdTest {
 
 	/**
 	 * Test method for {@link rsb.Id#EventId()}.
 	 */
 	@Test
-	public void testEventId() {
-		new Id();
+	public void testEventId() {		
+		new ParticipantId();
 	}
 
 	/**
@@ -45,9 +43,9 @@ public class IdTest {
 	 */
 	@Test
 	public void testEventIdString() {
-		Id id = new Id();
+		ParticipantId id = new ParticipantId();
 		String s = id.toString();
-		Id id2 = new Id(s);
+		ParticipantId id2 = new ParticipantId(s);
 		assertTrue(id.equals(id2));
 	}
 
@@ -56,14 +54,14 @@ public class IdTest {
 	 */
 	@Test
 	public void testToString() {
-		Id id = new Id();
+		ParticipantId id = new ParticipantId();
 		String s = id.toString();
 		assertTrue(s.length() > 0);
 	}
 
 	@Test
 	public void testToByteArray() {
-		Id id = new Id("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
+		ParticipantId id = new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
 
 		byte[] data = new byte[16];
 
@@ -110,7 +108,7 @@ public class IdTest {
 		data[14] = (byte) 150;
 		data[15] = (byte) 29;
 
-		assertEquals(new Id("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"), new Id(
+		assertEquals(new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"), new ParticipantId(
 				data));
 
 	}

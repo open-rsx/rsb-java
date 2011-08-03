@@ -532,7 +532,7 @@ NOT SUPPORTED IN 1.1	*/
 	/////////////////////////////////////
 	private void instantiateAuthMethod() throws SpreadException
 	{
-		Class authclass;
+		Class<?> authclass;
 
 		//		System.out.println("Authname is " + authName);
 		//		System.out.println("class name is " + authClassName);

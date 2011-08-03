@@ -22,7 +22,10 @@ package rsb;
 
 import java.util.logging.Logger;
 
+import rsb.converter.ConverterSelectionStrategy;
+import rsb.converter.DefaultConverterRepository;
 import rsb.transport.PortConfiguration;
+import rsb.transport.SequenceNumber;
 import rsb.transport.TransportFactory;
 
 /**
@@ -35,32 +38,40 @@ import rsb.transport.TransportFactory;
  * @author jschaefe
  * @author jwienke
  */
-public class Informer<T> extends Participant {
+public class Informer<T extends Object> extends Participant {
 
 	private final static Logger LOG = Logger
 			.getLogger(Informer.class.getName());
 
 	/** state variable for publisher instance */
 	protected InformerState<T> state;
+	
+	/** atomic uint32 counter object for event sequence numbers */
+	protected SequenceNumber sequenceNumber = new SequenceNumber();
+	
+	/** converter repository for type mappings */
+	protected ConverterSelectionStrategy<?> converter;
 
 	/** default data type for this publisher */
-	// TODO automatic initialization of typeinfo required
-	// TODO use Class objects as type identifiers here and in the converters
-	protected String typeinfo;
+	protected Class<?> type;
 
 	protected class InformerStateInactive extends InformerState<T> {
 
 		protected InformerStateInactive(Informer<T> ctx) {
 			super(ctx);
 			LOG.fine("Informer state activated: [Scope:" + getScope()
-					+ ",State:Inactive,Type:" + typeinfo + "]");
+					+ ",State:Inactive,Type:" + type.getName() + "]");
 		}
 
 		protected void activate() throws InitializeException {
+			// TODO check where to put the type mangling java type to wire type
+			// probably this should be translated in the respective converter itself
+			// however: this information is part of the notification! so, that is a problem
+			converter = DefaultConverterRepository.getDefaultConverterRepository().getConvertersForSerialization();
 			getRouter().activate();
-			p.state = new InformerStateActive(p);
+			ctx.state = new InformerStateActive(ctx);
 			LOG.info("Informer activated: [Scope:" + getScope() + ",Type:"
-					+ typeinfo + "]");
+					+ type.getName() + "]");
 		}
 
 	}
@@ -70,65 +81,77 @@ public class Informer<T> extends Participant {
 		protected InformerStateActive(Informer<T> ctx) {
 			super(ctx);
 			LOG.fine("Informer state activated: [Scope:" + getScope()
-					+ ",State:Active,Type:" + typeinfo + "]");
+					+ ",State:Active,Type:" + type.getName() + "]");
 		}
 
 		protected void deactivate() {
 			getRouter().deactivate();
-			p.state = new InformerStateInactive(p);
+			ctx.state = new InformerStateInactive(ctx);
 			LOG.info("Informer deactivated: [Scope:" + getScope() + ",Type:"
-					+ typeinfo + "]");
+					+ type.getName() + "]");
 		}
 
 		protected Event send(Event e) throws RSBException {
-
-			if (!typeinfo.equals(e.getType())) {
-				throw new IllegalArgumentException(
-						"Event type must not be null.");
-			}
+			
 			if (!getScope().equals(e.getScope())) {
 				throw new IllegalArgumentException(
 						"Event scope must not be null.");
 			}
-
-			e.getMetaData().setSenderId(getId());
+			if (e.getType()==null) {
+				throw new IllegalArgumentException(
+						"Event type must not be null.");
+			}			
+			// TODO check performance of isAssignableFrom	
+			if (!ctx.getTypeInfo().isAssignableFrom(e.getType())) {
+				throw new IllegalArgumentException(
+						"Type of event data does not match nor is a sub-class of the Informer data type.");
+			}
+			
+			// set participant metadata
+			// increment atomic counter
+			e.setSequenceNumber(sequenceNumber.incrementAndGet());
+			e.setSenderId(getId());
+			
+			// send to transport(s)
 			getRouter().publishSync(e);
+			
+			// return event for local use
 			return e;
 
 		}
 
 		protected Event send(T d) throws RSBException {
-			Event e = new Event(getScope(), typeinfo, (Object) d);
+			Event e = new Event(getScope(), d.getClass(), (Object) d);
 			return send(e);
 		}
 
 	}
 
-	private void initMembers(String t) {
+	private void initMembers(Class<?> c) {
+		this.type = c;
 		state = new InformerStateInactive(this);
-		this.typeinfo = t;
-		LOG.fine("New publisher instance created: [Scope:" + getScope()
-				+ ",State:Inactive,Type:" + typeinfo + "]");
+		LOG.info("New publisher instance created: [Scope:" + getScope()
+				+ ",State:Inactive,Type:" + type.getName() + "]");
 	}
 
 	Informer(Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
-		initMembers("String");
+		initMembers(Object.class);
 	}
 
 	Informer(Scope scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
-		initMembers("String");
+		initMembers(Object.class);
 	}
 
-	Informer(Scope scope, String t) {
+	Informer(Scope scope, Class<?> type) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
-		initMembers(t);
+		initMembers(type);
 	}
 
-	Informer(Scope scope, String t, TransportFactory tfac) {
+	Informer(Scope scope, Class<?> type, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
-		initMembers(t);
+		initMembers(type);
 	}
 
 	public synchronized void activate() throws InitializeException {
@@ -169,14 +192,23 @@ public class Informer<T> extends Participant {
 	}
 
 	/**
-	 * Returns the string describing the type of data sent by this informer.
+	 * Returns the class describing the type of data sent by this informer.
 	 * 
 	 * @return string declarator
 	 */
-	public String getTypeInfo() {
-		return typeinfo;
+	public Class<?> getTypeInfo() {
+		return type;
 	}
 
+	/**
+	 * Set the class object describing the type of data sent by this informer.
+	 * 
+	 * @return string declarator
+	 */
+	public void setTypeInfo(Class<?> typeInfo) {
+		type = typeInfo;
+	}	
+	
 	@Override
 	public boolean isActive() {
 		return state.getClass() == InformerStateActive.class;

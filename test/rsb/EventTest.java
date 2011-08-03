@@ -21,6 +21,17 @@ public class EventTest {
 		event2.getMetaData()
 				.setCreateTime(event1.getMetaData().getCreateTime());
 		assertEquals(event1, event2);
+		
+//		// TODO add Id test
+//		meta1.setSenderId(new Id());
+//		assertFalse(meta1.equals(meta2));
+//		assertFalse(meta2.equals(meta1));
+//
+//		meta2.setSenderId(meta1.getSenderId());
+//		assertEquals(meta1, meta2); // identical
+//
+//		meta1.setSenderId(new Id());
+//		assertFalse(meta1.equals(meta2)); // distinct UUIDs, again		
 
 		event1.setScope(new Scope("/foo/bar"));
 		assertFalse(event1.equals(event2));
@@ -32,10 +43,10 @@ public class EventTest {
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
 
-		event1.setType("blubb");
+		event1.setType("blubb".getClass());
 		assertFalse(event1.equals(event2));
 		assertFalse(event2.equals(event1));
-		event2.setType("no match type");
+		event2.setType(Boolean.class);
 		assertFalse(event1.equals(event2));
 		assertFalse(event2.equals(event1));
 		event2.setType(event1.getType());
@@ -52,10 +63,10 @@ public class EventTest {
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
 
-		event1.getMetaData().setSenderId(new Id());
+		event1.setSenderId(new ParticipantId());
 		assertFalse(event1.equals(event2));
 		assertFalse(event2.equals(event1));
-		event2.getMetaData().setSenderId(event1.getMetaData().getSenderId());
+		event2.setSenderId(event1.getSenderId());
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
 

@@ -2,16 +2,17 @@ package rsb.converter;
 
 /**
  * A wrapper around deserialized data that contains the unspecific
- * {@link Object} instance with a string describing its type.
+ * {@link Object} instance with a class object describing its type.
  * 
  * @author jwienke
+ * @author swrede
  */
 public class UserData<WireType> {
 
-	private Object data;
-	private String typeInfo;
+	private Object data;	
+	private Class<?> typeInfo;
 
-	public UserData(Object data, String typeInfo) {
+	public UserData(Object data, Class<?> typeInfo) {
 		this.data = data;
 		this.typeInfo = typeInfo;
 	}
@@ -26,11 +27,11 @@ public class UserData<WireType> {
 	}
 
 	/**
-	 * String describing the type of the deserialized data.
+	 * Class object describing the type of the deserialized data.
 	 * 
-	 * @return string type info
+	 * @return class type info
 	 */
-	public String getTypeInfo() {
+	public Class<?> getTypeInfo() {
 		return typeInfo;
 	}
 

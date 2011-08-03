@@ -37,7 +37,7 @@ public interface Converter<WireType> {
 	 * Serializes user data to a wire representation.
 	 * 
 	 * @param typeInfo
-	 *            programming language specific string describing the data to
+	 *            Java class describing the type of the data to
 	 *            serialize
 	 * @param obj
 	 *            data to serialize
@@ -45,7 +45,7 @@ public interface Converter<WireType> {
 	 * @throws ConversionException
 	 *             error converting the data
 	 */
-	public WireContents<WireType> serialize(String typeInfo, Object obj)
+	public WireContents<WireType> serialize(Class<?> typeInfo, Object obj)
 			throws ConversionException;
 
 	/**

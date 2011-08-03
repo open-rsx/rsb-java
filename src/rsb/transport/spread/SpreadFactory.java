@@ -22,8 +22,8 @@ package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
 
-import rsb.converter.StringConverter;
-import rsb.converter.UnambiguousConverterMap;
+import rsb.converter.ConverterSelectionStrategy;
+import rsb.converter.DefaultConverterRepository;
 import rsb.transport.EventHandler;
 import rsb.transport.Port;
 import rsb.transport.TransportFactory;
@@ -36,12 +36,12 @@ public class SpreadFactory extends TransportFactory {
 
 	@Override
 	public Port createPort(EventHandler handler) {
-		UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
-		inStrategy.addConverter("utf-8-string", new StringConverter());
-		inStrategy.addConverter("ascii-string", new StringConverter("US-ASCII", "ascii-string"));
+		ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository.getDefaultConverterRepository().getConvertersForDeserialization();
+//		inStrategy.addConverter("utf-8-string", new StringConverter());
+//		inStrategy.addConverter("ascii-string", new StringConverter("US-ASCII", "ascii-string"));
 
-		UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
-		outStrategy.addConverter("String", new StringConverter());
+		ConverterSelectionStrategy<ByteBuffer> outStrategy = DefaultConverterRepository.getDefaultConverterRepository().getConvertersForSerialization();
+//		outStrategy.addConverter("String", new StringConverter());
 
 		SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler, inStrategy, outStrategy);
 		return sp;

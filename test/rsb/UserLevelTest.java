@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import rsb.converter.DefaultConverters;
 import rsb.transport.TransportFactory;
 
 /**
@@ -15,10 +16,13 @@ import rsb.transport.TransportFactory;
  * @author jwienke
  */
 public class UserLevelTest {
-
+	
 	@Test(timeout = 15000)
 	public void roundtrip() throws Throwable {
 
+		// register converters
+		DefaultConverters.register();
+		
 		final Scope scope = new Scope("/example/informer");
 
 		// set up a receiver for events

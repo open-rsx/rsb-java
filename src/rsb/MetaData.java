@@ -33,7 +33,6 @@ import java.util.Set;
  */
 public class MetaData {
 
-	private Id senderId = null;
 	private long createTime = System.currentTimeMillis() * 1000;
 	private long sendTime = 0;
 	private long receiveTime = 0;
@@ -42,41 +41,9 @@ public class MetaData {
 	private Map<String, String> userInfos = new HashMap<String, String>();
 
 	/**
-	 * Creates a new {@link MetaData} instance with unspecified sender ID and
-	 * creation time now.
+	 * Creates a new {@link MetaData} instance with creation time now.
 	 */
 	public MetaData() {
-	}
-
-	/**
-	 * Creates a new {@link MetaData} instance with the specified sender ID and
-	 * creation time now.
-	 * 
-	 * @param senderId
-	 *            the id of the sender, not <code>null</code>
-	 */
-	public MetaData(Id senderId) {
-		assert senderId != null;
-		this.senderId = senderId;
-	}
-
-	/**
-	 * Returns the ID (a UUID) of the sending participant.
-	 * 
-	 * @return UUID, may be <code>null</code> if not specified
-	 */
-	public Id getSenderId() {
-		return senderId;
-	}
-
-	/**
-	 * Sets the ID (a UUID) of the sending participant.
-	 * 
-	 * @param senderId
-	 *            id of the sending participant
-	 */
-	public void setSenderId(Id senderId) {
-		this.senderId = senderId;
 	}
 
 	/**
@@ -294,36 +261,75 @@ public class MetaData {
 		userInfos.put(key, value);
 	}
 
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (createTime ^ (createTime >>> 32));
+		result = prime * result + (int) (deliverTime ^ (deliverTime >>> 32));
+		result = prime * result + (int) (receiveTime ^ (receiveTime >>> 32));
+		result = prime * result + (int) (sendTime ^ (sendTime >>> 32));
+		result = prime * result
+				+ ((userInfos == null) ? 0 : userInfos.hashCode());
+		result = prime * result
+				+ ((userTimes == null) ? 0 : userTimes.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
 		if (!(obj instanceof MetaData)) {
 			return false;
 		}
 		MetaData other = (MetaData) obj;
-		if (senderId == null ^ other.senderId == null) {
+		if (createTime != other.createTime) {
 			return false;
 		}
-		return (senderId == null || senderId.equals(other.senderId))
-				&& (createTime == other.createTime)
-				&& (sendTime == other.sendTime)
-				&& (receiveTime == other.receiveTime)
-				&& (deliverTime == other.deliverTime)
-				&& (userInfos.equals(other.userInfos))
-				&& (userTimes.equals(other.userTimes));
-	}
-
-	@Override
-	public int hashCode() {
-		return (int) (senderId.hashCode() + 3 * createTime - 7 * sendTime + 5
-				* receiveTime - 13 * deliverTime + 29 * userTimes.hashCode() - userInfos
-				.hashCode());
+		if (deliverTime != other.deliverTime) {
+			return false;
+		}
+		if (receiveTime != other.receiveTime) {
+			return false;
+		}
+		if (sendTime != other.sendTime) {
+			return false;
+		}
+		if (userInfos == null) {
+			if (other.userInfos != null) {
+				return false;
+			}
+		} else if (!userInfos.equals(other.userInfos)) {
+			return false;
+		}
+		if (userTimes == null) {
+			if (other.userTimes != null) {
+				return false;
+			}
+		} else if (!userTimes.equals(other.userTimes)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "MetaData[senderId = " + senderId + ", createTime = "
-				+ createTime + ", sendTime = " + sendTime + ", receiveTime = "
-				+ receiveTime + ", userTimes = " + userTimes + ", userInfos = "
-				+ userInfos + "]";
+		return "MetaData[createTime = " + createTime + ", sendTime = "
+				+ sendTime + ", receiveTime = " + receiveTime
+				+ ", userTimes = " + userTimes + ", userInfos = " + userInfos
+				+ "]";
 	}
 }

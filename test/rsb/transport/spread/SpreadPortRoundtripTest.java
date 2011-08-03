@@ -1,6 +1,6 @@
 package rsb.transport.spread;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import rsb.Event;
-import rsb.Id;
+import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
-import rsb.Scope;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
+import rsb.Scope;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.filter.FilterAction;
@@ -53,7 +53,7 @@ public class SpreadPortRoundtripTest {
 		UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
 		inStrategy.addConverter("utf-8-string", new StringConverter());
 		UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
-		outStrategy.addConverter("String", new StringConverter());
+		outStrategy.addConverter(String.class.getName(), new StringConverter());
 		SpreadPort outPort = new SpreadPort(outWrapper, null,inStrategy,outStrategy);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
@@ -83,11 +83,11 @@ public class SpreadPortRoundtripTest {
 			builder.append('c');
 		}
 
-		Event event = new Event("String");
+		Event event = new Event(String.class);
 		event.setSequenceNumber(0);
 		event.setData(builder.toString());
 		event.setScope(scope);
-		event.getMetaData().setSenderId(new Id());
+		event.setSenderId(new ParticipantId());
 		event.getMetaData().setUserInfo("foo", "a long string");
 		event.getMetaData().setUserInfo("barbar", "a long string again");
 		event.getMetaData().setUserTime("asdasd", 324234);

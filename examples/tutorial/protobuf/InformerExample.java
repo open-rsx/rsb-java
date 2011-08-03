@@ -1,4 +1,4 @@
-package protobuf;
+package tutorial.protobuf;
 /**
  * ============================================================
  *
@@ -20,11 +20,15 @@ package protobuf;
  * ============================================================
  */
 
+import com.google.protobuf.ByteString;
+
 import rsb.Factory;
 import rsb.Informer;
 import rsb.Scope;
+import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
-import rsb.protocol.Protocol;
+import tutorial.protobuf.ImageMessage.SimpleImage;
+import tutorial.protobuf.ImageMessage.SimpleImage.Builder;
 
 /**
  * An example how to use the {@link rsb.Informer} class to send events.
@@ -34,34 +38,19 @@ import rsb.protocol.Protocol;
 public class InformerExample {
 
 	public static void main(String[] args) throws Throwable {
-
-//		   shared_ptr<ProtocolBufferConverter<SimpleImage> > converter(
-//		            new ProtocolBufferConverter<SimpleImage> ());
-//		    stringConverterRepository()->registerConverter(converter);
-//
-//		    // Create an informer which has the SimpleImage protocol buffer
-//		    // message as its data type.
-//		    Informer<SimpleImage>::Ptr informer =
-//		            Factory::getInstance().createInformer<SimpleImage> (
-//		                    Scope("/tutorial/converter"));
-//
-//		    // Create and publish an instance of SimpleImage. To see the
-//		    // event, you can, for example use the RSB logger utility or the
-//		    // receiver program in this directory.
-//		    Informer<SimpleImage>::DataPtr data(new SimpleImage());
-//		    data->set_width(10);
-//		    data->set_height(10);
-//		    data->set_data(new char[100], 100);
-//		    informer->publish(data);				
-		
-		ProtocolBufferConverter<Protocol.Notification> converter = new ProtocolBufferConverter<Protocol.Notification>(Protocol.Notification.getDefaultInstance());
+					
+		// Instantiate generic ProtocolBufferConverter with SimpleImage exemplar
+		ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
 		
 		// get a factory instance to create new RSB domain objects
 		Factory factory = Factory.getInstance();
 
-		// create an informer on scope "/exmaple/informer" to send event
+		// register converter for SimpleImage's
+		DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+		
+		// create an informer on scope "/example/informer" to send event
 		// notifications. This informer is capable of sending Strings.
-		Informer<String> informer = factory.createInformer(new Scope(
+		Informer<SimpleImage> informer = factory.createInformer(new Scope(
 				"/example/informer"));
 
 		// activate the informer to be ready for work
@@ -69,8 +58,15 @@ public class InformerExample {
 
 		// send several events using a method that accepts the data and
 		// automatically creates an appropriate event internally.
-		for (int i = 0; i < 100; i++) {
-			informer.send("<message val=\"Hello World!\" nr=\"" + i + "\"/>");
+		Builder img = SimpleImage.newBuilder();
+		for (int i = 0; i < 100; i++) {			
+			img.setHeight(100);
+			img.setWidth(100);
+			byte[] bytes = new byte[100*100];
+			ByteString bs = ByteString.copyFrom(bytes);
+			img.setData(bs);					
+			informer.send(img.build());
+			System.out.println("Sending image...");
 		}
 
 		// as there is no explicit removal model in java, always manually

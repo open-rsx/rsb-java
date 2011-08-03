@@ -92,6 +92,11 @@
 			<fileset dir="${pbuf.protopath}" includes="*.proto" />
 			<fileset dir="${pbuf.protopath}/introspection" includes="/PortStateChange.proto" />
 		</apply>
+		<apply executable="${pbuf.protoc}">
+			<arg value="--java_out=examples" />
+			<arg value="--proto_path=${basedir}/examples/tutorial/protocol" />
+			<fileset dir="examples/tutorial/protocol" includes="*.proto" />
+		</apply>
 	</target>
 
 	<target name="compile" depends="init, protocol" description="compile the source ">

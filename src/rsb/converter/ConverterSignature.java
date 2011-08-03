@@ -12,9 +12,9 @@ public class ConverterSignature {
 	/** RSB WireSchema */
 	private final String schema;
 	/** Java Type */
-	private final String datatype;
+	private final Class<?> datatype;
 
-	public ConverterSignature(String schema, String datatype) {
+	public ConverterSignature(String schema, Class<?> datatype) {
 		this.schema = schema;
 		this.datatype = datatype;
 	}	
@@ -23,7 +23,7 @@ public class ConverterSignature {
 		return schema;
 	}
 
-	public String getDatatype() {
+	public Class<?> getDatatype() {
 		return datatype;
 	}
 	

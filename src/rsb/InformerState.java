@@ -7,10 +7,10 @@ public abstract class InformerState<T> {
 	private final static Logger LOG = Logger.getLogger(InformerState.class
 			.getName());
 
-	protected Informer<T> p;
+	protected Informer<T> ctx;
 
 	protected InformerState(Informer<T> ctx) {
-		p = ctx;
+		this.ctx = ctx;
 	}
 
 	protected void activate() throws InitializeException {

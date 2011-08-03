@@ -21,6 +21,7 @@
 
 package rsb;
 
+import rsb.converter.DefaultConverters;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 
@@ -40,6 +41,7 @@ public final class Factory {
 	 * Private constructor to ensure Singleton.
 	 */
 	private Factory() {
+		DefaultConverters.register();
 	}
 
 	/**
@@ -62,7 +64,7 @@ public final class Factory {
 	 *            type identifier of the informer
 	 * @return new informer instance
 	 */
-	public <T> Informer<T> createInformer(Scope scope, String type) {
+	public <T> Informer<T> createInformer(Scope scope, Class<?> type) {
 		return new Informer<T>(scope, type);
 	}
 

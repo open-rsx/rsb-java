@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import rsb.Id;
+import rsb.ParticipantId;
 import rsb.protocol.Protocol;
 import rsb.protocol.Protocol.Notification;
 
@@ -53,11 +53,12 @@ public class ProtocolBufferConverterTest {
 		Notification.Builder notificationBuilder = Notification.newBuilder();
 		// notification metadata
 		notificationBuilder.setSequenceNumber(0);
-		notificationBuilder.setSenderId(ByteString.copyFrom(new Id().toByteArray()));
+		notificationBuilder.setSenderId(ByteString.copyFrom(new ParticipantId().toByteArray()));
 		notificationBuilder.setWireSchema(ByteString.copyFromUtf8("rsb.notification"));
 		notificationBuilder.setScope(ByteString.copyFromUtf8("rsb"));
+		notificationBuilder.setSequenceNumber(23);
 
-		buffer = converter.serialize("",notificationBuilder.build());
+		buffer = converter.serialize(Notification.class,notificationBuilder.build());
 		assertNotNull(buffer);
 	}
 
@@ -69,6 +70,7 @@ public class ProtocolBufferConverterTest {
 		assertNotNull(buffer);
 		UserData<Notification> result = converter.deserialize(".rsb.protocol.Notification", buffer.getSerialization());
 		Notification n = (Notification) result.getData();
+		assertEquals(23, n.getSequenceNumber());
 	}
 
 	@Test

@@ -35,9 +35,9 @@ public class ConverterSignatureTest {
 	 */
 	@Test
 	public void testConverterSignature() {
-		ConverterSignature sig = new ConverterSignature("utf-8-string", "String");
+		ConverterSignature sig = new ConverterSignature("utf-8-string", String.class);
 		assertTrue(sig.getSchema().contentEquals("utf-8-string"));
-		assertTrue(sig.getDatatype().contentEquals("String"));
+		assertTrue(sig.getDatatype().getName().contentEquals("java.lang.String"));
 	}
 
 	/**
@@ -45,8 +45,8 @@ public class ConverterSignatureTest {
 	 */
 	@Test
 	public void testEqualsObject() {
-		ConverterSignature sig1 = new ConverterSignature("utf-8-string", "String");
-		ConverterSignature sig2 = new ConverterSignature("utf-8-string", "String");
+		ConverterSignature sig1 = new ConverterSignature("utf-8-string", String.class);
+		ConverterSignature sig2 = new ConverterSignature("utf-8-string", String.class);
 		assertEquals(sig1, sig2);
 	}
 

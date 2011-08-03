@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import rsb.Informer.InformerStateActive;
 import rsb.Informer.InformerStateInactive;
+import rsb.converter.DefaultConverters;
 import rsb.transport.TransportFactory;
 
 /**
@@ -37,9 +38,16 @@ public class InformerTest {
 
 	private final Scope defaultScope = new Scope("/informer/example");
 	private Informer<String> informer;
-
+	
 	@Before
 	public void setUp() throws Throwable {
+		try {
+			DefaultConverters.register();
+		} catch (IllegalArgumentException ex) {
+			// ignore, converters already registered
+			// should not happen when objects are created 
+			// using rsb.Factory
+		}
 		informer = new Informer<String>(defaultScope);
 		informer.activate();
 	}
@@ -82,10 +90,10 @@ public class InformerTest {
 	public void testInformerStringString() {
 		final Scope scope = new Scope("/x");
 		final String type = "XMLString";
-		Informer<String> p = new Informer<String>(scope, type);
+		Informer<String> p = new Informer<String>(scope, type.getClass());
 		assertNotNull(p);
 		assertEquals(p.getScope(), scope);
-		assertEquals(p.typeinfo, type);
+		assertEquals(p.getTypeInfo(), type.getClass());
 	}
 
 	/**
@@ -97,11 +105,11 @@ public class InformerTest {
 	public void testInformerStringStringTransportFactory() {
 		final Scope scope = new Scope("/x");
 		final String type = "XMLString";
-		Informer<String> p = new Informer<String>(scope, type,
+		Informer<String> p = new Informer<String>(scope, type.getClass(),
 				TransportFactory.getInstance());
 		assertNotNull(p);
 		assertEquals(p.getScope(), scope);
-		assertEquals(p.typeinfo, type);
+		assertEquals(p.getTypeInfo(), type.getClass());
 	}
 
 	/**
@@ -135,11 +143,11 @@ public class InformerTest {
 	}
 
 	private void testEvent(Event e, Participant participant) {
-		assertEquals("String", e.getType());
+		assertEquals(String.class, e.getType());
 		assertEquals("Hello World!", e.getData());
 		assertNotNull(e.getId());
 		assertEquals(new Scope("/informer/example"), e.getScope());
-		assertEquals(participant.getId(), e.getMetaData().getSenderId());
+		assertEquals(participant.getId(), e.getSenderId());
 	}
 
 	/**
@@ -149,7 +157,7 @@ public class InformerTest {
 	 */
 	@Test
 	public void testSendEvent() throws Throwable {
-		Event e = informer.send(new Event(defaultScope, "String",
+		Event e = informer.send(new Event(defaultScope, String.class,
 				"Hello World!"));
 		testEvent(e, informer);
 	}
@@ -194,8 +202,9 @@ public class InformerTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendEventWrongType() throws Throwable {
+		informer.setTypeInfo(String.class);
 		Event e = new Event();
-		e.setType("wrong");
+		e.setType(Boolean.class);
 		e.setScope(defaultScope);
 		e.setData("foo");
 		informer.send(e);

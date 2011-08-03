@@ -85,7 +85,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 	private void init(final Charset charset, String wireSchema) {
 		
 		// TODO replace by Java class object for type info
-		signature = new ConverterSignature(wireSchema, "String");
+		signature = new ConverterSignature(wireSchema, String.class);
 
 		encoder = new ThreadLocal<CharsetEncoder>() {
 
@@ -113,7 +113,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 	}
 
 	@Override
-	public WireContents<ByteBuffer> serialize(String typeInfo, Object data)
+	public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object data)
 			throws ConversionException {
 
 		try {
@@ -147,7 +147,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 		try {
 
 			String string = decoder.get().decode(bytes).toString();
-			return new UserData<ByteBuffer>(string, "String");
+			return new UserData<ByteBuffer>(string, String.class);
 
 		} catch (CharacterCodingException e) {
 			throw new ConversionException(

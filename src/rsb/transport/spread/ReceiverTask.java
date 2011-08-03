@@ -25,10 +25,8 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import rsb.Event;
-import rsb.Id;
+import rsb.ParticipantId;
 import rsb.Scope;
 import rsb.converter.ConversionException;
 import rsb.converter.Converter;
@@ -40,6 +38,8 @@ import rsb.protocol.Protocol.UserTime;
 import rsb.transport.EventHandler;
 import spread.SpreadException;
 import spread.SpreadMessage;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * A task that continuously reads on a spread connection and decodes RSB
@@ -118,6 +118,12 @@ class ReceiverTask extends Thread {
 	}
 
 	// TODO think about whether this could actually be a regular converter call
+	/*
+	 * Method for converting Spread data messages into Java RSB events.
+	 * The main purpose of this method is the conversion of Spread data
+	 * messages by parsing the notification data structures as defined
+	 * in RSB.Protocol using the ProtoBuf data holder classes.
+	 */
 	private Event convertNotification(DataMessage dm) {
 
 		try {
@@ -130,17 +136,18 @@ class ReceiverTask extends Thread {
 				log.fine("decoding notification");
 				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
+				e.setSenderId(new ParticipantId(n.getSenderId().toByteArray()));
+				e.setSequenceNumber(n.getSequenceNumber());
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
 				Converter<ByteBuffer> c = converters.getConverter(n.getWireSchema().toStringUtf8());
-				UserData userData = c.deserialize(n.getWireSchema().toStringUtf8(), joinedData);
+				UserData<?> userData = c.deserialize(n.getWireSchema().toStringUtf8(), joinedData);
 				e.setData(userData.getData());
 				e.setType(userData.getTypeInfo());
 				log.finest("returning event with id: " + e.getId());
 
 				// metadata
-				e.getMetaData().setSenderId(new Id(n.getSenderId().toByteArray()));
 				e.getMetaData().setCreateTime(n.getMetaData().getCreateTime());
 				e.getMetaData().setSendTime(n.getMetaData().getSendTime());
 				e.getMetaData().setReceiveTime(0);
