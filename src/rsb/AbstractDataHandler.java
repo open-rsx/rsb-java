@@ -29,18 +29,18 @@ package rsb;
  *            the desired target data type of the user handler. The event
  *            payload will be casted to this type
  */
-public abstract class DataHandler<V> implements Handler {
+public abstract class AbstractDataHandler<V> implements Handler {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void internalNotify(Event e) {
+	public void internalNotify(final Event event) {
 		try {
-			handleEvent((V) e.getData());
+			handleEvent((V) event.getData());
 		} catch (RuntimeException ex) {
 			throw ex;
 		}
 	}
 
-	public abstract void handleEvent(V d);
+	public abstract void handleEvent(V data);
 
 }

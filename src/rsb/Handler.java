@@ -24,7 +24,7 @@ import java.util.EventListener;
 
 /**
  * Internal handler interface. As a client use one of the specific interfaces
- * like {@link EventHandler} or {@link DataHandler}.
+ * like {@link EventHandler} or {@link AbstractDataHandler}.
  * 
  * @author swrede
  */

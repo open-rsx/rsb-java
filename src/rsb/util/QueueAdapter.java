@@ -23,7 +23,7 @@ package rsb.util;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import rsb.DataHandler;
+import rsb.AbstractDataHandler;
 
 /**
  * Synchronized queue implementing the rsb.DataHandler interface.
@@ -33,7 +33,7 @@ import rsb.DataHandler;
  * @author swrede
  * @author dklotz
  */
-public class QueueAdapter<T> extends DataHandler<T> { 
+public class QueueAdapter<T> extends AbstractDataHandler<T> { 
         BlockingQueue<T> queue;
         
         public QueueAdapter() {

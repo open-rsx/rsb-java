@@ -22,7 +22,7 @@ package tutorial.protobuf;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rsb.DataHandler;
+import rsb.AbstractDataHandler;
 import rsb.Factory;
 import rsb.Listener;
 import rsb.Scope;
@@ -60,7 +60,7 @@ public class ListenerExample {
 
 		// add a DataHandler that is notified directly with the data grabbed
 		// from the received event
-		sub.addHandler(new DataHandler<SimpleImage>() {
+		sub.addHandler(new AbstractDataHandler<SimpleImage>() {
 
 			@Override
 			public void handleEvent(SimpleImage e) {

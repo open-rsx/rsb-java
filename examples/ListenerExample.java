@@ -21,7 +21,7 @@
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rsb.DataHandler;
+import rsb.AbstractDataHandler;
 import rsb.EventHandler;
 import rsb.Factory;
 import rsb.Event;
@@ -73,7 +73,7 @@ public class ListenerExample {
 
 		// add a DataHandler that is notified directly with the data grabbed
 		// from the received event
-		sub.addHandler(new DataHandler<String>() {
+		sub.addHandler(new AbstractDataHandler<String>() {
 
 			@Override
 			public void handleEvent(String e) {
