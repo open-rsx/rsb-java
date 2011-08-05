@@ -33,8 +33,8 @@ public interface ErrorHandler {
 	// public void lostConnectionToMemoryServer();
 	//
 
-	public void error(RSBException ex);
+	public void error(RSBException exception);
 
-	public void warning(RSBException ex);
+	public void warning(RSBException exception);
 
 }

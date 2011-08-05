@@ -28,16 +28,16 @@ public class DefaultErrorHandler implements ErrorHandler {
 	@SuppressWarnings("PMD.LoggerIsNotStaticFinal")
 	Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
 
-	public DefaultErrorHandler(Logger logger) {
+	public DefaultErrorHandler(final Logger logger) {
 		log = logger;
 	}
 
-	public void error(RSBException exception) {
+	public void error(final RSBException exception) {
 		log.severe("An error was reported to the ErrorHandler: "
 				+ exception.getMessage());
 	}
 
-	public void warning(RSBException exception) {
+	public void warning(final RSBException exception) {
 		log.severe("A warning was reported to the ErrorHandler: "
 				+ exception.getMessage());
 	}
