@@ -2,6 +2,7 @@ package rsb.patterns;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import rsb.Participant;
 import rsb.Scope;
@@ -21,7 +22,7 @@ import rsb.transport.TransportFactory;
 public abstract class Server extends Participant {
 	
 	protected class ServerStateActive extends ServerState {
-		protected ServerStateActive(Server ctx) {
+		protected ServerStateActive(final Server ctx) {
 			super(ctx);
 		}
 
@@ -29,26 +30,26 @@ public abstract class Server extends Participant {
 			for (Method method : methods.values()) {
 				method.deactivate();
 			}
-			return new ServerStateInactive(s);
+			return new ServerStateInactive(server);
 		}
 	}
 
 	protected class ServerStateInactive extends ServerState {
 		
-		protected ServerStateInactive(Server ctx) {
+		protected ServerStateInactive(final Server ctx) {
 			super(ctx);
 		}
 
 		public ServerState activate() {
-			return new ServerStateActive(s);
+			return new ServerStateActive(server);
 		}
 	}
 
-	private HashMap<String, Method> methods;
+	private final Map<String, Method> methods;
 	private ServerState state;
 
-	protected Server(Scope scope, TransportFactory transportFactory,
-			PortConfiguration portConfig) {
+	protected Server(final Scope scope, final TransportFactory transportFactory,
+			final PortConfiguration portConfig) {
 		super(scope, transportFactory, portConfig);
 		methods = new HashMap<String, Method>();
 		state = new ServerStateInactive(this);

@@ -14,10 +14,10 @@ class ServerState {
 	protected final static Logger LOG = Logger.getLogger(ServerState.class.getName());
 
 	// reference to server instance
-	protected Server s; 
+	protected Server server; 
 	
-	protected ServerState (Server ctx) {
-		s = ctx;
+	protected ServerState (final Server ctx) {
+		server = ctx;
 	}	
 	
 	public ServerState activate() throws InvalidStateException {
@@ -28,7 +28,7 @@ class ServerState {
 		throw new InvalidStateException("Server not activated.");
 	}
 	
-	public synchronized void run(boolean async) {
+	public synchronized void run(final boolean async) {
 		throw new InvalidStateException("server not activated");
 	}	
 }
