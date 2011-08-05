@@ -58,8 +58,8 @@ public class InformerExample {
 
 		// send several events using a method that accepts the data and
 		// automatically creates an appropriate event internally.
-		Builder img = SimpleImage.newBuilder();
 		for (int i = 0; i < 100; i++) {			
+			Builder img = SimpleImage.newBuilder();
 			img.setHeight(100);
 			img.setWidth(100);
 			byte[] bytes = new byte[100*100];
