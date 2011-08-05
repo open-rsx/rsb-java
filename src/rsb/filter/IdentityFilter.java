@@ -6,7 +6,7 @@
 package rsb.filter;
 
 import rsb.Event;
-import rsb.Id;
+import rsb.EventId;
 
 /**
  *
@@ -62,7 +62,7 @@ public class IdentityFilter extends AbstractFilter {
 		o.notify(this, a);
 	}	
 
-	public void skip(Id id) {
+	public void skip(EventId id) {
 		LOG.info("Event with ID " + id + " will not be matched by IdentityFilter as this was already done by network layer!");
 		super.skip(id);
 	}

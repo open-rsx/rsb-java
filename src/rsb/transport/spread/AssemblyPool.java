@@ -45,7 +45,6 @@ public class AssemblyPool {
 	private class Assembly {
 
 		private Map<Integer, Notification> notifications = new HashMap<Integer, Notification>();
-		private ByteString id = null;
 		private int requiredParts = 0;
 
 		public Assembly(Notification initialNotification) {

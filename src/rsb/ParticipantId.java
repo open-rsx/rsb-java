@@ -22,6 +22,8 @@ package rsb;
 
 import java.util.UUID;
 
+import rsb.util.UUIDTools;
+
 /**
  * This class serves as a Uniform Resource Name to identify participants 
  * in an RSB system. At present, the URN is based on an UUID that is 
@@ -48,17 +50,7 @@ public class ParticipantId {
 	 *            byte representation of the id.
 	 */
 	public ParticipantId(byte[] bytes) {
-
-		assert bytes.length == 16;
-
-		long msb = 0;
-		long lsb = 0;
-		for (int i = 0; i < 8; i++)
-			msb = (msb << 8) | (bytes[i] & 0xff);
-		for (int i = 8; i < 16; i++)
-			lsb = (lsb << 8) | (bytes[i] & 0xff);
-		this.id = new UUID(msb, lsb);
-
+		this.id = UUIDTools.fromByteArray(bytes);
 	}
 
 	/**
@@ -84,22 +76,9 @@ public class ParticipantId {
 	 * @return byte representing the id (length 16)
 	 */
 	public byte[] toByteArray() {
-
-		long msb = id.getMostSignificantBits();
-		long lsb = id.getLeastSignificantBits();
-		byte[] buffer = new byte[16];
-
-		for (int i = 0; i < 8; i++) {
-			buffer[i] = (byte) (msb >>> 8 * (7 - i));
-		}
-		for (int i = 8; i < 16; i++) {
-			buffer[i] = (byte) (lsb >>> 8 * (7 - i));
-		}
-
-		return buffer;
-
+		return UUIDTools.toByteArray(id);
 	}
-
+	
 
 	@Override
 	public int hashCode() {
@@ -127,6 +106,10 @@ public class ParticipantId {
 			return false;
 		}
 		return true;
+	}
+
+	protected UUID getUUID() {
+			return id;
 	}
 
 

@@ -25,6 +25,7 @@
 	<property name="cobertura.dir" value="${lib.dir}" />
 	<property name="cobertura.out.dir" value="coverage" />
 	<property name="instrumented.dir" value="${build.dir}/instrumented" />
+	<property name="spread.daemon" location="/usr/sbin/spread" />
 
 	<!-- set up ant-contrib -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -149,12 +150,13 @@
 			<assertions>
 				<enable />
 			</assertions>
+		<!--	<test name="rsb.EventIdTest"/>
+			<test name="rsb.util.UUIDToolsTest"/> -->
 			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
 				<fileset dir="test">
 					<include name="**/*Test*.java" />
 				</fileset>
-			</batchtest>
-		</junit>
+			</batchtest> 		</junit>
 	</target>
 
 	<target name="coverage" depends="test-compile" description="JUnit tests">
@@ -215,7 +217,7 @@
 			<ruleset>braces</ruleset>
 			<ruleset>clone</ruleset>
 			<ruleset>codesize</ruleset>
-			<ruleset>controversial</ruleset>
+			<!-- <ruleset>controversial</ruleset> --> 
 			<ruleset>coupling</ruleset>
 			<ruleset>design</ruleset>
 			<ruleset>finalizers</ruleset>
@@ -228,7 +230,7 @@
 			<ruleset>typeresolution</ruleset>
 			<ruleset>unusedcode</ruleset>
 			<formatter type="xml" toFile="pmd.xml"/>
-<!--			<formatter type="html" toFile="pmd_report.html" toConsole="true" /> -->
+			<formatter type="html" toFile="pmd_report.html" toConsole="true" /> 
 			<fileset dir="./src">
 				<include name="**/*.java" />
 			</fileset>

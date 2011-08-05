@@ -6,7 +6,7 @@
 package rsb.filter;
 
 import rsb.Event;
-import rsb.Id;
+import rsb.EventId;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class TypeFilter extends AbstractFilter {
 		type = c;
 	}
 
-	public void skip(Id id) {
+	public void skip(EventId id) {
 		LOG.info("Event with ID "
 				+ id
 				+ " will not be matched by TypeFilter as this was already done by network layer!");

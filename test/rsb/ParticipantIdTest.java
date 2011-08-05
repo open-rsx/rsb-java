@@ -31,7 +31,7 @@ import org.junit.Test;
 public class ParticipantIdTest {
 
 	/**
-	 * Test method for {@link rsb.Id#EventId()}.
+	 * Test method for {@link rsb.EventId#EventId()}.
 	 */
 	@Test
 	public void testEventId() {		
@@ -39,7 +39,7 @@ public class ParticipantIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.Id#EventId(java.lang.String)}.
+	 * Test method for {@link rsb.EventId#EventId(java.lang.String)}.
 	 */
 	@Test
 	public void testEventIdString() {
@@ -50,7 +50,7 @@ public class ParticipantIdTest {
 	}
 
 	/**
-	 * Test method for {@link rsb.Id#toString()}.
+	 * Test method for {@link rsb.EventId#toString()}.
 	 */
 	@Test
 	public void testToString() {

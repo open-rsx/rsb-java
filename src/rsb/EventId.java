@@ -22,6 +22,9 @@ package rsb;
 
 import java.util.Formatter;
 import java.util.UUID;
+import java.util.logging.Logger;
+
+import rsb.util.UUIDTools;
 
 /**
  * This class serves as a Uniform Resource Name to identify events in an RSB 
@@ -35,7 +38,9 @@ import java.util.UUID;
  * @author swrede
  * @author jwienke
  */
-public class Id {
+public class EventId {
+	
+	private final static Logger LOG = Logger.getLogger(EventId.class.getName());
 
 	// ID of event generating participant
 	protected ParticipantId participantId;
@@ -50,7 +55,7 @@ public class Id {
 	 * Creates a unique Id based on participant
 	 * and sequence number.
 	 */
-	public Id(ParticipantId participantId, long sequenceNumber2) {
+	public EventId(ParticipantId participantId, long sequenceNumber2) {
 		this.participantId = participantId;
 		this.sequenceNumber = sequenceNumber2;
 	}
@@ -85,7 +90,7 @@ public class Id {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Id other = (Id) obj;
+		EventId other = (EventId) obj;
 		if (participantId == null) {
 			if (other.participantId != null) {
 				return false;
@@ -108,13 +113,18 @@ public class Id {
 
 	public UUID getAsUUID() {	
 		if (uuid==null) {
-			StringBuilder builder = new StringBuilder();
-			Formatter formatter = new Formatter(builder);
-			formatter.format("%08x", sequenceNumber);
-			// id = makeV5UUID(metaData.getSenderId(), builder.toString());
-			// TODO just pretend for now
+			String seqNr = formatSequenceNumber(sequenceNumber);
+			LOG.finest("UUID generation for Event with ParticipantId " + participantId.toString() + " and sequence number: " + seqNr);
+			uuid = UUIDTools.getNameBasedUUID(participantId.getUUID(),seqNr);
 		}
 		return uuid;
+	}
+	
+	public static String formatSequenceNumber(long value) {
+		StringBuilder builder = new StringBuilder();
+		Formatter formatter = new Formatter(builder);
+		formatter.format("%08x", value);
+		return builder.toString();
 	}
 
 	@Override
@@ -122,7 +132,5 @@ public class Id {
 		return "Id [participantId=" + participantId + ", sequenceNumber="
 				+ sequenceNumber + ", uuid=" + uuid + "]";
 	}
-	
-	
 
 }

@@ -30,7 +30,7 @@ package rsb;
 // Rationale: A single event can only hold a single type
 public class Event {
 
-	private Id id = null;
+	private EventId id = null;
 	private Class<?> type;
 	private Scope scope;
     private long sequenceNumber;
@@ -120,9 +120,9 @@ public class Event {
 	        this.sequenceNumber = sequenceNumber;
 	}
 
-	public Id getId() {
+	public EventId getId() {
 	        if (id == null) {
-		        id = new Id(senderId, sequenceNumber);
+		        id = new EventId(senderId, sequenceNumber);
 	        }
 		return id;
 	}

@@ -6,7 +6,7 @@ package rsb.filter;
 import java.util.logging.Logger;
 
 import rsb.Event;
-import rsb.Id;
+import rsb.EventId;
 import rsb.Scope;
 
 /**
@@ -15,11 +15,11 @@ import rsb.Scope;
  */
 public class ScopeFilter extends AbstractFilter {
 
-	protected static Logger log = Logger.getLogger(ScopeFilter.class.getName());
+	protected final static Logger log = Logger.getLogger(ScopeFilter.class.getName());
 
 	private Scope scope;
 
-	public ScopeFilter(Scope scope) {
+	public ScopeFilter(final Scope scope) {
 		super("ScopeFilter");
 		this.scope = scope;
 	}
@@ -27,8 +27,8 @@ public class ScopeFilter extends AbstractFilter {
 	/**
 	 * Helper method for double dispatch of Filter registrations
 	 */
-	public void dispachToObserver(FilterObserver o, FilterAction a) {
-		o.notify(this, a);
+	public void dispachToObserver(final FilterObserver observer, final FilterAction action) {
+		observer.notify(this, action);
 	}
 
 	public void setScope(Scope scope) {
@@ -39,11 +39,11 @@ public class ScopeFilter extends AbstractFilter {
 		return this.scope;
 	}
 
-	public void skip(Id id) {
+	public void skip(EventId eventId) {
 		log.info("Event with ID "
-				+ id
+				+ eventId
 				+ " will not be matched by ScopeFilter as this was already done by network layer!");
-		super.skip(id);
+		super.skip(eventId);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ScopeFilter extends AbstractFilter {
 	}
 
 	@Override
-	public Event transform(Event e) {
+	public Event transform(final Event e) {
 		log.fine("ScopeFilter with scope " + scope
 				+ " received event to transform.");
 		if (e.getScope() != null) {
