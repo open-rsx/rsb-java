@@ -45,7 +45,7 @@ public abstract class Server extends Participant {
 		}
 	}
 
-	private final Map<String, Method> methods;
+	protected final Map<String, Method> methods;
 	private ServerState state;
 
 	protected Server(final Scope scope, final TransportFactory transportFactory,

@@ -23,12 +23,14 @@ public class LocalServer extends Server {
      *            The common super-scope under which the methods of
      *            the newly created server should be provided.
      */
-    public LocalServer(Scope scope) {
-	super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
-    }
+	public LocalServer(final Scope scope) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+	}
 
-    public void addMethod(String name, DataCallback<?, ?> callback) throws InitializeException {
-	new LocalMethod(this, name);
-    }
+	public void addMethod(String name, DataCallback<?, ?> callback)
+			throws InitializeException {
+		Method method = new LocalMethod(this, name);
+		methods.put(name, method);
+	}
 
 };

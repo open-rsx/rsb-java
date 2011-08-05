@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import rsb.Factory;
+import rsb.InitializeException;
 import rsb.Scope;
 
 /**
@@ -33,39 +34,57 @@ import rsb.Scope;
  */
 public class ServerTest {
 
+	protected class ReplyCallback implements DataCallback<String, String> {
+		@Override
+		public String invoke(String request) throws Throwable {
+			return request;
+		}
+	}
+	
 	/**
 	 * Test method for {@link rsb.patterns.Server#Server(rsb.Scope, rsb.transport.TransportFactory, rsb.transport.PortConfiguration)}.
 	 */
 	@Test
 	public void testServer() {
-		Factory factory = Factory.getInstance();
-		Server server = factory.createLocalServer(new Scope("/example/server"));
+		Server server = getServer();
 		assertNotNull(server);
 	}
 
-//	/**
-//	 * Test method for {@link rsb.patterns.Server#getMethods()}.
-//	 */
-//	@Test
-//	public void testGetMethods() {
-//		fail("Not yet implemented");
-//	}
-//
-//	/**
-//	 * Test method for {@link rsb.patterns.Server#isActive()}.
-//	 */
-//	@Test
-//	public void testIsActive() {
-//		fail("Not yet implemented");
-//	}
-//
-//	/**
-//	 * Test method for {@link rsb.patterns.Server#activate()}.
-//	 */
-//	@Test
-//	public void testActivate() {
-//		fail("Not yet implemented");
-//	}
+	private Server getServer() {
+		Factory factory = Factory.getInstance();
+		Server server = factory.createLocalServer(new Scope("/example/server"));
+		return server;
+	}
+
+	/**
+	 * Test method for {@link rsb.patterns.Server#getMethods()}.
+	 * @throws InitializeException 
+	 */
+	@Test
+	public void testGetMethods() throws InitializeException {
+		LocalServer server = (LocalServer) getServer();
+		assertTrue(server.getMethods().size()==0);
+		server.addMethod("callme", new ReplyCallback());
+		assertTrue(server.getMethods().size()==1);
+		assertTrue(server.getMethods().iterator().next().getName().equals("callme"));
+	}
+
+	@Test
+	public void addMethod() throws InitializeException {
+		LocalServer server = (LocalServer) getServer();
+		server.addMethod("callme", new ReplyCallback());
+	}
+	
+	/**
+	 * Test method for {@link rsb.patterns.Server#activate()}.
+	 */
+	@Test
+	public void testActivate() {
+		Server server = getServer();
+		assertFalse(server.isActive());
+		server.activate();
+		assertTrue(server.isActive());
+	}
 //
 //	/**
 //	 * Test method for {@link rsb.patterns.Server#deactivate()}.
