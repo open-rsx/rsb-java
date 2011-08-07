@@ -48,7 +48,7 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 			if (s.getSchema().contentEquals("ascii-string")) {
 				// adding two String representations would yield ambiguity
 				// we want to use the UTF-8 representation for strings as default
-				LOG.info("skipping ascii-string converter for Serialization map");
+				LOG.fine("skipping ascii-string converter for Serialization map");
 			} else {
 				// all other converters are added at this point
 				outStrategy.addConverter(s.getDatatype().getName(), converterMap.get(s));

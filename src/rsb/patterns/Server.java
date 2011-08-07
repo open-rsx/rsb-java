@@ -4,8 +4,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import rsb.Factory;
+import rsb.InitializeException;
+import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.Scope;
+import rsb.naming.NotFoundException;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
@@ -40,7 +44,10 @@ public abstract class Server extends Participant {
 			super(ctx);
 		}
 
-		public ServerState activate() {
+		public ServerState activate() throws InitializeException {
+			for (Method method : methods.values()) {
+				method.activate();
+			}			
 			return new ServerStateActive(server);
 		}
 	}
@@ -70,7 +77,7 @@ public abstract class Server extends Participant {
 	}
 
 	@Override
-	public void activate() {
+	public void activate() throws InitializeException {
 		state = state.activate();
 	}
 

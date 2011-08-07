@@ -102,7 +102,7 @@ public class Listener extends Participant {
 		LOG.info("New Listener instance: [scope=" + scope + "]");
 	}
 
-	public void activate() throws InitializeException, NotFoundException {
+	public void activate() throws InitializeException {
 		state.activate();
 		// TODO probably breaks re-activation
 		getRouter().addFilter(new ScopeFilter(getScope()));

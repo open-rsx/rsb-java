@@ -35,7 +35,7 @@ public class Event {
 	private Scope scope;
     private long sequenceNumber;
 	private Object data;
-	private MetaData metaData = new MetaData();
+	private final MetaData metaData = new MetaData();
 	private ParticipantId senderId = null;
 
 	// TODO move event creation into factory?
@@ -44,17 +44,22 @@ public class Event {
 	 * @param type
 	 * @param data
 	 */
-	public Event(Scope scope, Class<?> type, Object data) {
+	public Event(final Scope scope, final Class<?> type, final Object data) {
 		this.scope = scope;
 		this.type = type;
 		this.data = data;
 	}
 
 
-	public Event(Class<?> type) {
+	public Event(final Class<?> type) {
 		this.type = type;
 	}
 
+	/**
+	 * Construct empty event. Only metadata
+	 * is initialized.
+	 * 
+	 */
 	public Event() {
 	}
 
@@ -69,7 +74,7 @@ public class Event {
 	 * @param type
 	 *            the Java type to set for the Event payload
 	 */
-	public void setType(Class<?> type) {
+	public void setType(final Class<?> type) {
 		this.type = type;
 	}
 
@@ -84,7 +89,7 @@ public class Event {
 	 * @param data
 	 *            the data to set
 	 */
-	public void setData(Object data) {
+	public void setData(final Object data) {
 		this.data = data;
 	}
 

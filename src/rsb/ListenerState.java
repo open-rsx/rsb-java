@@ -42,7 +42,7 @@ public abstract class ListenerState {
 		s = ctx;
 	}
 
-	protected void activate() throws InitializeException, NotFoundException {
+	protected void activate() throws InitializeException {
 		LOG.warning("invalid state exception during activate call");
 		throw new InvalidStateException("subscriber already activated");
 	}

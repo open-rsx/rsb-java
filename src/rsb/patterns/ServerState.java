@@ -2,6 +2,7 @@ package rsb.patterns;
 
 import java.util.logging.Logger;
 
+import rsb.InitializeException;
 import rsb.InvalidStateException;
 
 /**
@@ -20,7 +21,7 @@ class ServerState {
 		server = ctx;
 	}	
 	
-	public ServerState activate() throws InvalidStateException {
+	public ServerState activate() throws InvalidStateException, InitializeException {
 		throw new InvalidStateException("Server already activated.");
 	}
 

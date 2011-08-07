@@ -77,21 +77,35 @@ public class ServerTest {
 	
 	/**
 	 * Test method for {@link rsb.patterns.Server#activate()}.
+	 * @throws InitializeException 
 	 */
 	@Test
-	public void testActivate() {
-		Server server = getServer();
+	public void testActivate() throws InitializeException {
+		LocalServer server = (LocalServer) getServer();
 		assertFalse(server.isActive());
 		server.activate();
 		assertTrue(server.isActive());
+		server.deactivate();
+		assertFalse(server.isActive());
+		server.addMethod("callme", new ReplyCallback());
+		server.activate();
 	}
-//
-//	/**
-//	 * Test method for {@link rsb.patterns.Server#deactivate()}.
-//	 */
-//	@Test
-//	public void testDeactivate() {
-//		fail("Not yet implemented");
-//	}
+
+	/**
+	 * Test method for {@link rsb.patterns.Server#deactivate()}.
+	 * @throws InitializeException 
+	 */
+	@Test
+	public void testDeactivate() throws InitializeException {
+		LocalServer server = (LocalServer) getServer();
+		DataCallback<String, String> method = new ReplyCallback();
+		server.addMethod("callme", method);
+		server.activate();
+		assertTrue(server.isActive());
+		assertTrue(server.getMethods().iterator().next().isActive());
+		server.deactivate();
+		assertFalse(server.isActive());
+		assertFalse(server.getMethods().iterator().next().isActive());
+	}
 
 }

@@ -130,7 +130,7 @@ public class Informer<T extends Object> extends Participant {
 	private void initMembers(Class<?> c) {
 		this.type = c;
 		state = new InformerStateInactive(this);
-		LOG.info("New publisher instance created: [Scope:" + getScope()
+		LOG.fine("New informer instance created: [Scope:" + getScope()
 				+ ",State:Inactive,Type:" + type.getName() + "]");
 	}
 

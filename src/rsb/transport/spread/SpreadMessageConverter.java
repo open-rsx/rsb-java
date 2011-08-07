@@ -50,7 +50,7 @@ class SpreadMessageConverter {
 		if (sm.isMembership()) {
 			// TODO think about meaningful handling of membership messages
 			// and print further info
-			log.info("Received membership message for group: "
+			log.fine("Received membership message for group: "
 					+ sm.getMembershipInfo().getGroup());
 
 		} else {
