@@ -68,7 +68,7 @@ public class MembershipInfo
 	
 	// The group's members.
 	///////////////////////
-	private Vector members;
+	private Vector<SpreadGroup> members;
 	
 	// The private groups of members that joined/left/disconected/stayed.
 	// For caused-by join/leave/disconnect, this has 1 element, with 1 member.
@@ -85,7 +85,7 @@ public class MembershipInfo
 	// Constructor.
 	///////////////
 	protected MembershipInfo(SpreadConnection connection, int serviceType,
-													 Vector groups, SpreadGroup sender,
+													 Vector<SpreadGroup> groups, SpreadGroup sender,
 													 byte data[], boolean daemonEndianMismatch)
 	{
 		// Set local variables.

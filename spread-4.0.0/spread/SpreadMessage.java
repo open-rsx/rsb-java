@@ -142,7 +142,7 @@ public class SpreadMessage
 	
 	// Creates a new incoming message.
 	//////////////////////////////////
-	protected SpreadMessage(int serviceType, Vector groups, SpreadGroup sender, byte[] data, short type, boolean endianMismatch, MembershipInfo membershipInfo)
+	protected SpreadMessage(int serviceType, Vector<SpreadGroup> groups, SpreadGroup sender, byte[] data, short type, boolean endianMismatch, MembershipInfo membershipInfo)
 	{
 		// Set member variables.
 		////////////////////////
@@ -168,7 +168,7 @@ public class SpreadMessage
 		outgoing = true;
 		content = CONTENT_DATA;
 		serviceType = RELIABLE_MESS;
-		groups = new Vector();
+		groups = new Vector<SpreadGroup>();
 		data = new byte[0];
 	}
 	
