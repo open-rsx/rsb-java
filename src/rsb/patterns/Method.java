@@ -51,9 +51,7 @@ public abstract class Method implements RSBObject {
 
 	protected class MethodStateInactive extends MethodState {
 		public MethodState activate() throws InitializeException {
-			listener = factory.createListener(REQUEST_SCOPE);
 			listener.activate();
-			informer = factory.createInformer(REPLY_SCOPE);
 			informer.activate();
 			return new MethodStateActive();
 		}
@@ -84,6 +82,8 @@ public abstract class Method implements RSBObject {
 		this.REQUEST_SCOPE = server.getScope().concat(new Scope("/request"+"/"+name));
 		this.REPLY_SCOPE = server.getScope().concat(new Scope("/reply"+"/"+name));
 		this.factory = Factory.getInstance();
+		listener = factory.createListener(REQUEST_SCOPE);
+		informer = factory.createInformer(REPLY_SCOPE);
 		this.state = new MethodStateInactive();
 	}
 
@@ -112,7 +112,7 @@ public abstract class Method implements RSBObject {
 	 * 
 	 * @return The Informer object.
 	 */
-	public Informer getInformer() {
+	public Informer<?> getInformer() {
 		return informer;
 	}
 

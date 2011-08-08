@@ -77,7 +77,7 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 	@Override
 	public void addConverter(Converter<WireType> converter) {
 		if (converterMap.containsKey(converter.getSignature())) {
-			throw new IllegalArgumentException();
+			LOG.warning("Converter with signature " + converter.getSignature() + " already registered in DefaultConverterRepository. Existing entry will be overwritten!");
 		}
 		converterMap.put(converter.getSignature(), converter);
 	}

@@ -14,30 +14,33 @@ public abstract class AbstractFilter implements Filter {
 	protected final static Logger LOG = Logger.getLogger(AbstractFilter.class.getName());
 	
 	/* stores whitelisted event ids registered by skip() */
-	protected HashSet<String> whitelist = new HashSet<String>();
+	protected HashSet<EventId> whitelist = new HashSet<EventId>();
 	
 	/* stores type info */
-	protected String type = "AbstractFilter";
-	
-	public AbstractFilter (String type) {
-        this.type=type;
-    }
+	protected String type = AbstractFilter.class.getSimpleName();
 
-	public Event transform(Event e) {
-		LOG.info("transform method matched event");
-		// always matches, just returns original event
-		return e;
+	/**
+	 * This method does the actual filtering step. If an event can be 
+	 * matched successfully against the condition of a specific filter, 
+	 * it is returned and processed by further filtering steps. If null 
+	 * is returned, the event is discarded.
+	 */
+	public abstract Event transform(Event e);
+	
+	protected AbstractFilter(String type) {
+		this.type = type;
+	}
+	
+	public AbstractFilter(Class<? extends AbstractFilter> type) {
+		this.type = type.getSimpleName();
 	}
 
 	/**
 	 * skip this filter for any event with the specified ID. This will cause the
 	 * MTF to successfully transform the event without applying any checks.
 	 */
-	public void skip(EventId id) {
-		skip(id.toString());
-	}
-	
-	public void skip(String id) {
+	public void skip(EventId id) {		
+		LOG.info("Event with ID " + id + " will not be matched by " + type + " as this was already done by network layer!");		
 		whitelist.add(id);
 	}
 	
@@ -47,10 +50,6 @@ public abstract class AbstractFilter implements Filter {
 	 * @return true, if the event with the specified ID should be skipped
 	 */
 	public boolean mustSkip(EventId id) {
-		return mustSkip(id.toString());
-	}
-	
-	public boolean mustSkip(String id) {
 		return whitelist.contains(id);
 	}
 	
@@ -59,12 +58,9 @@ public abstract class AbstractFilter implements Filter {
 	 * @param id
 	 */
 	public void skipped(EventId id) {
-		whitelist.remove(id.toString());		
-	}
-	
-	public void skipped(String id) {
 		whitelist.remove(id);		
 	}
+
 
 	/**
 	 * Helper method for double dispatch of Filter registrations

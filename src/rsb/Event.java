@@ -101,8 +101,8 @@ public class Event {
 	}
 	
 
-	public void setSenderId(ParticipantId id) {
-		this.senderId  = id;
+	public void setSenderId(final ParticipantId senderId) {
+		this.senderId  = senderId;
 	}	
 	
 	public ParticipantId getSenderId() {
@@ -113,7 +113,7 @@ public class Event {
 	 * @param scope
 	 *            the scope to set
 	 */
-	public void setScope(Scope scope) {
+	public void setScope(final Scope scope) {
 		this.scope = scope;
 	}
 
@@ -178,7 +178,7 @@ public class Event {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Event other = (Event) obj;
+		final Event other = (Event) obj;
 		if (data == null) {
 			if (other.data != null) {
 				return false;

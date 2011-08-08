@@ -17,11 +17,11 @@ public class TypeFilter extends AbstractFilter {
 	Class<?> type;
 
 	public TypeFilter() {
-		super("TypeFilter");
+		super(TypeFilter.class);
 	}
 
 	public TypeFilter(Class<?> c) {
-		super("TypeFilter");
+		super(TypeFilter.class);
 		type = c;
 	}
 
@@ -41,10 +41,10 @@ public class TypeFilter extends AbstractFilter {
 	@Override
 	public Event transform(Event e) {
 		// check skip
-		String evtId = e.getId().toString();
-		if (mustSkip(evtId)) {
-			LOG.info("event with ID " + evtId + " whitelisted in TypeFilter!");
-			skipped(evtId);
+		EventId eventId = e.getId();
+		if (mustSkip(eventId)) {
+			LOG.info("event with ID " + eventId + " whitelisted in TypeFilter!");
+			skipped(eventId);
 			return e;
 		}
 		// condition: class types are equal

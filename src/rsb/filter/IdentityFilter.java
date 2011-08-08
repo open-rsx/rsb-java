@@ -29,7 +29,7 @@ public class IdentityFilter extends AbstractFilter {
 	}
 	
     public IdentityFilter (String uri, Type type, boolean invert) {
-        super("IdentityFilter");
+        super(IdentityFilter.class);
         this.uri = uri;
         this.type = type;
         this.invert = invert;
@@ -63,7 +63,7 @@ public class IdentityFilter extends AbstractFilter {
 	}	
 
 	public void skip(EventId id) {
-		LOG.info("Event with ID " + id + " will not be matched by IdentityFilter as this was already done by network layer!");
+	
 		super.skip(id);
 	}
 

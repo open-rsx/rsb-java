@@ -599,11 +599,11 @@ public class SpreadMessage
 	 * @throws  SpreadException  if there is an error reading the objects
 	 * @see  SpreadMessage#digest(Serializable)
 	 */
-	public Vector getDigest() throws SpreadException
+	public Vector<Object> getDigest() throws SpreadException
 	{
 		// Make a vector to hold the objects.
 		/////////////////////////////////////
-		Vector objects = new Vector();
+		Vector<Object> objects = new Vector<Object>();
 			
 		// Setup the byte array stream.
 		///////////////////////////////
@@ -789,7 +789,7 @@ public class SpreadMessage
 		
 		// Copy the data.
 		/////////////////
-		this.data = (byte[])data.clone();
+		this.data = data.clone();
 	}
 	
 	// Sets the message to send the object.

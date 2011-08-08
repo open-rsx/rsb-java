@@ -72,7 +72,12 @@ public class ConverterSignature {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ConverterSignature [schema=" + schema + ", datatype="
+				+ datatype + "]";
 	}	
-	
 	
 }

@@ -52,6 +52,7 @@ public class Router extends FilterObservable implements EventHandler {
 		switch (config) {
 		case IN:
 			setupInPorts(f);
+			setupEventProcessor();
 			break;
 		case OUT:
 			setupOutPorts(f);
@@ -92,7 +93,6 @@ public class Router extends FilterObservable implements EventHandler {
 			switch (config) {
 			case IN:
 				inPort.activate();
-				setupEventProcessor();
 				break;
 			case OUT:
 				outPort.activate();

@@ -55,9 +55,9 @@ public class EventId {
 	 * Creates a unique Id based on participant
 	 * and sequence number.
 	 */
-	public EventId(ParticipantId participantId, long sequenceNumber2) {
+	public EventId(final ParticipantId participantId, final long sequenceNumber) {
 		this.participantId = participantId;
-		this.sequenceNumber = sequenceNumber2;
+		this.sequenceNumber = sequenceNumber;
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +80,7 @@ public class EventId {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -113,7 +113,7 @@ public class EventId {
 
 	public UUID getAsUUID() {	
 		if (uuid==null) {
-			String seqNr = formatSequenceNumber(sequenceNumber);
+			final String seqNr = formatSequenceNumber(sequenceNumber);
 			LOG.finest("UUID generation for Event with ParticipantId " + participantId.toString() + " and sequence number: " + seqNr);
 			uuid = UUIDTools.getNameBasedUUID(participantId.getUUID(),seqNr);
 		}

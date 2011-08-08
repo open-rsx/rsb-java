@@ -157,7 +157,7 @@ public class MembershipInfo
 					dataIndex += 4;
 					for( int j = 0 ; j < numMembers ; ++j ) {
 							virtualSynchronySets[i].addMember( connection.toGroup(data, dataIndex) );
-							dataIndex += connection.MAX_GROUP_NAME;
+							dataIndex += SpreadConnection.MAX_GROUP_NAME;
 					}
 			}
 		}

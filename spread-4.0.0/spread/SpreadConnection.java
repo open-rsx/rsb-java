@@ -140,11 +140,11 @@ public class SpreadConnection
 	
 	// Basic listeners.
 	///////////////////
-	protected Vector basicListeners;
+	protected Vector<BasicMessageListener> basicListeners;
 	
 	// Advanced listeners.
 	//////////////////////
-	protected Vector advancedListeners;
+	protected Vector<AdvancedMessageListener> advancedListeners;
 	
 	// The daemon's address.
 	////////////////////////
@@ -199,7 +199,7 @@ public class SpreadConnection
 	// For commands with an argument (all except
 	// for BUFFER_DISCONNECT), the argument follows in the Vector.
 	//////////////////////////////////////////////////////////////
-	private Vector listenerBuffer;
+	private Vector<Object> listenerBuffer;
 	
 	// Listener buffer commands.
 	// These are Object's because they need to be added to a Vector.
@@ -704,12 +704,12 @@ NOT SUPPORTED IN 1.1	*/
 		listenersynchro = new Boolean(false);
 		// Init listeners.
 		//////////////////
-		basicListeners = new Vector();
-		advancedListeners = new Vector();
+		basicListeners = new Vector<BasicMessageListener>();
+		advancedListeners = new Vector<AdvancedMessageListener>();
 		
 		// Init listener command buffer.
 		////////////////////////////////
-		listenerBuffer = new Vector();
+		listenerBuffer = new Vector<Object>();
 
 		// Init default authentication
 		//////////////////////////////
@@ -1245,7 +1245,7 @@ NOT SUPPORTED IN 1.1	*/
 
 		// Get the groups from the buffer.
 		//////////////////////////////////
-		Vector groups = new Vector(numGroups);
+		Vector<SpreadGroup> groups = new Vector<SpreadGroup>(numGroups);
 		for(int bufferIndex = 0 ; bufferIndex < buffer.length ; bufferIndex += MAX_GROUP_NAME)
 		{
 			// Translate the name into a group and add it to the vector.
@@ -1711,7 +1711,7 @@ NOT SUPPORTED IN 1.1	*/
 						    {
 							    // Get the listener.
 							    ////////////////////
-							    basicListener = (BasicMessageListener)basicListeners.elementAt(i);
+							    basicListener = basicListeners.elementAt(i);
 									
 							    // Tell it.
 							    ///////////
@@ -1724,7 +1724,7 @@ NOT SUPPORTED IN 1.1	*/
 						    {
 							    // Get the listener.
 							    ////////////////////
-							    advancedListener = (AdvancedMessageListener)advancedListeners.elementAt(i);
+							    advancedListener = advancedListeners.elementAt(i);
 									
 							    // What type of message is it?
 							    //////////////////////////////

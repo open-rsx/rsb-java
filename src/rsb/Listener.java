@@ -20,14 +20,13 @@
  */
 package rsb;
 
-import java.util.logging.Logger;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 import rsb.filter.Filter;
 import rsb.filter.ScopeFilter;
-import rsb.naming.NotFoundException;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 

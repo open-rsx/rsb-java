@@ -20,7 +20,7 @@ public class ScopeFilter extends AbstractFilter {
 	private Scope scope;
 
 	public ScopeFilter(final Scope scope) {
-		super("ScopeFilter");
+		super(ScopeFilter.class);
 		this.scope = scope;
 	}
 
@@ -60,11 +60,10 @@ public class ScopeFilter extends AbstractFilter {
 			log.fine("  Event's receiver Scope = " + e.getScope());
 		}
 		boolean matches = false;
-		String evtId = e.getId().toString();
-		if (mustSkip(evtId)) {
-			log.fine("event with ID " + evtId + " whitelisted in ScopeFilter!");
+		if (mustSkip(e.getId())) {
+			log.fine("event with ID " + e.getId() + " whitelisted in ScopeFilter!");
 			matches = true;
-			skipped(evtId);
+			skipped(e.getId());
 		} else {
 		    matches = (scope.equals(e.getScope())
 			       || scope.isSuperScopeOf(e.getScope()));

@@ -22,8 +22,6 @@ package rsb;
 
 import java.util.logging.Logger;
 
-import rsb.naming.NotFoundException;
-
 /**
  * Interface for State-pattern in the Listener class.
  * Currently, just used for explicit de-/allocation

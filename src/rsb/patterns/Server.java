@@ -4,12 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rsb.Factory;
 import rsb.InitializeException;
-import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.Scope;
-import rsb.naming.NotFoundException;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
