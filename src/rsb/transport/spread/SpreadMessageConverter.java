@@ -35,7 +35,7 @@ import spread.SpreadMessage;
  */
 class SpreadMessageConverter {
 
-	Logger log = Logger.getLogger(SpreadMessageConverter.class.getName());
+	public final static Logger LOG = Logger.getLogger(SpreadMessageConverter.class.getName());
 
 	/**
 	 * Returns a {@link DataMessage} if presented by sm, else returns
@@ -45,20 +45,19 @@ class SpreadMessageConverter {
 	 *            message to analyze
 	 * @return DataMessage or <code>null</code> if not contained in sm
 	 */
-	public DataMessage process(SpreadMessage sm) {
-		DataMessage dm = null;
+	public DataMessage process(final SpreadMessage sm) {
+		DataMessage data = null;
 		if (sm.isMembership()) {
 			// TODO think about meaningful handling of membership messages
 			// and print further info
-			log.fine("Received membership message for group: "
+			LOG.fine("Received membership message for group: "
 					+ sm.getMembershipInfo().getGroup());
 
 		} else {
 			try {
-				dm = DataMessage.convertSpreadMessage(sm);
+				data = DataMessage.convertSpreadMessage(sm);
 			} catch (SerializeException e) {
-				e.printStackTrace();
-				SpreadWrapper.log.warning("Error de-serializing SpreadMessage");
+				LOG.warning("Error de-serializing SpreadMessage: " + e.getMessage());
 			}
 		}
 		// TODO in this design, following objects must be capable of handling
@@ -66,7 +65,7 @@ class SpreadMessageConverter {
 		// better approach would be to encapsulate logical changes to the
 		// unified event bus
 		// in internal events
-		return dm;
+		return data;
 	}
 
 }
