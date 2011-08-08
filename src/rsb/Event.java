@@ -34,6 +34,7 @@ public class Event {
 	private Class<?> type;
 	private Scope scope;
     private long sequenceNumber;
+    private String method;
 	private Object data;
 	private final MetaData metaData = new MetaData();
 	private ParticipantId senderId = null;
@@ -121,7 +122,7 @@ public class Event {
 	        return sequenceNumber;
 	}
 
-    public void setSequenceNumber(long sequenceNumber) {
+    public void setSequenceNumber(final long sequenceNumber) {
 	        this.sequenceNumber = sequenceNumber;
 	}
 
@@ -142,6 +143,22 @@ public class Event {
 		return metaData;
 	}
 
+	/**
+	 * @return the method
+	 */
+	public String getMethod() {
+		return method;
+	}
+
+
+	/**
+	 * @param method the method to set
+	 */
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
+
 	public String toString() {
 	        return "Event[id=" + getId() + ", scope=" + scope
 		    + ", seqnum=" + sequenceNumber + ", type =" + type
@@ -149,6 +166,9 @@ public class Event {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -157,6 +177,7 @@ public class Event {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result
 				+ ((metaData == null) ? 0 : metaData.hashCode());
+		result = prime * result + ((method == null) ? 0 : method.hashCode());
 		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
 		result = prime * result
 				+ ((senderId == null) ? 0 : senderId.hashCode());
@@ -167,8 +188,11 @@ public class Event {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -200,6 +224,13 @@ public class Event {
 		} else if (!metaData.equals(other.metaData)) {
 			return false;
 		}
+		if (method == null) {
+			if (other.method != null) {
+				return false;
+			}
+		} else if (!method.equalsIgnoreCase(other.method)) {
+			return false;
+		}
 		if (scope == null) {
 			if (other.scope != null) {
 				return false;
@@ -226,6 +257,7 @@ public class Event {
 		}
 		return true;
 	}
+
 
 
 

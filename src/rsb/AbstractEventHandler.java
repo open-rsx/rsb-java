@@ -27,12 +27,12 @@ package rsb;
  * @author swrede
  * @see Event
  */
-public abstract class EventHandler implements Handler {
+public abstract class AbstractEventHandler implements Handler {
 
-	public void internalNotify(Event e) {
-		handleEvent(e);
+	public void internalNotify(final Event event) {
+		handleEvent(event);
 	};
 
-	public abstract void handleEvent(Event e);
+	public abstract void handleEvent(Event event);
 
 }

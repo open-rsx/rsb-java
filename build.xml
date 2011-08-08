@@ -122,7 +122,7 @@
 		</copy>
 	</target>
 
-	<target name="dist" depends="compile" description="generate the distribution">
+	<target name="dist" depends="clean, compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}/lib" />
 		<jar jarfile="${dist.dir}/lib/${jarname}" basedir="${build.dir}/classes">

@@ -69,6 +69,13 @@ public class EventTest {
 		event2.setSenderId(event1.getSenderId());
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
+		
+		event1.setMethod("REQUEST");
+		assertFalse(event1.equals(event2));
+		event2.setMethod("Blub");
+		assertFalse(event1.equals(event2));
+		event2.setMethod("request");
+		assertTrue(event1.equals(event2));
 
 	}
 

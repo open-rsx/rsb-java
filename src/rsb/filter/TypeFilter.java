@@ -5,6 +5,8 @@
 
 package rsb.filter;
 
+import java.util.logging.Logger;
+
 import rsb.Event;
 import rsb.EventId;
 
@@ -14,6 +16,8 @@ import rsb.EventId;
  */
 public class TypeFilter extends AbstractFilter {
 
+	private final static Logger LOG = Logger.getLogger(TypeFilter.class.getName()); 
+	
 	Class<?> type;
 
 	public TypeFilter() {

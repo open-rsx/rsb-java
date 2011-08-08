@@ -252,6 +252,9 @@ public class SpreadPort extends AbstractPort {
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
 					.toString()));
 			notificationBuilder.setSenderId(ByteString.copyFrom(e.getSenderId().toByteArray()));
+			if (e.getMethod()!=null) {
+				notificationBuilder.setMethod(ByteString.copyFromUtf8(e.getMethod()));
+			}
 
 			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
 			metaDataBuilder.setCreateTime(e.getMetaData().getCreateTime());

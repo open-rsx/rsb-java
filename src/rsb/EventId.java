@@ -120,9 +120,9 @@ public class EventId {
 		return uuid;
 	}
 	
-	public static String formatSequenceNumber(long value) {
-		StringBuilder builder = new StringBuilder();
-		Formatter formatter = new Formatter(builder);
+	public static String formatSequenceNumber(final long value) {
+		final StringBuilder builder = new StringBuilder();
+		final Formatter formatter = new Formatter(builder);
 		formatter.format("%08x", value);
 		return builder.toString();
 	}

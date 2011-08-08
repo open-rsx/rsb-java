@@ -29,7 +29,7 @@ public class UserLevelTest {
 		final Set<String> receivedMessages = new HashSet<String>();
 		Listener listener = new Listener(scope, TransportFactory.getInstance());
 		listener.activate();
-		listener.addHandler(new EventHandler() {
+		listener.addHandler(new AbstractEventHandler() {
 
 			@Override
 			public void handleEvent(Event e) {

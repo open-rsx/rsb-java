@@ -11,7 +11,7 @@ import rsb.EventId;
  */
 public abstract class AbstractFilter implements Filter {
 
-	protected final static Logger LOG = Logger.getLogger(AbstractFilter.class.getName());
+	private final static Logger LOG = Logger.getLogger(AbstractFilter.class.getName());
 	
 	/* stores whitelisted event ids registered by skip() */
 	protected HashSet<EventId> whitelist = new HashSet<EventId>();

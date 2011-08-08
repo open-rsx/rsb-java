@@ -1,12 +1,11 @@
 package rsb.patterns;
 
-import rsb.Event;
+import java.util.logging.Logger;
+
 import rsb.InitializeException;
 import rsb.Scope;
-import rsb.filter.AbstractFilter;
 import rsb.filter.Filter;
-import rsb.filter.FilterAction;
-import rsb.filter.FilterObserver;
+import rsb.filter.MethodFilter;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
@@ -19,6 +18,8 @@ import rsb.transport.TransportFactory;
  */
 public class LocalServer extends Server {
 
+	private final static Logger LOG = Logger.getLogger(LocalServer.class.getName());
+	
 	/**
      * Create a new LocalServer object that exposes its methods under
      * the scope @a scope.
@@ -33,28 +34,19 @@ public class LocalServer extends Server {
 
 	public void addMethod(String name, DataCallback<?, ?> callback)
 			throws InitializeException {
+		LOG.info("Registering new method " + name + " with signature object: " + callback);
 		LocalMethod method = new LocalMethod(this, name);
 		
-		Filter filter = new AbstractFilter("MethodFilter") {
-			
-			@Override
-			public void dispachToObserver(FilterObserver o, FilterAction a) {
-				o.notify(this, a);
-				
-			}
-
-			@Override
-			public Event transform(Event e) {
-				// TODO check method field
-				return null;
-			}
-		};
+		// filter for request method
+		Filter filter = new MethodFilter("REQUEST");
+		method.getListener().addFilter(filter);
 		
+		// handler for invoking user-supplied callback
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		RequestHandler<?,?> handler = new RequestHandler(method, callback);
+
 		// TODO check on duplicates!!!
 		// TODO at least throw a warning if a method already exists
-		// TODO add a filter for request method set
 		method.getListener().addHandler(handler, false);
 		methods.put(name, method);
 	}

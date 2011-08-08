@@ -22,7 +22,7 @@
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rsb.AbstractDataHandler;
-import rsb.EventHandler;
+import rsb.AbstractEventHandler;
 import rsb.Factory;
 import rsb.Event;
 import rsb.Scope;
@@ -53,7 +53,7 @@ public class ListenerExample {
 
 		// add an EventHandler that will receive complete Event instances
 		// whenever they are received
-		sub.addHandler(new EventHandler() {
+		sub.addHandler(new AbstractEventHandler() {
 
 			@Override
 			public void handleEvent(Event e) {

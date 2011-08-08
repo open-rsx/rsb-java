@@ -138,6 +138,9 @@ class ReceiverTask extends Thread {
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
 				e.setSenderId(new ParticipantId(n.getSenderId().toByteArray()));
 				e.setSequenceNumber(n.getSequenceNumber());
+				if (n.hasMethod()) {
+					e.setMethod(n.getMethod().toStringUtf8());
+				}
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors

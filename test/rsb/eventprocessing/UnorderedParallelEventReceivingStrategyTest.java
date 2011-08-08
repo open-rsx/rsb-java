@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.EventHandler;
+import rsb.AbstractEventHandler;
 import rsb.eventprocessing.UnorderedParallelEventReceivingStrategy;
 
 /**
@@ -33,7 +33,7 @@ import rsb.eventprocessing.UnorderedParallelEventReceivingStrategy;
  */
 public class UnorderedParallelEventReceivingStrategyTest {
 
-	private final class TestHandler extends EventHandler {
+	private final class TestHandler extends AbstractEventHandler {
 		boolean notified = false;
 		public Event event;
 
@@ -89,7 +89,7 @@ public class UnorderedParallelEventReceivingStrategyTest {
 		assertTrue(ed.getHandlers().size() == 0);
 	}
 
-	private EventHandler getHandler() {
+	private AbstractEventHandler getHandler() {
 		return new TestHandler();
 	}
 
