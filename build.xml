@@ -100,7 +100,7 @@
 		</apply>
 	</target>
 
-	<target name="compile" depends="init, protocol" description="compile the source ">
+	<target name="compile" depends="clean, init, protocol" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac srcdir="${src}" destdir="${build.dir}/classes" debug="on" deprecation="on">
 			<compilerarg value="-Xlint" />
@@ -122,7 +122,7 @@
 		</copy>
 	</target>
 
-	<target name="dist" depends="clean, compile" description="generate the distribution">
+	<target name="dist" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}/lib" />
 		<jar jarfile="${dist.dir}/lib/${jarname}" basedir="${build.dir}/classes">
