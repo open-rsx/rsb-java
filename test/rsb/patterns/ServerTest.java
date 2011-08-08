@@ -34,13 +34,6 @@ import rsb.Scope;
  */
 public class ServerTest {
 
-	protected class ReplyCallback implements DataCallback<String, String> {
-		@Override
-		public String invoke(String request) throws Throwable {
-			return request;
-		}
-	}
-	
 	/**
 	 * Test method for {@link rsb.patterns.Server#Server(rsb.Scope, rsb.transport.TransportFactory, rsb.transport.PortConfiguration)}.
 	 */

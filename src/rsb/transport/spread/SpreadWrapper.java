@@ -47,7 +47,7 @@ public class SpreadWrapper implements RSBObject {
 	// TODO think about sub-classing SpreadConnection
 	// TODO leave the complex stuff for SpreadPort
 
-	final static Logger log = Logger.getLogger(SpreadWrapper.class.getName());
+	final static Logger LOG = Logger.getLogger(SpreadWrapper.class.getName());
 
 	/**
 	 * @return the status
@@ -60,7 +60,7 @@ public class SpreadWrapper implements RSBObject {
 	 * @param status
 	 *            the status to set
 	 */
-	public void setStatus(State status) {
+	public void setStatus(final State status) {
 		this.status = status;
 	}
 
@@ -76,7 +76,7 @@ public class SpreadWrapper implements RSBObject {
 	 *            the spreadhost to set
 	 * @throws RSBException
 	 */
-	public void setSpreadhost(String spreadHostname) throws RSBException {
+	private void setSpreadhost(final String spreadHostname) throws RSBException {
 		try {
 			spreadhost = InetAddress.getByName(spreadHostname);
 		} catch (UnknownHostException e) {
@@ -95,7 +95,7 @@ public class SpreadWrapper implements RSBObject {
 	 * @param useTcpNoDelay
 	 *            the useTcpNoDelay to set
 	 */
-	public void setUseTcpNoDelay(boolean useTcpNoDelay) {
+	public void setUseTcpNoDelay(final boolean useTcpNoDelay) {
 		this.useTcpNoDelay = useTcpNoDelay;
 	}
 
@@ -103,7 +103,7 @@ public class SpreadWrapper implements RSBObject {
 	 * @param connectionLost
 	 *            the connectionLost to set
 	 */
-	public void setConnectionLost(boolean connectionLost) {
+	public void setConnectionLost(final boolean connectionLost) {
 		this.connectionLost = connectionLost;
 	}
 
@@ -155,7 +155,7 @@ public class SpreadWrapper implements RSBObject {
 	 * @param port
 	 *            for the spread daemon
 	 */
-	public SpreadWrapper(String spreadhost, int port)
+	public SpreadWrapper(String spreadhost, final int port)
 			throws InitializeException, UnknownHostException {
 		this.spreadhost = spreadhost != null ? InetAddress
 				.getByName(spreadhost) : null;
@@ -180,7 +180,7 @@ public class SpreadWrapper implements RSBObject {
 		try {
 			grp.join(conn, group);
 			groups.add(grp);
-			log.info("Joined SpreadGroup with name: " + group);
+			LOG.info("Joined SpreadGroup with name: " + group);
 		} catch (SpreadException e) {
 			// log.info("Could not join group!");
 			throw e;
@@ -197,12 +197,12 @@ public class SpreadWrapper implements RSBObject {
 		if (conn == null)
 			return; // not initialized yet
 		if (isConnectionLost()) {
-			log.severe("lost connection to spread daemon");
+			LOG.severe("lost connection to spread daemon");
 			throw new ConnectionLostException(
 					"Lost connection to spread daemon");
 		}
 		if (!conn.isConnected() && !shutdown) {
-			log.severe("lost connection to spread daemon");
+			LOG.severe("lost connection to spread daemon");
 			throw new ConnectionLostException(
 					"Lost connection to spread daemon");
 		}
@@ -235,18 +235,18 @@ public class SpreadWrapper implements RSBObject {
 				}
 				conn.connect(spreadhost, port, null, false, mship);
 				conn.setTcpNoDelay(this.useTcpNoDelay);
-				log.fine("Connected to " + spreadhost + ":" + port
+				LOG.fine("Connected to " + spreadhost + ":" + port
 						+ ". Name = " + conn.getPrivateGroup().toString());
 				privGrpId = conn.getPrivateGroup().toString();
 				// instantiate our own listener thread
-				log.fine("Spread connection's private group id is: "
+				LOG.fine("Spread connection's private group id is: "
 						+ privGrpId);
 				return;
 			} catch (SpreadException e) {
 				e.printStackTrace();
 				ex = e;
 			}
-			log.info("reoccuring SpreadException during connect to daemon: "
+			LOG.info("reoccuring SpreadException during connect to daemon: "
 					+ ex.getMessage());
 		}
 		// if we get here, all connection attempts failed
@@ -273,11 +273,11 @@ public class SpreadWrapper implements RSBObject {
 				conn.multicast(msg.getSpreadMessage());
 				return true;
 			} catch (SpreadException e) {
-				log.warning("SpreadException occurred during multicast send of message, reason: "
+				LOG.warning("SpreadException occurred during multicast send of message, reason: "
 						+ e.getMessage());
 				return false;
 			} catch (SerializeException e) {
-				log.warning("SerializeException occurred during multicast send of message, reason: "
+				LOG.warning("SerializeException occurred during multicast send of message, reason: "
 						+ e.getMessage());
 				return false;
 			}
@@ -296,10 +296,10 @@ public class SpreadWrapper implements RSBObject {
 				SpreadGroup grp = it.next();
 				try {
 					grp.leave();
-					log.info("SpreadGroup '" + grp + "' has been left.");
+					LOG.info("SpreadGroup '" + grp + "' has been left.");
 				} catch (SpreadException e) {
 					// ignored
-					log.info("Caught a SpreadException while leaving group '"
+					LOG.info("Caught a SpreadException while leaving group '"
 							+ grp + "': " + e.getMessage());
 				}
 				it.remove();
@@ -330,11 +330,11 @@ public class SpreadWrapper implements RSBObject {
 						e.printStackTrace();
 					}
 					it.remove();
-					log.info("SpreadGroup '" + grp + "' has been left.");
+					LOG.info("SpreadGroup '" + grp + "' has been left.");
 					break;
 				}
 				if (!it.hasNext()) {
-					log.warning("Couldn't leave requested group with id: "
+					LOG.warning("Couldn't leave requested group with id: "
 							+ type);
 				}
 			}

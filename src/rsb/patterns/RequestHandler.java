@@ -1,6 +1,8 @@
 package rsb.patterns;
 
-import rsb.AbstractDataHandler;
+import java.util.logging.Logger;
+
+import rsb.AbstractEventHandler;
 import rsb.Event;
 import rsb.RSBException;
 
@@ -15,45 +17,56 @@ import rsb.RSBException;
  * @param <T>	return type of invoke method
  * @param <U>	parameter object type of invoke method
  */
-public class RequestHandler<T, U> extends AbstractDataHandler<U> {
+public class RequestHandler<T, U> extends AbstractEventHandler {
 
+	private final static Logger LOG = Logger.getLogger(RequestHandler.class.getName());
+	
 	LocalMethod method;
 	DataCallback<T, U> callback;
 	
 	public RequestHandler(LocalMethod method, DataCallback<T, U> callback) {
 		this.method = method;
+		this.callback = callback;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public void handleEvent(U data) {
-		// TODO Convert data
-		// and dispatch to client
-		// TODO check if we do not need an event handler here
-		// due to the necessary metadata
+	public void handleEvent(Event event) {
 		T result = null;
+		String error = null;
+		
+		// invoke callback
 		try {
-			result = callback.invoke(data);
+			result = callback.invoke((U) event.getData());
 		} catch (Throwable e) {
-			// TODO Check how we deal with exceptions
-			e.printStackTrace();
+			LOG.warning("Exception during method invocation in participant: " + method.REQUEST_SCOPE + " Exception message: " + e);
+			error = e.toString() + " Details: " + e.getMessage();
 		}
-		// Is the informer already ready to send any event
-		// if configured with object?
-		if (result != null) {
-			Event reply = new Event(result.getClass());
-			// reply.setMethod("REPLY");
+
+		// return reply as direct event, hence set some metadata here
+		Event reply = new Event();
+		reply.setMethod("REPLY");
+		reply.getMetaData().setUserInfo("rsb:reply",event.getId().getAsUUID().toString());
+		reply.setScope(method.REPLY_SCOPE);
+
+		if (error == null) {
+			// return result of invocation
+			reply.setType(result.getClass());
 			reply.setData(result);
-			try {
-				method.getInformer().send(reply);
-			} catch (RSBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// method.getInformer().send(ReplyEvent);
 		} else {
-			// do something!
-			// throw UserException("null result");
+			// return error information
+			reply.setType(String.class);
+			reply.getMetaData().setUserInfo("isException", "true");
+			reply.setData(error);
 		}
+		
+		// send reply via method informer
+		try {
+			method.getInformer().send(reply);
+		} catch (RSBException e) {
+			// TODO call local error handler
+			LOG.severe("Exception while sending reply in server method: " + method.REPLY_SCOPE + " Exception message: " + e.getMessage());
+		}		
 	}
 	
 }

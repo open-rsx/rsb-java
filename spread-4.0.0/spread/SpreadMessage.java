@@ -946,11 +946,12 @@ public class SpreadMessage
 	 * 
 	 * @return  a copy of this message
 	 */
+	@SuppressWarnings("unchecked")
 	public Object clone()
 	{
 		SpreadMessage message = new SpreadMessage();
 		message.setServiceType(serviceType);
-		message.groups = (Vector)groups.clone();
+		message.groups = (Vector<SpreadGroup>) groups.clone();
 		message.setType(type);
 		message.setData(data);
 		message.content = content;
