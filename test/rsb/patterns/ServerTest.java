@@ -22,6 +22,8 @@ package rsb.patterns;
 
 import static org.junit.Assert.*;
 
+import java.util.logging.Logger;
+
 import org.junit.Test;
 
 import rsb.Factory;
@@ -34,6 +36,24 @@ import rsb.Scope;
  */
 public class ServerTest {
 
+	final static private Logger LOG = Logger.getLogger(ServerTest.class.getName());
+	
+	public class ShutdownCallback implements DataCallback<String,String> {
+
+		Server server;
+		
+		public ShutdownCallback(Server server) {
+			this.server = server;
+		}
+		
+		@Override
+		public String invoke(String request) throws Throwable {
+			server.deactivate();
+			return "shutdown now";
+		}
+					
+	}
+	
 	/**
 	 * Test method for {@link rsb.patterns.Server#Server(rsb.Scope, rsb.transport.TransportFactory, rsb.transport.PortConfiguration)}.
 	 */
@@ -100,5 +120,40 @@ public class ServerTest {
 		assertFalse(server.isActive());
 		assertFalse(server.getMethods().iterator().next().isActive());
 	}
+	
+	@Test 
+	public void testStartServer() throws InitializeException {
+		LocalServer server = (LocalServer) getServer();
+		DataCallback<String, String> method = new ReplyCallback();
+		server.addMethod("callme", method);
+		server.activate();		
+		server.addMethod("callmetoo", method);
+		server.deactivate();
+	}
 
+	@Test
+	public void testBlocking() throws InitializeException {
+		final LocalServer server = (LocalServer) getServer();
+		DataCallback<String, String> method = new ShutdownCallback(server);
+		server.addMethod("shutdown", method);
+		server.activate();
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// must not happen
+				}
+				LOG.info("Shutting down server from callback.");
+				server.deactivate();
+				
+			}
+		});
+		LOG.info("Server running, shutting down in 500ms.");
+		t.run();
+		server.waitForShutdown();
+	}
+	
 }

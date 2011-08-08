@@ -31,6 +31,10 @@ public abstract class Server extends Participant {
 			for (Method method : methods.values()) {
 				method.deactivate();
 			}
+			// send signal to thread in waitForShutdown
+			synchronized (server) {
+				server.notify();
+			}
 			return new ServerStateInactive(server);
 		}
 	}

@@ -57,11 +57,11 @@ public abstract class Method implements RSBObject {
 		}
 	}
 
-	private Factory factory;
+	protected Factory factory;
 	private Server server;
 	private String name;
-	private Informer<?> informer;
-	private Listener listener;
+	protected Informer<?> informer;
+	protected Listener listener;
 	private MethodState state;
 	protected final Scope REQUEST_SCOPE;
 	protected final Scope REPLY_SCOPE;
@@ -82,8 +82,6 @@ public abstract class Method implements RSBObject {
 		this.REQUEST_SCOPE = server.getScope().concat(new Scope("/request"+"/"+name));
 		this.REPLY_SCOPE = server.getScope().concat(new Scope("/reply"+"/"+name));
 		this.factory = Factory.getInstance();
-		listener = factory.createListener(REQUEST_SCOPE);
-		informer = factory.createInformer(REPLY_SCOPE);
 		this.state = new MethodStateInactive();
 	}
 

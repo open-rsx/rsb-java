@@ -49,6 +49,23 @@ public class LocalServer extends Server {
 		// TODO at least throw a warning if a method already exists
 		method.getListener().addHandler(handler, false);
 		methods.put(name, method);
+		
+		if (this.isActive()) {
+			method.activate();
+		}
+	}
+	
+	public synchronized void waitForShutdown() {
+		// Blocks calling thread as long as this Server instance
+		// is in activated state
+		if (isActive()) {
+			try {
+				// Wait until we are done
+				this.wait();
+			} catch (InterruptedException ex) {
+				// Server has been deactivated, return from run
+			}
+		}
 	}
 
 };

@@ -56,6 +56,7 @@ public class RequestHandlerTest {
 		request.setSequenceNumber(1);
 		handler.handleEvent(request);
 		assertTrue(callback.wasCalled());
+		handler.handleEvent(request);
 	}
 
 }

@@ -28,18 +28,25 @@ import java.util.logging.Logger;
 
 public class DefaultConverterRepository<WireType> implements ConverterRepository<WireType> {
 
-	private static Logger LOG = Logger.getLogger(DefaultConverterRepository.class.getName());
+	private final static Logger LOG = Logger.getLogger(DefaultConverterRepository.class.getName());
 	
 	private static ConverterRepository<ByteBuffer> defaultInstance = new DefaultConverterRepository<ByteBuffer>();
 	
-	Map<ConverterSignature, Converter<WireType> > converterMap = new HashMap<ConverterSignature, Converter<WireType> >();
+	private transient final Map<ConverterSignature, Converter<WireType> > converterMap = new HashMap<ConverterSignature, Converter<WireType> >();
 	
+	/**
+	 * @return the converterMap
+	 */
+	protected Map<ConverterSignature, Converter<WireType>> getConverterMap() {
+		return converterMap;
+	}
+
 	/* (non-Javadoc)
 	 * @see rsb.converter.ConverterRepository#getConvertersForSerialization()
 	 */
 	@Override
 	public ConverterSelectionStrategy<WireType> getConvertersForSerialization(){
-		UnambiguousConverterMap<WireType> outStrategy = new UnambiguousConverterMap<WireType>();
+		final UnambiguousConverterMap<WireType> outStrategy = new UnambiguousConverterMap<WireType>();
 		// where to register the initial converters
 		//outStrategy.addConverter("String", new StringConverter());
 		// Query Map for types
@@ -62,7 +69,7 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 	 */
 	@Override
 	public ConverterSelectionStrategy<WireType> getConvertersForDeserialization(){
-		UnambiguousConverterMap<WireType> inStrategy = new UnambiguousConverterMap<WireType>();
+		final UnambiguousConverterMap<WireType> inStrategy = new UnambiguousConverterMap<WireType>();
 		// Query Map for wire schemas
 		for (ConverterSignature s : converterMap.keySet()) {
 			// put datatype and converter into unambiguous converter map
@@ -75,7 +82,7 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 	 * @see rsb.converter.ConverterRepository#addConverter(rsb.converter.Converter)
 	 */
 	@Override
-	public void addConverter(Converter<WireType> converter) {
+	public void addConverter(final Converter<WireType> converter) {
 		if (converterMap.containsKey(converter.getSignature())) {
 			LOG.warning("Converter with signature " + converter.getSignature() + " already registered in DefaultConverterRepository. Existing entry will be overwritten!");
 		}

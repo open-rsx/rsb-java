@@ -12,7 +12,11 @@ class ReplyCallback implements DataCallback<String, String> {
 	@Override
 	public String invoke(String request) throws Throwable {
 		LOG.info("ReplyCallback invoked with Request value: " + request);
-		flag.set(true);
+		if (flag.get()==false) {
+			flag.set(true);
+		} else {
+			throw new Exception("test exception in request handler");
+		}
 		return request;
 	}
 	

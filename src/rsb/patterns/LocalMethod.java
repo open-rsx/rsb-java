@@ -23,5 +23,7 @@ class LocalMethod extends Method {
 	 */
 	public LocalMethod(Server server, String name) {
 		super(server, name);
+		listener = factory.createListener(REQUEST_SCOPE);
+		informer = factory.createInformer(REPLY_SCOPE);		
 	}
 };

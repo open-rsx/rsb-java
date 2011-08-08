@@ -92,30 +92,44 @@ public final class Factory {
 		return new Listener(scope);
 	}
 
-    /**
-     * Creates a new LocalServer object which exposes methods under
-     * the scope @a scope.
-     *
-     * @param scope
-     *            The scope under which methods of the LocalServer
-     *            object should be exposed.
-     * @return The new LocalServer object.
-     */
-    public LocalServer createLocalServer(Scope scope) {
-	return new LocalServer(scope);
-    }
+	/**
+	 * Creates a new LocalServer object which exposes methods under the scope @a
+	 * scope.
+	 * 
+	 * @param scope
+	 *            The scope under which methods of the LocalServer object should
+	 *            be exposed.
+	 * @return The new LocalServer object.
+	 */
+	public LocalServer createLocalServer(Scope scope) {
+		return new LocalServer(scope);
+	}
 
-    /**
-     * Creates a new RemoteServer object which is suitable for calling
-     * methods provided by a remote server under the scope @a scope.
-     *
-     * @param scope
-     *            The scope under which a remote server provides its
-     *            methods.
-     * @return The new RemoteServer object.
-     */
-    public RemoteServer createRemoteServer(Scope scope) {
-	return new RemoteServer(scope);
-    }
+	/**
+	 * Creates a new RemoteServer object which is suitable for calling methods
+	 * provided by a remote server under the scope @a scope.
+	 * 
+	 * @param scope
+	 *            The scope under which a remote server provides its methods.
+	 * @return The new RemoteServer object.
+	 */
+	public RemoteServer createRemoteServer(Scope scope) {
+		return new RemoteServer(scope);
+	}
 
+	/**
+	 * Creates a new RemoteServer object which is suitable for calling methods
+	 * provided by a remote server under the scope @a scope.
+	 * 
+	 * @param scope
+	 *            The scope under which a remote server provides its methods.
+	 * @param timeout
+	 *            The amount of seconds methods calls should wait for their
+	 *            replies to arrive before failing.
+	 * @return The new RemoteServer object.
+	 */
+	public RemoteServer createRemoteServer(Scope scope, double timeout) {
+		return new RemoteServer(scope, timeout);
+	}
+    
 }
