@@ -110,7 +110,7 @@ public class SpreadMessage
 	
 	// The groups this message is from/to.
 	//////////////////////////////////////
-	protected Vector groups;
+	protected Vector<SpreadGroup> groups;
 	
 	// The sender's group.
 	//////////////////////
@@ -721,7 +721,7 @@ public class SpreadMessage
 	{
 		int len = groups.length;
 		for(int i = 0 ; i < len ; i++)
-			this.groups.addElement(groups);
+			this.groups.addElement(groups[i]);
 	}
 	
 	// Adds a group to the message's destination group list.
