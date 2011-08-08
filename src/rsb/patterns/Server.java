@@ -71,7 +71,7 @@ public abstract class Server extends Participant {
 	public Collection<Method> getMethods() {
 		return this.methods.values();
 	}
-
+	
 	@Override
 	public boolean isActive() {
 		return state.getClass() == ServerStateActive.class;

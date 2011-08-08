@@ -32,7 +32,7 @@ public class LocalServer extends Server {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
 	}
 
-	public void addMethod(String name, DataCallback<?, ?> callback)
+	public <U, T> void addMethod(String name, DataCallback<U, T> callback)
 			throws InitializeException {
 		LOG.info("Registering new method " + name + " with signature object: " + callback);
 		LocalMethod method = new LocalMethod(this, name);
@@ -42,8 +42,7 @@ public class LocalServer extends Server {
 		method.getListener().addFilter(filter);
 		
 		// handler for invoking user-supplied callback
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		RequestHandler<?,?> handler = new RequestHandler(method, callback);
+		RequestHandler<U, T> handler = new RequestHandler<U, T>(method, callback);
 
 		// TODO check on duplicates!!!
 		// TODO at least throw a warning if a method already exists

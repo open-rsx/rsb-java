@@ -20,6 +20,8 @@
  */
 package rsb;
 
+import java.util.logging.Logger;
+
 /**
  * A handler that receives the user payload of an event by extracting the data
  * and casting them to the specified type.
@@ -31,12 +33,15 @@ package rsb;
  */
 public abstract class AbstractDataHandler<V> implements Handler {
 
+	private static final Logger LOG = Logger.getLogger(AbstractDataHandler.class.getName());
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void internalNotify(final Event event) {
 		try {
 			handleEvent((V) event.getData());
 		} catch (RuntimeException ex) {
+			LOG.warning("RuntimeException during event dispatching: " + ex.getMessage() + " Re-throwing it.");
 			throw ex;
 		}
 	}

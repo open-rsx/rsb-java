@@ -57,7 +57,7 @@ public class Informer<T extends Object> extends Participant {
 
 	protected class InformerStateInactive extends InformerState<T> {
 
-		protected InformerStateInactive(Informer<T> ctx) {
+		protected InformerStateInactive(final Informer<T> ctx) {
 			super(ctx);
 			LOG.fine("Informer state activated: [Scope:" + getScope()
 					+ ",State:Inactive,Type:" + type.getName() + "]");
@@ -78,7 +78,7 @@ public class Informer<T extends Object> extends Participant {
 
 	protected class InformerStateActive extends InformerState<T> {
 
-		protected InformerStateActive(Informer<T> ctx) {
+		protected InformerStateActive(final Informer<T> ctx) {
 			super(ctx);
 			LOG.fine("Informer state activated: [Scope:" + getScope()
 					+ ",State:Active,Type:" + type.getName() + "]");
@@ -91,65 +91,65 @@ public class Informer<T extends Object> extends Participant {
 					+ type.getName() + "]");
 		}
 
-		protected Event send(Event e) throws RSBException {
+		protected Event send(final Event event) throws RSBException {
 			
-			if (!getScope().equals(e.getScope())) {
+			if (!getScope().equals(event.getScope())) {
 				throw new IllegalArgumentException(
 						"Event scope must not be null.");
 			}
-			if (e.getType()==null) {
+			if (event.getType()==null) {
 				throw new IllegalArgumentException(
 						"Event type must not be null.");
 			}			
 			// TODO check performance of isAssignableFrom	
-			if (!ctx.getTypeInfo().isAssignableFrom(e.getType())) {
+			if (!ctx.getTypeInfo().isAssignableFrom(event.getType())) {
 				throw new IllegalArgumentException(
 						"Type of event data does not match nor is a sub-class of the Informer data type.");
 			}
 			
 			// set participant metadata
 			// increment atomic counter
-			e.setSequenceNumber(sequenceNumber.incrementAndGet());
-			e.setSenderId(getId());
+			event.setSequenceNumber(sequenceNumber.incrementAndGet());
+			event.setSenderId(getId());
 			
 			// send to transport(s)
-			getRouter().publishSync(e);
+			getRouter().publishSync(event);
 			
 			// return event for local use
-			return e;
+			return event;
 
 		}
 
-		protected Event send(T d) throws RSBException {
-			Event e = new Event(getScope(), d.getClass(), (Object) d);
-			return send(e);
+		protected Event send(final T data) throws RSBException {
+			final Event event = new Event(getScope(), data.getClass(), (Object) data);
+			return send(event);
 		}
 
 	}
 
-	private void initMembers(Class<?> c) {
-		this.type = c;
+	private void initMembers(final Class<?> type) {
+		this.type = type;
 		state = new InformerStateInactive(this);
 		LOG.fine("New informer instance created: [Scope:" + getScope()
 				+ ",State:Inactive,Type:" + type.getName() + "]");
 	}
 
-	Informer(Scope scope) {
+	Informer(final Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
 		initMembers(Object.class);
 	}
 
-	Informer(Scope scope, TransportFactory tfac) {
+	Informer(final Scope scope, final TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
 		initMembers(Object.class);
 	}
 
-	Informer(Scope scope, Class<?> type) {
+	Informer(final Scope scope, final Class<?> type) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
 		initMembers(type);
 	}
 
-	Informer(Scope scope, Class<?> type, TransportFactory tfac) {
+	Informer(final Scope scope, final Class<?> type, final TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
 		initMembers(type);
 	}
@@ -165,7 +165,7 @@ public class Informer<T extends Object> extends Participant {
 	/**
 	 * Send an {@link Event} to all subscribed participants.
 	 * 
-	 * @param e
+	 * @param event
 	 *            the event to send
 	 * @return modified event with set timing information
 	 * @throws RSBException
@@ -174,21 +174,21 @@ public class Informer<T extends Object> extends Participant {
 	 *             if the event is not complete or does not match the type or
 	 *             scope settings of the informer
 	 */
-	public synchronized Event send(Event e) throws RSBException {
-		return state.send(e);
+	public synchronized Event send(final Event event) throws RSBException {
+		return state.send(event);
 	}
 
 	/**
 	 * Send data (of type <T>) to all subscribed participants.
 	 * 
-	 * @param d
+	 * @param data
 	 *            data to send with default setting from the informer
 	 * @return generated event
 	 * @throws RSBException
 	 *             error sending event
 	 */
-	public synchronized Event send(T d) throws RSBException {
-		return state.send(d);
+	public synchronized Event send(final T data) throws RSBException {
+		return state.send(data);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class Informer<T extends Object> extends Participant {
 	 * 
 	 * @return string declarator
 	 */
-	public void setTypeInfo(Class<?> typeInfo) {
+	public void setTypeInfo(final Class<?> typeInfo) {
 		type = typeInfo;
 	}	
 	
