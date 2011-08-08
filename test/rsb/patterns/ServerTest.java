@@ -102,6 +102,7 @@ public class ServerTest {
 		assertFalse(server.isActive());
 		server.addMethod("callme", new ReplyCallback());
 		server.activate();
+		server.deactivate();
 	}
 
 	/**

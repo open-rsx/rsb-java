@@ -28,7 +28,7 @@ public class RemoteServerTest {
 
 	private RemoteServer getRemoteServer() {
 		final Factory factory = Factory.getInstance();
-		return factory.createRemoteServer(new Scope("/example/server"));
+		return factory.createRemoteServer(new Scope("/example/server"),1200);
 	}
 
 	@Test
@@ -36,6 +36,7 @@ public class RemoteServerTest {
 		final RemoteServer remote = getRemoteServer();
 		assertNotNull("RemoteServer construction failed",remote);
 		remote.activate();
+		remote.deactivate();
 	}
 
 	@Test
@@ -45,19 +46,24 @@ public class RemoteServerTest {
 		remote.addMethod("callme");
 		remote.activate();
 		assertNotNull("Method not added to remote server",remote.getMethods().iterator().next());
+		remote.deactivate();
 	}	
 	
 	@Test
 	public void testCallMethod() throws RSBException {
 		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
-		server.addMethod("callme", new ReplyCallback());
+		ReplyCallback cb = new ReplyCallback();
+		server.addMethod("callme", cb);
 		server.activate();
 		final RemoteServer remote = getRemoteServer();
 		assertNotNull("RemoteServer construction failed",remote);
-		RemoteMethod<String, String> method = remote.addMethod("callme");
-		assertNotNull(method);
 		remote.activate();	
-		String result = method.call("testdata");
+		String result = null;
+		for (int i = 0; i < 100; i++) {
+			result = remote.call("callme","testdata");
+		}
+		System.out.println("Count requests: " + cb.counter.get());
+		System.out.println("Listener: " + remote.getMethods().iterator().next().listener.getHandlers());
 		assertTrue("Received wrong result from server callback.",result.equals("testdata"));
 	}
 	

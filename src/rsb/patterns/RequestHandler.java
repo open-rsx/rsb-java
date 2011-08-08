@@ -56,7 +56,7 @@ public class RequestHandler<T, U> extends AbstractEventHandler {
 		} else {
 			// return error information
 			reply.setType(String.class);
-			reply.getMetaData().setUserInfo("isException", "true");
+			reply.getMetaData().setUserInfo("rsb:error?", "1");
 			reply.setData(error);
 		}
 		

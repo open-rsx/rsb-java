@@ -2,21 +2,21 @@ package rsb.patterns;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This class provides an implementation of an asynchronous request class 
- * based on Java's Future interface. 
+ * This class provides an implementation 
+ * of Java's Future interface for use
+ * with request invocations. 
  * 
  * @author jschaefe
  * @author swrede
  * 
- * @see Future
+ * @see java.util.concurrent.Future
  */
 
-public class AsyncRequest<T> implements Future<T> {
+public class Future<T> implements java.util.concurrent.Future<T> {
 	
 	protected Throwable exception = null;
 	protected T result = null;
@@ -48,7 +48,7 @@ public class AsyncRequest<T> implements Future<T> {
 
 	/**
 	 * Convenience method for get(0, TimeUnit.MILLISECONDS).
-	 * @see AsyncRequest#get(long, TimeUnit)
+	 * @see Future#get(long, TimeUnit)
 	 */
 	public synchronized T get() throws InterruptedException, ExecutionException {
 		try {
@@ -62,7 +62,7 @@ public class AsyncRequest<T> implements Future<T> {
 
 	/**
 	 * Convenience method for get(timeout, TimeUnit.MILLISECONDS).
-	 * @see AsyncRequest#get(long, TimeUnit)
+	 * @see Future#get(long, TimeUnit)
 	 */
 	public synchronized T get(final long timeout) throws InterruptedException, ExecutionException, TimeoutException {
 		return get(timeout, TimeUnit.MILLISECONDS);
@@ -85,19 +85,20 @@ public class AsyncRequest<T> implements Future<T> {
 	 * available
 	 */
 	public synchronized T get(final long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		if(result == null && exception == null) {
-			long timeout_millis = unit.toMillis(timeout);
-			// prevent waiting forever, if timeout was not 0, but was rounded to 0
-			if(timeout > 0 && timeout_millis == 0) {
-				timeout_millis = 1;
-			}
+		long timeout_millis = unit.toMillis(timeout);
+		// prevent waiting forever, if timeout was not 0, but was rounded to 0
+		if (timeout > 0 && timeout_millis == 0) {
+			timeout_millis = 1;
+		}
+		while (result == null && exception == null) {
 			wait(timeout_millis);
 		}
-		if(exception != null) { // operation threw an exception
+		if (exception != null) { // operation threw an exception
 			throw new ExecutionException(exception);
-		} else if(isCancelled()) { // cancel() was called before
-			throw new CancellationException("async operation was cancelled before it completed");
-		} else if(result == null) { // no result yet, timeout was hit
+		} else if (isCancelled()) { // cancel() was called before
+			throw new CancellationException(
+					"async operation was cancelled before it completed");
+		} else if (result == null) { // no result yet, timeout was hit
 			throw new TimeoutException();
 		}
 		return result;

@@ -53,6 +53,7 @@ public abstract class Server extends Participant {
 		}
 	}
 
+	
 	protected final Map<String, Method> methods;
 	private ServerState state;
 

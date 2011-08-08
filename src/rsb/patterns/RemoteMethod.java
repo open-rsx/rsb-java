@@ -1,9 +1,9 @@
 package rsb.patterns;
 
+import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.Handler;
@@ -20,7 +20,24 @@ import rsb.filter.MethodFilter;
  */
 public class RemoteMethod<U, T> extends Method implements Handler {
 	
-	private final Map<UUID, AsyncRequest<U>> pendingRequests = new ConcurrentHashMap<UUID, AsyncRequest<U>>();
+	private static final Logger LOG = Logger.getLogger(RemoteMethod.class.getName());
+	
+	protected class CollectorThread implements Runnable {
+		public void run() {
+			do {
+				for (String key : pendingRequests.keySet()) {
+					if (pendingRequests.get(key).isEnqueued()) {
+						// future already cleared, thus we remove the pending request entry
+						LOG.info("Removing request with id: " + key);
+						pendingRequests.remove(key);
+					}
+				}
+			} while (isActive());
+		}
+	}
+	
+	// assuming usually eight threads will write simultaneously to the map 
+	private final Map<String, WeakReference<Future<U>>> pendingRequests = new ConcurrentHashMap<String, WeakReference<Future<U>>>(16,0.75f,8);
 	
 	/**
 	 * Create a new RemoteMethod object that represent the remote method named @a
@@ -36,11 +53,19 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 		listener = factory.createListener(REPLY_SCOPE);
 		informer = factory.createInformer(REQUEST_SCOPE);		
 		listener.addFilter(new MethodFilter("REPLY"));
-		listener.addHandler(this, false);
+		listener.addHandler(this, true);
 	}
 
-	// Blocking call
-	public U call(final T data) throws RSBException {
+	public Event call(final Event event) {
+		System.out.println("Called!");
+		return null;
+	}
+	
+	public Future<Event> callAsync(final Event event) {
+		return null;
+	}
+	
+	public Future<U> callAsync(final T data) throws RSBException {
 		// build event and send it over the informer as request
 		// return reply as direct event, hence set some metadata here
 		final Event request = new Event(data.getClass());
@@ -49,55 +74,73 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 		request.setData(data);
 
 		// instantiate future
-		final AsyncRequest<U> future = new AsyncRequest<U>();
+		final Future<U> future = new Future<U>();
 		Event sentEvent = null;
 		synchronized (this) {
 			sentEvent = informer.send(request);
-			// put future with id in pending results table
-			pendingRequests.put(sentEvent.getId().getAsUUID(), future);
+			// put future with id as weak ref in pending results table
+			pendingRequests.put(sentEvent.getId().getAsUUID().toString(), new WeakReference<Future<U>>(future));
+			LOG.fine("registered future in pending requests with id: " + sentEvent.getId().getAsUUID().toString());
 		}
-		
-		// wait on result in get or return exception
-		U result = null;
-		try {
-			result = future.get();
-		} catch (InterruptedException exception) {
-			LOG.warning("InterruptedException during wait for server reply. Re-throwing exception.");
-			throw new RSBException(exception);
-		} catch (ExecutionException exception) {
-			LOG.warning("ExceutionException during remote method call. Re-throwing exception.");
-			throw new RSBException(exception);
-		} finally {
-			// remove request from pending calls
-			pendingRequests.remove(sentEvent);
-		}
-		return result;
+		return future;
 	}
 	
-//	// Async call, returns future
-//	public U callAsync(T parameter) {
-//		
+//	// Blocking call
+//	public U call(final T data) throws RSBException {
+//		// wait on result in get or return exception
+//		U result = null;
+//		try {
+//			result = future.get();
+//		} catch (InterruptedException exception) {
+//			LOG.warning("InterruptedException during wait for server reply. Re-throwing exception.");
+//			throw new RSBException(exception);
+//		} catch (ExecutionException exception) {
+//			LOG.warning("ExceutionException during remote method call. Re-throwing exception.");
+//			throw new RSBException(exception);
+//		} finally {
+//			// remove request from pending calls
+//			pendingRequests.remove(sentEvent);
+//		}
+//		return result;
 //	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void internalNotify(final Event event) {
-		UUID replyId = null;
+		//Thread.dumpStack();
+		String replyId = null;
 		// get reply id
 		try {
-			final String replyKey = event.getMetaData().getUserInfo("rsb:reply");
-			replyId = UUID.fromString(replyKey);
+			replyId = event.getMetaData().getUserInfo("rsb:reply");
+			LOG.fine("Received reply with id: " + replyId);
 		} catch (IllegalArgumentException exception) {
 			LOG.warning("Received reply event without rsb:reply userinfo item. Skipping it.");
 			return;
 		}
 		
 		// check for reply id in list of pending calls
-		if (pendingRequests.containsKey(replyId)) {
-			final AsyncRequest<U> request = pendingRequests.get(replyId);
-			// error case
+		Future<U> request = null;
+		synchronized (this) {
+			if (pendingRequests.containsKey(replyId)) {
+				request = pendingRequests.get(replyId).get();
+				if (request==null) {
+					// the future was already garbage collected locally
+					LOG.info("Can not deliver reply: Future reference already garbage collected in user code!");
+				} 				
+				pendingRequests.remove(replyId);
+			}
+		}
+		// error cases
+		if (request==null) {
+			// for instance, if several clients send an event to the same server method,
+			// this effect may occur
+			Thread.dumpStack();
+			LOG.info("Could not find matching reply in table for id: " + replyId);
+		} else {
+			LOG.fine("Found plending reply for id: " + replyId);
 			try {
-				if (event.getMetaData().getUserInfo("isException")!=null) {
+				// an error occured at the server side
+				if (event.getMetaData().getUserInfo("rsb:error?")!=null) {
 					final String error = (String) event.getData();
 					request.error(new RSBException(error));
 					return;
@@ -107,6 +150,6 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 			}
 			// regular case
 			request.complete((U) event.getData());
-		}	
+		}
 	}
 };
