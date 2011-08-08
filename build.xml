@@ -100,7 +100,7 @@
 		</apply>
 	</target>
 
-	<target name="compile" depends="clean, init, protocol" description="compile the source ">
+	<target name="compile" depends="init, protocol" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac srcdir="${src}" destdir="${build.dir}/classes" debug="on" deprecation="on">
 			<compilerarg value="-Xlint" />
