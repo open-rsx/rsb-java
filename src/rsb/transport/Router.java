@@ -50,6 +50,8 @@ public class Router extends FilterObservable implements EventHandler {
 		config = pc;
 		// router setup
 		switch (config) {
+		case NONE:
+			break;		
 		case IN:
 			setupInPorts(f);
 			setupEventProcessor();

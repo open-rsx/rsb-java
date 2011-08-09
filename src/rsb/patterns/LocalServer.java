@@ -29,7 +29,7 @@ public class LocalServer extends Server {
      *            the newly created server should be provided.
      */
 	public LocalServer(final Scope scope) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 	}
 
 	public <U, T> void addMethod(String name, DataCallback<U, T> callback)

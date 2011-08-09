@@ -38,7 +38,7 @@ public class RemoteServer extends Server {
 	 *            replies to arrive before failing.
 	 */
 	public RemoteServer(Scope scope, double timeout) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = timeout;
 	}
 
@@ -51,7 +51,7 @@ public class RemoteServer extends Server {
 	 *            created server are provided.
 	 */
 	public RemoteServer(Scope scope) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = 25;
 	}
 	

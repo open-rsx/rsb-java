@@ -29,6 +29,6 @@ package rsb.transport;
  */
 public enum PortConfiguration {
 
-	IN, INOUT, OUT;
+	IN, INOUT, OUT, NONE;
 	
 }

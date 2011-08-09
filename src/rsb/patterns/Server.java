@@ -31,6 +31,7 @@ public abstract class Server extends Participant {
 			for (Method method : methods.values()) {
 				method.deactivate();
 			}
+			server.getRouter().deactivate();
 			// send signal to thread in waitForShutdown
 			synchronized (server) {
 				server.notify();
