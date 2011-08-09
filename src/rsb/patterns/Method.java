@@ -37,14 +37,14 @@ public abstract class Method implements RSBObject {
 	protected class MethodStateActive extends MethodState {
 		public MethodState deactivate() {
 			// Deactivate informer and listener if necessary.
-			if (informer != null) {
-				informer.deactivate();
-				informer = null;
-			}
 			if (listener != null) {
 				listener.deactivate();
 				listener = null;
 			}
+			if (informer != null) {
+				informer.deactivate();
+				informer = null;
+			}			
 			return new MethodStateInactive();
 		}
 	}
