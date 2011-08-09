@@ -77,7 +77,7 @@ public class ServerTest {
 	public void testGetMethods() throws InitializeException {
 		LocalServer server = (LocalServer) getServer();
 		assertTrue(server.getMethods().size()==0);
-		server.addMethod("callme", new ReplyCallback());
+		server.addMethod("callme", new ReplyDataCallback());
 		assertTrue(server.getMethods().size()==1);
 		assertTrue(server.getMethods().iterator().next().getName().equals("callme"));
 	}
@@ -85,7 +85,9 @@ public class ServerTest {
 	@Test
 	public void addMethod() throws InitializeException {
 		LocalServer server = (LocalServer) getServer();
-		server.addMethod("callme", new ReplyCallback());
+		server.addMethod("callme", new ReplyDataCallback());
+		server.addMethod("callmeEvent", new ReplyEventCallback());
+		assertTrue(server.getMethods().size()==2);
 	}
 	
 	/**
@@ -100,7 +102,7 @@ public class ServerTest {
 		assertTrue(server.isActive());
 		server.deactivate();
 		assertFalse(server.isActive());
-		server.addMethod("callme", new ReplyCallback());
+		server.addMethod("callme", new ReplyDataCallback());
 		server.activate();
 		server.deactivate();
 	}
@@ -112,7 +114,7 @@ public class ServerTest {
 	@Test
 	public void testDeactivate() throws InitializeException {
 		LocalServer server = (LocalServer) getServer();
-		DataCallback<String, String> method = new ReplyCallback();
+		DataCallback<String, String> method = new ReplyDataCallback();
 		server.addMethod("callme", method);
 		server.activate();
 		assertTrue(server.isActive());
@@ -125,7 +127,7 @@ public class ServerTest {
 	@Test 
 	public void testStartServer() throws InitializeException {
 		LocalServer server = (LocalServer) getServer();
-		DataCallback<String, String> method = new ReplyCallback();
+		DataCallback<String, String> method = new ReplyDataCallback();
 		server.addMethod("callme", method);
 		server.activate();		
 		server.addMethod("callmetoo", method);

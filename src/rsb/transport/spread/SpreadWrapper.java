@@ -180,7 +180,7 @@ public class SpreadWrapper implements RSBObject {
 		try {
 			grp.join(conn, group);
 			groups.add(grp);
-			LOG.info("Joined SpreadGroup with name: " + group);
+			LOG.fine("Joined SpreadGroup with name: " + group);
 		} catch (SpreadException e) {
 			// log.info("Could not join group!");
 			throw e;
@@ -296,7 +296,7 @@ public class SpreadWrapper implements RSBObject {
 				SpreadGroup grp = it.next();
 				try {
 					grp.leave();
-					LOG.info("SpreadGroup '" + grp + "' has been left.");
+					LOG.fine("SpreadGroup '" + grp + "' has been left.");
 				} catch (SpreadException e) {
 					// ignored
 					LOG.info("Caught a SpreadException while leaving group '"
@@ -358,7 +358,7 @@ public class SpreadWrapper implements RSBObject {
 	@Override
 	protected void finalize() throws Throwable {
 		if (status == State.ACTIVATED) {
-			System.exit(1);
+			LOG.severe("Finalize called while status is activated.");
 		}
 		super.finalize();
 	}

@@ -22,13 +22,16 @@ package rsb;
 
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Informer.InformerStateActive;
 import rsb.Informer.InformerStateInactive;
-import rsb.converter.DefaultConverters;
+import rsb.converter.ConverterRepository;
+import rsb.converter.DefaultConverterRepository;
 import rsb.transport.TransportFactory;
 
 /**
@@ -38,16 +41,11 @@ public class InformerTest {
 
 	private final Scope defaultScope = new Scope("/informer/example");
 	private Informer<String> informer;
+	@SuppressWarnings("unused")
+	private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository.getDefaultConverterRepository();
 	
 	@Before
 	public void setUp() throws Throwable {
-		try {
-			DefaultConverters.register();
-		} catch (IllegalArgumentException ex) {
-			// ignore, converters already registered
-			// should not happen when objects are created 
-			// using rsb.Factory
-		}
 		informer = new Informer<String>(defaultScope);
 		informer.activate();
 	}

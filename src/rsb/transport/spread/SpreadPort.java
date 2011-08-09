@@ -161,7 +161,7 @@ public class SpreadPort extends AbstractPort {
 	 */
 	@Override
 	public void notify(ScopeFilter e, FilterAction a) {
-		log.info("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
+		log.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
 				+ " called");
 		switch (a) {
 		case ADD:

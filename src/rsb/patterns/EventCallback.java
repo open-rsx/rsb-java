@@ -10,7 +10,7 @@ import rsb.Event;
  *
  * @author jmoringe
  */
-interface EventCallback {
+public interface EventCallback {
 
     /**
      * This method is called to invoke the actual behavior of an

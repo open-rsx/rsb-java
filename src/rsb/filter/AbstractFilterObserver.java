@@ -35,7 +35,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(AbstractFilter e, FilterAction a) {
-		LOG.info("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
+		LOG.fine("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
 	}
 
 	/* (non-Javadoc)
@@ -43,7 +43,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(ScopeFilter e, FilterAction a) {
-		LOG.info("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
+		LOG.fine("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
 	}
 
 	/* (non-Javadoc)
@@ -51,7 +51,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(TypeFilter e, FilterAction a) {
-		LOG.info("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
+		LOG.fine("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
 
 	}
 
@@ -60,7 +60,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 */
 	@Override
 	public void notify(IdentityFilter e, FilterAction a) {
-		LOG.info("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
+		LOG.fine("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
 	}
 
 }

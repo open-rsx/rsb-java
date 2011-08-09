@@ -2,10 +2,9 @@ package rsb.patterns;
 
 import java.util.logging.Logger;
 
+import rsb.Event;
 import rsb.InitializeException;
 import rsb.Scope;
-import rsb.filter.Filter;
-import rsb.filter.MethodFilter;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
@@ -34,19 +33,28 @@ public class LocalServer extends Server {
 
 	public <U, T> void addMethod(String name, DataCallback<U, T> callback)
 			throws InitializeException {
-		LOG.info("Registering new method " + name + " with signature object: " + callback);
-		LocalMethod method = new LocalMethod(this, name);
-		
-		// filter for request method
-		Filter filter = new MethodFilter("REQUEST");
-		method.getListener().addFilter(filter);
-		
-		// handler for invoking user-supplied callback
-		RequestHandler<U, T> handler = new RequestHandler<U, T>(method, callback);
+		LOG.fine("Registering new data method " + name + " with signature object: " + callback);
+		LocalMethod<U, T> method = new LocalMethod<U, T>(this, name,callback);
+		addAndActivate(name, method);
+	}
+	
+	
+	public void addMethod(String name, EventCallback callback) throws InitializeException {
+		LOG.fine("Registering new event method " + name + " with signature object: " + callback);
+		LocalMethod<Event, Event> method = new LocalMethod<Event, Event>(this, name, callback);
+		addAndActivate(name, method);
+	}	
 
-		// TODO check on duplicates!!!
-		// TODO at least throw a warning if a method already exists
-		method.getListener().addHandler(handler, false);
+	/**
+	 * @param name
+	 * @param method
+	 * @throws InitializeException
+	 */
+	private <U, T> void addAndActivate(String name, LocalMethod<?, ?> method)
+			throws InitializeException {
+		if (methods.containsKey(name)) {
+			LOG.warning("Method with name " + name + " already registered. Overwriting it!");
+		}
 		methods.put(name, method);
 		
 		if (this.isActive()) {

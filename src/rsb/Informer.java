@@ -70,7 +70,7 @@ public class Informer<T extends Object> extends Participant {
 			converter = DefaultConverterRepository.getDefaultConverterRepository().getConvertersForSerialization();
 			getRouter().activate();
 			ctx.state = new InformerStateActive(ctx);
-			LOG.info("Informer activated: [Scope:" + getScope() + ",Type:"
+			LOG.fine("Informer activated: [Scope:" + getScope() + ",Type:"
 					+ type.getName() + "]");
 		}
 
@@ -87,7 +87,7 @@ public class Informer<T extends Object> extends Participant {
 		protected void deactivate() {
 			getRouter().deactivate();
 			ctx.state = new InformerStateInactive(ctx);
-			LOG.info("Informer deactivated: [Scope:" + getScope() + ",Type:"
+			LOG.fine("Informer deactivated: [Scope:" + getScope() + ",Type:"
 					+ type.getName() + "]");
 		}
 

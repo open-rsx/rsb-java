@@ -98,7 +98,7 @@ public class Listener extends Participant {
 	private void initMembers(Scope scope) {
 		this.state = new ListenerStateInactive(this);
 		errorHandler = new DefaultErrorHandler(LOG);
-		LOG.info("New Listener instance: [scope=" + scope + "]");
+		LOG.fine("New Listener instance: [scope=" + scope + "]");
 	}
 
 	public void activate() throws InitializeException {

@@ -52,7 +52,7 @@ public class RemoteServerTest {
 	@Test
 	public void testCallMethod() throws RSBException {
 		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
-		ReplyCallback cb = new ReplyCallback();
+		ReplyDataCallback cb = new ReplyDataCallback();
 		server.addMethod("callme", cb);
 		server.activate();
 		final RemoteServer remote = getRemoteServer();

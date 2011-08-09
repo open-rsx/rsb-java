@@ -4,9 +4,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-class ReplyCallback implements DataCallback<String, String> {
+class ReplyDataCallback implements DataCallback<String, String> {
 	
-	private final static Logger LOG = Logger.getLogger(ReplyCallback.class.getName());
+	private final static Logger LOG = Logger.getLogger(ReplyDataCallback.class.getName());
 	
 	AtomicBoolean flag = new AtomicBoolean(false);
 	public AtomicInteger counter = new AtomicInteger();
