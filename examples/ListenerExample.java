@@ -20,6 +20,7 @@
  */
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 import rsb.AbstractDataHandler;
 import rsb.AbstractEventHandler;
@@ -35,6 +36,8 @@ import rsb.Listener;
  */
 public class ListenerExample {
 
+	private static final Logger LOG = Logger.getLogger(ListenerExample.class.getName());
+	
 	static AtomicInteger counter1 = new AtomicInteger(0);
 	static AtomicInteger counter2 = new AtomicInteger(0);
 	static Object l = new Object();
@@ -59,7 +62,7 @@ public class ListenerExample {
 			public void handleEvent(Event e) {
 				counter1.getAndIncrement();
 				if (counter1.get() % 100 == 0) {
-					System.out.println("Event received: " + e.toString()
+					LOG.info("Event received: " + e.toString()
 							+ " # " + counter1);
 				}
 				if (counter1.get() == 1200) {
@@ -80,7 +83,7 @@ public class ListenerExample {
 				try {
 					counter2.getAndIncrement();
 					if (counter2.get() % 100 == 0) {
-						System.out.println("Data received: " + e + " event # "
+						LOG.info("Data received: " + e + " event # "
 								+ counter2.get());
 					}
 					if (counter2.get() == 1200) {
@@ -99,7 +102,7 @@ public class ListenerExample {
 		while (!allEventsDelivered()) {
 			synchronized (l) {
 				l.wait();
-				System.out.println("Wake-Up!!!");
+				LOG.fine("Wake-Up!!!");
 			}
 		}
 
