@@ -18,7 +18,7 @@ public class ServerExample {
 		@Override
 		public String invoke(String request) throws Throwable {
 			// do some stupid stuff
-			return request + "reply";
+			return (request + "/reply").toLowerCase();
 		}
 		
 	}
@@ -27,7 +27,7 @@ public class ServerExample {
 
 		@Override
 		public Event invoke(Event request) throws Throwable {
-			request.setData((String) request.getData() + "reply");
+			request.setData((String) (request.getData() + "/reply").toUpperCase());
 			return request;
 		}
 		
@@ -44,9 +44,9 @@ public class ServerExample {
 		
 		// add methods		
 		// callback with handler signature based on event payload
-		server.addMethod("replyData", new DataReplyCallback());
+		server.addMethod("replyLower", new DataReplyCallback());
 		// callback with handler signature based on events
-		server.addMethod("replyEvent", new EventReplyCallback());
+		server.addMethod("replyHigher", new EventReplyCallback());
 
 		// optional: block until server.deactivate or process shutdown
 		LOG.info("Server /example/server running");

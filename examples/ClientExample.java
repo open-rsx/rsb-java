@@ -49,12 +49,12 @@ public class ClientExample {
 		LOG.info("RemoteServer object activated");
 
 		LOG.info("Calling remote server under scope /example/server:");
-		LOG.info("Data signature (replyData) synchronously: " + server.call("replyData", "request"));
-		LOG.info("Data signature (replyData) with future: " + server.callAsync("replyData", "request").get());
+		LOG.info("Data-driven callback (replyHigher) synchronously: " + server.call("replyHigher", "request"));
+		LOG.info("Data-driven callback (replyHigher) with future: " + server.callAsync("replyHigher", "request").get());
 		Event event = new Event(String.class);
 		event.setData("request");
-		LOG.info("Event signature (replyEvent) synchronously: " + server.call("replyEvent", event));
-		LOG.info("Event signature (replyEvent) with future: " + server.callAsync("replyEvent", event).get());		
+		LOG.info("Event-driven callback (replyLower) synchronously: " + server.call("replyLower", event.getData()));
+		LOG.info("Event-driven callback (replyLower) with future: " + server.callAsync("replyLower", event.getData()).get());		
 		
 		server.deactivate();
 	}
