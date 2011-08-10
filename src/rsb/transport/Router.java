@@ -36,7 +36,7 @@ import rsb.filter.FilterObservable;
 
 public class Router extends FilterObservable implements EventHandler {
 
-	private final static Logger log = Logger.getLogger(Router.class.getName());
+	private final static Logger LOG = Logger.getLogger(Router.class.getName());
 
 	protected Port inPort;
 	protected Port outPort;
@@ -76,15 +76,15 @@ public class Router extends FilterObservable implements EventHandler {
 	/**
 	 * @param f
 	 */
-	private void setupOutPorts(TransportFactory f) {
-		outPort = f.createPort();
+	private void setupOutPorts(final TransportFactory factory) {
+		outPort = factory.createPort();
 	}
 
 	/**
 	 * @param f
 	 */
-	protected void setupInPorts(TransportFactory f) {
-		inPort = f.createPort(this);
+	private void setupInPorts(final TransportFactory factory) {
+		inPort = factory.createPort(this);
 		addObserver(inPort);
 	}
 
@@ -104,7 +104,7 @@ public class Router extends FilterObservable implements EventHandler {
 				break;
 			}
 		} catch (RSBException e) {
-			log.severe("exception occured during port initialization for router");
+			LOG.severe("exception occured during port initialization for router");
 			throw new InitializeException(e);
 		}
 	}
@@ -113,7 +113,7 @@ public class Router extends FilterObservable implements EventHandler {
 	 * Setup internal event processing subsystem using RSB configuration
 	 * options.
 	 */
-	protected void setupEventProcessor() {
+	private void setupEventProcessor() {
 		ep = new SingleThreadEventReceivingStrategy();
 	}
 
@@ -123,16 +123,16 @@ public class Router extends FilterObservable implements EventHandler {
 	 * @param e
 	 *            The {@link Event} to be published
 	 */
-	public void publish(Event e) {
-		// TODO add config checks as preconditions
-		// send event async
-		throw new RuntimeException("Router::publish method not implemented!");
-	}
+//	public void publish(Event e) {
+//		// TODO add config checks as preconditions
+//		// send event async
+//		throw new RuntimeException("Router::publish method not implemented!");
+//	}
 
 	public void publishSync(Event e) throws ConversionException {
 		// TODO add config checks as preconditions
 		// send event sync?
-		log.fine("Router publishing new event to port: [EventID:"
+		LOG.fine("Router publishing new event to port: [EventID:"
 				+ e.getId().toString() + ",PortType:" + outPort.getType() + "]");
 		outPort.push(e);
 	}
@@ -147,9 +147,9 @@ public class Router extends FilterObservable implements EventHandler {
 				ep.shutdownAndWait();
 			}
 		} catch (RSBException e) {
-			log.log(Level.WARNING, "Error waiting for shutdown", e);
+			LOG.log(Level.WARNING, "Error waiting for shutdown", e);
 		} catch (InterruptedException e) {
-			log.log(Level.WARNING, "Error waiting for shutdown", e);
+			LOG.log(Level.WARNING, "Error waiting for shutdown", e);
 		}
 	}
 

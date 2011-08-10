@@ -37,10 +37,13 @@ import rsb.filter.MethodFilter;
  * @author jmoringe
  * @author swrede
  *
+ * @param <T>	return type 
+ * @param <U>	parameter object type 
+ *
  */
-public class RemoteMethod<U, T> extends Method implements Handler {
+public abstract class AbstractRemoteMethod<T, U> extends Method implements Handler {
 
-	private static final Logger LOG = Logger.getLogger(RemoteMethod.class.getName());
+	private static final Logger LOG = Logger.getLogger(AbstractRemoteMethod.class.getName()); 
 
 	protected class CollectorThread implements Runnable {
 		public void run() {
@@ -57,7 +60,7 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 	}
 
 	// assuming usually eight threads will write simultaneously to the map
-	private final Map<String, WeakReference<Future<U>>> pendingRequests = new ConcurrentHashMap<String, WeakReference<Future<U>>>(16,0.75f,8);
+	private final Map<String, WeakReference<Future<T>>> pendingRequests = new ConcurrentHashMap<String, WeakReference<Future<T>>>(16,0.75f,8);
 
 	/**
 	 * Create a new RemoteMethod object that represent the remote method named @a
@@ -68,63 +71,39 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 	 * @param name
 	 *            The name of the method.
 	 */
-	public RemoteMethod(final Server server, final String name) {
+	public AbstractRemoteMethod(final Server server, final String name) {
 		super(server, name);
 		listener = factory.createListener(REPLY_SCOPE);
 		informer = factory.createInformer(REQUEST_SCOPE);
 		listener.addFilter(new MethodFilter("REPLY"));
 		listener.addHandler(this, true);
 	}
+	
+	public abstract Future<T> call(final U data) throws RSBException;
 
-	public Event call(final Event event) {
-		System.out.println("Called!");
-		return null;
-	}
-
-	public Future<Event> callAsync(final Event event) {
-		return null;
-	}
-
-	public Future<U> callAsync(final T data) throws RSBException {
-		// build event and send it over the informer as request
-		// return reply as direct event, hence set some metadata here
-		final Event request = new Event(data.getClass());
-		request.setScope(REQUEST_SCOPE);
-		request.setMethod("REQUEST");
-		request.setData(data);
-
+	/**
+	 * @param event
+	 * @return
+	 * @throws RSBException
+	 */
+	protected Future<T> sendRequest(final Event event) throws RSBException {
+		// set metadata
+		event.setScope(REQUEST_SCOPE);
+		event.setMethod("REQUEST");
+		// further metadata is set by informer
+		
 		// instantiate future
-		final Future<U> future = new Future<U>();
+		final Future<T> future = new Future<T>();
 		Event sentEvent = null;
 		synchronized (this) {
-			sentEvent = informer.send(request);
+			sentEvent = informer.send(event);
 			// put future with id as weak ref in pending results table
-			pendingRequests.put(sentEvent.getId().getAsUUID().toString(), new WeakReference<Future<U>>(future));
+			pendingRequests.put(sentEvent.getId().getAsUUID().toString(), new WeakReference<Future<T>>(future));
 			LOG.fine("registered future in pending requests with id: " + sentEvent.getId().getAsUUID().toString());
 		}
 		return future;
 	}
 
-//	// Blocking call
-//	public U call(final T data) throws RSBException {
-//		// wait on result in get or return exception
-//		U result = null;
-//		try {
-//			result = future.get();
-//		} catch (InterruptedException exception) {
-//			LOG.warning("InterruptedException during wait for server reply. Re-throwing exception.");
-//			throw new RSBException(exception);
-//		} catch (ExecutionException exception) {
-//			LOG.warning("ExceutionException during remote method call. Re-throwing exception.");
-//			throw new RSBException(exception);
-//		} finally {
-//			// remove request from pending calls
-//			pendingRequests.remove(sentEvent);
-//		}
-//		return result;
-//	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void internalNotify(final Event event) {
 		//Thread.dumpStack();
@@ -139,7 +118,7 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 		}
 
 		// check for reply id in list of pending calls
-		Future<U> request = null;
+		Future<T> request = null;
 		synchronized (this) {
 			if (pendingRequests.containsKey(replyId)) {
 				request = pendingRequests.get(replyId).get();
@@ -154,7 +133,6 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 		if (request==null) {
 			// for instance, if several clients send an event to the same server method,
 			// this effect may occur
-			Thread.dumpStack();
 			LOG.info("Could not find matching reply in table for id: " + replyId);
 		} else {
 			LOG.fine("Found plending reply for id: " + replyId);
@@ -168,8 +146,10 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 			} catch (IllegalArgumentException exception) {
 				// ignore
 			}
-			// regular case
-			request.complete((U) event.getData());
+			completeRequest(request,event);
 		}
 	}
+
+	protected abstract void completeRequest(Future<T> future, Event event);
+	
 };

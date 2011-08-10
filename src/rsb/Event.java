@@ -103,6 +103,7 @@ public class Event {
 	
 
 	public void setSenderId(final ParticipantId senderId) {
+		// TODO update eventId
 		this.senderId  = senderId;
 	}	
 	
@@ -128,6 +129,9 @@ public class Event {
 
 	public EventId getId() {
 	        if (id == null) {
+	        	if (senderId==null) {
+	        		Thread.dumpStack();
+	        	}
 		        id = new EventId(senderId, sequenceNumber);
 	        }
 		return id;

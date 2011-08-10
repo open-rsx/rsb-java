@@ -18,9 +18,6 @@ class ReplyDataCallback implements DataCallback<String, String> {
 			flag.set(true);
 		}
 		counter.incrementAndGet();
-//		} else {
-//			throw new Exception("test exception in request handler");
-//		}
 		return request;
 	}
 	

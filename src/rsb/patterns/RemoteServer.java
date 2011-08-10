@@ -79,15 +79,10 @@ public class RemoteServer extends Server {
 		return timeout;
 	}
 
-	public Event call(final String name, final Event event) {
-		return null;
+	public Future<Event> callAsync(final String name, final Event event) throws RSBException {
+		return callAsyncInternal(name,event,true);
 	}
 
-	public Future<Event> callAsync(final String name, final Event event) {
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
 	/**
 	 * Async call returning an rsb.patterns.Future object
 	 *
@@ -96,27 +91,42 @@ public class RemoteServer extends Server {
 	 * @return
 	 * @throws RSBException
 	 */
-	public <U, T> Future<U> callAsync(final String name, final T data) throws RSBException {
-		RemoteMethod<U, T> method = null;
+	public <T, U> Future<U> callAsync(final String name, final U data) throws RSBException {
+		return callAsyncInternal(name, data,false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T, U> Future<T> callAsyncInternal(final String name, final U data, boolean isEvent) throws RSBException {
+		AbstractRemoteMethod<T, U> method = null;
 		// get method, either new or cached
 		if (!methods.containsKey(name)) {
 			try {
-				method = addMethod(name);
+				method = (AbstractRemoteMethod<T, U>) addMethod(name,isEvent);
 			} catch (InitializeException exception) {
 				LOG.warning("Exception during method activation: " + exception.getMessage() + " Re-throwing it.");
 				throw new RSBException(exception);
 			}
 		} else {
 			try {
-				method = (RemoteMethod<U, T>) methods.get(name);
+				method = (AbstractRemoteMethod<T, U>) methods.get(name);
 			} catch (ClassCastException exception) {
 				LOG.warning("Exception during method activation: " + exception.getMessage() + " Re-throwing it.");
 				throw new RSBException(exception);
 			}
 		}
-		return method.callAsync(data);
+//			if (isEvent) {
+//				return method.callA((Event) data);
+//			} else {
+//				return method.callAsyncData(data);			
+//			}
+		return method.call(data);
 	}
 
+	public Event call(final String name, final Event event) throws RSBException {
+		Event result = callInternal(name,event,true);
+		return result;
+	}	
+	
 	/**
 	 * Blocking call directly returning the data or throwing an
 	 * exception upon timeout, interruption or failure.
@@ -127,7 +137,13 @@ public class RemoteServer extends Server {
 	 * @throws RSBException
 	 */
 	public <U, T> U call(final String name, final T data) throws RSBException {
-		Future<U> future = callAsync(name, data);
+		return callInternal(name, data,false);
+	}
+	
+	// internal methods are to prevent recursive calls from call(string, event) to call(string, event), which
+	// are bound to occur as the originally intended target (the template) method is not called in that situation.
+	private <U, T> U callInternal(final String name, final T data, boolean isEvent) throws RSBException {
+		Future<U> future = callAsyncInternal(name, data,isEvent);
 		U result;
 		try {
 			result = future.get((long) timeout,TimeUnit.SECONDS);
@@ -144,10 +160,15 @@ public class RemoteServer extends Server {
 		return result;
 	}
 
-	protected <U, T> RemoteMethod<U, T> addMethod(String name)
+	protected <U, T> AbstractRemoteMethod<?, ?> addMethod(String name, boolean isEvent)
 			throws InitializeException {
-		LOG.info("Registering new method " + name);
-		RemoteMethod<U, T> method = new RemoteMethod<U, T>(this, name);
+		LOG.fine("Registering new method " + name);
+		AbstractRemoteMethod<?, ?> method;
+		if (isEvent) {
+			method = new RemoteEventMethod(this, name);
+		} else {
+			method = new RemoteDataMethod<T, U>(this, name);
+		}
 		methods.put(name, method);
 
 		if (this.isActive()) {

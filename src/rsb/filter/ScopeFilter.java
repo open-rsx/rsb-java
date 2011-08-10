@@ -15,7 +15,7 @@ import rsb.Scope;
  */
 public class ScopeFilter extends AbstractFilter {
 
-	protected final static Logger log = Logger.getLogger(ScopeFilter.class.getName());
+	protected final static Logger LOG = Logger.getLogger(ScopeFilter.class.getName());
 
 	private Scope scope;
 
@@ -31,7 +31,7 @@ public class ScopeFilter extends AbstractFilter {
 		observer.notify(this, action);
 	}
 
-	public void setScope(Scope scope) {
+	public void setScope(final Scope scope) {
 		this.scope = scope;
 	}
 
@@ -39,41 +39,42 @@ public class ScopeFilter extends AbstractFilter {
 		return this.scope;
 	}
 
-	public void skip(EventId eventId) {
-		log.info("Event with ID "
+	@Override	
+	public void skip(final EventId eventId) {
+		LOG.info("Event with ID "
 				+ eventId
 				+ " will not be matched by ScopeFilter as this was already done by network layer!");
 		super.skip(eventId);
 	}
 
 	@Override
-	public boolean equals(Object that) {
+	public boolean equals(final Object that) {
 		return that instanceof ScopeFilter
 				&& scope.equals(((ScopeFilter) that).getScope());
 	}
 
 	@Override
-	public Event transform(final Event e) {
-		log.fine("ScopeFilter with scope " + scope
+	public Event transform(final Event event) {
+		LOG.fine("ScopeFilter with scope " + scope
 				+ " received event to transform.");
-		if (e.getScope() != null) {
-			log.fine("  Event's receiver Scope = " + e.getScope());
+		if (event.getScope() != null) {
+			LOG.fine("  Event's receiver Scope = " + event.getScope());
 		}
 		boolean matches = false;
-		if (mustSkip(e.getId())) {
-			log.fine("event with ID " + e.getId() + " whitelisted in ScopeFilter!");
+		if (mustSkip(event.getId())) {
+			LOG.fine("event with ID " + event.getId() + " whitelisted in ScopeFilter!");
 			matches = true;
-			skipped(e.getId());
+			skipped(event.getId());
 		} else {
-		    matches = (scope.equals(e.getScope())
-			       || scope.isSuperScopeOf(e.getScope()));
+		    matches = (scope.equals(event.getScope())
+			       || scope.isSuperScopeOf(event.getScope()));
 		}
 		if (matches) {
-			log.fine("ScopeFilter matched successfully!");
+			LOG.fine("ScopeFilter matched successfully!");
 		} else {
-			log.fine("ScopeFilter rejected event!");
+			LOG.fine("ScopeFilter rejected event!");
 		}
-		return matches ? e : null;
+		return matches ? event : null;
 	}
 
 }

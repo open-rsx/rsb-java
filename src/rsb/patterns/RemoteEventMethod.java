@@ -20,28 +20,27 @@
  */
 package rsb.patterns;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import rsb.Event;
+import rsb.RSBException;
 
 /**
  * @author swrede
  *
  */
-public class ReplyEventCallback implements EventCallback {
+public class RemoteEventMethod extends AbstractRemoteMethod<Event, Event> {
 
-	public AtomicInteger counter = new AtomicInteger();	
+	public RemoteEventMethod(Server server, String name) {
+		super(server, name);
+	}
+
+	@Override	
+	public Future<Event> call(final Event event) throws RSBException {
+		return sendRequest(event);
+	}	
 	
-	/* (non-Javadoc)
-	 * @see rsb.patterns.EventCallback#invoke(rsb.Event)
-	 */
 	@Override
-	public Event invoke(Event request) throws Throwable {
-		Event reply = new Event(String.class);
-		reply.setData(request.getData());
-		reply.getMetaData().setUserInfo("replyTo", request.getId().getAsUUID().toString());
-		counter.incrementAndGet();
-		return reply;
+	protected void completeRequest(Future<Event> request, Event event) {
+		request.complete(event);	
 	}
 
 }

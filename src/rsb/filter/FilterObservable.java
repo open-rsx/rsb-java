@@ -30,22 +30,24 @@ import java.util.logging.Logger;
  */
 public class FilterObservable {
 	
-	final static Logger log = Logger.getLogger(FilterObservable.class.getName());
+	private final static Logger LOG = Logger.getLogger(FilterObservable.class.getName());
 
 	List<FilterObserver> observers = new ArrayList<FilterObserver>();
 	
-	public void addObserver(FilterObserver f) {
-		observers.add(f);
+	public void addObserver(final FilterObserver observer) {
+		LOG.finest("Added observer" + observer);
+		observers.add(observer);
 	}
 	
-	public void removeObserver(FilterObserver f) {
-		observers.remove(f);
+	public void removeObserver(final FilterObserver observer) {
+		LOG.finest("Removed observer" + observer);
+		observers.remove(observer);
 	}
 	
-	public void notifyObservers(Filter f, FilterAction a) {
-		for (FilterObserver o : observers) {
+	public void notifyObservers(final Filter filter, final FilterAction action) {
+		for (FilterObserver observer : observers) {
 			// perform double dispatch
-			f.dispachToObserver(o, a);
+			filter.dispachToObserver(observer, action);
 		}
 	}
 	

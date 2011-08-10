@@ -12,7 +12,6 @@ public abstract class AbstractPort extends AbstractFilterObserver implements
 		Port {
 
 	@Override
-	public void push(Event e) throws ConversionException {
-	}
+	public abstract void push(Event event) throws ConversionException;
 
 }

@@ -39,10 +39,10 @@ import rsb.transport.TransportFactory;
  */
 public class InformerTest {
 
-	private final Scope defaultScope = new Scope("/informer/example");
-	private Informer<String> informer;
+	transient private final Scope defaultScope = new Scope("/informer/example");
+	transient private Informer<String> informer;
 	@SuppressWarnings("unused")
-	private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository.getDefaultConverterRepository();
+	final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository.getDefaultConverterRepository();
 	
 	@Before
 	public void setUp() throws Throwable {
@@ -62,7 +62,7 @@ public class InformerTest {
 	 */
 	@Test
 	public void testInformerString() {
-		assertNotNull(informer);
+		assertNotNull("Informer is null",informer);
 		assertEquals(informer.getScope(), defaultScope);
 	}
 
@@ -74,10 +74,10 @@ public class InformerTest {
 	@Test
 	public void testInformerStringTransportFactory() {
 		final Scope scope = new Scope("/x");
-		Informer<String> p = new Informer<String>(scope,
+		final Informer<String> p = new Informer<String>(scope,
 				TransportFactory.getInstance());
-		assertNotNull(p);
-		assertEquals(p.getScope(), scope);
+		assertNotNull("Informer is null",p);
+		assertEquals("Wrong scope",p.getScope(), scope);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class InformerTest {
 		final Scope scope = new Scope("/x");
 		final String type = "XMLString";
 		Informer<String> p = new Informer<String>(scope, type.getClass());
-		assertNotNull(p);
+		assertNotNull("Informer object is null",p);
 		assertEquals(p.getScope(), scope);
 		assertEquals(p.getTypeInfo(), type.getClass());
 	}
