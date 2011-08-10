@@ -1,6 +1,7 @@
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
+import rsb.Event;
 import rsb.Factory;
 import rsb.RSBException;
 import rsb.Scope;
@@ -50,8 +51,10 @@ public class ClientExample {
 		LOG.info("Calling remote server under scope /example/server:");
 		LOG.info("Data signature (replyData) synchronously: " + server.call("replyData", "request"));
 		LOG.info("Data signature (replyData) with future: " + server.callAsync("replyData", "request").get());
-		LOG.info("Event signature (replyEvent) synchronously: " + server.call("replyEvent", "request"));
-		LOG.info("Event signature (replyEvent) with future: " + server.callAsync("replyEvent", "request").get());		
+		Event event = new Event(String.class);
+		event.setData("request");
+		LOG.info("Event signature (replyEvent) synchronously: " + server.call("replyEvent", event));
+		LOG.info("Event signature (replyEvent) with future: " + server.callAsync("replyEvent", event).get());		
 		
 		server.deactivate();
 	}
