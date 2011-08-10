@@ -198,11 +198,20 @@ public class InformerTest {
 	public void testSendEventWrongScope() throws Throwable {
 		Event e = new Event();
 		e.setType(informerString.getTypeInfo());
-		e.setScope(defaultScope.concat(new Scope("/blubb")));
+		e.setScope(new Scope("/blubb"));
 		e.setData("foo");
 		informerString.send(e);
 	}
 
+	@Test
+	public void testSendEventSubScope() throws Throwable {
+		Event e = new Event();
+		e.setType(informerString.getTypeInfo());
+		e.setScope(defaultScope.concat(new Scope("/blubb")));
+		e.setData("foo");
+		informerString.send(e);
+	}	
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendEventNullType() throws Throwable {
 		Event e = new Event();
