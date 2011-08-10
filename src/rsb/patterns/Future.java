@@ -1,3 +1,23 @@
+/**
+ * ============================================================
+ *
+ * This file is part of the RSBJava project
+ *
+ * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation;
+ * either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ============================================================
+ */
 package rsb.patterns;
 
 import java.util.concurrent.CancellationException;
@@ -6,18 +26,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This class provides an implementation 
+ * This class provides an implementation
  * of Java's Future interface for use
- * with request invocations. 
- * 
+ * with request invocations.
+ *
  * @author jschaefe
  * @author swrede
- * 
+ *
  * @see java.util.concurrent.Future
  */
 
 public class Future<T> implements java.util.concurrent.Future<T> {
-	
+
 	protected Throwable exception = null;
 	protected T result = null;
 	protected boolean cancelled = false;
@@ -35,7 +55,7 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 	/**
 	 * This method makes the waiting thread return with a CancellationException
 	 * but does not cancel the actual operation the thread was waiting for.
-	 * @param mayInterruptIfRunning 
+	 * @param mayInterruptIfRunning
 	 * @return false
 	 */
 	public boolean cancel(boolean mayInterrupt) {
@@ -71,12 +91,12 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 	/**
 	 * Gets the results passed to this callback object. This method blocks until
 	 * either the results are available, or the timeout is reached.
-	 * 
+	 *
 	 * @param timeout number of TimeUnits to wait for results to become
 	 * available
 	 * @param unit TimeUnit to use
 	 * @return the value resulting from the operation
-	 * 
+	 *
 	 * @see Future#get(long, TimeUnit)
 	 * @throws InterruptedException if the calling thread is interrupted while
 	 * waiting

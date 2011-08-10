@@ -1,3 +1,23 @@
+/**
+ * ============================================================
+ *
+ * This file is part of the RSBJava project
+ *
+ * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation;
+ * either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ============================================================
+ */
 package rsb.patterns;
 
 import java.lang.ref.WeakReference;
@@ -19,9 +39,9 @@ import rsb.filter.MethodFilter;
  *
  */
 public class RemoteMethod<U, T> extends Method implements Handler {
-	
+
 	private static final Logger LOG = Logger.getLogger(RemoteMethod.class.getName());
-	
+
 	protected class CollectorThread implements Runnable {
 		public void run() {
 			do {
@@ -35,14 +55,14 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 			} while (isActive());
 		}
 	}
-	
-	// assuming usually eight threads will write simultaneously to the map 
+
+	// assuming usually eight threads will write simultaneously to the map
 	private final Map<String, WeakReference<Future<U>>> pendingRequests = new ConcurrentHashMap<String, WeakReference<Future<U>>>(16,0.75f,8);
-	
+
 	/**
 	 * Create a new RemoteMethod object that represent the remote method named @a
 	 * name provided by @a server.
-	 * 
+	 *
 	 * @param server
 	 *            The remote server providing the method.
 	 * @param name
@@ -51,7 +71,7 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 	public RemoteMethod(final Server server, final String name) {
 		super(server, name);
 		listener = factory.createListener(REPLY_SCOPE);
-		informer = factory.createInformer(REQUEST_SCOPE);		
+		informer = factory.createInformer(REQUEST_SCOPE);
 		listener.addFilter(new MethodFilter("REPLY"));
 		listener.addHandler(this, true);
 	}
@@ -60,16 +80,16 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 		System.out.println("Called!");
 		return null;
 	}
-	
+
 	public Future<Event> callAsync(final Event event) {
 		return null;
 	}
-	
+
 	public Future<U> callAsync(final T data) throws RSBException {
 		// build event and send it over the informer as request
 		// return reply as direct event, hence set some metadata here
 		final Event request = new Event(data.getClass());
-		request.setScope(REQUEST_SCOPE);		
+		request.setScope(REQUEST_SCOPE);
 		request.setMethod("REQUEST");
 		request.setData(data);
 
@@ -84,7 +104,7 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 		}
 		return future;
 	}
-	
+
 //	// Blocking call
 //	public U call(final T data) throws RSBException {
 //		// wait on result in get or return exception
@@ -117,7 +137,7 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 			LOG.warning("Received reply event without rsb:reply userinfo item. Skipping it.");
 			return;
 		}
-		
+
 		// check for reply id in list of pending calls
 		Future<U> request = null;
 		synchronized (this) {
@@ -126,7 +146,7 @@ public class RemoteMethod<U, T> extends Method implements Handler {
 				if (request==null) {
 					// the future was already garbage collected locally
 					LOG.info("Can not deliver reply: Future reference already garbage collected in user code!");
-				} 				
+				}
 				pendingRequests.remove(replyId);
 			}
 		}

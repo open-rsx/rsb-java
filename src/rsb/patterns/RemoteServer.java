@@ -1,3 +1,23 @@
+/**
+ * ============================================================
+ *
+ * This file is part of the RSBJava project
+ *
+ * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation;
+ * either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ============================================================
+ */
 package rsb.patterns;
 
 import java.util.concurrent.ExecutionException;
@@ -18,18 +38,18 @@ import rsb.transport.TransportFactory;
  *
  * @author jmoringe
  * @author swrede
- * 
+ *
  */
 public class RemoteServer extends Server {
 
 	private static final Logger LOG = Logger.getLogger(RemoteServer.class.getName());
-	
+
     private double timeout;
 
 	/**
 	 * Create a new RemoteServer object that provides its methods under the
 	 * scope @a scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The common super-scope under which the methods of the remote
 	 *            created server are provided.
@@ -45,7 +65,7 @@ public class RemoteServer extends Server {
 	/**
 	 * Create a new RemoteServer object that provides its methods under the
 	 * scope @a scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The common super-scope under which the methods of the remote
 	 *            created server are provided.
@@ -54,23 +74,23 @@ public class RemoteServer extends Server {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = 25;
 	}
-	
+
 	public double getTimeout() {
 		return timeout;
 	}
 
 	public Event call(final String name, final Event event) {
 		return null;
-	}	
-	
+	}
+
 	public Future<Event> callAsync(final String name, final Event event) {
 		return null;
-	}	
-	
+	}
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * Async call returning an rsb.patterns.Future object
-	 * 
+	 *
 	 * @param name
 	 * @param data
 	 * @return
@@ -96,11 +116,11 @@ public class RemoteServer extends Server {
 		}
 		return method.callAsync(data);
 	}
-	
+
 	/**
-	 * Blocking call directly returning the data or throwing an 
+	 * Blocking call directly returning the data or throwing an
 	 * exception upon timeout, interruption or failure.
-	 * 
+	 *
 	 * @param name
 	 * @param data
 	 * @return
@@ -129,12 +149,12 @@ public class RemoteServer extends Server {
 		LOG.info("Registering new method " + name);
 		RemoteMethod<U, T> method = new RemoteMethod<U, T>(this, name);
 		methods.put(name, method);
-		
+
 		if (this.isActive()) {
 			method.activate();
 		}
-		
+
 		return method;
-	}	
-	
+	}
+
 };

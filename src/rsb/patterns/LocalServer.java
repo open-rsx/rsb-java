@@ -1,3 +1,23 @@
+/**
+ * ============================================================
+ *
+ * This file is part of the RSBJava project
+ *
+ * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation;
+ * either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ============================================================
+ */
 package rsb.patterns;
 
 import java.util.logging.Logger;
@@ -18,7 +38,7 @@ import rsb.transport.TransportFactory;
 public class LocalServer extends Server {
 
 	private final static Logger LOG = Logger.getLogger(LocalServer.class.getName());
-	
+
 	/**
      * Create a new LocalServer object that exposes its methods under
      * the scope @a scope.
@@ -37,13 +57,13 @@ public class LocalServer extends Server {
 		LocalMethod<U, T> method = new LocalMethod<U, T>(this, name,callback);
 		addAndActivate(name, method);
 	}
-	
-	
+
+
 	public void addMethod(String name, EventCallback callback) throws InitializeException {
 		LOG.fine("Registering new event method " + name + " with signature object: " + callback);
 		LocalMethod<Event, Event> method = new LocalMethod<Event, Event>(this, name, callback);
 		addAndActivate(name, method);
-	}	
+	}
 
 	/**
 	 * @param name
@@ -56,12 +76,12 @@ public class LocalServer extends Server {
 			LOG.warning("Method with name " + name + " already registered. Overwriting it!");
 		}
 		methods.put(name, method);
-		
+
 		if (this.isActive()) {
 			method.activate();
 		}
 	}
-	
+
 	public synchronized void waitForShutdown() {
 		// Blocks calling thread as long as this Server instance
 		// is in activated state

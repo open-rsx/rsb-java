@@ -1,3 +1,23 @@
+/**
+ * ============================================================
+ *
+ * This file is part of the RSBJava project
+ *
+ * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation;
+ * either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * ============================================================
+ */
 package rsb.patterns;
 
 import java.util.logging.Logger;
@@ -16,22 +36,22 @@ import rsb.filter.MethodFilter;
  *
  * @author jmoringe
  * @author swrede
- * 
+ *
  * @param <T>	return type of supplied handler method
  * @param <U>	parameter object type of supplied handler method
- * 
+ *
  */
 class LocalMethod<T, U> extends Method implements Handler  {
-	
+
 	private final static Logger LOG = Logger.getLogger(LocalMethod.class.getName());
 
-	DataCallback<T, U> callback = null;	
+	DataCallback<T, U> callback = null;
 	EventCallback eventCallback = null;
-	
+
 	/**
 	 * Create a new LocalMethod object that is exposed under the name @a name by @a
 	 * server.
-	 * 
+	 *
 	 * @param server
 	 *            The local server object to which the method will be
 	 *            associated.
@@ -41,26 +61,26 @@ class LocalMethod<T, U> extends Method implements Handler  {
 	public LocalMethod(Server server, String name, DataCallback<T, U> callback) {
 		super(server, name);
 		listener = factory.createListener(REQUEST_SCOPE);
-		informer = factory.createInformer(REPLY_SCOPE);		
+		informer = factory.createInformer(REPLY_SCOPE);
 		this.callback = callback;
 		listener.addFilter(new MethodFilter("REQUEST"));
-		listener.addHandler(this, true);		
+		listener.addHandler(this, true);
 	}
 
 	public LocalMethod(Server server, String name, EventCallback callback) {
 		super(server, name);
 		listener = factory.createListener(REQUEST_SCOPE);
-		informer = factory.createInformer(REPLY_SCOPE);		
+		informer = factory.createInformer(REPLY_SCOPE);
 		this.eventCallback = callback;
 		listener.addFilter(new MethodFilter("REQUEST"));
-		listener.addHandler(this, true);		
-	}	
+		listener.addHandler(this, true);
+	}
 
 	@Override
 	public void internalNotify(Event event) {
 		// return reply as direct event, hence set some metadata here
-		Event reply = new Event();	
-		
+		Event reply = new Event();
+
 		// invoke correct callback
 		try {
 			if (callback!=null) {
@@ -74,20 +94,20 @@ class LocalMethod<T, U> extends Method implements Handler  {
 			// return error information
 			reply.setType(String.class);
 			reply.getMetaData().setUserInfo("rsb:error?", "1");
-			reply.setData(error);			
+			reply.setData(error);
 		}
-		
+
 		reply.setMethod("REPLY");
 		reply.getMetaData().setUserInfo("rsb:reply",event.getId().getAsUUID().toString());
-		reply.setScope(REPLY_SCOPE);			
-		
+		reply.setScope(REPLY_SCOPE);
+
 		// send reply via method informer
 		try {
 			getInformer().send(reply);
 		} catch (RSBException exception) {
 			// TODO call local error handler
 			LOG.severe("Exception while sending reply in server method: " + REPLY_SCOPE + " Exception message: " + exception.getMessage());
-		}		
+		}
 	}
 
 	/**
