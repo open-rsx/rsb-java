@@ -93,6 +93,7 @@ public class Informer<T extends Object> extends Participant {
 
 		protected Event send(final Event event) throws RSBException {
 			
+			// TODO add check on sub-scopes
 			if (!getScope().equals(event.getScope())) {
 				throw new IllegalArgumentException(
 						"Event scope must not be null.");
