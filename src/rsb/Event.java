@@ -103,8 +103,9 @@ public class Event {
 	
 
 	public void setSenderId(final ParticipantId senderId) {
-		// TODO update eventId
 		this.senderId  = senderId;
+		// invalidates EventId
+		this.id = null;
 	}	
 	
 	public ParticipantId getSenderId() {
