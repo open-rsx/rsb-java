@@ -4,7 +4,7 @@
         Build file for Java Bindings of Robotics Service Bus Middleware
     </description>
 
-	<property name="version" value="0.4.0" />
+	<property name="version" value="0.5.0" />
 	<property name="jarname" value="RSBJava-${version}.jar" />
 
 	<!-- set global properties for this build -->
@@ -156,7 +156,7 @@
 				<fileset dir="test">
 					<include name="**/*Test*.java" />
 				</fileset>
-			</batchtest> 		</junit>
+			</batchtest>		</junit>
 	</target>
 
 	<target name="coverage" depends="test-compile" description="JUnit tests">
@@ -217,7 +217,7 @@
 			<ruleset>braces</ruleset>
 			<ruleset>clone</ruleset>
 			<ruleset>codesize</ruleset>
-			<!-- <ruleset>controversial</ruleset> --> 
+			<!-- <ruleset>controversial</ruleset> -->
 			<ruleset>coupling</ruleset>
 			<ruleset>design</ruleset>
 			<ruleset>finalizers</ruleset>
@@ -230,7 +230,7 @@
 			<ruleset>typeresolution</ruleset>
 			<ruleset>unusedcode</ruleset>
 			<formatter type="xml" toFile="pmd.xml"/>
-			<formatter type="html" toFile="pmd_report.html" toConsole="true" /> 
+			<formatter type="html" toFile="pmd_report.html" toConsole="true" />
 			<fileset dir="./src">
 				<include name="**/*.java" />
 			</fileset>
