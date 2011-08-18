@@ -123,7 +123,7 @@ public class RemoteServer extends Server {
 	}
 
 	public Event call(final String name, final Event event) throws RSBException {
-		Event result = callInternal(name,event,true);
+		Event result = callInternal(name, event, true);
 		return result;
 	}	
 	
@@ -137,7 +137,7 @@ public class RemoteServer extends Server {
 	 * @throws RSBException
 	 */
 	public <U, T> U call(final String name, final T data) throws RSBException {
-		return callInternal(name, data,false);
+		return this.<U, T>callInternal(name, data, false);
 	}
 	
 	// internal methods are to prevent recursive calls from call(string, event) to call(string, event), which
