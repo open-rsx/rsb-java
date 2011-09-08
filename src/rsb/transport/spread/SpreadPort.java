@@ -108,7 +108,8 @@ public class SpreadPort extends AbstractPort {
 	 */
 
 	private SpreadWrapper spread = null;
-	// TODO instantiate matching strategy, initially in the constructor, later per configuration
+	// TODO instantiate matching strategy, initially in the constructor, later
+	// per configuration
 	private ConverterSelectionStrategy<ByteBuffer> inStrategy;
 	private ConverterSelectionStrategy<ByteBuffer> outStrategy;
 
@@ -119,7 +120,9 @@ public class SpreadPort extends AbstractPort {
 	 * @param strategy
 	 * @param outStrategy
 	 */
-	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler, ConverterSelectionStrategy<ByteBuffer> inStrategy, ConverterSelectionStrategy<ByteBuffer> outStrategy) {
+	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler,
+			ConverterSelectionStrategy<ByteBuffer> inStrategy,
+			ConverterSelectionStrategy<ByteBuffer> outStrategy) {
 		spread = sw;
 		this.eventHandler = eventHandler;
 		this.inStrategy = inStrategy;
@@ -155,7 +158,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -182,7 +185,7 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 *
+	 * 
 	 * @param scope
 	 *            scope to create group name
 	 * @return truncated md5 hash to fit into spread group
@@ -245,15 +248,21 @@ public class SpreadPort extends AbstractPort {
 					.newBuilder();
 
 			// notification metadata
-			notificationBuilder.setSequenceNumber((int) e.getSequenceNumber());
-			// System.out.println("Sequence number is:" + e.getSequenceNumber());
+			rsb.protocol.Protocol.EventId.Builder eventIdBuilder = rsb.protocol.Protocol.EventId
+					.newBuilder();
+			eventIdBuilder.setSenderId(ByteString.copyFrom(e.getSenderId()
+					.toByteArray()));
+			eventIdBuilder.setSequenceNumber((int) e.getSequenceNumber());
+			notificationBuilder.setEventId(eventIdBuilder);
+			// System.out.println("Sequence number is:" +
+			// e.getSequenceNumber());
 			notificationBuilder.setWireSchema(ByteString
 					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
 					.toString()));
-			notificationBuilder.setSenderId(ByteString.copyFrom(e.getSenderId().toByteArray()));
-			if (e.getMethod()!=null) {
-				notificationBuilder.setMethod(ByteString.copyFromUtf8(e.getMethod()));
+			if (e.getMethod() != null) {
+				notificationBuilder.setMethod(ByteString.copyFromUtf8(e
+						.getMethod()));
 			}
 
 			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
@@ -262,7 +271,8 @@ public class SpreadPort extends AbstractPort {
 			for (String key : e.getMetaData().userInfoKeys()) {
 				UserInfo.Builder infoBuilder = UserInfo.newBuilder();
 				infoBuilder.setKey(ByteString.copyFromUtf8(key));
-				infoBuilder.setValue(ByteString.copyFromUtf8(e.getMetaData().getUserInfo(key)));
+				infoBuilder.setValue(ByteString.copyFromUtf8(e.getMetaData()
+						.getUserInfo(key)));
 				metaDataBuilder.addUserInfos(infoBuilder.build());
 			}
 			for (String key : e.getMetaData().userTimeKeys()) {

@@ -136,8 +136,8 @@ class ReceiverTask extends Thread {
 				log.fine("decoding notification");
 				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
-				e.setSenderId(new ParticipantId(n.getSenderId().toByteArray()));
-				e.setSequenceNumber(n.getSequenceNumber());
+				e.setSenderId(new ParticipantId(n.getEventId().getSenderId().toByteArray()));
+				e.setSequenceNumber(n.getEventId().getSequenceNumber());
 				if (n.hasMethod()) {
 					e.setMethod(n.getMethod().toStringUtf8());
 				}
