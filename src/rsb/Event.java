@@ -20,9 +20,22 @@
  */
 package rsb;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of
  * metadata and the actual data to publish / subscribe to as payload.
+ * 
+ * Events are often caused by other events, which e.g. means that their
+ * contained payload was calculated on the payload of one or more other events.
+ * 
+ * To express these relations each event contains a set of EventIds that express
+ * the direct causes of the event. This means, transitive event causes are not
+ * modeled.
+ * 
+ * Cause handling is inspired by the ideas proposed in: David Luckham, The Power
+ * of Events, Addison-Wessley, 2007
  * 
  * @author swrede
  */
@@ -33,11 +46,14 @@ public class Event {
 	private EventId id = null;
 	private Class<?> type;
 	private Scope scope;
-	private long sequenceNumber;
 	private String method;
 	private Object data;
 	private final MetaData metaData = new MetaData();
-	private ParticipantId senderId = null;
+
+	/**
+	 * The causes of one event as a set of causing IDs.
+	 */
+	private Set<EventId> causes = new HashSet<EventId>();
 
 	// TODO move event creation into factory?
 
@@ -98,14 +114,40 @@ public class Event {
 		return scope;
 	}
 
-	public void setSenderId(final ParticipantId senderId) {
-		this.senderId = senderId;
-		// invalidates EventId
-		this.id = null;
+	/**
+	 * Sets all information necessary to generate the {@link EventId} of this
+	 * event. After this call {@link #getId()} is able to return an id.
+	 * 
+	 * @param senderId
+	 *            id of the sending participant for this event
+	 * @param sequenceNumber
+	 *            sequence number within the specified participant
+	 */
+	public void setId(final ParticipantId senderId,
+			final long sequenceNumber) {
+		id = new EventId(senderId, sequenceNumber);
+	}
+	
+	/**
+	 * Sets the id of this event. Afterwards {@link #getId()} can return an id.
+	 * 
+	 * @param id new id to set
+	 */
+	public void setId(final EventId id) {
+		this.id = id; 
 	}
 
+	/**
+	 * Returns the id of the sending participant for this event.
+	 * 
+	 * @return sending participant id
+	 * @throws IllegalStateException
+	 *             the id is not yet defined because the event was not sent by
+	 *             an {@link Informer} so far
+	 * @deprecated use {@link #getId()} instead
+	 */
 	public ParticipantId getSenderId() {
-		return senderId;
+		return getId().getParticipantId();
 	}
 
 	/**
@@ -116,20 +158,24 @@ public class Event {
 		this.scope = scope;
 	}
 
+	/**
+	 * Returns the sequence number of the informer that sent the event.
+	 * 
+	 * @return unique number within one informer that sends an event
+	 * @throws IllegalStateException
+	 *             the id is not yet defined because the event was not sent by
+	 *             an {@link Informer} so far
+	 * @deprecated use {@link #getId()} instead
+	 */
 	public long getSequenceNumber() {
-		return sequenceNumber;
-	}
-
-	public void setSequenceNumber(final long sequenceNumber) {
-		this.sequenceNumber = sequenceNumber;
+		return getId().getSequenceNumber();
 	}
 
 	public EventId getId() {
 		if (id == null) {
-			if (senderId == null) {
-				Thread.dumpStack();
-			}
-			id = new EventId(senderId, sequenceNumber);
+			throw new IllegalStateException(
+					"The id of this event is not defined yet, "
+							+ "because it was not sent by an informer so far.");
 		}
 		return id;
 	}
@@ -160,8 +206,8 @@ public class Event {
 	}
 
 	public String toString() {
-		return "Event[id=" + getId() + ", scope=" + scope + ", seqnum="
-				+ sequenceNumber + ", type =" + type + ", metaData=" + metaData
+		return "Event[id=" + getId() + ", scope=" + scope + ", type =" + type
+				+ ", metaData=" + metaData + ", causes = " + causes.toString()
 				+ "]";
 	}
 
@@ -180,11 +226,9 @@ public class Event {
 				+ ((metaData == null) ? 0 : metaData.hashCode());
 		result = prime * result + ((method == null) ? 0 : method.hashCode());
 		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
-		result = prime * result
-				+ ((senderId == null) ? 0 : senderId.hashCode());
-		result = prime * result
-				+ (int) (sequenceNumber ^ (sequenceNumber >>> 32));
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + causes.hashCode();
 		return result;
 	}
 
@@ -240,16 +284,6 @@ public class Event {
 		} else if (!scope.equals(other.scope)) {
 			return false;
 		}
-		if (senderId == null) {
-			if (other.senderId != null) {
-				return false;
-			}
-		} else if (!senderId.equals(other.senderId)) {
-			return false;
-		}
-		if (sequenceNumber != other.sequenceNumber) {
-			return false;
-		}
 		if (type == null) {
 			if (other.type != null) {
 				return false;
@@ -257,7 +291,59 @@ public class Event {
 		} else if (!type.equals(other.type)) {
 			return false;
 		}
+		if (!causes.equals(other.causes)) {
+			return false;
+		}
 		return true;
+	}
+
+	/**
+	 * Adds the id of one event to the causes of this event. If the set of
+	 * causing events already contained the given id, this call has no effect.
+	 * 
+	 * @param id
+	 *            the id of a causing event
+	 * @return <code>true</code> if the causes was added, <code>false</code> if
+	 *         it already existed
+	 */
+	public boolean addCause(final EventId id) {
+		return causes.add(id);
+	}
+
+	/**
+	 * Removes a causing event from the set of causes for this event. If the id
+	 * was not contained in this set, the call has no effect.
+	 * 
+	 * @param id
+	 *            of the causing event
+	 * @return <code>true</code> if an event with this id was removed from the
+	 *         causes, else <code>false</code>
+	 */
+	public boolean removeCause(final EventId id) {
+		return causes.remove(id);
+	}
+
+	/**
+	 * Tells whether the id of one event is already marked as a cause of this
+	 * event.
+	 * 
+	 * @param id
+	 *            id of the event to test causality for
+	 * @return <code>true</code> if id is marked as a cause for this event, else
+	 *         <code>false</code>
+	 */
+	public boolean isCause(final EventId id) {
+		return causes.contains(id);
+	}
+
+	/**
+	 * Returns all causing events marked so far.
+	 * 
+	 * @return set of causing event ids. Modifications to this set do not affect
+	 *         this event as it is a copy.
+	 */
+	public Set<EventId> getCauses() {
+		return new HashSet<EventId>(causes);
 	}
 
 }

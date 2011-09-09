@@ -116,10 +116,9 @@ public class SpreadPortTest {
 
 		// send events
 		Event event = new Event(String.class);
-		event.setSequenceNumber(0);
 		event.setData("a test string " + numEvents);
 		event.setScope(sendScope);
-		event.setSenderId(new ParticipantId());
+		event.setId(new ParticipantId(), 42);
 
 		outPort.push(event);
 
@@ -151,11 +150,10 @@ public class SpreadPortTest {
 	public void longGroupNames() throws Throwable {
 
 		Event event = new Event(String.class);
-		event.setSequenceNumber(0);
 		event.setData("a test string");
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
-		event.setSenderId(new ParticipantId());
+		event.setId(new ParticipantId(), 452334);
 		
 		outPort.push(event);
 
@@ -169,7 +167,7 @@ public class SpreadPortTest {
 		Event event = new Event(String.class);
 		event.setData("a test string");
 		event.setScope(scope);
-		event.setSenderId(new ParticipantId());
+		event.setId(new ParticipantId(), 634);
 
 		// create a receiver to wait for event
 		final List<Event> receivedEvents = new ArrayList<Event>();
@@ -184,7 +182,8 @@ public class SpreadPortTest {
 				}
 			}
 
-		},getConverterStrategy("utf-8-string"),getConverterStrategy(String.class.getName()));
+		}, getConverterStrategy("utf-8-string"),
+				getConverterStrategy(String.class.getName()));
 		inPort.activate();
 		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 

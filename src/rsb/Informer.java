@@ -115,8 +115,7 @@ public class Informer<T extends Object> extends Participant {
 			
 			// set participant metadata
 			// increment atomic counter
-			event.setSequenceNumber(sequenceNumber.incrementAndGet());
-			event.setSenderId(getId());
+			event.setId(getId(), sequenceNumber.incrementAndGet());
 			
 			// send to transport(s)
 			getRouter().publishSync(event);

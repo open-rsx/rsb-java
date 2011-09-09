@@ -14,6 +14,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import rsb.Event;
+import rsb.EventId;
 import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
@@ -54,7 +55,8 @@ public class SpreadPortRoundtripTest {
 		inStrategy.addConverter("utf-8-string", new StringConverter());
 		UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
 		outStrategy.addConverter(String.class.getName(), new StringConverter());
-		SpreadPort outPort = new SpreadPort(outWrapper, null,inStrategy,outStrategy);
+		SpreadPort outPort = new SpreadPort(outWrapper, null, inStrategy,
+				outStrategy);
 		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
 				Ordering.ORDERED, Reliability.RELIABLE));
 
@@ -70,7 +72,7 @@ public class SpreadPortRoundtripTest {
 				}
 			}
 
-		},inStrategy,outStrategy);
+		}, inStrategy, outStrategy);
 
 		inPort.activate();
 		outPort.activate();
@@ -84,14 +86,15 @@ public class SpreadPortRoundtripTest {
 		}
 
 		Event event = new Event(String.class);
-		event.setSequenceNumber(0);
 		event.setData(builder.toString());
 		event.setScope(scope);
-		event.setSenderId(new ParticipantId());
+		event.setId(new ParticipantId(), 42);
 		event.getMetaData().setUserInfo("foo", "a long string");
 		event.getMetaData().setUserInfo("barbar", "a long string again");
 		event.getMetaData().setUserTime("asdasd", 324234);
 		event.getMetaData().setUserTime("xxx", 42);
+		event.addCause(new EventId(new ParticipantId(), 23434));
+		event.addCause(new EventId(new ParticipantId(), 42));
 
 		outPort.push(event);
 

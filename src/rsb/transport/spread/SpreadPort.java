@@ -40,6 +40,7 @@ import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
+import rsb.protocol.Protocol.EventId;
 import rsb.protocol.Protocol.MetaData;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
@@ -217,7 +218,16 @@ public class SpreadPort extends AbstractPort {
 		}
 
 	}
-
+	
+	private EventId.Builder createEventIdBuilder(final rsb.EventId id) {
+		rsb.protocol.Protocol.EventId.Builder eventIdBuilder = rsb.protocol.Protocol.EventId
+				.newBuilder();
+		eventIdBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
+				.toByteArray()));
+		eventIdBuilder.setSequenceNumber((int) id.getSequenceNumber());
+		return eventIdBuilder;
+	}
+	
 	@Override
 	public void push(Event e) throws ConversionException {
 		Converter<ByteBuffer> converter = null;
@@ -248,14 +258,7 @@ public class SpreadPort extends AbstractPort {
 					.newBuilder();
 
 			// notification metadata
-			rsb.protocol.Protocol.EventId.Builder eventIdBuilder = rsb.protocol.Protocol.EventId
-					.newBuilder();
-			eventIdBuilder.setSenderId(ByteString.copyFrom(e.getSenderId()
-					.toByteArray()));
-			eventIdBuilder.setSequenceNumber((int) e.getSequenceNumber());
-			notificationBuilder.setEventId(eventIdBuilder);
-			// System.out.println("Sequence number is:" +
-			// e.getSequenceNumber());
+			notificationBuilder.setEventId(createEventIdBuilder(e.getId()));
 			notificationBuilder.setWireSchema(ByteString
 					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
 			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
@@ -282,6 +285,9 @@ public class SpreadPort extends AbstractPort {
 				metaDataBuilder.addUserTimes(timeBuilder.build());
 			}
 			notificationBuilder.setMetaData(metaDataBuilder.build());
+			for (rsb.EventId cause : e.getCauses()) {
+				notificationBuilder.addCauses(createEventIdBuilder(cause));
+			}
 
 			// data fragmentation
 			int fragmentSize = MAX_MSG_SIZE;

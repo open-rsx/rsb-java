@@ -63,10 +63,10 @@ public class EventTest {
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
 
-		event1.setSenderId(new ParticipantId());
+		event1.setId(new ParticipantId(), 23);
 		assertFalse(event1.equals(event2));
 		assertFalse(event2.equals(event1));
-		event2.setSenderId(event1.getSenderId());
+		event2.setId(event1.getId().getParticipantId(), event1.getId().getSequenceNumber());
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
 		
@@ -76,7 +76,28 @@ public class EventTest {
 		assertFalse(event1.equals(event2));
 		event2.setMethod("request");
 		assertTrue(event1.equals(event2));
+		
+		// causes
+		EventId cause1 = new EventId(new ParticipantId(), 343);
+		event1.addCause(cause1);
+		assertFalse(event1.equals(event2));
+		assertFalse(event2.equals(event1));
+		event2.addCause(cause1);
+		assertEquals(event1, event2);
 
+	}
+	
+	@Test
+	public void testHashCode() {
+		
+		Event event1 = new Event();
+		Event event2 = new Event();
+		assertEquals(event1.hashCode(), event2.hashCode());
+		
+		// causes
+		event1.addCause(new EventId(new ParticipantId(), 234234));
+		assertFalse(event1.hashCode() == event2.hashCode());
+		
 	}
 
 }

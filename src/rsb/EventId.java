@@ -42,14 +42,20 @@ public class EventId {
 	
 	private final static Logger LOG = Logger.getLogger(EventId.class.getName());
 
-	// ID of event generating participant
-	protected ParticipantId participantId;
+	/**
+	 * ID of event generating participant.
+	 */
+	private ParticipantId participantId;
 
-	// Sequence number unique within participant
-	protected long sequenceNumber;
+	/**
+	 * Sequence number unique within participant.
+	 */
+	private long sequenceNumber;
 	
-	// Unique ID
-	protected UUID uuid;
+	/**
+	 * Unique ID.
+	 */
+	private UUID uuid;
 	
 	/**
 	 * Creates a unique Id based on participant
@@ -118,6 +124,26 @@ public class EventId {
 			uuid = UUIDTools.getNameBasedUUID(participantId.getUUID(),seqNr);
 		}
 		return uuid;
+	}
+
+	/**
+	 * Returns the id of the participant that sent the event.
+	 * 
+	 * @return participant id
+	 */
+	public ParticipantId getParticipantId() {
+		return participantId;
+	}
+	
+	/**
+	 * Returns the sequence number which makes this id unique combined with the
+	 * sending participants id.
+	 * 
+	 * @return sequence number for sending participant
+	 * @see #getParticipantId()
+	 */
+	public long getSequenceNumber() {
+		return sequenceNumber;
 	}
 	
 	public static String formatSequenceNumber(final long value) {

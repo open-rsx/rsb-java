@@ -151,7 +151,7 @@ public class InformerTest {
 		assertEquals("Hello World!", e.getData());
 		assertNotNull(e.getId());
 		assertEquals(new Scope("/informer/example"), e.getScope());
-		assertEquals(participant.getId(), e.getSenderId());
+		assertEquals(participant.getId(), e.getId().getParticipantId());
 	}
 
 	/**

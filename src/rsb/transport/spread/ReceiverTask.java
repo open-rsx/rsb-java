@@ -32,6 +32,7 @@ import rsb.converter.ConversionException;
 import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.UserData;
+import rsb.protocol.Protocol.EventId;
 import rsb.protocol.Protocol.Notification;
 import rsb.protocol.Protocol.UserInfo;
 import rsb.protocol.Protocol.UserTime;
@@ -118,7 +119,7 @@ class ReceiverTask extends Thread {
 	}
 
 	// TODO think about whether this could actually be a regular converter call
-	/*
+	/**
 	 * Method for converting Spread data messages into Java RSB events.
 	 * The main purpose of this method is the conversion of Spread data
 	 * messages by parsing the notification data structures as defined
@@ -136,8 +137,8 @@ class ReceiverTask extends Thread {
 				log.fine("decoding notification");
 				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
-				e.setSenderId(new ParticipantId(n.getEventId().getSenderId().toByteArray()));
-				e.setSequenceNumber(n.getEventId().getSequenceNumber());
+				e.setId(new ParticipantId(n.getEventId().getSenderId()
+						.toByteArray()), n.getEventId().getSequenceNumber());
 				if (n.hasMethod()) {
 					e.setMethod(n.getMethod().toStringUtf8());
 				}
@@ -161,6 +162,13 @@ class ReceiverTask extends Thread {
 				for (UserTime time : n.getMetaData().getUserTimesList()) {
 					e.getMetaData().setUserTime(time.getKey().toStringUtf8(),
 							time.getTimestamp());
+				}
+				
+				// causes
+				for (EventId cause : n.getCausesList()) {
+					e.addCause(new rsb.EventId(new ParticipantId(cause
+							.getSenderId().toByteArray()), cause
+							.getSequenceNumber()));
 				}
 
 				return e;
