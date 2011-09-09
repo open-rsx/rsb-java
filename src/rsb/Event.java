@@ -23,7 +23,7 @@ package rsb;
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of
  * metadata and the actual data to publish / subscribe to as payload.
- *
+ * 
  * @author swrede
  */
 // TODO check if we want to provide the type via a template parameter
@@ -33,8 +33,8 @@ public class Event {
 	private EventId id = null;
 	private Class<?> type;
 	private Scope scope;
-    private long sequenceNumber;
-    private String method;
+	private long sequenceNumber;
+	private String method;
 	private Object data;
 	private final MetaData metaData = new MetaData();
 	private ParticipantId senderId = null;
@@ -51,15 +51,12 @@ public class Event {
 		this.data = data;
 	}
 
-
 	public Event(final Class<?> type) {
 		this.type = type;
 	}
 
 	/**
-	 * Construct empty event. Only metadata
-	 * is initialized.
-	 * 
+	 * Construct empty event. Only metadata is initialized.
 	 */
 	public Event() {
 	}
@@ -100,18 +97,17 @@ public class Event {
 	public Scope getScope() {
 		return scope;
 	}
-	
 
 	public void setSenderId(final ParticipantId senderId) {
-		this.senderId  = senderId;
+		this.senderId = senderId;
 		// invalidates EventId
 		this.id = null;
-	}	
-	
+	}
+
 	public ParticipantId getSenderId() {
 		return senderId;
 	}
-	
+
 	/**
 	 * @param scope
 	 *            the scope to set
@@ -120,28 +116,28 @@ public class Event {
 		this.scope = scope;
 	}
 
-    public long getSequenceNumber() {
-	        return sequenceNumber;
+	public long getSequenceNumber() {
+		return sequenceNumber;
 	}
 
-    public void setSequenceNumber(final long sequenceNumber) {
-	        this.sequenceNumber = sequenceNumber;
+	public void setSequenceNumber(final long sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
 	}
 
 	public EventId getId() {
-	        if (id == null) {
-	        	if (senderId==null) {
-	        		Thread.dumpStack();
-	        	}
-		        id = new EventId(senderId, sequenceNumber);
-	        }
+		if (id == null) {
+			if (senderId == null) {
+				Thread.dumpStack();
+			}
+			id = new EventId(senderId, sequenceNumber);
+		}
 		return id;
 	}
 
 	/**
 	 * Returns a {@link MetaData} instance representing the meta data for this
 	 * event.
-	 *
+	 * 
 	 * @return meta data of this event, not <code>null</code>
 	 */
 	public MetaData getMetaData() {
@@ -155,23 +151,23 @@ public class Event {
 		return method;
 	}
 
-
 	/**
-	 * @param method the method to set
+	 * @param method
+	 *            the method to set
 	 */
 	public void setMethod(String method) {
 		this.method = method;
 	}
 
-
 	public String toString() {
-	        return "Event[id=" + getId() + ", scope=" + scope
-		    + ", seqnum=" + sequenceNumber + ", type =" + type
-		    + ", metaData=" + metaData + "]";
+		return "Event[id=" + getId() + ", scope=" + scope + ", seqnum="
+				+ sequenceNumber + ", type =" + type + ", metaData=" + metaData
+				+ "]";
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -192,8 +188,9 @@ public class Event {
 		return result;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -262,8 +259,5 @@ public class Event {
 		}
 		return true;
 	}
-
-
-
 
 }
