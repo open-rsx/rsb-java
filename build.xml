@@ -27,6 +27,36 @@
 	<property name="instrumented.dir" value="${build.dir}/instrumented" />
 	<property name="spread.daemon" location="/usr/sbin/spread" />
 
+	<!-- availability checks for external dependencies -->
+	<fail message="Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.">
+		<condition>
+			<not>
+				<available file="${pbuf.protoc}" />
+			</not>
+		</condition>
+	</fail>
+	<fail message="Google Protocol Buffers library not found at '${pbuf.lib}'. Please set pbuf.lib.">
+		<condition>
+			<not>
+				<available file="${pbuf.lib}" />
+			</not>
+		</condition>
+	</fail>
+	<fail message="RSB protocol property pbuf.protopath does not point to a valid installation of RSBProtocol at 'pbuf.protopath'">
+		<condition>
+			<not>
+				<available file="${pbuf.protopath}/Protocol.proto" />
+			</not>
+		</condition>
+	</fail>
+	<fail message="Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.">
+		<condition>
+			<not>
+				<available file="${spread.daemon}" />
+			</not>
+		</condition>
+	</fail>
+
 	<!-- set up ant-contrib -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -81,8 +111,8 @@
 	<!-- Create PMD classpath -->
 	<path id="pmd.classpath">
 		<pathelement location="${lib.dir}/pmd-4.2.5.jar" />
-		<pathelement location="${lib.dir}/jaxen-1.1.1.jar"/>
-		<pathelement location="${lib.dir}/asm-3.1.jar"/>
+		<pathelement location="${lib.dir}/jaxen-1.1.1.jar" />
+		<pathelement location="${lib.dir}/asm-3.1.jar" />
 	</path>
 	<taskdef name="pmd" classpathref="pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />
 
@@ -150,13 +180,14 @@
 			<assertions>
 				<enable />
 			</assertions>
-		<!--	<test name="rsb.EventIdTest"/>
+			<!--	<test name="rsb.EventIdTest"/>
 			<test name="rsb.util.UUIDToolsTest"/> -->
 			<batchtest fork="yes" todir="${dir.report.unittests.xml}">
 				<fileset dir="test">
 					<include name="**/*Test*.java" />
 				</fileset>
-			</batchtest>		</junit>
+			</batchtest>
+		</junit>
 	</target>
 
 	<target name="coverage" depends="test-compile" description="JUnit tests">
@@ -229,7 +260,7 @@
 			<ruleset>strings</ruleset>
 			<ruleset>typeresolution</ruleset>
 			<ruleset>unusedcode</ruleset>
-			<formatter type="xml" toFile="pmd.xml"/>
+			<formatter type="xml" toFile="pmd.xml" />
 			<formatter type="html" toFile="pmd_report.html" toConsole="true" />
 			<fileset dir="./src">
 				<include name="**/*.java" />
