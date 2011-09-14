@@ -35,6 +35,7 @@ public class DefaultConverters {
 		// TODO add missing converters for default types
 		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new StringConverter());
 		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new StringConverter("US-ASCII", "ascii-string"));
+		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new Uint64Converter());
 	}
-	
+
 }
