@@ -53,8 +53,8 @@ public class RemoteServerTest {
 		remote.activate();
 		assertNotNull("Method not added to remote server",remote.getMethods().iterator().next());
 		remote.deactivate();
-	}	
-	
+	}
+
 	@Test
 	public void testCallMethod() throws RSBException, InterruptedException, ExecutionException {
 		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
@@ -65,7 +65,7 @@ public class RemoteServerTest {
 		server.activate();
 		final RemoteServer remote = getRemoteServer();
 		assertNotNull("RemoteServer construction failed",remote);
-		remote.activate();	
+		remote.activate();
 		String result1 = null;
 		String result2 = null;
 		List<Future<Event>> resultsEvents = new ArrayList<Future<Event>>();
@@ -77,9 +77,10 @@ public class RemoteServerTest {
 			Event event2 = remote.call("callme2",event);
 			result2 = (String) event2.getData();
 			Event event3 = new Event(String.class);
-			event3.setData("testdata2");			
+			event3.setData("testdata2");
 			resultsEvents.add(remote.callAsync("callme2", event3));
-			resultsData.add(remote.callAsync("callme", "testdata"));
+			Future<String> future = remote.callAsync("callme", "testdata");
+			resultsData.add(future);
 		}
 		// TODO make this test nicer, remove sleep...
 		Thread.sleep(500);
@@ -93,13 +94,13 @@ public class RemoteServerTest {
 		// check result of async event calls
 		for (int i = 0; i < 100; i++) {
 			String result = (String) resultsEvents.get(i).get().getData();
-			assertTrue("Received wrong result from server callback.",result.equals("testdata2"));			
+			assertTrue("Received wrong result from server callback.",result.equals("testdata2"));
 		}
 		// check result of async data calls
 		for (int i = 0; i < 100; i++) {
 			String result = resultsData.get(i).get();
-			assertTrue("Received wrong result from server callback.",result.equals("testdata"));			
-		}		
+			assertTrue("Received wrong result from server callback.",result.equals("testdata"));
+		}
 	}
-	
+
 }
