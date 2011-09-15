@@ -48,13 +48,25 @@ public class Uint64ConverterTest {
     @Test
     public void roundtrip() throws Throwable {
 	Uint64Converter c = new Uint64Converter();
-	Long l1 = 24398L;
-	WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
-	assertNotNull(buf);
-	Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-	    .getData();
-	Long l2 = (Long) o;
-	assertEquals(l1, l2);
+	{
+	    Long l1 = 24398L;
+	    WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
+	    assertNotNull(buf);
+	    Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
+		.getData();
+	    Long l2 = (Long) o;
+	    assertEquals(l1, l2);
+	}
+
+	{
+	    Long l1 = 130236144L;
+	    WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
+	    assertNotNull(buf);
+	    Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
+		.getData();
+	    Long l2 = (Long) o;
+	    assertEquals(l1, l2);
+	}
     }
 
     @Test(expected = ConversionException.class)

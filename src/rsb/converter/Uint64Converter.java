@@ -69,7 +69,11 @@ public class Uint64Converter implements Converter<ByteBuffer> {
 
 	long result = 0;
 	for (int i = 0; i < 8; ++i) {
-	    result |= (((long) bytes.get(i)) << (i * 8));
+	    long value = (long) bytes.get(i);
+	    if (value < 0L) {
+		value = 256L + value;
+	    }
+	    result |= (value << (i * 8));
 	}
 	return new UserData<ByteBuffer>(result, Long.class);
     }
