@@ -159,7 +159,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -186,7 +186,7 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 * 
+	 *
 	 * @param scope
 	 *            scope to create group name
 	 * @return truncated md5 hash to fit into spread group
@@ -218,7 +218,7 @@ public class SpreadPort extends AbstractPort {
 		}
 
 	}
-	
+
 	private EventId.Builder createEventIdBuilder(final rsb.EventId id) {
 		rsb.protocol.Protocol.EventId.Builder eventIdBuilder = rsb.protocol.Protocol.EventId
 				.newBuilder();
@@ -227,13 +227,17 @@ public class SpreadPort extends AbstractPort {
 		eventIdBuilder.setSequenceNumber((int) id.getSequenceNumber());
 		return eventIdBuilder;
 	}
-	
+
 	@Override
 	public void push(Event e) throws ConversionException {
 		Converter<ByteBuffer> converter = null;
 		// convert data
 		try {
+		    if (e.getType() == null) {
+			converter = outStrategy.getConverter("null");
+		    } else {
 			converter = outStrategy.getConverter(e.getType().getName());
+		    }
 		} catch (NoSuchConverterException ex) {
 			log.warning(ex.getMessage());
 			return;

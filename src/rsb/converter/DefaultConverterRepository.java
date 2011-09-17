@@ -29,11 +29,11 @@ import java.util.logging.Logger;
 public class DefaultConverterRepository<WireType> implements ConverterRepository<WireType> {
 
 	private final static Logger LOG = Logger.getLogger(DefaultConverterRepository.class.getName());
-	
+
 	private static ConverterRepository<ByteBuffer> defaultInstance = new DefaultConverterRepository<ByteBuffer>();
-	
+
 	private transient final Map<ConverterSignature, Converter<WireType> > converterMap = new HashMap<ConverterSignature, Converter<WireType> >();
-	
+
 	/**
 	 * @return the converterMap
 	 */
@@ -57,13 +57,17 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 				// we want to use the UTF-8 representation for strings as default
 				LOG.fine("skipping ascii-string converter for Serialization map");
 			} else {
-				// all other converters are added at this point
+			    // all other converters are added at this point
+			    if (s.getDatatype() == null) {
+				outStrategy.addConverter("null", converterMap.get(s));
+			    } else {
 				outStrategy.addConverter(s.getDatatype().getName(), converterMap.get(s));
+			    }
 			}
 		}
 		return outStrategy;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see rsb.converter.ConverterRepository#getConvertersForDeserialization()
 	 */
@@ -74,10 +78,10 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 		for (ConverterSignature s : converterMap.keySet()) {
 			// put datatype and converter into unambiguous converter map
 			inStrategy.addConverter(s.getSchema(), converterMap.get(s));
-		}		
+		}
 		return inStrategy;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see rsb.converter.ConverterRepository#addConverter(rsb.converter.Converter)
 	 */
@@ -88,9 +92,9 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 		}
 		converterMap.put(converter.getSignature(), converter);
 	}
-	
+
 	public static ConverterRepository<ByteBuffer> getDefaultConverterRepository() {
 		return defaultInstance;
 	}
-	
+
 }
