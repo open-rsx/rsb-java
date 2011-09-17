@@ -32,6 +32,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author jschaefe
  * @author swrede
+ * @author jmoringe
  *
  * @see java.util.concurrent.Future
  */
@@ -40,28 +41,34 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 
 	protected Throwable exception = null;
 	protected T result = null;
+
+	protected boolean hasResult = false;
 	protected boolean cancelled = false;
 
 	public synchronized void complete(final T val) {
 		result = val;
+		hasResult = true;
 		notifyAll();
 	}
 
 	public synchronized void error(final Throwable exception) {
 		this.exception = exception;
+		hasResult = true;
 		notifyAll();
 	}
 
 	/**
-	 * This method makes the waiting thread return with a CancellationException
-	 * but does not cancel the actual operation the thread was waiting for.
-	 * @param mayInterruptIfRunning
+	 * This method makes the waiting thread return with a
+	 * CancellationException but does not cancel the actual
+	 * operation the thread was waiting for.
+	 *
+	 * @param mayInterrupt
 	 * @return false
 	 */
-	public boolean cancel(boolean mayInterrupt) {
+	public synchronized boolean cancel(boolean mayInterrupt) {
 		cancelled = true;
-		if(mayInterrupt) {
-			notifyAll();
+		if (mayInterrupt) {
+		    notifyAll();
 		}
 		return true;
 	}
@@ -70,7 +77,7 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 	 * Convenience method for get(0, TimeUnit.MILLISECONDS).
 	 * @see Future#get(long, TimeUnit)
 	 */
-	public synchronized T get() throws InterruptedException, ExecutionException {
+	public synchronized T get() throws ExecutionException {
 		try {
 			return get(0, TimeUnit.MILLISECONDS);
 		} catch (TimeoutException e) {
@@ -84,13 +91,14 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 	 * Convenience method for get(timeout, TimeUnit.MILLISECONDS).
 	 * @see Future#get(long, TimeUnit)
 	 */
-	public synchronized T get(final long timeout) throws InterruptedException, ExecutionException, TimeoutException {
+	public synchronized T get(final long timeout) throws ExecutionException, TimeoutException {
 		return get(timeout, TimeUnit.MILLISECONDS);
 	}
 
 	/**
-	 * Gets the results passed to this callback object. This method blocks until
-	 * either the results are available, or the timeout is reached.
+	 * Gets the results passed to this callback object. This
+	 * method blocks until either the results are available, or
+	 * the timeout is reached.
 	 *
 	 * @param timeout number of TimeUnits to wait for results to become
 	 * available
@@ -98,36 +106,55 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 	 * @return the value resulting from the operation
 	 *
 	 * @see Future#get(long, TimeUnit)
-	 * @throws InterruptedException if the calling thread is interrupted while
-	 * waiting
 	 * @throws ExecutionException if the operation resulted in an Exception
 	 * @throws TimeoutException if the timeout was reached before results were
 	 * available
 	 */
-	public synchronized T get(final long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		long timeout_millis = unit.toMillis(timeout);
-		// prevent waiting forever, if timeout was not 0, but was rounded to 0
-		if (timeout > 0 && timeout_millis == 0) {
+	public synchronized T get(final long timeout, TimeUnit unit) throws ExecutionException, TimeoutException {
+		if (timeout == 0) {
+		    // Wait until
+		    // - a result arrives
+		    // - the operation is cancelled
+		    // In case of spurious wakeups, just continue waiting.
+		    while (!hasResult && !cancelled) {
+			try {
+			    wait();
+			} catch (InterruptedException e) {}
+		    }
+		} else {
+		    // Calculate waiting time in milliseconds. Prevent
+		    // waiting forever, if timeout was not 0, but was
+		    // rounded to 0
+		    long timeout_millis = unit.toMillis(timeout);
+		    if (timeout > 0 && timeout_millis == 0) {
 			timeout_millis = 1;
+		    }
+
+		    // Wait until
+		    // - a result arrives
+		    // - the operation is cancelled
+		    // - the specified timeout is exceeded
+		    // In case of spurious wakeups, just continue waiting.
+		    long waitTime = 0;
+		    while (!hasResult && !cancelled && (waitTime < timeout_millis)) {
+			try {
+			    wait(timeout_millis - waitTime);
+			} catch (InterruptedException e) {}
+			waitTime += timeout_millis; /* TODO(jmoringe): use real clock */
+		    }
 		}
-		while (result == null && exception == null) {
-			wait(timeout_millis);
-		}
+
+		// One of the conditions occurred. Determine which.
 		if (exception != null) { // operation threw an exception
-			throw new ExecutionException(exception);
+		    throw new ExecutionException(exception);
 		} else if (isCancelled()) { // cancel() was called before
-			throw new CancellationException(
-					"async operation was cancelled before it completed");
-		} else if (result == null) { // no result yet, timeout was hit
-			throw new TimeoutException();
+		    throw new CancellationException("async operation was cancelled before it completed");
+		} else if (!hasResult) { // no result yet, timeout was hit
+		    throw new TimeoutException();
 		}
 		return result;
 	}
 
-	/**
-	 * Always returns false since operation can not be cancelled
-	 * @return false
-	 */
 	public boolean isCancelled() {
 		return cancelled;
 	}
@@ -137,7 +164,7 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 	 * @return true if results have already been passed to this callback
 	 */
 	public synchronized boolean isDone() {
-		return result != null || exception != null;
+		return hasResult;
 	}
 
 }
