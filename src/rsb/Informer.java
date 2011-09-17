@@ -32,7 +32,7 @@ import rsb.transport.TransportFactory;
  * This class offers a method to publish events to a channel, reaching all
  * participating Listeners. This n:m-communication is one of the basic
  * communication patterns offered by RSB.
- * 
+ *
  * @author swrede
  * @author rgaertne
  * @author jschaefe
@@ -45,10 +45,10 @@ public class Informer<T extends Object> extends Participant {
 
 	/** state variable for publisher instance */
 	protected InformerState<T> state;
-	
+
 	/** atomic uint32 counter object for event sequence numbers */
 	protected SequenceNumber sequenceNumber = new SequenceNumber();
-	
+
 	/** converter repository for type mappings */
 	protected ConverterSelectionStrategy<?> converter;
 
@@ -92,34 +92,33 @@ public class Informer<T extends Object> extends Participant {
 		}
 
 		protected Event send(final Event event) throws RSBException {
-	
+
 			if (event.getScope()==null) {
 				throw new IllegalArgumentException(
 						"Event scope must not be null.");
-			}				
+			}
 			if (!getScope().equals(event.getScope())) {
 				if (!getScope().isSuperScopeOf(event.getScope())) {
 					throw new IllegalArgumentException(
 							"Event scope not a sub-scope of informer scope.");
 				}
 			}
-			if (event.getType()==null) {
-				throw new IllegalArgumentException(
-						"Event type must not be null.");
-			}			
-			// TODO check performance of isAssignableFrom	
-			if (!ctx.getTypeInfo().isAssignableFrom(event.getType())) {
-				throw new IllegalArgumentException(
+			// TODO check performance of isAssignableFrom
+			if (ctx.getTypeInfo() == null && event.getType() != null) {
+			    throw new IllegalArgumentException("Type of event data does not match the Informer data type.");
+			} else if (ctx.getTypeInfo() != null
+				   && !ctx.getTypeInfo().isAssignableFrom(event.getType())) {
+			    throw new IllegalArgumentException(
 						"Type of event data does not match nor is a sub-class of the Informer data type.");
 			}
-			
+
 			// set participant metadata
 			// increment atomic counter
 			event.setId(getId(), sequenceNumber.incrementAndGet());
-			
+
 			// send to transport(s)
 			getRouter().publishSync(event);
-			
+
 			// return event for local use
 			return event;
 
@@ -169,7 +168,7 @@ public class Informer<T extends Object> extends Participant {
 
 	/**
 	 * Send an {@link Event} to all subscribed participants.
-	 * 
+	 *
 	 * @param event
 	 *            the event to send
 	 * @return modified event with set timing information
@@ -185,7 +184,7 @@ public class Informer<T extends Object> extends Participant {
 
 	/**
 	 * Send data (of type <T>) to all subscribed participants.
-	 * 
+	 *
 	 * @param data
 	 *            data to send with default setting from the informer
 	 * @return generated event
@@ -198,7 +197,7 @@ public class Informer<T extends Object> extends Participant {
 
 	/**
 	 * Returns the class describing the type of data sent by this informer.
-	 * 
+	 *
 	 * @return string declarator
 	 */
 	public Class<?> getTypeInfo() {
@@ -207,13 +206,13 @@ public class Informer<T extends Object> extends Participant {
 
 	/**
 	 * Set the class object describing the type of data sent by this informer.
-	 * 
+	 *
 	 * @return string declarator
 	 */
 	public void setTypeInfo(final Class<?> typeInfo) {
 		type = typeInfo;
-	}	
-	
+	}
+
 	@Override
 	public boolean isActive() {
 		return state.getClass() == InformerStateActive.class;

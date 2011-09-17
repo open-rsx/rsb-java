@@ -44,13 +44,13 @@ public class InformerTest {
 	transient private Informer<?> informerGeneric;
 	@SuppressWarnings("unused")
 	final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository.getDefaultConverterRepository();
-	
+
 	@Before
 	public void setUp() throws Throwable {
 		informerString = new Informer<String>(defaultScope,String.class);
 		informerString.activate();
 		informerGeneric = new Informer<Object>(defaultScope);
-		informerGeneric.activate();		
+		informerGeneric.activate();
 	}
 
 	@After
@@ -60,7 +60,7 @@ public class InformerTest {
 		}
 		if (informerGeneric.isActive()) {
 			informerGeneric.deactivate();
-		}		
+		}
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class InformerTest {
 
 	/**
 	 * Test method for {@link rsb.Informer#activate()}.
-	 * 
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
@@ -136,7 +136,7 @@ public class InformerTest {
 
 	/**
 	 * Test method for {@link rsb.Informer#deactivate()}.
-	 * 
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
@@ -156,7 +156,7 @@ public class InformerTest {
 
 	/**
 	 * Test method for {@link rsb.Informer#send(rsb.Event)}.
-	 * 
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
@@ -168,15 +168,15 @@ public class InformerTest {
 				"Hello World!"));
 		testEvent(e, informerGeneric);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendWrongType() throws RSBException {
-		informerString.send(new Event(defaultScope, Object.class,"not allowed"));	
+		informerString.send(new Event(defaultScope, Object.class,"not allowed"));
 	}
 
 	/**
 	 * Test method for {@link rsb.Informer#send(rsb.Event)}.
-	 * 
+	 *
 	 * @throws InitializeException
 	 */
 	@Test
@@ -210,9 +210,8 @@ public class InformerTest {
 		e.setScope(defaultScope.concat(new Scope("/blubb")));
 		e.setData("foo");
 		informerString.send(e);
-	}	
-	
-	@Test(expected = IllegalArgumentException.class)
+	}
+
 	public void testSendEventNullType() throws Throwable {
 		Event e = new Event();
 		e.setType(null);

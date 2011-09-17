@@ -119,7 +119,12 @@ class LocalMethod<T, U> extends Method implements Handler  {
 		@SuppressWarnings("unchecked")
 		T result = callback.invoke((U) event.getData());
 		// return result of invocation
-		reply.setType(result.getClass());
-		reply.setData(result);
+		if (result != null) {
+		    reply.setType(result.getClass());
+		    reply.setData(result);
+		} else {
+		    reply.setType(null);
+		    reply.setData(null);
+		}
 	}
 };
