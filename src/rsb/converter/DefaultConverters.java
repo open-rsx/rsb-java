@@ -36,6 +36,7 @@ public class DefaultConverters {
 		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new StringConverter());
 		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new StringConverter("US-ASCII", "ascii-string"));
 		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new Uint64Converter());
+		DefaultConverterRepository.getDefaultConverterRepository().addConverter(new NullConverter());
 	}
 
 }
