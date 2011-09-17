@@ -107,6 +107,7 @@ public class Informer<T extends Object> extends Participant {
 			if (ctx.getTypeInfo() == null && event.getType() != null) {
 			    throw new IllegalArgumentException("Type of event data does not match the Informer data type.");
 			} else if (ctx.getTypeInfo() != null
+				   && event.getType() != null
 				   && !ctx.getTypeInfo().isAssignableFrom(event.getType())) {
 			    throw new IllegalArgumentException(
 						"Type of event data does not match nor is a sub-class of the Informer data type.");
