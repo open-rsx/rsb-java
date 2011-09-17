@@ -147,9 +147,6 @@ public class RemoteServer extends Server {
 		U result;
 		try {
 			result = future.get((long) timeout,TimeUnit.SECONDS);
-		} catch (InterruptedException exception) {
-			LOG.warning("Exception during remote call: " + exception.getMessage() + " Re-throwing it.");
-			throw new RSBException(exception);
 		} catch (ExecutionException exception) {
 			LOG.warning("Exception during remote call: " + exception.getMessage() + " Re-throwing it.");
 			throw new RSBException(exception);
