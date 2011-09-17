@@ -24,6 +24,7 @@ package rsb.converter;
 import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
+
 import java.util.LinkedList;
 
 import org.junit.Test;

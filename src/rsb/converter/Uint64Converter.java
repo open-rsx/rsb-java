@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of
- * handling unsigned integers that fit in 64 bit.
+ * handling unsigned integers that fit into 64 bits.
  *
  * @author jmoringe
  */
@@ -33,9 +33,6 @@ public class Uint64Converter implements Converter<ByteBuffer> {
 
     private ConverterSignature signature;
 
-    /**
-     * Creates a converter for UTF-8 encoding with utf-8-string wire schema.
-     */
     public Uint64Converter() {
 	signature = new ConverterSignature("uint64", Long.class);
     }
@@ -54,7 +51,7 @@ public class Uint64Converter implements Converter<ByteBuffer> {
 	    return new WireContents<ByteBuffer>(serialized, signature.getSchema());
 
 	} catch (ClassCastException e) {
-	    throw new ConversionException("Input data for serializing must be strings.", e);
+	    throw new ConversionException("Input data for serializing must be long values.", e);
 	}
     }
 
