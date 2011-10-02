@@ -32,6 +32,31 @@ public abstract class Participant implements RSBObject {
 	 */
 	protected Participant(Scope scope, TransportFactory transportFactory,
 			PortConfiguration portConfig) {
+		initMembers(scope, transportFactory, portConfig);
+	}
+	
+	/**
+	 * Creates a new participant on the specified scope.
+	 * 
+	 * @param scope
+	 *            scope of the participant
+	 * @param transportFactory
+	 *            the factory used for transports for this {@link Participant}
+	 * @param portConfig
+	 *            type of ports to create for this participant
+	 */
+	protected Participant(String scope, TransportFactory transportFactory,
+			PortConfiguration portConfig) {
+		initMembers(new Scope(scope), transportFactory, portConfig);
+	}	
+
+	/**
+	 * @param scope
+	 * @param transportFactory
+	 * @param portConfig
+	 */
+	protected void initMembers(Scope scope, TransportFactory transportFactory,
+			PortConfiguration portConfig) {
 		if (scope == null) {
 			throw new IllegalArgumentException(
 					"Scope of a participant must not be null.");

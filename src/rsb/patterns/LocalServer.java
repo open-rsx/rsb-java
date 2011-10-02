@@ -50,6 +50,18 @@ public class LocalServer extends Server {
 	public LocalServer(final Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 	}
+	
+	/**
+     * Create a new LocalServer object that exposes its methods under
+     * the scope @a scope.
+     *
+     * @param scope
+     *            The common super-scope under which the methods of
+     *            the newly created server should be provided.
+     */
+	public LocalServer(final String scope) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+	}	
 
 	public <U, T> void addMethod(String name, DataCallback<U, T> callback)
 			throws InitializeException {

@@ -139,21 +139,41 @@ public class Informer<T extends Object> extends Participant {
 				+ ",State:Inactive,Type:" + type.getName() + "]");
 	}
 
+	Informer(String scope) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+		initMembers(Object.class);
+	}
+	
 	Informer(final Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
 		initMembers(Object.class);
 	}
+	
+	Informer(String scope, final Class<?> type) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+		initMembers(type);
+	}			
+	
+	Informer(final Scope scope, final Class<?> type) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+		initMembers(type);
+	}	
 
+	Informer(String scope, final TransportFactory tfac) {
+		super(scope, tfac, PortConfiguration.OUT);
+		initMembers(Object.class);
+	}	
+	
 	Informer(final Scope scope, final TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
 		initMembers(Object.class);
 	}
 
-	Informer(final Scope scope, final Class<?> type) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+	Informer(String scope, final Class<?> type, final TransportFactory tfac) {
+		super(scope, tfac, PortConfiguration.OUT);
 		initMembers(type);
-	}
-
+	}	
+	
 	Informer(final Scope scope, final Class<?> type, final TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.OUT);
 		initMembers(type);

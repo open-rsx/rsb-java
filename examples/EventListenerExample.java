@@ -22,26 +22,41 @@
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import rsb.AbstractDataHandler;
 import rsb.AbstractEventHandler;
 import rsb.Factory;
 import rsb.Event;
-import rsb.Scope;
 import rsb.Listener;
 
 /**
- * An example that demonstrated how to receive events in java.
+ * A basic example that demonstrated how to receive events.
  * 
  * @author swrede
  */
-public class ListenerExample {
+public class EventListenerExample extends AbstractEventHandler {
 
-	private static final Logger LOG = Logger.getLogger(ListenerExample.class.getName());
+	private static final Logger LOG = Logger.getLogger(EventListenerExample.class.getName());
 	
-	static AtomicInteger counter1 = new AtomicInteger(0);
-	static AtomicInteger counter2 = new AtomicInteger(0);
+	static AtomicInteger counter = new AtomicInteger(0);
 	static Object l = new Object();
 
+	/**
+	 * The actual callback that is notified upon arrival of events. In contrast to
+	 * a DataListener, an Event object is passed to the callback which in addition
+	 * to the payload, also provides access to the Event meta data.
+	 */
+	@Override
+	public void handleEvent(Event event) {
+		counter.getAndIncrement();
+		if (counter.get() % 100 == 0) {
+			LOG.info("Event #" + counter.get() + " received with payload: " + event.toString());
+		}
+		if (counter.get() == 1000) {
+			synchronized (l) {
+				l.notifyAll();
+			}
+		}
+	}	
+	
 	public static void main(String[] args) throws Throwable {
 
 		// get a factory instance to create new RSB domain objects
@@ -49,54 +64,14 @@ public class ListenerExample {
 
 		// create a Listener instance on the specified scope that will receive
 		// events and dispatches them asynchronously to all registered handlers
-		Listener sub = factory.createListener(new Scope("/example/informer"));
+		Listener sub = factory.createListener("/example/informer");
 
 		// activate the listener to be ready for work
 		sub.activate();
 
 		// add an EventHandler that will receive complete Event instances
 		// whenever they are received
-		sub.addHandler(new AbstractEventHandler() {
-
-			@Override
-			public void handleEvent(Event e) {
-				counter1.getAndIncrement();
-				if (counter1.get() % 100 == 0) {
-					LOG.info("Event received: " + e.toString()
-							+ " # " + counter1);
-				}
-				if (counter1.get() == 1200) {
-					synchronized (l) {
-						l.notifyAll();
-					}
-				}
-			}
-
-		}, true);
-
-		// add a DataHandler that is notified directly with the data grabbed
-		// from the received event
-		sub.addHandler(new AbstractDataHandler<String>() {
-
-			@Override
-			public void handleEvent(String e) {
-				try {
-					counter2.getAndIncrement();
-					if (counter2.get() % 100 == 0) {
-						LOG.info("Data received: " + e + " event # "
-								+ counter2.get());
-					}
-					if (counter2.get() == 1200) {
-						synchronized (l) {
-							l.notifyAll();
-						}
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-
-		}, true);
+		sub.addHandler(new EventListenerExample(), true);
 
 		// wait that enough events are received
 		while (!allEventsDelivered()) {
@@ -112,7 +87,9 @@ public class ListenerExample {
 	};
 
 	private synchronized static boolean allEventsDelivered() {
-		return !((counter1.get() != 1200) || (counter2.get() != 1200));
+		return !(counter.get() != 1000);
 	}
+
+
 
 }

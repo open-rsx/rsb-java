@@ -83,22 +83,32 @@ public class Listener extends Participant {
 
 	Listener(Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
-		initMembers(scope);
+		initMembers();
 	}
 
+	Listener(String scope) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+		initMembers();
+	}	
+
+	Listener(String scope, TransportFactory tfac) {
+		super(scope, tfac, PortConfiguration.IN);
+		initMembers();
+	}	
+	
 	Listener(Scope scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.IN);
-		initMembers(scope);
+		initMembers();
 	}
 
 	/**
 	 * @param scope
 	 *            scope of this listener.
 	 */
-	private void initMembers(Scope scope) {
+	private void initMembers() {
 		this.state = new ListenerStateInactive(this);
 		errorHandler = new DefaultErrorHandler(LOG);
-		LOG.fine("New Listener instance: [scope=" + scope + "]");
+		LOG.fine("New Listener instance: [scope=" + getScope() + "]");
 	}
 
 	public void activate() throws InitializeException {

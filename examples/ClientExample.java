@@ -1,12 +1,3 @@
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
-
-import rsb.Event;
-import rsb.Factory;
-import rsb.RSBException;
-import rsb.Scope;
-import rsb.patterns.RemoteServer;
-
 /**
  * ============================================================
  *
@@ -28,9 +19,20 @@ import rsb.patterns.RemoteServer;
  * ============================================================
  */
 
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
+
+import rsb.Event;
+import rsb.Factory;
+import rsb.RSBException;
+import rsb.patterns.RemoteServer;
+
 /**
+ * This class demonstrates how to access an RSB server
+ * object using synchronous and asynchronously calls.
+ * 
  * @author swrede
- *
+ * 
  */
 public class ClientExample {
 
@@ -43,8 +45,8 @@ public class ClientExample {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws RSBException, InterruptedException, ExecutionException {
-		// get remote server object to call exposed request methods of participants
-		RemoteServer server = Factory.getInstance().createRemoteServer(new Scope("/example/server"));
+		// Get remote server object to call exposed request methods of participants
+		RemoteServer server = Factory.getInstance().createRemoteServer("/example/server");
 		server.activate();
 		LOG.info("RemoteServer object activated");
 

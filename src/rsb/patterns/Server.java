@@ -84,6 +84,13 @@ public abstract class Server extends Participant {
 		methods = new HashMap<String, Method>();
 		state = new ServerStateInactive(this);
 	}
+	
+	protected Server(final String scope, final TransportFactory transportFactory,
+			final PortConfiguration portConfig) {
+		super(scope, transportFactory, portConfig);
+		methods = new HashMap<String, Method>();
+		state = new ServerStateInactive(this);
+	}	
 
 	/**
 	 * Return all methods of the server.

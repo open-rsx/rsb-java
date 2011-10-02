@@ -64,7 +64,7 @@ public final class Factory {
 	 *            type identifier of the informer
 	 * @return new informer instance
 	 */
-	public <T> Informer<T> createInformer(Scope scope, Class<?> type) {
+	public <T> Informer<T> createInformer(final Scope scope, Class<?> type) {
 		return new Informer<T>(scope, type);
 	}
 
@@ -75,12 +75,40 @@ public final class Factory {
 	 *            type of the data sent by this informer
 	 * @param scope
 	 *            scope of the informer
+	 * @param type
+	 *            type identifier of the informer
+	 * @return new informer instance
+	 */	
+	public <T> Informer<T> createInformer(final String scope, Class<?> type) {
+		return new Informer<T>(new Scope(scope), type);
+	}	
+	
+	/**
+	 * Creates a new informer instance.
+	 *
+	 * @param <T>
+	 *            type of the data sent by this informer
+	 * @param scope
+	 *            scope of the informer
 	 * @return new informer instance
 	 */
-	public <T> Informer<T> createInformer(Scope scope) {
+	public <T> Informer<T> createInformer(final Scope scope) {
 		return new Informer<T>(scope);
 	}
 
+	/**
+	 * Creates a new informer instance.
+	 *
+	 * @param <T>
+	 *            type of the data sent by this informer
+	 * @param scope
+	 *            scope of the informer
+	 * @return new informer instance
+	 */	
+	public <T> Informer<T> createInformer(final String scope) {
+		return new Informer<T>(new Scope(scope));
+	}	
+	
 	/**
 	 * Creates a new listener instance.
 	 *
@@ -88,9 +116,20 @@ public final class Factory {
 	 *            scope of the listener
 	 * @return new listener
 	 */
-	public Listener createListener(Scope scope) {
+	public Listener createListener(final Scope scope) {
 		return new Listener(scope);
 	}
+	
+	/**
+	 * Creates a new listener instance.
+	 *
+	 * @param scope
+	 *            scope of the listener
+	 * @return new listener
+	 */	
+	public Listener createListener(final String scope) {
+		return new Listener(scope);
+	}	
 
 	/**
 	 * Creates a new LocalServer object which exposes methods under the scope @a
@@ -101,7 +140,20 @@ public final class Factory {
 	 *            be exposed.
 	 * @return The new LocalServer object.
 	 */
-	public LocalServer createLocalServer(Scope scope) {
+	public LocalServer createLocalServer(final Scope scope) {
+		return new LocalServer(scope);
+	}
+
+	/**
+	 * Creates a new LocalServer object which exposes methods under the scope @a
+	 * scope.
+	 * 
+	 * @param scope
+	 *            The scope under which methods of the LocalServer object should
+	 *            be exposed.
+	 * @return The new LocalServer object.
+	 */	
+	public LocalServer createLocalServer(final String scope) {
 		return new LocalServer(scope);
 	}
 
@@ -113,10 +165,22 @@ public final class Factory {
 	 *            The scope under which a remote server provides its methods.
 	 * @return The new RemoteServer object.
 	 */
-	public RemoteServer createRemoteServer(Scope scope) {
+	public RemoteServer createRemoteServer(final Scope scope) {
 		return new RemoteServer(scope);
 	}
 
+	/**
+	 * Creates a new RemoteServer object which is suitable for calling methods
+	 * provided by a remote server under the scope @a scope.
+	 * 
+	 * @param scope
+	 *            The scope under which a remote server provides its methods.
+	 * @return The new RemoteServer object.
+	 */
+	public RemoteServer createRemoteServer(final String scope) {
+		return new RemoteServer(scope);
+	}	
+	
 	/**
 	 * Creates a new RemoteServer object which is suitable for calling methods
 	 * provided by a remote server under the scope @a scope.
@@ -128,8 +192,23 @@ public final class Factory {
 	 *            replies to arrive before failing.
 	 * @return The new RemoteServer object.
 	 */
-	public RemoteServer createRemoteServer(Scope scope, double timeout) {
+	public RemoteServer createRemoteServer(final Scope scope, double timeout) {
 		return new RemoteServer(scope, timeout);
 	}
+	
+	/**
+	 * Creates a new RemoteServer object which is suitable for calling methods
+	 * provided by a remote server under the scope @a scope.
+	 * 
+	 * @param scope
+	 *            The scope under which a remote server provides its methods.
+	 * @param timeout
+	 *            The amount of seconds methods calls should wait for their
+	 *            replies to arrive before failing.
+	 * @return The new RemoteServer object.
+	 */
+	public RemoteServer createRemoteServer(final String scope, double timeout) {
+		return new RemoteServer(scope, timeout);
+	}	
     
 }

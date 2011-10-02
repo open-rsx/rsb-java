@@ -57,10 +57,26 @@ public class RemoteServer extends Server {
 	 *            The amount of seconds methods calls should wait for their
 	 *            replies to arrive before failing.
 	 */
-	public RemoteServer(Scope scope, double timeout) {
+	public RemoteServer(final Scope scope, double timeout) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = timeout;
 	}
+	
+	/**
+	 * Create a new RemoteServer object that provides its methods under the
+	 * scope @a scope.
+	 *
+	 * @param scope
+	 *            The common super-scope under which the methods of the remote
+	 *            created server are provided.
+	 * @param timeout
+	 *            The amount of seconds methods calls should wait for their
+	 *            replies to arrive before failing.
+	 */
+	public RemoteServer(final String scope, double timeout) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+		this.timeout = timeout;
+	}	
 
 	/**
 	 * Create a new RemoteServer object that provides its methods under the
@@ -70,10 +86,23 @@ public class RemoteServer extends Server {
 	 *            The common super-scope under which the methods of the remote
 	 *            created server are provided.
 	 */
-	public RemoteServer(Scope scope) {
+	public RemoteServer(final Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = 25;
 	}
+	
+	/**
+	 * Create a new RemoteServer object that provides its methods under the
+	 * scope @a scope.
+	 *
+	 * @param scope
+	 *            The common super-scope under which the methods of the remote
+	 *            created server are provided.
+	 */
+	public RemoteServer(final String scope) {
+		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+		this.timeout = 25;
+	}	
 
 	public double getTimeout() {
 		return timeout;
