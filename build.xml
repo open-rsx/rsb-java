@@ -264,6 +264,7 @@
 			<formatter type="html" toFile="pmd_report.html" toConsole="true" />
 			<fileset dir="./src">
 				<include name="**/*.java" />
+				<exclude name="**/protocol/*.java"/>
 			</fileset>
 		</pmd>
 	</target>

@@ -55,7 +55,7 @@ public abstract class Participant implements RSBObject {
 	 * @param transportFactory
 	 * @param portConfig
 	 */
-	protected void initMembers(Scope scope, TransportFactory transportFactory,
+	private void initMembers(Scope scope, TransportFactory transportFactory,
 			PortConfiguration portConfig) {
 		if (scope == null) {
 			throw new IllegalArgumentException(
