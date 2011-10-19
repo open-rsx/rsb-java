@@ -152,6 +152,8 @@ public class Properties {
 		propsMap.put("errorhandling.onhandlererror", new InSetProperty("LOG",
 				errorValues));
 
+		propsMap.put("transport.inprocess.enabled", new BooleanProperty("FALSE"));
+
 		propsMap.put("transport.spread.enabled", new BooleanProperty("TRUE"));
 		propsMap.put("transport.spread.port", new IntegerProperty("4803"));
 		propsMap.put("transport.spread.host", new ValidProperty("localhost"));
