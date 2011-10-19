@@ -26,17 +26,17 @@ import java.util.Set;
 /**
  * Basic event structure exchanged between RSB ports. It is a combination of
  * metadata and the actual data to publish / subscribe to as payload.
- * 
+ *
  * Events are often caused by other events, which e.g. means that their
  * contained payload was calculated on the payload of one or more other events.
- * 
+ *
  * To express these relations each event contains a set of EventIds that express
  * the direct causes of the event. This means, transitive event causes are not
  * modeled.
- * 
+ *
  * Cause handling is inspired by the ideas proposed in: David Luckham, The Power
  * of Events, Addison-Wessley, 2007
- * 
+ *
  * @author swrede
  */
 // TODO check if we want to provide the type via a template parameter
@@ -58,8 +58,16 @@ public class Event {
 	// TODO move event creation into factory?
 
 	/**
+	 * Creates a new event that can be send to scope.
+	 *
+	 * @param scope
+	 *            The scope to which the event will be sent.
 	 * @param type
+	 *            A class object indicating the class of the data
+	 *            being sent in the event.
 	 * @param data
+	 *            The actual data that should be sent in the
+	 *            event.
 	 */
 	public Event(final Scope scope, final Class<?> type, final Object data) {
 		this.scope = scope;
@@ -117,7 +125,7 @@ public class Event {
 	/**
 	 * Sets all information necessary to generate the {@link EventId} of this
 	 * event. After this call {@link #getId()} is able to return an id.
-	 * 
+	 *
 	 * @param senderId
 	 *            id of the sending participant for this event
 	 * @param sequenceNumber
@@ -127,19 +135,19 @@ public class Event {
 			final long sequenceNumber) {
 		id = new EventId(senderId, sequenceNumber);
 	}
-	
+
 	/**
 	 * Sets the id of this event. Afterwards {@link #getId()} can return an id.
-	 * 
+	 *
 	 * @param id new id to set
 	 */
 	public void setId(final EventId id) {
-		this.id = id; 
+		this.id = id;
 	}
 
 	/**
 	 * Returns the id of the sending participant for this event.
-	 * 
+	 *
 	 * @return sending participant id
 	 * @throws IllegalStateException
 	 *             the id is not yet defined because the event was not sent by
@@ -160,7 +168,7 @@ public class Event {
 
 	/**
 	 * Returns the sequence number of the informer that sent the event.
-	 * 
+	 *
 	 * @return unique number within one informer that sends an event
 	 * @throws IllegalStateException
 	 *             the id is not yet defined because the event was not sent by
@@ -183,7 +191,7 @@ public class Event {
 	/**
 	 * Returns a {@link MetaData} instance representing the meta data for this
 	 * event.
-	 * 
+	 *
 	 * @return meta data of this event, not <code>null</code>
 	 */
 	public MetaData getMetaData() {
@@ -213,7 +221,7 @@ public class Event {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -234,7 +242,7 @@ public class Event {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -300,7 +308,7 @@ public class Event {
 	/**
 	 * Adds the id of one event to the causes of this event. If the set of
 	 * causing events already contained the given id, this call has no effect.
-	 * 
+	 *
 	 * @param id
 	 *            the id of a causing event
 	 * @return <code>true</code> if the causes was added, <code>false</code> if
@@ -313,7 +321,7 @@ public class Event {
 	/**
 	 * Removes a causing event from the set of causes for this event. If the id
 	 * was not contained in this set, the call has no effect.
-	 * 
+	 *
 	 * @param id
 	 *            of the causing event
 	 * @return <code>true</code> if an event with this id was removed from the
@@ -326,7 +334,7 @@ public class Event {
 	/**
 	 * Tells whether the id of one event is already marked as a cause of this
 	 * event.
-	 * 
+	 *
 	 * @param id
 	 *            id of the event to test causality for
 	 * @return <code>true</code> if id is marked as a cause for this event, else
@@ -338,7 +346,7 @@ public class Event {
 
 	/**
 	 * Returns all causing events marked so far.
-	 * 
+	 *
 	 * @return set of causing event ids. Modifications to this set do not affect
 	 *         this event as it is a copy.
 	 */
