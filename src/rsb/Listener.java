@@ -38,7 +38,7 @@ import rsb.transport.TransportFactory;
  * particular filtering of incoming events. Each time a event is received from
  * an Informer, an Event object is dispatched to all Handlers associated to the
  * Listener.
- * 
+ *
  * @author swrede
  * @author jschaefe
  * @author jwienke
@@ -89,13 +89,13 @@ public class Listener extends Participant {
 	Listener(String scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
 		initMembers();
-	}	
+	}
 
 	Listener(String scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.IN);
 		initMembers();
-	}	
-	
+	}
+
 	Listener(Scope scope, TransportFactory tfac) {
 		super(scope, tfac, PortConfiguration.IN);
 		initMembers();
@@ -111,12 +111,14 @@ public class Listener extends Participant {
 		LOG.fine("New Listener instance: [scope=" + getScope() + "]");
 	}
 
+	@Override
 	public void activate() throws InitializeException {
 		state.activate();
 		// TODO probably breaks re-activation
 		getRouter().addFilter(new ScopeFilter(getScope()));
 	}
 
+	@Override
 	public void deactivate() {
 		state.deactivate();
 	}
@@ -147,7 +149,7 @@ public class Listener extends Participant {
 	/**
 	 * Register an event handler on this Listener to be notified about incoming
 	 * events. All received events will be send to the registered listeners.
-	 * 
+	 *
 	 * @param handler
 	 *            the handler instance to be registered
 	 * @param wait
@@ -162,7 +164,7 @@ public class Listener extends Participant {
 
 	/**
 	 * Remove an event listener from this Listener.
-	 * 
+	 *
 	 * @param handler
 	 *            the listener instance to be removed.
 	 * @param wait
