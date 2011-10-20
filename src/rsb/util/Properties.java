@@ -179,24 +179,14 @@ public class Properties {
 			String homeDir = System.getProperty("user.home");
 			try {
 				singleton.loadFile(homeDir + "/.config/rsb.conf");
-				System.out
-						.println("Found rsb.conf in configuration directory '"
-								+ homeDir + "/.config'");
 			} catch (FileNotFoundException ex) {
-				System.out
-						.println("No rsb.conf found in configuration directory '"
-								+ homeDir + "/.config'");
 			} catch (IOException ex) {
 				System.err.println("Caught IOException trying to read "
 						+ homeDir + "/.config/rsb.conf: " + ex.getMessage());
 			}
 			try {
 				singleton.loadFile(workDir + "/rsb.conf");
-				System.out.println("Found rsb.conf in working directory '"
-						+ workDir + "'");
 			} catch (FileNotFoundException ex) {
-				System.out.println("No rsb.conf found in working directory '"
-						+ workDir + "'");
 			} catch (IOException ex) {
 				System.err.println("Caught IOException trying to read "
 						+ workDir + "rsb.conf: " + ex.getMessage());
