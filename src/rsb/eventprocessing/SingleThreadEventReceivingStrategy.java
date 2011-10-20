@@ -32,7 +32,7 @@ import rsb.filter.Filter;
 
 /**
  * An {@link EventReceivingStrategy} that uses a single thread for all handlers.
- * 
+ *
  * @author jwienke
  */
 public class SingleThreadEventReceivingStrategy implements
@@ -45,7 +45,7 @@ public class SingleThreadEventReceivingStrategy implements
 	/**
 	 * A thread that matches events and dispatches them to all handlers that are
 	 * registered in his internal set of handlers.
-	 * 
+	 *
 	 * @author jwienke
 	 */
 	private class DispatchThread extends Thread {
@@ -73,6 +73,7 @@ public class SingleThreadEventReceivingStrategy implements
 
 			try {
 
+			        outer:
 				while (!interrupted()) {
 
 					Event e = events.take();
@@ -82,7 +83,7 @@ public class SingleThreadEventReceivingStrategy implements
 					synchronized (filters) {
 						for (Filter f : filters) {
 							if (f.transform(e) == null) {
-								continue;
+							        continue outer;
 							}
 						}
 					}
