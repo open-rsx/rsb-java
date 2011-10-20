@@ -97,9 +97,9 @@ class LocalMethod<T, U> extends Method implements Handler  {
 			reply.setData(error);
 		}
 
-		reply.setMethod("REPLY");
-		reply.getMetaData().setUserInfo("rsb:reply",event.getId().getAsUUID().toString());
 		reply.setScope(REPLY_SCOPE);
+		reply.setMethod("REPLY");
+		reply.addCause(event.getId());
 
 		// send reply via method informer
 		try {

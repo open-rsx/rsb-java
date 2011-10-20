@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import rsb.EventId;
 import rsb.Event;
 import rsb.Handler;
 import rsb.RSBException;
@@ -37,18 +38,18 @@ import rsb.filter.MethodFilter;
  * @author jmoringe
  * @author swrede
  *
- * @param <T>	return type 
- * @param <U>	parameter object type 
+ * @param <T>	return type
+ * @param <U>	parameter object type
  *
  */
 public abstract class AbstractRemoteMethod<T, U> extends Method implements Handler {
 
-	private static final Logger LOG = Logger.getLogger(AbstractRemoteMethod.class.getName()); 
+	private static final Logger LOG = Logger.getLogger(AbstractRemoteMethod.class.getName());
 
 	protected class CollectorThread implements Runnable {
 		public void run() {
 			do {
-				for (String key : pendingRequests.keySet()) {
+				for (EventId key : pendingRequests.keySet()) {
 					if (pendingRequests.get(key).isEnqueued()) {
 						// future already cleared, thus we remove the pending request entry
 						LOG.info("Removing request with id: " + key);
@@ -60,7 +61,7 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 	}
 
 	// assuming usually eight threads will write simultaneously to the map
-	private final Map<String, WeakReference<Future<T>>> pendingRequests = new ConcurrentHashMap<String, WeakReference<Future<T>>>(16,0.75f,8);
+	private final Map<EventId, WeakReference<Future<T>>> pendingRequests = new ConcurrentHashMap<EventId, WeakReference<Future<T>>>(16,0.75f,8);
 
 	/**
 	 * Create a new RemoteMethod object that represent the remote method named @a
@@ -78,7 +79,7 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 		listener.addFilter(new MethodFilter("REPLY"));
 		listener.addHandler(this, true);
 	}
-	
+
 	public abstract Future<T> call(final U data) throws RSBException;
 
 	/**
@@ -91,15 +92,15 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 		event.setScope(REQUEST_SCOPE);
 		event.setMethod("REQUEST");
 		// further metadata is set by informer
-		
+
 		// instantiate future
 		final Future<T> future = new Future<T>();
 		Event sentEvent = null;
 		synchronized (this) {
 			sentEvent = informer.send(event);
 			// put future with id as weak ref in pending results table
-			pendingRequests.put(sentEvent.getId().getAsUUID().toString(), new WeakReference<Future<T>>(future));
-			LOG.fine("registered future in pending requests with id: " + sentEvent.getId().getAsUUID().toString());
+			pendingRequests.put(sentEvent.getId(), new WeakReference<Future<T>>(future));
+			LOG.fine("registered future in pending requests with id: " + sentEvent.getId());
 		}
 		return future;
 	}
@@ -107,14 +108,18 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 	@Override
 	public void internalNotify(final Event event) {
 		//Thread.dumpStack();
-		String replyId = null;
+		EventId replyId = null;
 		// get reply id
-		try {
-			replyId = event.getMetaData().getUserInfo("rsb:reply");
-			LOG.fine("Received reply with id: " + replyId);
-		} catch (IllegalArgumentException exception) {
-			LOG.warning("Received reply event without rsb:reply userinfo item. Skipping it.");
-			return;
+		if (event.getCauses().size() > 0) {
+		        try {
+			        replyId = event.getCauses().iterator().next();
+				LOG.fine("Received reply with id: " + replyId);
+			} catch (IllegalArgumentException exception) {
+			}
+		}
+		if (replyId == null) {
+		    LOG.warning("Received reply event without cause. Skipping it.");
+		    return;
 		}
 
 		// check for reply id in list of pending calls
@@ -151,5 +156,5 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 	}
 
 	protected abstract void completeRequest(Future<T> future, Event event);
-	
+
 };
