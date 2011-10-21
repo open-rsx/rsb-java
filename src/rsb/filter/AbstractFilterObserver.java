@@ -34,7 +34,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 * @see rsb.filter.FilterObserver#notify(rsb.filter.AbstractFilter, rsb.filter.FilterAction)
 	 */
 	@Override
-	public void notify(AbstractFilter e, FilterAction a) {
+	public void notify(AbstractFilter event, FilterAction action) {
 		LOG.fine("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
 	}
 
@@ -42,7 +42,7 @@ public class AbstractFilterObserver implements FilterObserver {
 	 * @see rsb.filter.FilterObserver#notify(rsb.filter.ScopeFilter, rsb.filter.FilterAction)
 	 */
 	@Override
-	public void notify(ScopeFilter e, FilterAction a) {
+	public void notify(ScopeFilter event, FilterAction action) {
 		LOG.fine("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
 	}
 
@@ -50,16 +50,16 @@ public class AbstractFilterObserver implements FilterObserver {
 	 * @see rsb.filter.FilterObserver#notify(rsb.filter.TypeFilter, rsb.filter.FilterAction)
 	 */
 	@Override
-	public void notify(TypeFilter e, FilterAction a) {
+	public void notify(TypeFilter event, FilterAction action) {
 		LOG.fine("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
 
 	}
 
 	/* (non-Javadoc)
-	 * @see rsb.filter.FilterObserver#notify(rsb.filter.IdentityFilter, rsb.filter.FilterAction)
+	 * @see rsb.filter.FilterObserver#notify(rsb.filter.OriginFilter, rsb.filter.FilterAction)
 	 */
 	@Override
-	public void notify(IdentityFilter e, FilterAction a) {
+	public void notify(OriginFilter event, FilterAction action) {
 		LOG.fine("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
 	}
 

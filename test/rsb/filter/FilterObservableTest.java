@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import rsb.ParticipantId;
 import rsb.Scope;
 
 /**
@@ -33,28 +34,28 @@ import rsb.Scope;
 public class FilterObservableTest {
 
 	private final class TestObserver implements FilterObserver {
-		boolean notified_id = false;
+		boolean notified_of = false;
 		boolean notified_tf = false;
 		boolean notified_sf = false;
 		boolean notified_af = false;
 
 		@Override
-		public void notify(IdentityFilter e, FilterAction a) {
-			notified_id = true;
+		public void notify(OriginFilter event, FilterAction action) {
+			notified_of = true;
 		}
 
 		@Override
-		public void notify(TypeFilter e, FilterAction a) {
+		public void notify(TypeFilter event, FilterAction action) {
 			notified_tf = true;
 		}
 
 		@Override
-		public void notify(ScopeFilter e, FilterAction a) {
+		public void notify(ScopeFilter event, FilterAction action) {
 			notified_sf = true;
 		}
 
 		@Override
-		public void notify(AbstractFilter e, FilterAction a) {
+		public void notify(AbstractFilter event, FilterAction action) {
 			notified_af = true;
 		}
 	}
@@ -97,13 +98,12 @@ public class FilterObservableTest {
 		fo.addObserver(to);
 		fo.notifyObservers((Filter) new ScopeFilter(new Scope("/blub")),
 				FilterAction.ADD);
-		fo.notifyObservers((Filter) new IdentityFilter("blub",
-				IdentityFilter.Type.RECEIVER_IDENTITY), FilterAction.ADD);
+		fo.notifyObservers((Filter) new OriginFilter(new ParticipantId()), FilterAction.ADD);
 		fo.notifyObservers((Filter) new TypeFilter(this.getClass()),
 				FilterAction.ADD);
 		assertTrue(to.notified_sf);
 		assertTrue(to.notified_tf);
-		assertTrue(to.notified_id);
+		assertTrue(to.notified_of);
 		assertFalse(to.notified_af);
 	}
 

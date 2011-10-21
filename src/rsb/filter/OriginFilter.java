@@ -37,7 +37,7 @@ public class OriginFilter extends AbstractFilter {
 	boolean invert = false;
 	
         public OriginFilter (ParticipantId origin, boolean invert) {
-                super(IdentityFilter.class);
+                super(OriginFilter.class);
                 this.origin = origin;
                 this.invert = invert;
         }

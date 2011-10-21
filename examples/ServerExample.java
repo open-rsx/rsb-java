@@ -53,7 +53,7 @@ public class ServerExample {
 
 		@Override
 		public Event invoke(Event request) throws Throwable {
-			request.setData((String) (request.getData() + "/reply").toUpperCase());
+			request.setData(((String) request.getData()) + "/reply".toUpperCase());
 			return request;
 		}
 		
