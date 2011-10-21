@@ -101,18 +101,17 @@ class ReceiverTask extends Thread {
 				log.info("Listener thread was interrupted during IO.");
 				break;
 			} catch (SpreadException e1) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}
 				if (!spread.conn.isConnected()) {
 					log.fine("Spread connection is closed.");
-					break;
 				}
 				if (!spread.shutdown) {
 					log.warning("Caught a SpreadException while trying to receive a message: "
 							+ e1.getMessage());
 				}
+				// get out here, stop this thread as no further messages can be retrieved
+				// re-initialization elsewhere is necessary
+				// TODO call error handler to allow framework shutdown from client-code
+				this.interrupt();
 			}
 		}
 		log.fine("Listener thread stopped");
