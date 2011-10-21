@@ -15,7 +15,7 @@ public class ProtocolBufferConverter<MessageType extends Message> implements Con
 	
 	public ProtocolBufferConverter(MessageType instance) {
 		defaultInstance = instance;
-		LOG.info("Result of instance.getClass().getName() " + instance.getClass().getName());
+		LOG.fine("Result of instance.getClass().getName() " + instance.getClass().getName());
 		signature = new ConverterSignature(getWireSchema(),instance.getClass());
 	}
 	

@@ -5,7 +5,7 @@
     </description>
 
 	<property name="version" value="0.5.0" />
-	<property name="jarname" value="RSBJava-${version}.jar" />
+	<property name="jarname" value="rsb-${version}.jar" />
 
 	<!-- set global properties for this build -->
 	<property file="build.properties" />
@@ -285,7 +285,7 @@
 		<echo message="Installing to ${install.dir}." />
 		<mkdir dir="${install.dir}" />
 		<copy file="${dist.dir}/lib/${jarname}" todir="${install.dir}" />
-		<symlink link="${install.dir}/RSBJava.jar" resource="${install.dir}/${jarname}" overwrite="true" />
+		<symlink link="${install.dir}/rsb.jar" resource="${install.dir}/${jarname}" overwrite="true" />
 	</target>
 
 	<target name="doc">
