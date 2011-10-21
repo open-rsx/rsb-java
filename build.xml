@@ -19,7 +19,7 @@
 	<property name="pbuf.protoc" location="/usr/bin/protoc" />
 	<property name="pbuf.lib" location="/usr/share/java/protobuf.jar" />
 	<property name="pbuf.protopath" location="${env.prefix}/share/rsbprotocol" />
-	<property name="install.dir" location="${env.prefix}/lib/java" />
+	<property name="install.dir" location="${env.prefix}/share/java" />
 	<property name="dir.report.unittests.xml" location="testreports" />
 	<property name="dir.doc" location="doc" />
 	<property name="cobertura.dir" value="${lib.dir}" />
