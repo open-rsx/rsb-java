@@ -61,7 +61,7 @@ public class RemoteServer extends Server {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = timeout;
 	}
-	
+
 	/**
 	 * Create a new RemoteServer object that provides its methods under the
 	 * scope @a scope.
@@ -76,7 +76,7 @@ public class RemoteServer extends Server {
 	public RemoteServer(final String scope, double timeout) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = timeout;
-	}	
+	}
 
 	/**
 	 * Create a new RemoteServer object that provides its methods under the
@@ -90,7 +90,7 @@ public class RemoteServer extends Server {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = 25;
 	}
-	
+
 	/**
 	 * Create a new RemoteServer object that provides its methods under the
 	 * scope @a scope.
@@ -102,7 +102,7 @@ public class RemoteServer extends Server {
 	public RemoteServer(final String scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 		this.timeout = 25;
-	}	
+	}
 
 	public double getTimeout() {
 		return timeout;
@@ -177,10 +177,10 @@ public class RemoteServer extends Server {
 		try {
 			result = future.get((long) timeout,TimeUnit.SECONDS);
 		} catch (ExecutionException exception) {
-			LOG.warning("Exception during remote call: " + exception.getMessage() + " Re-throwing it.");
+			LOG.warning("Exception during remote call: " + exception.getMessage() + "; Re-throwing it.");
 			throw new RSBException(exception);
 		} catch (TimeoutException exception) {
-			LOG.warning("Exception during remote call: " + exception.getMessage() + " Re-throwing it.");
+			LOG.warning("Timeout during remote call; Throwing exception.");
 			throw new RSBException(exception);
 		}
 		return result;
