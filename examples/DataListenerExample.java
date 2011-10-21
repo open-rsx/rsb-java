@@ -75,7 +75,7 @@ public class DataListenerExample extends AbstractDataHandler<String> {
 		// wait that enough events are received
 		while (!allEventsDelivered()) {
 			synchronized (l) {
-				l.wait();
+				l.wait(1000);
 				LOG.fine("Wake-Up!!!");
 			}
 		}		

@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.Factory;
+import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.patterns.RemoteServer;
 
@@ -43,21 +44,29 @@ public class ClientExample {
 	 * @throws RSBException 
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
+	 * @throws InitializeException 
 	 */
-	public static void main(String[] args) throws RSBException, InterruptedException, ExecutionException {
+	public static void main(String[] args) throws InterruptedException, ExecutionException, InitializeException {
 		// Get remote server object to call exposed request methods of participants
 		RemoteServer server = Factory.getInstance().createRemoteServer("/example/server");
 		server.activate();
 		LOG.info("RemoteServer object activated");
 
 		LOG.info("Calling remote server under scope /example/server:");
-		LOG.info("Data-driven callback (replyHigher) synchronously: " + server.call("replyHigher", "request"));
-		LOG.info("Data-driven callback (replyHigher) with future: " + server.callAsync("replyHigher", "request").get());
-		Event event = new Event(String.class);
-		event.setData("request");
-		LOG.info("Event-driven callback (replyLower) synchronously: " + server.call("replyLower", event.getData()));
-		LOG.info("Event-driven callback (replyLower) with future: " + server.callAsync("replyLower", event.getData()).get());		
-		
+		try {
+			LOG.info("Data-driven callback (replyHigher) synchronously: "
+					+ server.call("replyHigher", "request"));
+			LOG.info("Data-driven callback (replyHigher) with future: "
+					+ server.callAsync("replyHigher", "request").get());
+			Event event = new Event(String.class);
+			event.setData("request");
+			LOG.info("Event-driven callback (replyLower) synchronously: "
+					+ server.call("replyLower", event.getData()));
+			LOG.info("Event-driven callback (replyLower) with future: "
+					+ server.callAsync("replyLower", event.getData()).get());
+		} catch (RSBException e) {
+			e.printStackTrace();
+		}
 		server.deactivate();
 	}
 
