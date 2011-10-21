@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import rsb.AbstractDataHandler;
 import rsb.Factory;
+import rsb.InitializeException;
 import rsb.Listener;
 
 /**
@@ -55,7 +56,7 @@ public class DataListenerExample extends AbstractDataHandler<String> {
 		}
 	}	
 	
-	public static void main(String[] args) throws Throwable {
+	public static void main(String[] args) throws InterruptedException, InitializeException {
 
 		// get a factory instance to create new RSB domain objects
 		Factory factory = Factory.getInstance();
@@ -77,7 +78,7 @@ public class DataListenerExample extends AbstractDataHandler<String> {
 				l.wait();
 				LOG.fine("Wake-Up!!!");
 			}
-		}
+		}		
 
 		// as there is no explicit removal model in java, always manually
 		// deactivate the listener if it is not needed anymore
