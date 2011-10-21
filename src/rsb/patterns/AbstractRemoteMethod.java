@@ -134,13 +134,12 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 				pendingRequests.remove(replyId);
 			}
 		}
-		// error cases
-		if (request==null) {
-			// for instance, if several clients send an event to the same server method,
-			// this effect may occur
-			LOG.info("Could not find matching reply in table for id: " + replyId);
-		} else {
-			LOG.fine("Found plending reply for id: " + replyId);
+
+		// If several clients send requests to the same server
+		// method, and EVENT is the reply to one of the
+		// "other" requests, REQUEST can be null here.
+		if (request!=null) {
+			LOG.fine("Found pending reply for id: " + replyId);
 			try {
 				// an error occured at the server side
 				if (event.getMetaData().getUserInfo("rsb:error?")!=null) {
