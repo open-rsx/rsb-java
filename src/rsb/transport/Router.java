@@ -104,6 +104,7 @@ public class Router extends FilterObservable implements EventHandler {
 				break;
 			}
 		} catch (RSBException e) {
+			stopEventProcessor();
 			LOG.severe("exception occured during port initialization for router");
 			throw new InitializeException(e);
 		}
@@ -115,6 +116,19 @@ public class Router extends FilterObservable implements EventHandler {
 	 */
 	private void setupEventProcessor() {
 		ep = new SingleThreadEventReceivingStrategy();
+	}
+	
+	/**
+	 * Stop event dispatching gracefully.
+	 */
+	private void stopEventProcessor() {
+		if (ep != null) {
+			try {
+				ep.shutdownAndWait();
+			} catch (InterruptedException e) {
+				LOG.log(Level.WARNING, "Error waiting for shutdown of EventProcessor: ", e);
+			}
+		}		
 	}
 
 	/**
@@ -143,12 +157,8 @@ public class Router extends FilterObservable implements EventHandler {
 				inPort.deactivate();
 			if (outPort != null)
 				outPort.deactivate();
-			if (ep != null) {
-				ep.shutdownAndWait();
-			}
+			stopEventProcessor();
 		} catch (RSBException e) {
-			LOG.log(Level.WARNING, "Error waiting for shutdown", e);
-		} catch (InterruptedException e) {
 			LOG.log(Level.WARNING, "Error waiting for shutdown", e);
 		}
 	}
