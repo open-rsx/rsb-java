@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.google.protobuf.ByteString;
 
-import rsb.protocol.Protocol.Notification;
+import rsb.protocol.FragmentedNotificationType;
 
 /**
  * A class that assembles fragmented messages received over spread in form of
@@ -44,10 +44,11 @@ public class AssemblyPool {
 	 */
 	private class Assembly {
 
-		private Map<Integer, Notification> notifications = new HashMap<Integer, Notification>();
+		private Map<Integer, FragmentedNotificationType.FragmentedNotification> notifications
+		    = new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
 		private int requiredParts = 0;
 
-		public Assembly(Notification initialNotification) {
+		public Assembly(FragmentedNotificationType.FragmentedNotification initialNotification) {
 			assert (initialNotification.getNumDataParts() > 1);
 			//id = initialNotification.getId();
 			notifications.put(initialNotification.getDataPart(),
@@ -55,7 +56,7 @@ public class AssemblyPool {
 			requiredParts = initialNotification.getNumDataParts();
 		}
 
-		public ByteBuffer add(Notification notification) {
+		public ByteBuffer add(FragmentedNotificationType.FragmentedNotification notification) {
 		        //assert notification.getId().equals(id);
 			assert !notifications.containsKey(notification.getDataPart());
 			notifications.put(notification.getDataPart(), notification);
@@ -66,7 +67,8 @@ public class AssemblyPool {
 				for (int part = 0; part < requiredParts; ++part) {
 					assert notifications.containsKey(part);
 
-					ByteString currentData = notifications.get(part).getData();
+					ByteString currentData
+					    = notifications.get(part).getNotification().getData();
 					stream.write(currentData.toByteArray(), 0,
 							currentData.size());
 
@@ -92,11 +94,11 @@ public class AssemblyPool {
 	 * @return joined data or <code>null</code> if not event was completed with
 	 *         this notification
 	 */
-	public ByteBuffer insert(Notification notification) {
+	public ByteBuffer insert(FragmentedNotificationType.FragmentedNotification notification) {
 
 		assert notification.getNumDataParts() > 0;
 		if (notification.getNumDataParts() == 1) {
-			return ByteBuffer.wrap(notification.getData().toByteArray());
+		        return ByteBuffer.wrap(notification.getNotification().getData().toByteArray());
 		}
 
 		ByteString id = null; // = notification.getId();

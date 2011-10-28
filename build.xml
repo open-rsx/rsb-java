@@ -10,7 +10,7 @@
 	<!-- set global properties for this build -->
 	<property file="build.properties" />
 	<property environment="env" />
-	<property name="src" location="spread-4.0.0;src" />
+	<property name="src" location="spread-4.0.0;src;generated-protocol" />
 	<property name="build.dir" location="build" />
 	<property name="dist.dir" location="dist" />
 	<property name="test.dir" location="${build.dir}/test" />
@@ -45,7 +45,7 @@
 	<fail message="RSB protocol property pbuf.protopath does not point to a valid installation of RSBProtocol at 'pbuf.protopath'">
 		<condition>
 			<not>
-				<available file="${pbuf.protopath}/Protocol.proto" />
+				<available file="${pbuf.protopath}/rsb/protocol/Notification.proto" />
 			</not>
 		</condition>
 	</fail>
@@ -76,6 +76,7 @@
 		<mkdir dir="${cobertura.out.dir}" />
 		<mkdir dir="${dir.report.unittests.xml}" />
 		<mkdir dir="${dir.doc}" />
+		<mkdir dir="generated-protocol" />
 		<echo message="Using pbuf: ${pbuf.lib}" />
 		<echo message="Test report dir: ${dir.report.unittests.xml}" />
 	</target>
@@ -118,13 +119,12 @@
 
 	<target name="protocol">
 		<apply executable="${pbuf.protoc}">
-			<arg value="--java_out=src" />
+			<arg value="--java_out=generated-protocol" />
 			<arg value="--proto_path=${pbuf.protopath}" />
-			<fileset dir="${pbuf.protopath}" includes="*.proto" />
-			<fileset dir="${pbuf.protopath}/introspection" includes="/PortStateChange.proto" />
+			<fileset dir="${pbuf.protopath}" includes="**/*.proto" />
 		</apply>
 		<apply executable="${pbuf.protoc}">
-			<arg value="--java_out=examples" />
+			<arg value="--java_out=generated-protocol" />
 			<arg value="--proto_path=${basedir}/examples/tutorial/protocol" />
 			<fileset dir="examples/tutorial/protocol" includes="*.proto" />
 		</apply>
@@ -272,7 +272,7 @@
 	<target name="clean" description="clean up">
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build.dir}" />
-		<delete dir="src/rsb/protocol" />
+		<delete dir="generated-protocol" />
 		<delete dir="${test.dir}" />
 		<delete dir="${instrumented.dir}" />
 		<delete dir="${dist.dir}" />

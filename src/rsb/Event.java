@@ -86,7 +86,8 @@ public class Event {
 	}
 
 	/**
-	 * @return the Java type of the payload
+	 * @return the Java type of the payload, may be <code>null</code> to express
+	 *         a void type where no payload is carried at all.
 	 */
 	public Class<?> getType() {
 		return type;

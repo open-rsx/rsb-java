@@ -29,9 +29,8 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import rsb.ParticipantId;
-import rsb.protocol.Protocol;
-import rsb.protocol.Protocol.EventId;
-import rsb.protocol.Protocol.Notification;
+import rsb.protocol.NotificationType.Notification;
+import rsb.protocol.EventIdType.EventId;
 
 import com.google.protobuf.ByteString;
 
@@ -44,8 +43,8 @@ public class ProtocolBufferConverterTest {
 			.getLogger(ProtocolBufferConverterTest.class.getName());
 
 	WireContents<ByteBuffer> buffer;
-	ProtocolBufferConverter<Protocol.Notification> converter = new ProtocolBufferConverter<Protocol.Notification>(
-			Protocol.Notification.getDefaultInstance());
+	ProtocolBufferConverter<Notification> converter = new ProtocolBufferConverter<Notification>(
+			Notification.getDefaultInstance());
 
 	/**
 	 * Test method for

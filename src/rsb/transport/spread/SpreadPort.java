@@ -3,7 +3,7 @@
  *
  * This file is a part of the RSBJava project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010, 2011 CoR-Lab, Bielefeld University
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@ package rsb.transport.spread;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,11 +41,13 @@ import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
-import rsb.protocol.Protocol.EventId;
-import rsb.protocol.Protocol.MetaData;
-import rsb.protocol.Protocol.Notification;
-import rsb.protocol.Protocol.UserInfo;
-import rsb.protocol.Protocol.UserTime;
+import rsb.protocol.EventIdType.EventId;
+import rsb.protocol.EventMetaDataType.EventMetaData;
+import rsb.protocol.EventMetaDataType.UserInfo;
+import rsb.protocol.EventMetaDataType.UserTime;
+import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
+import rsb.protocol.NotificationType.Notification;
+import rsb.protocol.NotificationType.Notification.Builder;
 import rsb.transport.AbstractPort;
 import rsb.transport.EventHandler;
 import rsb.util.InvalidPropertyException;
@@ -54,12 +57,15 @@ import spread.SpreadException;
 import com.google.protobuf.ByteString;
 
 /**
+ * A port which connects to a spread daemon network.
+ * 
  * @author swrede
  */
 public class SpreadPort extends AbstractPort {
 
 	private ReceiverTask receiver;
 	private EventHandler eventHandler;
+	private static final int MIN_DATA_SIZE = 5;
 	private static final int MAX_MSG_SIZE = 100000;
 
 	private final static Logger log = Logger.getLogger(SpreadPort.class
@@ -159,7 +165,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -186,7 +192,7 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 *
+	 * 
 	 * @param scope
 	 *            scope to create group name
 	 * @return truncated md5 hash to fit into spread group
@@ -220,7 +226,7 @@ public class SpreadPort extends AbstractPort {
 	}
 
 	private EventId.Builder createEventIdBuilder(final rsb.EventId id) {
-		rsb.protocol.Protocol.EventId.Builder eventIdBuilder = rsb.protocol.Protocol.EventId
+		rsb.protocol.EventIdType.EventId.Builder eventIdBuilder = rsb.protocol.EventIdType.EventId
 				.newBuilder();
 		eventIdBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
 				.toByteArray()));
@@ -228,104 +234,159 @@ public class SpreadPort extends AbstractPort {
 		return eventIdBuilder;
 	}
 
+	private void fillMandatoryNotificationFields(
+			Notification.Builder notificationBuilder, Event event) {
+		notificationBuilder.setEventId(createEventIdBuilder(event.getId()));
+	}
+
+	private void fillNotificationHeader(Builder notificationBuilder,
+			Event event, String wireSchema) {
+
+		// notification metadata
+		notificationBuilder.setWireSchema(ByteString.copyFromUtf8(wireSchema));
+		notificationBuilder.setScope(ByteString.copyFromUtf8(event.getScope()
+				.toString()));
+		if (event.getMethod() != null) {
+			notificationBuilder.setMethod(ByteString.copyFromUtf8(event
+					.getMethod()));
+		}
+
+		EventMetaData.Builder metaDataBuilder = EventMetaData.newBuilder();
+		metaDataBuilder.setCreateTime(event.getMetaData().getCreateTime());
+		metaDataBuilder.setSendTime(event.getMetaData().getSendTime());
+		for (String key : event.getMetaData().userInfoKeys()) {
+			UserInfo.Builder infoBuilder = UserInfo.newBuilder();
+			infoBuilder.setKey(ByteString.copyFromUtf8(key));
+			infoBuilder.setValue(ByteString.copyFromUtf8(event.getMetaData()
+					.getUserInfo(key)));
+			metaDataBuilder.addUserInfos(infoBuilder.build());
+		}
+		for (String key : event.getMetaData().userTimeKeys()) {
+			UserTime.Builder timeBuilder = UserTime.newBuilder();
+			timeBuilder.setKey(ByteString.copyFromUtf8(key));
+			timeBuilder.setTimestamp(event.getMetaData().getUserTime(key));
+			metaDataBuilder.addUserTimes(timeBuilder.build());
+		}
+		notificationBuilder.setMetaData(metaDataBuilder.build());
+		for (rsb.EventId cause : event.getCauses()) {
+			notificationBuilder.addCauses(createEventIdBuilder(cause));
+		}
+
+	}
+
+	private class Fragment {
+		public FragmentedNotification.Builder fragmentBuilder = null;
+		public Notification.Builder notificationBuilder = null;
+
+		public Fragment(FragmentedNotification.Builder fragmentBuilder,
+				Notification.Builder notificationBuilder) {
+			this.fragmentBuilder = fragmentBuilder;
+			this.notificationBuilder = notificationBuilder;
+		}
+	}
+
 	@Override
-	public void push(Event e) throws ConversionException {
-		Converter<ByteBuffer> converter = null;
-		// convert data
+	public void push(Event event) throws ConversionException {
+
+		WireContents<ByteBuffer> convertedDataBuffer;
 		try {
-		    if (e.getType() == null) {
-			converter = outStrategy.getConverter("null");
-		    } else {
-			converter = outStrategy.getConverter(e.getType().getName());
-		    }
+			convertedDataBuffer = convertEvent(event);
 		} catch (NoSuchConverterException ex) {
 			log.warning(ex.getMessage());
 			return;
 		}
-		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
-				e.getType(), e.getData());
 		int dataSize = convertedDataBuffer.getSerialization().limit();
 
+		event.getMetaData().setSendTime(0);
+
 		// find out how many messages are required to send the data
-		int requiredParts = 1;
-		if (dataSize > 0) {
-			requiredParts = (int) Math.ceil((float) dataSize
-					/ (float) MAX_MSG_SIZE);
-		}
+		// int requiredParts = 1;
+		// if (dataSize > 0) {
+		// requiredParts = (int) Math.ceil((float) dataSize
+		// / (float) MAX_MSG_SIZE);
+		// }
 
-		e.getMetaData().setSendTime(0);
+		// create a list of fragmented messages
+		List<Fragment> fragments = new ArrayList<Fragment>();
+		int cursor = 0;
+		int currentFragment = 0;
+		while (cursor <= dataSize) {
 
-		// send all parts
-		for (int part = 0; part < requiredParts; ++part) {
-
+			FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
+					.newBuilder();
 			Notification.Builder notificationBuilder = Notification
 					.newBuilder();
 
-			// notification metadata
-			notificationBuilder.setEventId(createEventIdBuilder(e.getId()));
-			notificationBuilder.setWireSchema(ByteString
-					.copyFromUtf8(convertedDataBuffer.getWireSchema()));
-			notificationBuilder.setScope(ByteString.copyFromUtf8(e.getScope()
-					.toString()));
-			if (e.getMethod() != null) {
-				notificationBuilder.setMethod(ByteString.copyFromUtf8(e
-						.getMethod()));
+			fillMandatoryNotificationFields(notificationBuilder, event);
+
+			// for the first notification we also need to set the whole head
+			// with meta data etc.
+			if (cursor == 0) {
+				fillNotificationHeader(notificationBuilder, event,
+						convertedDataBuffer.getWireSchema());
 			}
 
-			MetaData.Builder metaDataBuilder = MetaData.newBuilder();
-			metaDataBuilder.setCreateTime(e.getMetaData().getCreateTime());
-			metaDataBuilder.setSendTime(e.getMetaData().getSendTime());
-			for (String key : e.getMetaData().userInfoKeys()) {
-				UserInfo.Builder infoBuilder = UserInfo.newBuilder();
-				infoBuilder.setKey(ByteString.copyFromUtf8(key));
-				infoBuilder.setValue(ByteString.copyFromUtf8(e.getMetaData()
-						.getUserInfo(key)));
-				metaDataBuilder.addUserInfos(infoBuilder.build());
+			// determine how much space can still be used for data
+			// TODO this is really suboptimal with the java API...
+			FragmentedNotification.Builder fragmentBuilderClone = fragmentBuilder
+					.clone();
+			fragmentBuilderClone.setNotification(notificationBuilder.clone());
+			int currentNotificationSize = fragmentBuilderClone.buildPartial()
+					.getSerializedSize();
+			if (currentNotificationSize > MAX_MSG_SIZE - MIN_DATA_SIZE) {
+				throw new RuntimeException(
+						"There is not enough space for data in this message.");
 			}
-			for (String key : e.getMetaData().userTimeKeys()) {
-				UserTime.Builder timeBuilder = UserTime.newBuilder();
-				timeBuilder.setKey(ByteString.copyFromUtf8(key));
-				timeBuilder.setTimestamp(e.getMetaData().getUserTime(key));
-				metaDataBuilder.addUserTimes(timeBuilder.build());
-			}
-			notificationBuilder.setMetaData(metaDataBuilder.build());
-			for (rsb.EventId cause : e.getCauses()) {
-				notificationBuilder.addCauses(createEventIdBuilder(cause));
-			}
+			int maxDataPartSize = MAX_MSG_SIZE - currentNotificationSize;
 
-			// data fragmentation
-			int fragmentSize = MAX_MSG_SIZE;
-			if (part == requiredParts - 1) {
-				fragmentSize = dataSize - MAX_MSG_SIZE * part;
+			int fragmentDataSize = maxDataPartSize;
+			if (cursor + fragmentDataSize > dataSize) {
+				fragmentDataSize = dataSize - cursor;
 			}
 			ByteString dataPart = ByteString.copyFrom(convertedDataBuffer
-					.getSerialization().array(), part * MAX_MSG_SIZE,
-					fragmentSize);
-			if (part != requiredParts - 1) {
-				assert dataPart.size() == MAX_MSG_SIZE;
-			}
+					.getSerialization().array(), cursor, fragmentDataSize);
+
 			notificationBuilder.setData(dataPart);
-			notificationBuilder.setDataPart(part);
-			notificationBuilder.setNumDataParts(requiredParts);
+			fragmentBuilder.setDataPart(currentFragment);
+			// optimistic guess
+			fragmentBuilder.setNumDataParts(1);
+
+			fragments.add(new Fragment(fragmentBuilder, notificationBuilder));
+
+			cursor += fragmentDataSize;
+			currentFragment++;
+
+		}
+
+		// check how many fragments we really need to send
+		if (fragments.size() > 1) {
+			for (Fragment fragment : fragments) {
+				fragment.fragmentBuilder.setNumDataParts(fragments.size());
+			}
+		}
+
+		// send all fragments
+		for (Fragment fragment : fragments) {
+
+			fragment.fragmentBuilder
+					.setNotification(fragment.notificationBuilder);
 
 			// build final notification
-			Notification notification = notificationBuilder.build();
-			log.fine("push called, sending message fragment " + (part + 1)
-					+ "/" + requiredParts + " on port infrastructure: [eid="
-					+ e.getId().toString() + "]");
+			FragmentedNotification serializedFragment = fragment.fragmentBuilder
+					.build();
 
 			// send message on spread
 			// TODO remove data message
 			DataMessage dm = new DataMessage();
 			try {
-				dm.setData(notification.toByteArray());
+				dm.setData(serializedFragment.toByteArray());
 			} catch (SerializeException ex) {
 				throw new RuntimeException(
 						"Unable to set binary data for a spread message.", ex);
 			}
 
 			// send to all super scopes
-			List<Scope> scopes = e.getScope().superScopes(true);
+			List<Scope> scopes = event.getScope().superScopes(true);
 			for (Scope scope : scopes) {
 				dm.addGroup(spreadGroupName(scope));
 			}
@@ -344,6 +405,21 @@ public class SpreadPort extends AbstractPort {
 
 		}
 
+	}
+
+	private WireContents<ByteBuffer> convertEvent(Event event)
+			throws ConversionException {
+		Converter<ByteBuffer> converter = null;
+		// convert data
+		if (event.getType() == null) {
+			// special handling for void type
+			converter = outStrategy.getConverter("null");
+		} else {
+			converter = outStrategy.getConverter(event.getType().getName());
+		}
+		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
+				event.getType(), event.getData());
+		return convertedDataBuffer;
 	}
 
 	private void joinSpreadGroup(Scope scope) {

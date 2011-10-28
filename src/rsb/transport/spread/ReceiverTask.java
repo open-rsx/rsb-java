@@ -25,6 +25,9 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import spread.SpreadException;
+import spread.SpreadMessage;
+
 import rsb.Event;
 import rsb.ParticipantId;
 import rsb.Scope;
@@ -32,13 +35,12 @@ import rsb.converter.ConversionException;
 import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.UserData;
-import rsb.protocol.Protocol.EventId;
-import rsb.protocol.Protocol.Notification;
-import rsb.protocol.Protocol.UserInfo;
-import rsb.protocol.Protocol.UserTime;
 import rsb.transport.EventHandler;
-import spread.SpreadException;
-import spread.SpreadMessage;
+import rsb.protocol.EventIdType.EventId;
+import rsb.protocol.EventMetaDataType.UserInfo;
+import rsb.protocol.EventMetaDataType.UserTime;
+import rsb.protocol.NotificationType.Notification;
+import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -128,11 +130,11 @@ class ReceiverTask extends Thread {
 
 		try {
 
-			Notification n = Notification.parseFrom(dm.getData().array());
-			ByteBuffer joinedData = pool.insert(n);
+			FragmentedNotification f = FragmentedNotification.parseFrom(dm.getData().array());
+			ByteBuffer joinedData = pool.insert(f);
 
 			if (joinedData != null) {
-
+                                Notification n = f.getNotification();
 				log.fine("decoding notification");
 				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
@@ -162,7 +164,7 @@ class ReceiverTask extends Thread {
 					e.getMetaData().setUserTime(time.getKey().toStringUtf8(),
 							time.getTimestamp());
 				}
-				
+
 				// causes
 				for (EventId cause : n.getCausesList()) {
 					e.addCause(new rsb.EventId(new ParticipantId(cause
