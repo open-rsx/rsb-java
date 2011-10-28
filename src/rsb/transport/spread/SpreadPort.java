@@ -58,7 +58,7 @@ import com.google.protobuf.ByteString;
 
 /**
  * A port which connects to a spread daemon network.
- * 
+ *
  * @author swrede
  */
 public class SpreadPort extends AbstractPort {
@@ -165,7 +165,7 @@ public class SpreadPort extends AbstractPort {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
 	 * rsb.filter.FilterAction)
 	 */
@@ -192,7 +192,7 @@ public class SpreadPort extends AbstractPort {
 
 	/**
 	 * Creates the md5 hashed spread group names.
-	 * 
+	 *
 	 * @param scope
 	 *            scope to create group name
 	 * @return truncated md5 hash to fit into spread group
@@ -310,7 +310,7 @@ public class SpreadPort extends AbstractPort {
 		List<Fragment> fragments = new ArrayList<Fragment>();
 		int cursor = 0;
 		int currentFragment = 0;
-		while (cursor <= dataSize) {
+		while (cursor < dataSize) {
 
 			FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
 					.newBuilder();
@@ -321,7 +321,7 @@ public class SpreadPort extends AbstractPort {
 
 			// for the first notification we also need to set the whole head
 			// with meta data etc.
-			if (cursor == 0) {
+			if (currentFragment == 0) {
 				fillNotificationHeader(notificationBuilder, event,
 						convertedDataBuffer.getWireSchema());
 			}

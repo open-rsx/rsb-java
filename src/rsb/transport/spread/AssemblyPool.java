@@ -27,6 +27,10 @@ import java.util.Map;
 
 import com.google.protobuf.ByteString;
 
+
+import rsb.EventId;
+import rsb.ParticipantId;
+import rsb.protocol.NotificationType;
 import rsb.protocol.FragmentedNotificationType;
 
 /**
@@ -50,14 +54,16 @@ public class AssemblyPool {
 
 		public Assembly(FragmentedNotificationType.FragmentedNotification initialNotification) {
 			assert (initialNotification.getNumDataParts() > 1);
-			//id = initialNotification.getId();
 			notifications.put(initialNotification.getDataPart(),
 					initialNotification);
 			requiredParts = initialNotification.getNumDataParts();
 		}
 
+		public FragmentedNotificationType.FragmentedNotification getInitialFragment() {
+			return notifications.get(0);
+		}
+
 		public ByteBuffer add(FragmentedNotificationType.FragmentedNotification notification) {
-		        //assert notification.getId().equals(id);
 			assert !notifications.containsKey(notification.getDataPart());
 			notifications.put(notification.getDataPart(), notification);
 
@@ -83,7 +89,26 @@ public class AssemblyPool {
 
 	}
 
-	private Map<ByteString, Assembly> assemblies = new HashMap<ByteString, Assembly>();
+	private Map<EventId, Assembly> assemblies = new HashMap<EventId, Assembly>();
+
+        public class DataAndNotification {
+		private ByteBuffer		      data;
+		private NotificationType.Notification notification;
+
+		public DataAndNotification(ByteBuffer		         data,
+					   NotificationType.Notification notification) {
+			this.data	  = data;
+			this.notification = notification;
+		}
+
+		public ByteBuffer getData() {
+			return this.data;
+		}
+
+		public NotificationType.Notification getNotification() {
+			return this.notification;
+		}
+        };
 
 	/**
 	 * Adds a new message to the assembly pool and joins the data of all
@@ -94,14 +119,16 @@ public class AssemblyPool {
 	 * @return joined data or <code>null</code> if not event was completed with
 	 *         this notification
 	 */
-	public ByteBuffer insert(FragmentedNotificationType.FragmentedNotification notification) {
+	public DataAndNotification insert(FragmentedNotificationType.FragmentedNotification notification) {
 
 		assert notification.getNumDataParts() > 0;
 		if (notification.getNumDataParts() == 1) {
-		        return ByteBuffer.wrap(notification.getNotification().getData().toByteArray());
+		        return new DataAndNotification(ByteBuffer.wrap(notification.getNotification().getData().toByteArray()),
+						       notification.getNotification());
 		}
 
-		ByteString id = null; // = notification.getId();
+		EventId id = new EventId(new ParticipantId(notification.getNotification().getEventId().getSenderId().toByteArray()),
+					 notification.getNotification().getEventId().getSequenceNumber());
 		if (!assemblies.containsKey(id)) {
 			assemblies.put(id, new Assembly(notification));
 			return null;
@@ -112,9 +139,10 @@ public class AssemblyPool {
 		ByteBuffer joinedData = assembly.add(notification);
 		if (joinedData != null) {
 			assemblies.remove(id);
+			return new DataAndNotification(joinedData, assembly.getInitialFragment().getNotification());
+		} else {
+			return null;
 		}
-		return joinedData;
-
 	}
 
 }

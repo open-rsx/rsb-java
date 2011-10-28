@@ -131,10 +131,10 @@ class ReceiverTask extends Thread {
 		try {
 
 			FragmentedNotification f = FragmentedNotification.parseFrom(dm.getData().array());
-			ByteBuffer joinedData = pool.insert(f);
+			AssemblyPool.DataAndNotification joinedData = pool.insert(f);
 
 			if (joinedData != null) {
-                                Notification n = f.getNotification();
+				Notification n = joinedData.getNotification();
 				log.fine("decoding notification");
 				Event e = new Event();
 				e.setScope(new Scope(n.getScope().toStringUtf8()));
@@ -147,7 +147,7 @@ class ReceiverTask extends Thread {
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
 				Converter<ByteBuffer> c = converters.getConverter(n.getWireSchema().toStringUtf8());
-				UserData<?> userData = c.deserialize(n.getWireSchema().toStringUtf8(), joinedData);
+				UserData<?> userData = c.deserialize(n.getWireSchema().toStringUtf8(), joinedData.getData());
 				e.setData(userData.getData());
 				e.setType(userData.getTypeInfo());
 				log.finest("returning event with id: " + e.getId());
