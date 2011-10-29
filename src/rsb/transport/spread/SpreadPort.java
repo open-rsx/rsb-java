@@ -310,7 +310,8 @@ public class SpreadPort extends AbstractPort {
 		List<Fragment> fragments = new ArrayList<Fragment>();
 		int cursor = 0;
 		int currentFragment = 0;
-		while (cursor < dataSize) {
+		// "currentFragment == 0" is required for the case when dataSize == 0
+		while (cursor < dataSize || currentFragment == 0) {
 
 			FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
 					.newBuilder();
