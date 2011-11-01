@@ -117,7 +117,7 @@
 	</path>
 	<taskdef name="pmd" classpathref="pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />
 
-	<target name="protocol">
+	<target name="protocol" depends="init">
 		<apply executable="${pbuf.protoc}">
 			<arg value="--java_out=generated-protocol" />
 			<arg value="--proto_path=${pbuf.protopath}" />
