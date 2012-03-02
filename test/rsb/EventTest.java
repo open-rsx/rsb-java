@@ -119,6 +119,7 @@ public class EventTest {
 		
 		Event event1 = new Event();
 		Event event2 = new Event();
+		event2.getMetaData().setCreateTime(event1.getMetaData().getCreateTime());
 		assertEquals(event1.hashCode(), event2.hashCode());
 		
 		// causes
