@@ -45,26 +45,27 @@ import rsb.converter.WireContents;
  */
 public class NullConverterTest {
 
-    @Test
-    public void serialize() throws Throwable {
-	NullConverter c = new NullConverter();
-	WireContents<ByteBuffer> buf = c.serialize(null, null);
-	assertNotNull(buf);
-    }
+	@Test
+	public void serialize() throws Throwable {
+		NullConverter c = new NullConverter();
+		WireContents<ByteBuffer> buf = c.serialize(null, null);
+		assertNotNull(buf);
+	}
 
-    @Test
-    public void roundtrip() throws Throwable {
-	NullConverter c = new NullConverter();
-	WireContents<ByteBuffer> buf = c.serialize(null, null);
-	assertNotNull(buf);
-	Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization()).getData();
-	assertNull(o);
-    }
+	@Test
+	public void roundtrip() throws Throwable {
+		NullConverter c = new NullConverter();
+		WireContents<ByteBuffer> buf = c.serialize(null, null);
+		assertNotNull(buf);
+		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
+				.getData();
+		assertNull(o);
+	}
 
-    @Test(expected = ConversionException.class)
-    public void serializationNotNull() throws Throwable {
-	NullConverter c = new NullConverter();
-	c.serialize(null, new LinkedList<Integer>());
-    }
+	@Test(expected = ConversionException.class)
+	public void serializationNotNull() throws Throwable {
+		NullConverter c = new NullConverter();
+		c.serialize(null, new LinkedList<Integer>());
+	}
 
 }

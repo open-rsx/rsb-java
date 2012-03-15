@@ -3,7 +3,7 @@
  *
  * This file is a part of the RSBJava project
  *
- * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ * Copyright (C) 2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -27,26 +27,31 @@
  */
 package rsb.converter;
 
-/**
- * @author swrede
- */
-public class DefaultConverters {
+import static org.junit.Assert.*;
 
-	/*
-	 * Convenience method to register default converters for default wire type.
-	 */
-	public static void register() {
-		// TODO add missing converters for default types
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new StringConverter());
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new StringConverter("US-ASCII", "ascii-string"));
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new Uint64Converter());
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new EventIdConverter());
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new NullConverter());
+import java.nio.ByteBuffer;
+
+import org.junit.Test;
+
+import rsb.EventId;
+import rsb.ParticipantId;
+import rsb.converter.WireContents;
+
+/**
+ * @author jwienke
+ */
+public class EventIdConverterTest {
+
+	@Test
+	public void roundtrip() throws Throwable {
+		EventIdConverter converter = new EventIdConverter();
+
+		final EventId id = new EventId(new ParticipantId(), 251);
+		WireContents<ByteBuffer> buf = converter.serialize(id.getClass(), id);
+		assertNotNull(buf);
+		Object o = converter.deserialize(buf.getWireSchema(),
+				buf.getSerialization()).getData();
+		assertEquals(id, o);
 	}
 
 }
