@@ -53,20 +53,6 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 
 	private static final Logger LOG = Logger.getLogger(AbstractRemoteMethod.class.getName());
 
-	protected class CollectorThread implements Runnable {
-		public void run() {
-			do {
-				for (EventId key : pendingRequests.keySet()) {
-					if (pendingRequests.get(key).isEnqueued()) {
-						// future already cleared, thus we remove the pending request entry
-						LOG.info("Removing request with id: " + key);
-						pendingRequests.remove(key);
-					}
-				}
-			} while (isActive());
-		}
-	}
-
 	// assuming usually eight threads will write simultaneously to the map
 	private final Map<EventId, WeakReference<Future<T>>> pendingRequests = new ConcurrentHashMap<EventId, WeakReference<Future<T>>>(16,0.75f,8);
 
