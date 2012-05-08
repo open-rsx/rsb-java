@@ -19,7 +19,9 @@
 	<property name="pbuf.protoc" location="/usr/bin/protoc" />
 	<property name="pbuf.lib" location="/usr/share/java/protobuf.jar" />
 	<property name="pbuf.protopath" location="${env.prefix}/share/rsbprotocol" />
-	<property name="install.dir" location="${env.prefix}/share/java" />
+	<property name="prefix.dir" location="${env.prefix}" />
+	<property name="license.dir" location="${prefix.dir}/share/doc/rsbjava" />
+	<property name="install.dir" location="${prefix.dir}/share/java" />
 	<property name="dir.report.unittests.xml" location="testreports" />
 	<property name="dir.doc" location="doc" />
 	<property name="cobertura.dir" value="${lib.dir}" />
@@ -286,6 +288,8 @@
 		<mkdir dir="${install.dir}" />
 		<copy file="${dist.dir}/lib/${jarname}" todir="${install.dir}" />
 		<symlink link="${install.dir}/rsb.jar" resource="${install.dir}/${jarname}" overwrite="true" />
+		<mkdir dir="${license.dir}" />
+		<copy file="COPYING.txt" tofile="${license.dir}/copyright" />
 	</target>
 
 	<target name="doc">
