@@ -32,22 +32,17 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import spread.SpreadException;
-import spread.SpreadMessage;
-
 import rsb.Event;
-import rsb.ParticipantId;
-import rsb.Scope;
 import rsb.converter.ConversionException;
 import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.UserData;
-import rsb.transport.EventHandler;
-import rsb.protocol.EventIdType.EventId;
-import rsb.protocol.EventMetaDataType.UserInfo;
-import rsb.protocol.EventMetaDataType.UserTime;
-import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
+import rsb.protocol.NotificationType.Notification;
+import rsb.transport.EventBuilder;
+import rsb.transport.EventHandler;
+import spread.SpreadException;
+import spread.SpreadMessage;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -142,14 +137,8 @@ class ReceiverTask extends Thread {
 
 			if (joinedData != null) {
 				Notification n = joinedData.getNotification();
-				log.fine("decoding notification");
-				Event e = new Event();
-				e.setScope(new Scope(n.getScope().toStringUtf8()));
-				e.setId(new ParticipantId(n.getEventId().getSenderId()
-						.toByteArray()), n.getEventId().getSequenceNumber());
-				if (n.hasMethod()) {
-					e.setMethod(n.getMethod().toStringUtf8());
-				}
+				Event e = EventBuilder.fromNotification(n);
+				
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors
@@ -157,27 +146,6 @@ class ReceiverTask extends Thread {
 				UserData<?> userData = c.deserialize(n.getWireSchema().toStringUtf8(), joinedData.getData());
 				e.setData(userData.getData());
 				e.setType(userData.getTypeInfo());
-				log.finest("returning event with id: " + e.getId());
-
-				// metadata
-				e.getMetaData().setCreateTime(n.getMetaData().getCreateTime());
-				e.getMetaData().setSendTime(n.getMetaData().getSendTime());
-				e.getMetaData().setReceiveTime(0);
-				for (UserInfo info : n.getMetaData().getUserInfosList()) {
-				    e.getMetaData().setUserInfo(info.getKey().toStringUtf8(),
-								info.getValue().toStringUtf8());
-				}
-				for (UserTime time : n.getMetaData().getUserTimesList()) {
-					e.getMetaData().setUserTime(time.getKey().toStringUtf8(),
-							time.getTimestamp());
-				}
-
-				// causes
-				for (EventId cause : n.getCausesList()) {
-					e.addCause(new rsb.EventId(new ParticipantId(cause
-							.getSenderId().toByteArray()), cause
-							.getSequenceNumber()));
-				}
 
 				return e;
 

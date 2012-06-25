@@ -31,7 +31,9 @@ import java.nio.channels.WritableByteChannel;
 
 import org.junit.Test;
 
+import rsb.Event;
 import rsb.protocol.NotificationType.Notification;
+import rsb.transport.EventBuilder;
 
 /**
  * @author swrede
@@ -62,6 +64,12 @@ public class BusConnectionTest {
 				i++;
 				System.out.println("Waiting for Notification #" + i);
 				Notification n = processNotification(rbc);
+				// convert to Event
+				Event e = EventBuilder.fromNotification(n);
+
+				System.out.println("Scope: " + e.getScope());
+				System.out.println("Id: " + e.getId());
+				System.out.println("------------------------------");				
 				if (i==1200) break;
 			}
 			
@@ -87,10 +95,6 @@ public class BusConnectionTest {
 		
 		// get notification
 		Notification n = readNotification(rbc,length);
-
-		System.out.println("Scope: " + n.getScope().toStringUtf8());
-		System.out.println("Payload: " + n.getData().toStringUtf8());
-		System.out.println("------------------------------");
 		return n;
 	}
 
