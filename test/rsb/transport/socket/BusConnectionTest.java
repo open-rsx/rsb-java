@@ -21,17 +21,17 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import rsb.Event;
+import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 import rsb.transport.EventBuilder;
 
@@ -41,29 +41,48 @@ import rsb.transport.EventBuilder;
  */
 public class BusConnectionTest {
 
-	static final int HANDSHAKE        = 0x00000000;
-
 	@Test
-	public void testClientConnection() {
+	public void testBusConnection() throws UnknownHostException {
+//		def __init__(self,
+//				  65                   host = None, port = None, socket_ = None,
+//				  66                   isServer = False):
+		InetAddress addr = InetAddress.getLocalHost();
+		BusConnection bus1 = new BusConnection(addr,55555,false);
+	}
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();	
+	
+	//@Test
+	// TODO add Server mock for testing
+	public void testBusConnectionDeActivation() throws IOException, RSBException {
+		// instantiate Socket object
+		// precondition: server is running!!!
+		Socket socket1 = new Socket(InetAddress.getLocalHost(),55555);
+		Socket socket2 = new Socket(InetAddress.getLocalHost(),55555);
+		InetAddress addr = InetAddress.getLocalHost();
+		BusConnection bus1 = new BusConnection(addr,55555);	
+	    bus1.activate();
+		bus1.deactivate();
+		bus1.activate();
+		bus1.deactivate();
+		bus1.activate();
+	}
+	
+	@Test
+	public void testClientConnection() throws RSBException {
 		try {
 			// prototyping code that works with rsb_listener example
-			
-			// instantiate Socket object
-			Socket socket = new Socket("localhost",55555);
-
-			// get i/o streams 
-			ReadableByteChannel rbc = Channels.newChannel(socket.getInputStream());
-			WritableByteChannel wbc = Channels.newChannel(socket.getOutputStream());
-
-			// do RSB socket transport handshake
-			connect(rbc, wbc);
+			InetAddress addr = InetAddress.getLocalHost();
+			BusConnection bus = new BusConnection(addr,55555);	
+		    bus.activate();
 	
 			// process packet
 			int i = 0;
-			while (socket.isConnected()) {
+			while (true) {
 				i++;
 				System.out.println("Waiting for Notification #" + i);
-				Notification n = processNotification(rbc);
+				Notification n = bus.readNotification();
 				// convert to Event
 				Event e = EventBuilder.fromNotification(n);
 
@@ -73,10 +92,6 @@ public class BusConnectionTest {
 				if (i==1200) break;
 			}
 			
-			// cleanup
-			rbc.close(); 
-			wbc.close(); 
-			socket.close();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -88,56 +103,8 @@ public class BusConnectionTest {
 	
 	}
 
-	private Notification processNotification(ReadableByteChannel rbc) throws IOException {
-		// get size
-		int length = readLength(rbc);
-		System.out.println("Length of payload: " + length);
-		
-		// get notification
-		Notification n = readNotification(rbc,length);
-		return n;
-	}
 
-	/**
-	 * @param rbc
-	 * @param wbc
-	 * @return
-	 * @throws IOException
-	 */
-	protected void connect(ReadableByteChannel rbc,
-			WritableByteChannel wbc) throws IOException {
-		ByteBuffer buf_handshake = ByteBuffer.allocateDirect(4);
-		buf_handshake.asIntBuffer().put(HANDSHAKE);
-					
-		System.out.print("Request:" + buf_handshake.getInt());
-		wbc.write(buf_handshake); // write(HANDSHAKE);
-		
-		// read
-		ByteBuffer bb = ByteBuffer.allocateDirect(4);
-		bb.order(ByteOrder.LITTLE_ENDIAN);	
-		System.out.println("Bytes read: " + rbc.read(bb));
-		
-		// check if reply = 0x00000000;
-		bb.rewind();
-		if (HANDSHAKE==bb.getInt()) {
-			System.out.print("Handshake successfull!");
-		}
-	}
 
-	/**
-	 * @param rbc
-	 * @param bb
-	 * @return
-	 * @throws IOException
-	 */
-	protected int readLength(ReadableByteChannel rbc)
-			throws IOException {
-		ByteBuffer bb = ByteBuffer.allocateDirect(4);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		System.out.println("Bytes read: " + rbc.read(bb));
-		bb.rewind();
-		return bb.getInt();
-	}
 
 	private void saveRawNotification(ByteBuffer buf_notificaton) {
 //		System.out.println("Extra bytes read: " + rbc.read(buf_notification));
@@ -164,23 +131,6 @@ public class BusConnectionTest {
 		
 	}
 
-	private Notification readNotification(ReadableByteChannel rbc, int length) {
-		byte[] buf = new byte[length];
-		ByteBuffer buf_notification = ByteBuffer.wrap(buf);
-		// Why does the following not work?!?
-		// ByteBuffer buf_notification = ByteBuffer.allocateDirect(length);
-		buf_notification.order(ByteOrder.LITTLE_ENDIAN);
-		System.out.println("Bytes to be read: " + buf_notification.remaining());
-		Notification n = null;
-		try {
-			System.out.println("Bytes read: " + rbc.read(buf_notification));
-			saveRawNotification(buf_notification);
-			buf_notification.rewind();
-			n = Notification.parseFrom(buf);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return n;
-	}
+
 
 }
