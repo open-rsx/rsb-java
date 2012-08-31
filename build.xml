@@ -17,7 +17,7 @@
     <property name="examples.dir" location="${build.dir}/examples" />
     <property name="lib.dir" location="lib" />
     <property name="pbuf.protoc" location="/usr/bin/protoc" />
-    <property name="pbuf.lib" location="/usr/share/java/protobuf.jar" />
+    <property name="pbuf.lib" location="/usr/share/java/protobuf-java.jar" />
     <property name="pbuf.protopath" location="${env.prefix}/share/rsbprotocol" />
     <property name="prefix.dir" location="${env.prefix}" />
     <property name="license.dir" location="${prefix.dir}/share/doc/rsbjava" />
