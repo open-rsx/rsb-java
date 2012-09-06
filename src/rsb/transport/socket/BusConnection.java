@@ -21,7 +21,9 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -54,6 +56,7 @@ public class BusConnection {
 	protected static final int HANDSHAKE        = 0x00000000;
 	
 	Socket socket;
+	ServerSocket server;
 	ReadableByteChannel reader;
 	WritableByteChannel writer;	
 	InetAddress address;
@@ -72,9 +75,13 @@ public class BusConnection {
 	}
 
 	public void activate() throws IOException, RSBException {
+		// TODO implement auto mode
 		if (isServer) {
-			// TODO instantiate server socket
-			throw new RuntimeException("Not implemented yet!");
+			try {
+				server = new ServerSocket(port);
+			} catch (BindException ex) {
+				throw new RSBException(ex);
+			}
 		} else {
 			// instantiate Socket object
 			socket = new Socket(address,port);
@@ -153,7 +160,7 @@ public class BusConnection {
 	 * @return Notification object
 	 * @throws IOException
 	 */	
-	protected Notification readNotification() throws IOException {
+	public Notification readNotification() throws IOException {
 		// get size
 		int length = readLength();
 		byte[] buf = new byte[length];
@@ -173,6 +180,10 @@ public class BusConnection {
 		}
 		return n;
 	}	
+	
+	public void sendNotification(Notification notification) {
+		// TODO implement sending of notification to socket
+	}
 	
 	
 }
