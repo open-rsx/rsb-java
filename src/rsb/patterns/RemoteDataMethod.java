@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -41,19 +41,19 @@ public class RemoteDataMethod<T, U> extends AbstractRemoteMethod<T, U> {
 	public RemoteDataMethod(Server server, String name) {
 		super(server, name);
 	}
-	
+
 	@Override
 	public Future<T> call(U data) throws RSBException {
 		// build event and send it over the informer as request
 		final Event request = new Event(data.getClass());
 		request.setData(data);
-		return sendRequest(request);	
-	}	
-	
+		return sendRequest(request);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void completeRequest(Future<T> request, Event event) {
-		request.complete((T) event.getData()); 
+		request.complete((T) event.getData());
 	}
 
 }

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -161,7 +161,7 @@ public class SpreadPortTest {
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
 		event.setId(new ParticipantId(), 452334);
-		
+
 		outPort.push(event);
 
 	}

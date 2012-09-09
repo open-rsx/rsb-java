@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -57,7 +57,7 @@ public class LocalServer extends Server {
 	public LocalServer(final Scope scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 	}
-	
+
 	/**
      * Create a new LocalServer object that exposes its methods under
      * the scope @a scope.
@@ -68,7 +68,7 @@ public class LocalServer extends Server {
      */
 	public LocalServer(final String scope) {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
-	}	
+	}
 
 	public <U, T> void addMethod(String name, DataCallback<U, T> callback)
 			throws InitializeException {

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -85,11 +85,11 @@ public final class Factory {
 	 * @param type
 	 *            type identifier of the informer
 	 * @return new informer instance
-	 */	
+	 */
 	public <T> Informer<T> createInformer(final String scope, Class<?> type) {
 		return new Informer<T>(new Scope(scope), type);
-	}	
-	
+	}
+
 	/**
 	 * Creates a new informer instance.
 	 *
@@ -111,11 +111,11 @@ public final class Factory {
 	 * @param scope
 	 *            scope of the informer
 	 * @return new informer instance
-	 */	
+	 */
 	public <T> Informer<T> createInformer(final String scope) {
 		return new Informer<T>(new Scope(scope));
-	}	
-	
+	}
+
 	/**
 	 * Creates a new listener instance.
 	 *
@@ -126,22 +126,22 @@ public final class Factory {
 	public Listener createListener(final Scope scope) {
 		return new Listener(scope);
 	}
-	
+
 	/**
 	 * Creates a new listener instance.
 	 *
 	 * @param scope
 	 *            scope of the listener
 	 * @return new listener
-	 */	
+	 */
 	public Listener createListener(final String scope) {
 		return new Listener(scope);
-	}	
+	}
 
 	/**
 	 * Creates a new LocalServer object which exposes methods under the scope @a
 	 * scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The scope under which methods of the LocalServer object should
 	 *            be exposed.
@@ -154,12 +154,12 @@ public final class Factory {
 	/**
 	 * Creates a new LocalServer object which exposes methods under the scope @a
 	 * scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The scope under which methods of the LocalServer object should
 	 *            be exposed.
 	 * @return The new LocalServer object.
-	 */	
+	 */
 	public LocalServer createLocalServer(final String scope) {
 		return new LocalServer(scope);
 	}
@@ -167,7 +167,7 @@ public final class Factory {
 	/**
 	 * Creates a new RemoteServer object which is suitable for calling methods
 	 * provided by a remote server under the scope @a scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The scope under which a remote server provides its methods.
 	 * @return The new RemoteServer object.
@@ -179,19 +179,19 @@ public final class Factory {
 	/**
 	 * Creates a new RemoteServer object which is suitable for calling methods
 	 * provided by a remote server under the scope @a scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The scope under which a remote server provides its methods.
 	 * @return The new RemoteServer object.
 	 */
 	public RemoteServer createRemoteServer(final String scope) {
 		return new RemoteServer(scope);
-	}	
-	
+	}
+
 	/**
 	 * Creates a new RemoteServer object which is suitable for calling methods
 	 * provided by a remote server under the scope @a scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The scope under which a remote server provides its methods.
 	 * @param timeout
@@ -202,11 +202,11 @@ public final class Factory {
 	public RemoteServer createRemoteServer(final Scope scope, double timeout) {
 		return new RemoteServer(scope, timeout);
 	}
-	
+
 	/**
 	 * Creates a new RemoteServer object which is suitable for calling methods
 	 * provided by a remote server under the scope @a scope.
-	 * 
+	 *
 	 * @param scope
 	 *            The scope under which a remote server provides its methods.
 	 * @param timeout
@@ -216,6 +216,6 @@ public final class Factory {
 	 */
 	public RemoteServer createRemoteServer(final String scope, double timeout) {
 		return new RemoteServer(scope, timeout);
-	}	
-    
+	}
+
 }

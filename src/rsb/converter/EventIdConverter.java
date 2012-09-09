@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2012 CoR-Lab, Bielefeld University
  *
@@ -36,7 +36,7 @@ import rsb.protocol.EventIdType.EventId;
 
 /**
  * A converter for {@link EventId} instances.
- * 
+ *
  * @author jwienke
  */
 public class EventIdConverter implements Converter<ByteBuffer> {

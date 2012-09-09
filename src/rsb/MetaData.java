@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -34,7 +34,7 @@ import java.util.Set;
 /**
  * Framework-supplied meta data attached to each event that give information
  * e.g. about timing issues.
- * 
+ *
  * @author jwienke
  */
 public class MetaData {
@@ -58,10 +58,10 @@ public class MetaData {
 	 * the time at which the notified condition most likely occurred in the
 	 * sender. If event instances are reused, it has to be reset manually by the
 	 * client.
-	 * 
+	 *
 	 * This timestamp is initially set to the creating time stamp of this
 	 * instance.
-	 * 
+	 *
 	 * @return timestamp in microseconds
 	 */
 	public long getCreateTime() {
@@ -74,7 +74,7 @@ public class MetaData {
 	 * the time at which the notified condition most likely occurred in the
 	 * sender. If event instances are reused, it has to be reset manually by the
 	 * client.
-	 * 
+	 *
 	 * @param time
 	 *            timestamp in microseconds or 0 to use current system time
 	 */
@@ -89,7 +89,7 @@ public class MetaData {
 	/**
 	 * Returns the time at which the generated notification for an event was
 	 * sent on the bus (after serialization).
-	 * 
+	 *
 	 * @return timestamp in microseconds
 	 */
 	public long getSendTime() {
@@ -99,7 +99,7 @@ public class MetaData {
 	/**
 	 * Sets the time at which the generated notification for an event was sent
 	 * on the bus (after serialization).
-	 * 
+	 *
 	 * @param time
 	 *            timestamp in microseconds or 0 to use current system time
 	 */
@@ -114,7 +114,7 @@ public class MetaData {
 	/**
 	 * Returns the time at which an event is received by listener in its encoded
 	 * form.
-	 * 
+	 *
 	 * @return timestamp in microseconds
 	 */
 	public long getReceiveTime() {
@@ -124,7 +124,7 @@ public class MetaData {
 	/**
 	 * Sets the time at which an event is received by listener in its encoded
 	 * form.
-	 * 
+	 *
 	 * @param time
 	 *            timestamp in microseconds or 0 to use current system time
 	 */
@@ -140,7 +140,7 @@ public class MetaData {
 	 * Returns the time at which an event was decoded and will be dispatched to
 	 * the client as soon as possible (set directly before passing it to the
 	 * client handler).
-	 * 
+	 *
 	 * @return timestamp in microseconds
 	 */
 	public long getDeliverTime() {
@@ -151,7 +151,7 @@ public class MetaData {
 	 * Sets the time at which an event was decoded and will be dispatched to the
 	 * client as soon as possible (set directly before passing it to the client
 	 * handler).
-	 * 
+	 *
 	 * @param time
 	 *            timestamp in microseconds or 0 to use current system time
 	 */
@@ -165,7 +165,7 @@ public class MetaData {
 
 	/**
 	 * Returns the keys of all available user times.
-	 * 
+	 *
 	 * @return set of all keys
 	 */
 	public Set<String> userTimeKeys() {
@@ -174,7 +174,7 @@ public class MetaData {
 
 	/**
 	 * Checks whether a user-provided timestamp with the given key exists
-	 * 
+	 *
 	 * @param key
 	 *            the key to check
 	 * @return <code>true</code> if a timestamp for the given key exists, else
@@ -186,7 +186,7 @@ public class MetaData {
 
 	/**
 	 * Returns the user timestamp stored under the provided key.
-	 * 
+	 *
 	 * @param key
 	 *            key of the user-provided timestamp
 	 * @return timetamp
@@ -202,7 +202,7 @@ public class MetaData {
 
 	/**
 	 * Sets a user timestamp and replaces existing entries.
-	 * 
+	 *
 	 * @param key
 	 *            the key for the timestamp
 	 * @param time
@@ -218,7 +218,7 @@ public class MetaData {
 
 	/**
 	 * Returns all keys of user-defined infos.
-	 * 
+	 *
 	 * @return set of all defined keys
 	 */
 	public Set<String> userInfoKeys() {
@@ -227,7 +227,7 @@ public class MetaData {
 
 	/**
 	 * Checks whether a user info exists under the provided key.
-	 * 
+	 *
 	 * @param key
 	 *            key to check
 	 * @return <code>true</code> if an info for the key is defined, else
@@ -239,7 +239,7 @@ public class MetaData {
 
 	/**
 	 * Returns the user-defined string for the given key.
-	 * 
+	 *
 	 * @param key
 	 *            key to look up
 	 * @return user info given for this key
@@ -257,7 +257,7 @@ public class MetaData {
 	/**
 	 * Sets a user info with the specified key and value or replaces and already
 	 * existing one
-	 * 
+	 *
 	 * @param key
 	 *            the key to set
 	 * @param value

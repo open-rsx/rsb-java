@@ -2,7 +2,7 @@ package tutorial.protobuf;
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -39,22 +39,22 @@ import tutorial.protobuf.ImageMessage.SimpleImage.Builder;
 
 /**
  * An example how to use the {@link rsb.Informer} class to send events.
- * 
+ *
  * @author swrede
  */
 public class InformerExample {
 
 	public static void main(String[] args) throws Throwable {
-					
+
 		// Instantiate generic ProtocolBufferConverter with SimpleImage exemplar
 		ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
-		
+
 		// get a factory instance to create new RSB domain objects
 		Factory factory = Factory.getInstance();
 
 		// register converter for SimpleImage's
 		DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
-		
+
 		// create an informer on scope "/example/informer" to send event
 		// notifications. This informer is capable of sending Strings.
 		Informer<SimpleImage> informer = factory.createInformer(new Scope(
@@ -65,13 +65,13 @@ public class InformerExample {
 
 		// send several events using a method that accepts the data and
 		// automatically creates an appropriate event internally.
-		for (int i = 0; i < 100; i++) {			
+		for (int i = 0; i < 100; i++) {
 			Builder img = SimpleImage.newBuilder();
 			img.setHeight(100);
 			img.setWidth(100);
 			byte[] bytes = new byte[100*100];
 			ByteString bs = ByteString.copyFrom(bytes);
-			img.setData(bs);					
+			img.setData(bs);
 			informer.send(img.build());
 			System.out.println("Sending image...");
 		}

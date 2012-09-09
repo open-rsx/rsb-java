@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -46,7 +46,7 @@ import spread.SpreadGroup;
  * This class encapsulates and manages a connection to the spread daemon.
  * Thereby, it maintains the membership information for this connection and
  * evaluates and enqueues all sorts of spread messages.
- * 
+ *
  * @author swrede
  */
 public class SpreadWrapper implements RSBObject {
@@ -156,7 +156,7 @@ public class SpreadWrapper implements RSBObject {
 	/**
 	 * Create a new Manager using the specified connection data for the Spread
 	 * network.
-	 * 
+	 *
 	 * @param spreadhost
 	 *            hostname of the machine the spread daemon is running on
 	 * @param port
@@ -219,7 +219,7 @@ public class SpreadWrapper implements RSBObject {
 	 * Create a new SpreadConnection. Generates a new name randomly, using the
 	 * specified prefix. To allow for name collisions, try a couple of times
 	 * before giving up.
-	 * 
+	 *
 	 * @param prefix
 	 *            prefix to use in name, should be short
 	 * @param mship

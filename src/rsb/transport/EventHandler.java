@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -31,7 +31,7 @@ import rsb.Event;
 
 /**
  * A generic interface for handlers of {@link Event}s.
- * 
+ *
  * @author jwienke
  */
 public interface EventHandler {

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -39,17 +39,17 @@ import rsb.transport.TransportFactory;
 
 /**
  * User-level test for RSBJava.
- * 
+ *
  * @author jwienke
  */
 public class UserLevelTest {
-	
+
 	@Test(timeout = 15000)
 	public void roundtrip() throws Throwable {
 
 		// register converters
 		DefaultConverters.register();
-		
+
 		final Scope scope = new Scope("/example/informer");
 
 		// set up a receiver for events

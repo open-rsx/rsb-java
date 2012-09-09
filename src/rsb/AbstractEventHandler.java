@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -30,7 +30,7 @@ package rsb;
 /**
  * An interface for handlers that are interested in whole {@link Event}
  * instances.
- * 
+ *
  * @author swrede
  * @see Event
  */

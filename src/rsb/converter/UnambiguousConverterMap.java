@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -40,7 +40,7 @@ public class UnambiguousConverterMap<WireType> implements
 		ConverterSelectionStrategy<WireType> {
 
 	Map<String,Converter<WireType> > converters = new HashMap<String,Converter<WireType> >();
-	
+
 	@Override
 	public Converter<WireType> getConverter(String key)
 			throws NoSuchConverterException {
@@ -48,8 +48,8 @@ public class UnambiguousConverterMap<WireType> implements
 			return converters.get(key);
 		}
 		throw new NoSuchConverterException("No converter with key " + key + " registered in ConverterMap");
-	}	
-	
+	}
+
 	public void addConverter(String key, Converter<WireType> c) {
 		if (converters.containsKey(key)) {
 			throw new IllegalArgumentException();

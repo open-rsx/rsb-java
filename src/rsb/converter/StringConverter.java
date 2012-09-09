@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -39,7 +39,7 @@ import java.nio.charset.CodingErrorAction;
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
  * strings with different encodings.
- * 
+ *
  * @author swrede
  * @author jwienke
  */
@@ -58,7 +58,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
 	/**
 	 * Creates a converter that uses the specified encoding for strings.
-	 * 
+	 *
 	 * @param encoding
 	 *            encoding name for the data
 	 * @param wireSchema
@@ -79,7 +79,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
 	/**
 	 * Creates a converter that uses the specified charset for strings.
-	 * 
+	 *
 	 * @param charset
 	 *            encoding for the data
 	 * @param wireSchema
@@ -90,7 +90,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 	}
 
 	private void init(final Charset charset, String wireSchema) {
-		
+
 		// TODO replace by Java class object for type info
 		signature = new ConverterSignature(wireSchema, String.class);
 

@@ -2,7 +2,7 @@ package tutorial.protobuf;
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -39,7 +39,7 @@ import tutorial.protobuf.ImageMessage.SimpleImage;
 
 /**
  * An example that demonstrated how to receive events in java.
- * 
+ *
  * @author swrede
  */
 public class ListenerExample {
@@ -51,10 +51,10 @@ public class ListenerExample {
 
 		// Instantiate generic ProtocolBufferConverter with SimpleImage exemplar
 		ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
-		
+
 		// register converter for SimpleImage's
-		DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);		
-		
+		DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+
 		// get a factory instance to create new RSB domain objects
 		Factory factory = Factory.getInstance();
 

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -36,13 +36,13 @@ import rsb.Listener;
 
 /**
  * A basic example that demonstrated how to receive events.
- * 
+ *
  * @author swrede
  */
 public class EventListenerExample extends AbstractEventHandler {
 
 	private static final Logger LOG = Logger.getLogger(EventListenerExample.class.getName());
-	
+
 	static AtomicInteger counter = new AtomicInteger(0);
 	static Object l = new Object();
 
@@ -62,8 +62,8 @@ public class EventListenerExample extends AbstractEventHandler {
 				l.notifyAll();
 			}
 		}
-	}	
-	
+	}
+
 	public static void main(String[] args) throws Throwable {
 
 		// get a factory instance to create new RSB domain objects

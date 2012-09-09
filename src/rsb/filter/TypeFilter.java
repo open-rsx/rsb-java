@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -33,13 +33,13 @@ import rsb.Event;
 import rsb.EventId;
 
 /**
- * 
+ *
  * @author swrede
  */
 public class TypeFilter extends AbstractFilter {
 
-	private final static Logger LOG = Logger.getLogger(TypeFilter.class.getName()); 
-	
+	private final static Logger LOG = Logger.getLogger(TypeFilter.class.getName());
+
 	Class<?> type;
 
 	public TypeFilter() {

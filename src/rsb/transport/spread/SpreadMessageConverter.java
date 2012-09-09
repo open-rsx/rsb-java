@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -34,11 +34,11 @@ import spread.SpreadMessage;
 /**
  * SpreadMessageConverter encapsulates the handling of regular spread messages
  * and considers Membership messages.
- * 
+ *
  * TODO (de-)multiplex large messages here
- * 
+ *
  * @author swrede
- * 
+ *
  */
 class SpreadMessageConverter {
 
@@ -47,7 +47,7 @@ class SpreadMessageConverter {
 	/**
 	 * Returns a {@link DataMessage} if presented by sm, else returns
 	 * <code>null</code>.
-	 * 
+	 *
 	 * @param sm
 	 *            message to analyze
 	 * @return DataMessage or <code>null</code> if not contained in sm

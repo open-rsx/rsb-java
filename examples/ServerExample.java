@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -38,14 +38,14 @@ import rsb.patterns.LocalServer;
 /**
  * This example demonstrates how to expose a request/reply interface
  * with RSB using data and event callbacks.
- * 
+ *
  * @author swrede
  *
  */
 public class ServerExample {
 
-	private static final Logger LOG = Logger.getLogger(ServerExample.class.getName());	
-	
+	private static final Logger LOG = Logger.getLogger(ServerExample.class.getName());
+
 	public static class DataReplyCallback implements DataCallback<String, String> {
 
 		@Override
@@ -53,9 +53,9 @@ public class ServerExample {
 			// do some stupid stuff
 			return (request + "/reply").toLowerCase();
 		}
-		
+
 	}
-	
+
 	public static class EventReplyCallback implements EventCallback {
 
 		@Override
@@ -63,19 +63,19 @@ public class ServerExample {
 			request.setData(((String) request.getData()) + "/reply".toUpperCase());
 			return request;
 		}
-		
+
 	}
-	
+
 	/**
 	 * @param args
-	 * @throws InitializeException 
+	 * @throws InitializeException
 	 */
 	public static void main(String[] args) throws InitializeException {
 		// Get local server object which allows to expose request methods to participants
 		LocalServer server = Factory.getInstance().createLocalServer("/example/server");
 		server.activate();
-		
-		// Add methods		
+
+		// Add methods
 		// Callback with handler signature based on event payload
 		server.addMethod("replyLower", new DataReplyCallback());
 		// Callback with handler signature based on events
@@ -84,7 +84,7 @@ public class ServerExample {
 		// Optional: block until server.deactivate or process shutdown
 		LOG.info("Server /example/server running");
 		server.waitForShutdown();
-		
+
 	}
 
 }

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -35,7 +35,7 @@ import rsb.filter.Filter;
 /**
  * A decorator for {@link Handler}s that allows additional filtering for each
  * handler. Filters are a conjunction, hence one failure prevents delivery.
- * 
+ *
  * @author jwienke
  */
 public class FilteringHandler implements Handler {
@@ -46,7 +46,7 @@ public class FilteringHandler implements Handler {
 	/**
 	 * Creates a filtering handler that wraps another handler and takes one
 	 * additional filter.
-	 * 
+	 *
 	 * @param decorated
 	 *            handler to wrap and call if filter matches
 	 * @param filter
@@ -60,7 +60,7 @@ public class FilteringHandler implements Handler {
 	/**
 	 * Creates a filtering handler that wraps another handler and takes a set of
 	 * filters to apply.
-	 * 
+	 *
 	 * @param decorated
 	 *            handler to wrap and call if filter matches
 	 * @param filters

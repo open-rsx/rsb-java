@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -39,5 +39,5 @@ public class SerializeException extends RSBException {
 	 * Serial version UID.
 	 */
 	private static final long serialVersionUID = -6286452461407036752L;
-	
+
 }

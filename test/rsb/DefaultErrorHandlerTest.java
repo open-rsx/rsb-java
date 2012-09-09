@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -36,7 +36,7 @@ import org.junit.Test;
 public class DefaultErrorHandlerTest {
 
 	private final static Logger LOG = Logger.getLogger(DefaultErrorHandlerTest.class.getName());
-	
+
 	@Test
 	public void testError() {
 		DefaultErrorHandler handler = new DefaultErrorHandler(LOG);

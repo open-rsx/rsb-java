@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("deprecation")
 public class DefaultErrorHandler implements ErrorHandler {
-	
+
 	@SuppressWarnings("PMD.LoggerIsNotStaticFinal")
 	Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
 

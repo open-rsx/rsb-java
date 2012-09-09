@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -33,9 +33,9 @@ import java.util.logging.Logger;
  * Interface for State-pattern in the Listener class.
  * Currently, just used for explicit de-/allocation
  * of resources.
- * 
+ *
  * @author swrede
- * 
+ *
  */
 public abstract class ListenerState {
 

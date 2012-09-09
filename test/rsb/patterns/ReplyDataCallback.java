@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 class ReplyDataCallback implements DataCallback<String, String> {
-	
+
 	private final static Logger LOG = Logger.getLogger(ReplyDataCallback.class.getName());
-	
+
 	AtomicBoolean flag = new AtomicBoolean(false);
 	public AtomicInteger counter = new AtomicInteger();
 
@@ -47,7 +47,7 @@ class ReplyDataCallback implements DataCallback<String, String> {
 		counter.incrementAndGet();
 		return request;
 	}
-	
+
 	public boolean wasCalled() {
 		return flag.get();
 	}

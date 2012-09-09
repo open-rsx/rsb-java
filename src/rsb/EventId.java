@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -34,19 +34,19 @@ import java.util.logging.Logger;
 import rsb.util.UUIDTools;
 
 /**
- * This class serves as a Uniform Resource Name to identify events in an RSB 
- * system. This URN is based on the participant's ID and a sequence number 
- * generated at the sender side unique for this participant. Both can be 
- * combined and returned as a UUID. 
- * Please note, that the sequence number is a 32bit unsigned integer and thus 
+ * This class serves as a Uniform Resource Name to identify events in an RSB
+ * system. This URN is based on the participant's ID and a sequence number
+ * generated at the sender side unique for this participant. Both can be
+ * combined and returned as a UUID.
+ * Please note, that the sequence number is a 32bit unsigned integer and thus
  * can overrun in a long-running system. In such cases, the timestamp has to be
- * additionally considered to further distinguish between events. 
- *  
+ * additionally considered to further distinguish between events.
+ *
  * @author swrede
  * @author jwienke
  */
 public class EventId {
-	
+
 	private final static Logger LOG = Logger.getLogger(EventId.class.getName());
 
 	/**
@@ -58,12 +58,12 @@ public class EventId {
 	 * Sequence number unique within participant.
 	 */
 	private long sequenceNumber;
-	
+
 	/**
 	 * Unique ID.
 	 */
 	private UUID uuid;
-	
+
 	/**
 	 * Creates a unique Id based on participant
 	 * and sequence number.
@@ -124,7 +124,7 @@ public class EventId {
 		return true;
 	}
 
-	public UUID getAsUUID() {	
+	public UUID getAsUUID() {
 		if (uuid==null) {
 			final String seqNr = formatSequenceNumber(sequenceNumber);
 			LOG.finest("UUID generation for Event with ParticipantId " + participantId.toString() + " and sequence number: " + seqNr);
@@ -135,24 +135,24 @@ public class EventId {
 
 	/**
 	 * Returns the id of the participant that sent the event.
-	 * 
+	 *
 	 * @return participant id
 	 */
 	public ParticipantId getParticipantId() {
 		return participantId;
 	}
-	
+
 	/**
 	 * Returns the sequence number which makes this id unique combined with the
 	 * sending participants id.
-	 * 
+	 *
 	 * @return sequence number for sending participant
 	 * @see #getParticipantId()
 	 */
 	public long getSequenceNumber() {
 		return sequenceNumber;
 	}
-	
+
 	public static String formatSequenceNumber(final long value) {
 		final StringBuilder builder = new StringBuilder();
 		final Formatter formatter = new Formatter(builder);

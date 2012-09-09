@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -30,7 +30,7 @@ package rsb;
 /**
  * Superclass of all RSB exceptions that may be used in handlers that catch all
  * RSB-related exceptions.
- * 
+ *
  * @author swrede
  */
 public class RSBException extends Exception {
@@ -38,7 +38,7 @@ public class RSBException extends Exception {
 	private static final long serialVersionUID = -5223250815059688771L;
 
 	/**
-	 * 
+	 *
 	 */
 	public RSBException() {
 	}

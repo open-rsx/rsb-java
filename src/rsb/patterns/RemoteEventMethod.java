@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -40,14 +40,14 @@ public class RemoteEventMethod extends AbstractRemoteMethod<Event, Event> {
 		super(server, name);
 	}
 
-	@Override	
+	@Override
 	public Future<Event> call(final Event event) throws RSBException {
 		return sendRequest(event);
-	}	
-	
+	}
+
 	@Override
 	protected void completeRequest(Future<Event> request, Event event) {
-		request.complete(event);	
+		request.complete(event);
 	}
 
 }

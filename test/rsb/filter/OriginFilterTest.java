@@ -1,9 +1,9 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
- * Copyright (C) 2011 Jan Moringen
+ * Copyright (C) 2011, 2012 Jan Moringen
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),

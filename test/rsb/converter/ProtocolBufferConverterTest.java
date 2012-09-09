@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -57,7 +57,7 @@ public class ProtocolBufferConverterTest {
 	 * Test method for
 	 * {@link rsb.converter.ProtocolBufferConverter#serialize(java.lang.String, java.lang.Object)}
 	 * .
-	 * 
+	 *
 	 * @throws ConversionException
 	 */
 	public void testSerialize() throws ConversionException {
@@ -81,7 +81,7 @@ public class ProtocolBufferConverterTest {
 	 * Test method for
 	 * {@link rsb.converter.ProtocolBufferConverter#deserialize(java.lang.String, java.nio.ByteBuffer)}
 	 * .
-	 * 
+	 *
 	 * @throws ConversionException
 	 */
 	public void testDeserialize() throws ConversionException {

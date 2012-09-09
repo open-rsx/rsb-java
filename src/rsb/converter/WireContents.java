@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -29,7 +29,7 @@ package rsb.converter;
 
 /**
  * A wrapper around the contents to be placed on the wire.
- * 
+ *
  * @author jwienke
  * @param <WireType>
  *            serialization type of the wire contents
@@ -41,7 +41,7 @@ public class WireContents<WireType> {
 
 	/**
 	 * Constructs a new wrapper around serialized data.
-	 * 
+	 *
 	 * @param serialization
 	 *            the serialized data
 	 * @param wireSchema
@@ -54,7 +54,7 @@ public class WireContents<WireType> {
 
 	/**
 	 * Returns the contents for the wire in their serialized form.
-	 * 
+	 *
 	 * @return serialized contents
 	 */
 	public WireType getSerialization() {
@@ -64,7 +64,7 @@ public class WireContents<WireType> {
 	/**
 	 * Returns the identifier of the wire schema that was used to serialize
 	 * the contents.
-	 * 
+	 *
 	 * @return wire schema identifier
 	 */
 	public String getWireSchema() {

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -31,7 +31,7 @@ import rsb.Informer;
 
 /**
  * An example how to use the {@link rsb.Informer} class to send events.
- * 
+ *
  * @author swrede
  */
 public class InformerExample {
@@ -42,7 +42,7 @@ public class InformerExample {
 		Factory factory = Factory.getInstance();
 
 		// Create an informer on scope "/exmaple/informer" to send event
-		// notifications. 
+		// notifications.
 		Informer<Object> informer = factory.createInformer("/example/informer");
 
 		// Activate the informer to be ready for work

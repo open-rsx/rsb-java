@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -35,7 +35,7 @@ import org.junit.Test;
 
 /**
  * Test case for {@link Scope}.
- * 
+ *
  * @author jwienke
  */
 public class ScopeTest {

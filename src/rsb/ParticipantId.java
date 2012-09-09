@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -32,15 +32,15 @@ import java.util.UUID;
 import rsb.util.UUIDTools;
 
 /**
- * This class serves as a Uniform Resource Name to identify participants 
- * in an RSB system. At present, the URN is based on an UUID that is 
+ * This class serves as a Uniform Resource Name to identify participants
+ * in an RSB system. At present, the URN is based on an UUID that is
  * unique for each participant instance.
- * 
+ *
  * @author swrede
  * @author jwienke
  */
 public class ParticipantId {
-	
+
 	private UUID id;
 
 	/**
@@ -52,7 +52,7 @@ public class ParticipantId {
 
 	/**
 	 * Creates an ID from a byte representation.
-	 * 
+	 *
 	 * @param bytes
 	 *            byte representation of the id.
 	 */
@@ -62,7 +62,7 @@ public class ParticipantId {
 
 	/**
 	 * Parses an id from its string form generated with {@link #toString()}.
-	 * 
+	 *
 	 * @param sid
 	 *            string representation
 	 * @throws IllegalArgumentException
@@ -79,20 +79,20 @@ public class ParticipantId {
 
 	/**
 	 * Returns the bytes representing the id.
-	 * 
+	 *
 	 * @return byte representing the id (length 16)
 	 */
 	public byte[] toByteArray() {
 		return UUIDTools.toByteArray(id);
 	}
-	
+
 
 	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

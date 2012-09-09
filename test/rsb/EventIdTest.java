@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class EventIdTest {
-	
+
 	ParticipantId participantId = new ParticipantId();
 
 	@Test
@@ -45,7 +45,7 @@ public class EventIdTest {
 		assertEquals(eventId_a, eventId_b);
 		assertTrue(eventId_a.getAsUUID().equals(eventId_b.getAsUUID()));
 		eventId_b = new EventId(participantId, 1);
-		assertFalse(eventId_a.getAsUUID().equals(eventId_b.getAsUUID()));	
+		assertFalse(eventId_a.getAsUUID().equals(eventId_b.getAsUUID()));
 	}
 
 	@Test
@@ -53,5 +53,5 @@ public class EventIdTest {
 		EventId eventId = new EventId(participantId, 1);
 		assertNotNull(eventId.getAsUUID());
 	}
-	
+
 }

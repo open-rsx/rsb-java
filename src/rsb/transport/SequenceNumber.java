@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -32,20 +32,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Atomic uint32 implementation respecting
  * size of ProtocolBuffer uint32 type.
- * 
+ *
  * @author swrede
  *
  */
 public class SequenceNumber {
-	
+
 	AtomicInteger count = new AtomicInteger();
-	
+
 	// uint32 max: 4.294.967.295
-	public final static long MAX_VALUE = (long) 2*Integer.MAX_VALUE+1;  
-	
+	public final static long MAX_VALUE = (long) 2*Integer.MAX_VALUE+1;
+
 	public SequenceNumber() {
-	}	
-	
+	}
+
 	public SequenceNumber(long value) {
 		if (Math.abs(value) > (SequenceNumber.MAX_VALUE)) {
 			throw new IllegalArgumentException("Value larger than uint32");
@@ -64,9 +64,9 @@ public class SequenceNumber {
 		}
 		return (long) count.get() & 0xffffffffL;
 	}
-	
+
 	public long get() {
 		return (long) count.get() & 0xffffffffL;
 	}
-	
+
 }

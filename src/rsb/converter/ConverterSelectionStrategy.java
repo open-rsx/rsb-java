@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -32,15 +32,15 @@ package rsb.converter;
  * followings forms:
  * - wire-schema -> @ref Converter
  * - data-type -> @ref Converter
- * 	
+ *
  * @author jmoringe
  * @author swrede
  */
 public interface ConverterSelectionStrategy<WireType> {
-	
+
 	/**
 	 * Tries to look up the converter designated by @a key.
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 * @throws NoSuchConverterException

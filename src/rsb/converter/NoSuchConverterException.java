@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -34,7 +34,7 @@ package rsb.converter;
 public class NoSuchConverterException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	public NoSuchConverterException() {
 		super();
@@ -67,7 +67,7 @@ public class NoSuchConverterException extends RuntimeException {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 4919272894409736639L;
 

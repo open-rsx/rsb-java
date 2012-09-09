@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -36,28 +36,28 @@ import java.util.logging.Logger;
  *
  */
 public class FilterObservable {
-	
+
 	private final static Logger LOG = Logger.getLogger(FilterObservable.class.getName());
 
 	List<FilterObserver> observers = new ArrayList<FilterObserver>();
-	
+
 	public void addObserver(final FilterObserver observer) {
 		LOG.finest("Added observer" + observer);
 		observers.add(observer);
 	}
-	
+
 	public void removeObserver(final FilterObserver observer) {
 		LOG.finest("Removed observer" + observer);
 		observers.remove(observer);
 	}
-	
+
 	public void notifyObservers(final Filter filter, final FilterAction action) {
 		for (FilterObserver observer : observers) {
 			// perform double dispatch
 			filter.dispachToObserver(observer, action);
 		}
 	}
-	
+
 	public void clearObservers() {
 		observers.clear();
 	}

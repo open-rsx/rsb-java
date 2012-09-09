@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -30,11 +30,11 @@ package rsb.converter;
 /**
  * Immutable object representing a converter signature. Used to index the
  * converter maps.
- * 
+ *
  * @author swrede
  */
 public class ConverterSignature {
-	
+
 	/** RSB WireSchema */
 	private final String schema;
 	/** Java Type */
@@ -43,7 +43,7 @@ public class ConverterSignature {
 	public ConverterSignature(String schema, Class<?> datatype) {
 		this.schema = schema;
 		this.datatype = datatype;
-	}	
+	}
 
 	public String getSchema() {
 		return schema;
@@ -52,7 +52,7 @@ public class ConverterSignature {
 	public Class<?> getDatatype() {
 		return datatype;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -73,7 +73,7 @@ public class ConverterSignature {
 	@SuppressWarnings({"PMD.OnlyOneReturn","PMD.CyclomaticComplexity"})
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {			
+		if (this == obj) {
 			return true;
 		}
 		if (obj == null) {
@@ -104,6 +104,6 @@ public class ConverterSignature {
 	public String toString() {
 		return "ConverterSignature [schema=" + schema + ", datatype="
 				+ datatype + "]";
-	}	
-	
+	}
+
 }

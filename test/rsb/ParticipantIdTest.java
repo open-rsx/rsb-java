@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -33,7 +33,7 @@ import org.junit.Test;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class ParticipantIdTest {
 
@@ -41,7 +41,7 @@ public class ParticipantIdTest {
 	 * Test method for {@link rsb.EventId#EventId()}.
 	 */
 	@Test
-	public void testEventId() {		
+	public void testEventId() {
 		new ParticipantId();
 	}
 

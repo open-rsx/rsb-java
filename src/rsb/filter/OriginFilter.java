@@ -1,9 +1,9 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
- * Copyright (C) 2011 Jan Moringen
+ * Copyright (C) 2011, 2012 Jan Moringen
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -42,7 +42,7 @@ public class OriginFilter extends AbstractFilter {
 
         ParticipantId origin;
 	boolean invert = false;
-	
+
         public OriginFilter (ParticipantId origin, boolean invert) {
                 super(OriginFilter.class);
                 this.origin = origin;
@@ -52,11 +52,11 @@ public class OriginFilter extends AbstractFilter {
         public OriginFilter (ParticipantId origin) {
                 this(origin, false);
         }
-    
+
         public ParticipantId getOrigin() {
                 return origin;
         }
-    
+
         public boolean isInverted() {
                 return invert;
         }
@@ -77,7 +77,7 @@ public class OriginFilter extends AbstractFilter {
 	 */
 	public void dispachToObserver(FilterObserver o, FilterAction a) {
 		o.notify(this, a);
-	}	
+	}
 
 	public void skip(EventId id) {
 		super.skip(id);
@@ -89,5 +89,5 @@ public class OriginFilter extends AbstractFilter {
                         && origin.equals(((OriginFilter) that).origin)
                         && (invert == ((OriginFilter) that).invert);
 	}
-	
+
 }

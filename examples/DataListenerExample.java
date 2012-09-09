@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -36,20 +36,20 @@ import rsb.Listener;
 
 /**
  * A basic example that demonstrated how to receive event payloads.
- * 
+ *
  * @author swrede
  */
 public class DataListenerExample extends AbstractDataHandler<String> {
 
 	private static final Logger LOG = Logger.getLogger(DataListenerExample.class.getName());
-	
+
 	static AtomicInteger counter = new AtomicInteger(0);
 	static Object l = new Object();
 
 	/**
-	 * The actual callback that is notified upon arrival of events. In contrast 
+	 * The actual callback that is notified upon arrival of events. In contrast
 	 * to an EventListener, here the event payload is passed to the callback.
-	 */	
+	 */
 	@Override
 	public void handleEvent(String data) {
 		counter.getAndIncrement();
@@ -61,8 +61,8 @@ public class DataListenerExample extends AbstractDataHandler<String> {
 				l.notifyAll();
 			}
 		}
-	}	
-	
+	}
+
 	public static void main(String[] args) throws InterruptedException, InitializeException {
 
 		// get a factory instance to create new RSB domain objects
@@ -75,7 +75,7 @@ public class DataListenerExample extends AbstractDataHandler<String> {
 		// activate the listener to be ready for work
 		sub.activate();
 
-		// add a DataHandler, here the DataListenerExample that is notified directly 
+		// add a DataHandler, here the DataListenerExample that is notified directly
 		// with the data extracted from the received event
 		sub.addHandler(new DataListenerExample(), true);
 
@@ -85,7 +85,7 @@ public class DataListenerExample extends AbstractDataHandler<String> {
 				l.wait(1000);
 				LOG.fine("Wake-Up!!!");
 			}
-		}		
+		}
 
 		// as there is no explicit removal model in java, always manually
 		// deactivate the listener if it is not needed anymore

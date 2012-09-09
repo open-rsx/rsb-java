@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -36,7 +36,7 @@ import rsb.AbstractDataHandler;
  * Synchronized queue implementing the rsb.DataHandler interface. Can be
  * directly registered as handler in rsb.Listener instance and used for
  * receiving and storing dispatched events.
- * 
+ *
  * @author swrede
  * @author dklotz
  */
@@ -53,7 +53,7 @@ public class QueueAdapter<T> extends AbstractDataHandler<T> {
 	/**
 	 * Creates an adapter with a preset queue inside that is limited to
 	 * <code>capacity</code> elements.
-	 * 
+	 *
 	 * @param capacity
 	 *            capacity of the internal queue
 	 */

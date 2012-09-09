@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 public class AbstractFilterObserver implements FilterObserver {
 
 	protected final static Logger LOG = Logger.getLogger(AbstractFilterObserver.class.getCanonicalName());
-	
+
 	/* (non-Javadoc)
 	 * @see rsb.filter.FilterObserver#notify(rsb.filter.AbstractFilter, rsb.filter.FilterAction)
 	 */

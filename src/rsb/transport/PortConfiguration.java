@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -30,12 +30,12 @@ package rsb.transport;
 /**
  * Minimal domain object to pass port configuration
  * to Router objects from Pattern objects
- * 
+ *
  * @author swrede
  *
  */
 public enum PortConfiguration {
 
 	IN, INOUT, OUT, NONE;
-	
+
 }

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -48,6 +48,6 @@ public class InvalidPropertyException extends RuntimeException {
 	/**
 	 * Serial version UID.
 	 */
-	private static final long serialVersionUID = 5696967985100081449L;	
-	
+	private static final long serialVersionUID = 5696967985100081449L;
+
 }

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -40,7 +40,7 @@ public interface Filter {
 	 * transform the given event into a result event according to this filters
 	 * rules. This may return null, if the event is dropped by the filter, the
 	 * passed-in event if no transformation is applied, or some new event.
-	 * 
+	 *
 	 * @param e
 	 *            the event to be transformed
 	 * @return the transformed event or null

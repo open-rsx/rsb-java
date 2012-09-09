@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -104,7 +104,7 @@ public class UnorderedParallelEventReceivingStrategyTest {
 	 * Test method for
 	 * {@link rsb.eventprocessing.UnorderedParallelEventReceivingStrategy#fire(rsb.Event)}
 	 * .
-	 * 
+	 *
 	 * @throws InterruptedException
 	 */
 	@Test

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,7 +32,7 @@ package rsb.converter;
  * converter has a wire type describing the actual message that is written on
  * the wire and a data type that indicates which data it can serialize on the
  * wire.
- * 
+ *
  * @author swrede
  */
 public interface ConverterRepository<WireType> {
@@ -41,7 +41,7 @@ public interface ConverterRepository<WireType> {
 	 * This method queries the converter map for seralizable data types and
 	 * returns an UnambiguousConverterMap for the chosen <WireType> to the
 	 * caller.
-	 * 
+	 *
 	 * @return ConverterSelectionStrategy object for serialization
 	 */
 	public abstract ConverterSelectionStrategy<WireType> getConvertersForSerialization();

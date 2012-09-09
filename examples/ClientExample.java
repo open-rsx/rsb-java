@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -38,20 +38,20 @@ import rsb.patterns.RemoteServer;
 /**
  * This class demonstrates how to access an RSB server
  * object using synchronous and asynchronously calls.
- * 
+ *
  * @author swrede
- * 
+ *
  */
 public class ClientExample {
 
 	private static final Logger LOG = Logger.getLogger(ClientExample.class.getName());
-	
+
 	/**
 	 * @param args
-	 * @throws RSBException 
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
-	 * @throws InitializeException 
+	 * @throws RSBException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 * @throws InitializeException
 	 */
 	public static void main(String[] args) throws InterruptedException, ExecutionException, InitializeException {
 		// Get remote server object to call exposed request methods of participants

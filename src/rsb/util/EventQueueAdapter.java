@@ -1,19 +1,31 @@
-/*
- * Copyright 2010,2011 Bielefeld University
- * Copyright 2011 David Klotz <david -at- sofaecke -dot- org>
+/**
+ * ============================================================
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
+ * This file is part of the rsb-java project
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2010,2011 CoR-Lab, Bielefeld University
+ * Copyright (C) 2011 David Klotz <david -at- sofaecke -dot- org>
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * This file may be licensed under the terms of the
+ * GNU Lesser General Public License Version 3 (the ``LGPL''),
+ * or (at your option) any later version.
+ *
+ * Software distributed under the License is distributed
+ * on an ``AS IS'' basis, WITHOUT WARRANTY OF ANY KIND, either
+ * express or implied. See the LGPL for the specific language
+ * governing rights and limitations.
+ *
+ * You should have received a copy of the LGPL along with this
+ * program. If not, go to http://www.gnu.org/licenses/lgpl.html
+ * or write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * The development of this software was supported by:
+ *   CoR-Lab, Research Institute for Cognition and Robotics
+ *     Bielefeld University
+ * ============================================================
  */
+
 package rsb.util;
 
 import java.util.concurrent.BlockingQueue;
@@ -24,11 +36,12 @@ import rsb.Event;
 import rsb.util.QueueAdapter;
 
 /**
- * An adapter similar to the {@link QueueAdapter} that provides access to a
- * queue of RSB {@link Event}s instead of directly to the payload data. It can
- * also be directly registered as handler in an rsb.Listener instance and used
- * for receiving and storing dispatched events.
- * 
+ * An adapter similar to the {@link QueueAdapter} that provides access
+ * to a queue of RSB {@link Event}s instead of directly to the payload
+ * data. It can also be directly registered as handler in an
+ * rsb.Listener instance and used for receiving and storing dispatched
+ * events.
+ *
  * @author dklotz
  */
 public class EventQueueAdapter extends AbstractEventHandler {
@@ -44,7 +57,7 @@ public class EventQueueAdapter extends AbstractEventHandler {
 	/**
 	 * Creates an adapter with a preset queue inside that is limited to
 	 * <code>capacity</code> elements.
-	 * 
+	 *
 	 * @param capacity
 	 *            capacity of the internal queue
 	 */
@@ -58,7 +71,7 @@ public class EventQueueAdapter extends AbstractEventHandler {
 
 	/**
 	 * Creates an adapter with the given queue implementation.
-	 * 
+	 *
 	 * @param queue
 	 *            The queue this adapter should fill.
 	 */
@@ -73,7 +86,7 @@ public class EventQueueAdapter extends AbstractEventHandler {
 
 	/**
 	 * Provides access to the queue filled by this queue adapter.
-	 * 
+	 *
 	 * @return The current with the events received by this adapter.
 	 */
 	public BlockingQueue<Event> getQueue() {

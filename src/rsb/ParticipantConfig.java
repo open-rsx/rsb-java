@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -29,7 +29,7 @@ package rsb;
 
 /**
  *  A class describing the configuration of Participant instances.
- * 
+ *
  * @author swrede
  *
  */

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,7 +32,7 @@ import java.util.EventListener;
 /**
  * Internal handler interface. As a client use one of the specific interfaces
  * like {@link AbstractEventHandler} or {@link AbstractDataHandler}.
- * 
+ *
  * @author swrede
  */
 public interface Handler extends EventListener {

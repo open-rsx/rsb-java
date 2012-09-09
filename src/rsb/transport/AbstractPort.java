@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,7 +32,7 @@ import rsb.converter.ConversionException;
 import rsb.filter.AbstractFilterObserver;
 
 /**
- * 
+ *
  * @author swrede
  */
 public abstract class AbstractPort extends AbstractFilterObserver implements

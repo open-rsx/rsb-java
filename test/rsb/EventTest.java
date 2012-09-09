@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -48,7 +48,7 @@ public class EventTest {
 		event2.getMetaData()
 				.setCreateTime(event1.getMetaData().getCreateTime());
 		assertEquals(event1, event2);
-		
+
 //		// TODO add Id test
 //		meta1.setSenderId(new Id());
 //		assertFalse(meta1.equals(meta2));
@@ -58,7 +58,7 @@ public class EventTest {
 //		assertEquals(meta1, meta2); // identical
 //
 //		meta1.setSenderId(new Id());
-//		assertFalse(meta1.equals(meta2)); // distinct UUIDs, again		
+//		assertFalse(meta1.equals(meta2)); // distinct UUIDs, again
 
 		event1.setScope(new Scope("/foo/bar"));
 		assertFalse(event1.equals(event2));
@@ -96,14 +96,14 @@ public class EventTest {
 		event2.setId(event1.getId().getParticipantId(), event1.getId().getSequenceNumber());
 		assertTrue(event1.equals(event2));
 		assertTrue(event2.equals(event1));
-		
+
 		event1.setMethod("REQUEST");
 		assertFalse(event1.equals(event2));
 		event2.setMethod("Blub");
 		assertFalse(event1.equals(event2));
 		event2.setMethod("request");
 		assertTrue(event1.equals(event2));
-		
+
 		// causes
 		EventId cause1 = new EventId(new ParticipantId(), 343);
 		event1.addCause(cause1);
@@ -113,19 +113,19 @@ public class EventTest {
 		assertEquals(event1, event2);
 
 	}
-	
+
 	@Test
 	public void testHashCode() {
-		
+
 		Event event1 = new Event();
 		Event event2 = new Event();
 		event2.getMetaData().setCreateTime(event1.getMetaData().getCreateTime());
 		assertEquals(event1.hashCode(), event2.hashCode());
-		
+
 		// causes
 		event1.addCause(new EventId(new ParticipantId(), 234234));
 		assertFalse(event1.hashCode() == event2.hashCode());
-		
+
 	}
 
 }

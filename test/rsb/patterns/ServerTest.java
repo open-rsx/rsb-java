@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -44,23 +44,23 @@ import rsb.Scope;
 public class ServerTest {
 
 	final static private Logger LOG = Logger.getLogger(ServerTest.class.getName());
-	
+
 	public class ShutdownCallback implements DataCallback<String,String> {
 
 		Server server;
-		
+
 		public ShutdownCallback(Server server) {
 			this.server = server;
 		}
-		
+
 		@Override
 		public String invoke(String request) throws Throwable {
 			server.deactivate();
 			return "shutdown now";
 		}
-					
+
 	}
-	
+
 	/**
 	 * Test method for {@link rsb.patterns.Server#Server(rsb.Scope, rsb.transport.TransportFactory, rsb.transport.PortConfiguration)}.
 	 */
@@ -78,7 +78,7 @@ public class ServerTest {
 
 	/**
 	 * Test method for {@link rsb.patterns.Server#getMethods()}.
-	 * @throws InitializeException 
+	 * @throws InitializeException
 	 */
 	@Test
 	public void testGetMethods() throws InitializeException {
@@ -96,10 +96,10 @@ public class ServerTest {
 		server.addMethod("callmeEvent", new ReplyEventCallback());
 		assertTrue(server.getMethods().size()==2);
 	}
-	
+
 	/**
 	 * Test method for {@link rsb.patterns.Server#activate()}.
-	 * @throws InitializeException 
+	 * @throws InitializeException
 	 */
 	@Test
 	public void testActivate() throws InitializeException {
@@ -116,7 +116,7 @@ public class ServerTest {
 
 	/**
 	 * Test method for {@link rsb.patterns.Server#deactivate()}.
-	 * @throws InitializeException 
+	 * @throws InitializeException
 	 */
 	@Test
 	public void testDeactivate() throws InitializeException {
@@ -130,13 +130,13 @@ public class ServerTest {
 		assertFalse(server.isActive());
 		assertFalse(server.getMethods().iterator().next().isActive());
 	}
-	
-	@Test 
+
+	@Test
 	public void testStartServer() throws InitializeException {
 		LocalServer server = (LocalServer) getServer();
 		DataCallback<String, String> method = new ReplyDataCallback();
 		server.addMethod("callme", method);
-		server.activate();		
+		server.activate();
 		server.addMethod("callmetoo", method);
 		server.deactivate();
 	}
@@ -148,7 +148,7 @@ public class ServerTest {
 		server.addMethod("shutdown", method);
 		server.activate();
 		Thread t = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -158,12 +158,12 @@ public class ServerTest {
 				}
 				LOG.info("Shutting down server from callback.");
 				server.deactivate();
-				
+
 			}
 		});
 		LOG.info("Server running, shutting down in 500ms.");
 		t.run();
 		server.waitForShutdown();
 	}
-	
+
 }

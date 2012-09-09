@@ -1,23 +1,31 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2012 CoR-Lab, Bielefeld University
  *
- * This program is free software; you can redistribute it
- * and/or modify it under the terms of the GNU General
- * Public License as published by the Free Software Foundation;
- * either version 2, or (at your option)
- * any later version.
+ * This file may be licensed under the terms of the
+ * GNU Lesser General Public License Version 3 (the ``LGPL''),
+ * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Software distributed under the License is distributed
+ * on an ``AS IS'' basis, WITHOUT WARRANTY OF ANY KIND, either
+ * express or implied. See the LGPL for the specific language
+ * governing rights and limitations.
+ *
+ * You should have received a copy of the LGPL along with this
+ * program. If not, go to http://www.gnu.org/licenses/lgpl.html
+ * or write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * The development of this software was supported by:
+ *   CoR-Lab, Research Institute for Cognition and Robotics
+ *     Bielefeld University
  *
  * ============================================================
  */
+
 package rsb.transport.socket;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,25 +38,25 @@ import rsb.protocol.NotificationType.Notification;
  * It is transparent for clients (connectors) of this class whether
  * is accessed by running the bus server or by connecting to the bus
  * server as a client.
- * 
+ *
  * This class offers methods for sending and receiving events to this
- * bus as well as registration of internal Connectors (inward) and 
+ * bus as well as registration of internal Connectors (inward) and
  * Connections (outward) which allow to send event notifications to
- * external participants. 
- * 
+ * external participants.
+ *
  * @author swrede
  *
  */
 public class Bus {
-	
+
 	protected static Logger log = Logger.getLogger(Bus.class.getName());
-	
+
 	ConcurrentLinkedQueue<BusConnection> connections = new ConcurrentLinkedQueue<BusConnection>();
-	
+
 	public void handleIncoming() {
 		// TODO handle incoming notifications and dispatch these to connectors
 	}
-	
+
 	/**
 	 * Distribute event notification to connected participants.
 	 */
@@ -61,17 +69,17 @@ public class Bus {
 		}
 		// TODO 2. Broadcast notification to internal connectors
 	}
-	
+
 	public void addConnection(BusConnection con) {
 		connections.add(con);
 	}
-	
+
 	public void removeConnection(BusConnection con) {
 		if (connections.remove(con)==false) {
 			log.warning("Couldn't remove BusConnection " + con + " from connection queue.");
 		}
 	}
-	
+
 // TODO implement InPushConnector support for internal notification
 
 }

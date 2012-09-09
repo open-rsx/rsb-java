@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -45,7 +45,7 @@ public interface Port extends RSBObject, FilterObserver {
 	/**
 	 * Sets the quality of service requirements on sending and receiving event
 	 * notifications.
-	 * 
+	 *
 	 * @param spec
 	 *            new spec to apply
 	 */

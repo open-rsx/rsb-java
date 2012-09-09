@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 /**
  * A handler that receives the user payload of an event by extracting the data
  * and casting them to the specified type.
- * 
+ *
  * @author swrede
  * @param <V>
  *            the desired target data type of the user handler. The event
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 public abstract class AbstractDataHandler<V> implements Handler {
 
 	private static final Logger LOG = Logger.getLogger(AbstractDataHandler.class.getName());
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void internalNotify(final Event event) {

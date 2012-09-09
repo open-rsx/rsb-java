@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -37,8 +37,8 @@ import rsb.Event;
  */
 public class ReplyEventCallback implements EventCallback {
 
-	public AtomicInteger counter = new AtomicInteger();	
-	
+	public AtomicInteger counter = new AtomicInteger();
+
 	/* (non-Javadoc)
 	 * @see rsb.patterns.EventCallback#invoke(rsb.Event)
 	 */

@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,13 +32,13 @@ package rsb.util;
  */
 public class Timestamp {
 	// TODO improve Timestamp class, think about Timeval
-	
+
 	public long stamp = System.currentTimeMillis();
-	
+
 	public Timestamp() {
 		// do nothing
 	}
-	
+
 	public Timestamp(long s) {
 		this.stamp = s;
 	}
@@ -53,5 +53,5 @@ public class Timestamp {
 			return null;
 		}
 	}
-	
+
 }

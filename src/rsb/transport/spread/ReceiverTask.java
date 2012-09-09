@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -138,7 +138,7 @@ class ReceiverTask extends Thread {
 			if (joinedData != null) {
 				Notification n = joinedData.getNotification();
 				Event e = EventBuilder.fromNotification(n);
-				
+
 				// user data conversion
 				// why not do this lazy after / in the filtering?
 				// TODO deal with missing converters, errors

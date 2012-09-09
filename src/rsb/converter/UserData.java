@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -30,13 +30,13 @@ package rsb.converter;
 /**
  * A wrapper around deserialized data that contains the unspecific
  * {@link Object} instance with a class object describing its type.
- * 
+ *
  * @author jwienke
  * @author swrede
  */
 public class UserData<WireType> {
 
-	private Object data;	
+	private Object data;
 	private Class<?> typeInfo;
 
 	public UserData(Object data, Class<?> typeInfo) {
@@ -46,7 +46,7 @@ public class UserData<WireType> {
 
 	/**
 	 * Returns the deserialized data.
-	 * 
+	 *
 	 * @return deserialized data
 	 */
 	public Object getData() {
@@ -55,7 +55,7 @@ public class UserData<WireType> {
 
 	/**
 	 * Class object describing the type of the deserialized data.
-	 * 
+	 *
 	 * @return class type info
 	 */
 	public Class<?> getTypeInfo() {

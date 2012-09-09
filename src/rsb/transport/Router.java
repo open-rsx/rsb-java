@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -58,7 +58,7 @@ public class Router extends FilterObservable implements EventHandler {
 		// router setup
 		switch (config) {
 		case NONE:
-			break;		
+			break;
 		case IN:
 			setupInPorts(f);
 			setupEventProcessor();
@@ -124,7 +124,7 @@ public class Router extends FilterObservable implements EventHandler {
 	private void setupEventProcessor() {
 		ep = new SingleThreadEventReceivingStrategy();
 	}
-	
+
 	/**
 	 * Stop event dispatching gracefully.
 	 */
@@ -135,12 +135,12 @@ public class Router extends FilterObservable implements EventHandler {
 			} catch (InterruptedException e) {
 				LOG.log(Level.WARNING, "Error waiting for shutdown of EventProcessor: ", e);
 			}
-		}		
+		}
 	}
 
 	/**
 	 * Publish an {@link Event} over the event bus.
-	 * 
+	 *
 	 * @param e
 	 *            The {@link Event} to be published
 	 */
@@ -191,7 +191,7 @@ public class Router extends FilterObservable implements EventHandler {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see rsb.transport.EventHandler#deliver(rsb.Event)
 	 */
 	@Override

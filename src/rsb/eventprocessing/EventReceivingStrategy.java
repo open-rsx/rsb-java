@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -35,7 +35,7 @@ import rsb.transport.EventHandler;
  * An interface for strategies that dispatch received events to {@link Handler}
  * s. Implementations have the task of freeing the caller of
  * {@link #handle(rsb.Event)} to dispatch the event in its thread.
- * 
+ *
  * @author jwienke
  */
 public interface EventReceivingStrategy extends EventHandler {
@@ -43,7 +43,7 @@ public interface EventReceivingStrategy extends EventHandler {
 	/**
 	 * Adds a filter that is applied for all registered handlers some time after
 	 * this method call.
-	 * 
+	 *
 	 * @param filter
 	 *            filter to add, not <code>null</code>
 	 */
@@ -52,7 +52,7 @@ public interface EventReceivingStrategy extends EventHandler {
 	/**
 	 * Removes a filter that is remove for all registered handlers some time
 	 * after this method call.
-	 * 
+	 *
 	 * @param filter
 	 *            filter to remove, not <code>null</code>
 	 */

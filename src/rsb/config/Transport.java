@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2011 CoR-Lab, Bielefeld University
  *
@@ -43,7 +43,7 @@ public class Transport {
 		// TODO add string
 		// this is for Spread transport only currently
 		result.add(new ConverterSignature("utf-8-string", String.class));
-		return result;		
+		return result;
 	}
-	
+
 }

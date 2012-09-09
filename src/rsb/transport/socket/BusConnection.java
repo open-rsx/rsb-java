@@ -1,20 +1,27 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2012 CoR-Lab, Bielefeld University
  *
- * This program is free software; you can redistribute it
- * and/or modify it under the terms of the GNU General
- * Public License as published by the Free Software Foundation;
- * either version 2, or (at your option)
- * any later version.
+ * This file may be licensed under the terms of the
+ * GNU Lesser General Public License Version 3 (the ``LGPL''),
+ * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Software distributed under the License is distributed
+ * on an ``AS IS'' basis, WITHOUT WARRANTY OF ANY KIND, either
+ * express or implied. See the LGPL for the specific language
+ * governing rights and limitations.
+ *
+ * You should have received a copy of the LGPL along with this
+ * program. If not, go to http://www.gnu.org/licenses/lgpl.html
+ * or write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * The development of this software was supported by:
+ *   CoR-Lab, Research Institute for Cognition and Robotics
+ *     Bielefeld University
  *
  * ============================================================
  */
@@ -36,39 +43,41 @@ import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
 /**
- * Instances of this class implement connections to a socket-based bus.
- * 
- * The basic operations provided by this class are receiving an event notifications
- * by calling receiveNotification and submitting an event to the bus by
- * calling sendNotification. This class implements the fundamental RSB protocol
- * for socket connections, e.g., the basic handshaking and the encoding/decoding
- * of data packages for event notifications. 
- * 
- * @see <a href="http://docs.cor-lab.de/rsb-manual/trunk/html/specification.html#tcp-socket-based-transport">RSB Specification for Socket Transport</a>
- * 
+ * Instances of this class implement connections to a socket-based
+ * bus.
+ *
+ * The basic operations provided by this class are receiving an event
+ * notifications by calling receiveNotification and submitting an
+ * event to the bus by calling sendNotification. This class implements
+ * the fundamental RSB protocol for socket connections, e.g., the
+ * basic handshaking and the encoding/decoding of data packages for
+ * event notifications.
+ *
+ * @see <a href="http://docs.cor-lab.de/rsb-manual/trunk/html/specification-socket.html">RSB Specification for Socket Transport</a>
+ *
  * @author swrede
  *
  */
 public class BusConnection {
-	
-	private static Logger log = Logger.getLogger(BusConnection.class.getName());	
+
+	private static Logger log = Logger.getLogger(BusConnection.class.getName());
 
 	protected static final int HANDSHAKE        = 0x00000000;
-	
+
 	Socket socket;
 	ServerSocket server;
 	ReadableByteChannel reader;
-	WritableByteChannel writer;	
+	WritableByteChannel writer;
 	InetAddress address;
 	int port;
 	boolean isServer = false;
-	
+
 	public BusConnection(InetAddress addr, int port, boolean isServer) {
 		address = addr;
 		this.port = port;
 		this.isServer = isServer;
 	}
-	
+
 	public BusConnection(InetAddress addr, int port) {
 		address = addr;
 		this.port = port;
@@ -87,45 +96,45 @@ public class BusConnection {
 			socket = new Socket(address,port);
 			log.info("Client Socket established at local port: " + socket.getLocalPort());
 
-			// get i/o streams 
+			// get i/o streams
 			reader = Channels.newChannel(socket.getInputStream());
 			writer = Channels.newChannel(socket.getOutputStream());
 		}
 		// do RSB handshake
 		connect();
-		
-	}		
+
+	}
 
 	/**
 	 * Safely close I/O streams and sockets.
 	 *
-	 * @throws RSBException 
-	 */	
+	 * @throws RSBException
+	 */
 	public void deactivate() {
-			try {	
+			try {
 				if (writer!=null && writer.isOpen()) writer.close();
-				if (reader!=null && reader.isOpen()) reader.close();				
+				if (reader!=null && reader.isOpen()) reader.close();
 				if (socket!=null && socket.isConnected()) socket.close();
 			} catch (IOException e) {
 				log.warning("Exception during deactivation of BusConnection: " + e.getMessage());
 			}
 	}
-	
+
 	/**
 	 * Perform simple handshake as specified in RSB socket protocol.
 	 *
-	 * @throws RSBException 
+	 * @throws RSBException
 	 */
 	protected void connect() throws RSBException {
 		ByteBuffer buf_handshake = ByteBuffer.allocateDirect(4);
 		buf_handshake.asIntBuffer().put(HANDSHAKE);
-					
+
 		System.out.print("Request:" + buf_handshake.getInt());
 		try {
 			writer.write(buf_handshake);
 			// read
 			ByteBuffer bb = ByteBuffer.allocateDirect(4);
-			bb.order(ByteOrder.LITTLE_ENDIAN);	
+			bb.order(ByteOrder.LITTLE_ENDIAN);
 			System.out.println("Bytes read: " + reader.read(bb));
 			// check if reply = 0x00000000;
 			bb.rewind();
@@ -137,11 +146,11 @@ public class BusConnection {
 		} catch (IOException e) {
 			throw new RSBException(e);
 		} // write(HANDSHAKE);
-	}	
-	
+	}
+
 	/**
 	 * Extract length of next notification blob.
-	 * 
+	 *
 	 * @return Number of bytes
 	 * @throws IOException
 	 */
@@ -151,15 +160,15 @@ public class BusConnection {
 		System.out.println("Bytes read: " + reader.read(bb));
 		bb.rewind();
 		return bb.getInt();
-	}	
+	}
 
 	/**
 	 * Read a single Socket transport packet (length + notification)
 	 * and decode it into an RSB notification object.
-	 * 
+	 *
 	 * @return Notification object
 	 * @throws IOException
-	 */	
+	 */
 	public Notification readNotification() throws IOException {
 		// get size
 		int length = readLength();
@@ -179,11 +188,11 @@ public class BusConnection {
 			e.printStackTrace();
 		}
 		return n;
-	}	
-	
+	}
+
 	public void sendNotification(Notification notification) {
 		// TODO implement sending of notification to socket
 	}
-	
-	
+
+
 }

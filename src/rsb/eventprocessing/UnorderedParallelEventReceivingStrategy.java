@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -46,7 +46,7 @@ import rsb.filter.Filter;
 /**
  * An {@link EventReceivingStrategy} that dispatches {@link Event}s using a
  * thread pool but without any ordering guarantees.
- * 
+ *
  * @author swrede
  */
 public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor

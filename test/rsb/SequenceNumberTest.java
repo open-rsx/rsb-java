@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -36,17 +36,17 @@ import rsb.transport.SequenceNumber;
 public class SequenceNumberTest {
 
 	@Test
-	public void testOverflowUsage() {        
+	public void testOverflowUsage() {
 		// check max value
 		assertEquals(((long) 2*Integer.MAX_VALUE+1),Long.parseLong("4294967295"));
 		assertEquals(SequenceNumber.MAX_VALUE, Long.parseLong("4294967295"));
-		
+
 		// test int overflow in use
 		SequenceNumber i = new SequenceNumber(Integer.MAX_VALUE);
 		assertEquals(i.get(), Integer.MAX_VALUE);
 		i.incrementAndGet();
-		assertEquals(i.get(), (long) Integer.MAX_VALUE+1);		
-		
+		assertEquals(i.get(), (long) Integer.MAX_VALUE+1);
+
 		// test uint32 overflow in use
 		i = new SequenceNumber(SequenceNumber.MAX_VALUE);
 		assertEquals(i.get(), Long.parseLong("4294967295"));
@@ -61,6 +61,6 @@ public class SequenceNumberTest {
 		assertEquals(Integer.MAX_VALUE+1, Integer.MIN_VALUE);
 		assertEquals(i.get(), (long) Integer.MAX_VALUE+1);
 		i.incrementAndGet();
-	}	
-	
+	}
+
 }

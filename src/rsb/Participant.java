@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -32,10 +32,10 @@ import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
 /**
- * Base class for all bus participants with an associated scope. 
+ * Base class for all bus participants with an associated scope.
  * Mainly holds references to the router and configuration-level
  * objects.
- * 
+ *
  * @author jwienke
  * @author swrede
  */
@@ -48,7 +48,7 @@ public abstract class Participant implements RSBObject {
 
 	/**
 	 * Creates a new participant on the specified scope.
-	 * 
+	 *
 	 * @param scope
 	 *            scope of the participant
 	 * @param transportFactory
@@ -60,10 +60,10 @@ public abstract class Participant implements RSBObject {
 			PortConfiguration portConfig) {
 		initMembers(scope, transportFactory, portConfig);
 	}
-	
+
 	/**
 	 * Creates a new participant on the specified scope.
-	 * 
+	 *
 	 * @param scope
 	 *            scope of the participant
 	 * @param transportFactory
@@ -74,7 +74,7 @@ public abstract class Participant implements RSBObject {
 	protected Participant(String scope, TransportFactory transportFactory,
 			PortConfiguration portConfig) {
 		initMembers(new Scope(scope), transportFactory, portConfig);
-	}	
+	}
 
 	/**
 	 * @param scope
@@ -98,7 +98,7 @@ public abstract class Participant implements RSBObject {
 
 	/**
 	 * Returns the unique ID of this participant.
-	 * 
+	 *
 	 * @return the unique id of the participant
 	 */
 	public ParticipantId getId() {
@@ -107,7 +107,7 @@ public abstract class Participant implements RSBObject {
 
 	/**
 	 * Returns the scope of this participant.
-	 * 
+	 *
 	 * @return scope of the participant, not <code>null</code>
 	 */
 	public Scope getScope() {
@@ -116,7 +116,7 @@ public abstract class Participant implements RSBObject {
 
 	/**
 	 * Returns the {@link TransportFactory} used for this participant.
-	 * 
+	 *
 	 * @return instance not <code>null</code>
 	 */
 	protected TransportFactory getTransportFactory() {
@@ -125,7 +125,7 @@ public abstract class Participant implements RSBObject {
 
 	/**
 	 * Returns the router used for this participant.
-	 * 
+	 *
 	 * @return router used for this participant, not <code>null</code>
 	 */
 	protected Router getRouter() {

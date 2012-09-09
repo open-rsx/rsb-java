@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 /**
  * A scope defines a channel of the hierarchical unified bus covered by RSB. It
  * is defined by a surface syntax like "/a/deep/scope".
- * 
+ *
  * @author jwienke
  */
 public class Scope {
@@ -50,7 +50,7 @@ public class Scope {
 
 	/**
 	 * Parses a scope from a string representation.
-	 * 
+	 *
 	 * @param stringRep
 	 *            string representation of the scope
 	 * @throws IllegalArgumentException
@@ -91,7 +91,7 @@ public class Scope {
 	 * the names between the separator character '/'. The first entry in the
 	 * list is the highest level of hierarchy. The scope '/' returns an empty
 	 * list.
-	 * 
+	 *
 	 * @return components of the represented scope as ordered list with highest
 	 *         level as first entry
 	 */
@@ -103,7 +103,7 @@ public class Scope {
 	 * Creates a new scope that is a sub-scope of this one with the subordinated
 	 * scope described by the given argument. E.g.
 	 * "/this/is/".concat("/a/test/") results in "/this/is/a/test".
-	 * 
+	 *
 	 * @param childScope
 	 *            child to concatenate to the current scope for forming a
 	 *            sub-scope
@@ -120,7 +120,7 @@ public class Scope {
 	 * Tests whether this scope is a sub-scope of the given other scope, which
 	 * means that the other scope is a prefix of this scope. E.g. "/a/b/" is a
 	 * sub-scope of "/a/".
-	 * 
+	 *
 	 * @param other
 	 *            other scope to test
 	 * @return <code>true</code> if this is a sub-scope of the other scope,
@@ -136,7 +136,7 @@ public class Scope {
 
 	/**
 	 * Inverse operation of {@link #isSubScopeOf(Scope)}.
-	 * 
+	 *
 	 * @param other
 	 *            other scope to test
 	 * @return <code>true</code> if this scope is a strict super scope of the
@@ -154,7 +154,7 @@ public class Scope {
 	 * Generates all super scopes of this scope including the root scope "/".
 	 * The returned list of scopes is ordered by hierarchy with "/" being the
 	 * first entry.
-	 * 
+	 *
 	 * @param includeSelf
 	 *            if set to <code>true</code>, this scope is also included as
 	 *            last element of the returned list

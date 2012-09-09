@@ -1,20 +1,27 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2012 CoR-Lab, Bielefeld University
  *
- * This program is free software; you can redistribute it
- * and/or modify it under the terms of the GNU General
- * Public License as published by the Free Software Foundation;
- * either version 2, or (at your option)
- * any later version.
+ * This file may be licensed under the terms of the
+ * GNU Lesser General Public License Version 3 (the ``LGPL''),
+ * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Software distributed under the License is distributed
+ * on an ``AS IS'' basis, WITHOUT WARRANTY OF ANY KIND, either
+ * express or implied. See the LGPL for the specific language
+ * governing rights and limitations.
+ *
+ * You should have received a copy of the LGPL along with this
+ * program. If not, go to http://www.gnu.org/licenses/lgpl.html
+ * or write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * The development of this software was supported by:
+ *   CoR-Lab, Research Institute for Cognition and Robotics
+ *     Bielefeld University
  *
  * ============================================================
  */
@@ -49,10 +56,10 @@ public class BusConnectionTest {
 		InetAddress addr = InetAddress.getLocalHost();
 		BusConnection bus1 = new BusConnection(addr,55555,false);
 	}
-	
+
 	@Rule
-	public ExpectedException exception = ExpectedException.none();	
-	
+	public ExpectedException exception = ExpectedException.none();
+
 	//@Test
 	// TODO add Server mock for testing
 	public void testBusConnectionDeActivation() throws IOException, RSBException {
@@ -61,22 +68,22 @@ public class BusConnectionTest {
 		Socket socket1 = new Socket(InetAddress.getLocalHost(),55555);
 		Socket socket2 = new Socket(InetAddress.getLocalHost(),55555);
 		InetAddress addr = InetAddress.getLocalHost();
-		BusConnection bus1 = new BusConnection(addr,55555);	
+		BusConnection bus1 = new BusConnection(addr,55555);
 	    bus1.activate();
 		bus1.deactivate();
 		bus1.activate();
 		bus1.deactivate();
 		bus1.activate();
 	}
-	
+
 	@Test
 	public void testClientConnection() throws RSBException {
 		try {
 			// prototyping code that works with rsb_listener example
 			InetAddress addr = InetAddress.getLocalHost();
-			BusConnection bus = new BusConnection(addr,55555);	
+			BusConnection bus = new BusConnection(addr,55555);
 		    bus.activate();
-	
+
 			// process packet
 			int i = 0;
 			while (true) {
@@ -88,10 +95,10 @@ public class BusConnectionTest {
 
 				System.out.println("Scope: " + e.getScope());
 				System.out.println("Id: " + e.getId());
-				System.out.println("------------------------------");				
+				System.out.println("------------------------------");
 				if (i==1200) break;
 			}
-			
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -99,8 +106,8 @@ public class BusConnectionTest {
 		} finally {
 			// cleanup
 		}
-		
-	
+
+
 	}
 
 
@@ -108,7 +115,7 @@ public class BusConnectionTest {
 
 	private void saveRawNotification(ByteBuffer buf_notificaton) {
 //		System.out.println("Extra bytes read: " + rbc.read(buf_notification));
-		
+
 //		File file = new File("pbuf.data");
 //
 //		// Set to true if the bytes should be appended to the file;
@@ -127,8 +134,8 @@ public class BusConnectionTest {
 //		    // Close the file
 //		    wChannel.close();
 //		} catch (IOException e) {
-//		}	
-		
+//		}
+
 	}
 
 

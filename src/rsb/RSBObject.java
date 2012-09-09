@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the RSBJava project
+ * This file is part of the rsb-java project
  *
  * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
@@ -42,10 +42,10 @@ public interface RSBObject {
 	 * order to reactivate it.
 	 */
 	public void deactivate() throws RSBException;
-	
+
 	/**
 	 * Tells wether this class is currently active or not.
-	 * 
+	 *
 	 * @return <code>true</code> if active
 	 */
 	boolean isActive();
