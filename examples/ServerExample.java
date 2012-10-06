@@ -3,7 +3,7 @@
  *
  * This file is a part of the RSBJava project
  *
- * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ * Copyright (C) 2011, 2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -26,6 +26,7 @@
  * ============================================================
  */
 
+// mark-start::body
 import java.util.logging.Logger;
 
 import rsb.Event;
@@ -38,53 +39,50 @@ import rsb.patterns.LocalServer;
 /**
  * This example demonstrates how to expose a request/reply interface
  * with RSB using data and event callbacks.
- * 
+ *
  * @author swrede
  *
  */
 public class ServerExample {
 
-	private static final Logger LOG = Logger.getLogger(ServerExample.class.getName());	
-	
-	public static class DataReplyCallback implements DataCallback<String, String> {
+    private static final Logger LOG = Logger.getLogger(ServerExample.class.getName());
 
-		@Override
-		public String invoke(String request) throws Throwable {
-			// do some stupid stuff
-			return (request + "/reply").toLowerCase();
-		}
-		
-	}
-	
-	public static class EventReplyCallback implements EventCallback {
+    public static class DataReplyCallback implements DataCallback<String, String> {
 
-		@Override
-		public Event invoke(Event request) throws Throwable {
-			request.setData(((String) request.getData()) + "/reply".toUpperCase());
-			return request;
-		}
-		
-	}
-	
-	/**
-	 * @param args
-	 * @throws InitializeException 
-	 */
-	public static void main(String[] args) throws InitializeException {
-		// Get local server object which allows to expose request methods to participants
-		LocalServer server = Factory.getInstance().createLocalServer("/example/server");
-		server.activate();
-		
-		// Add methods		
-		// Callback with handler signature based on event payload
-		server.addMethod("replyLower", new DataReplyCallback());
-		// Callback with handler signature based on events
-		server.addMethod("replyHigher", new EventReplyCallback());
+        @Override
+            public String invoke(String request) throws Throwable {
+            // do some stupid stuff
+            return (request + "/reply").toLowerCase();
+        }
 
-		// Optional: block until server.deactivate or process shutdown
-		LOG.info("Server /example/server running");
-		server.waitForShutdown();
-		
-	}
+    }
+
+    public static class EventReplyCallback implements EventCallback {
+
+        @Override
+        public Event invoke(Event request) throws Throwable {
+            request.setData(((String) request.getData()) + "/reply".toUpperCase());
+            return request;
+        }
+
+    }
+
+    public static void main(String[] args) throws InitializeException {
+        // Get local server object which allows to expose request methods to participants
+        LocalServer server = Factory.getInstance().createLocalServer("/example/server");
+        server.activate();
+
+        // Add methods
+        // Callback with handler signature based on event payload
+        server.addMethod("replyLower", new DataReplyCallback());
+        // Callback with handler signature based on events
+        server.addMethod("replyHigher", new EventReplyCallback());
+
+        // Optional: block until server.deactivate or process shutdown
+        LOG.info("Server /example/server running");
+        server.waitForShutdown();
+
+    }
 
 }
+// mark-end::body

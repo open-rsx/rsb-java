@@ -3,7 +3,7 @@
  *
  * This file is a part of the RSBJava project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010,2011,2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -26,6 +26,7 @@
  * ============================================================
  */
 
+// mark-start::body
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -36,65 +37,65 @@ import rsb.Listener;
 
 /**
  * A basic example that demonstrated how to receive event payloads.
- * 
+ *
  * @author swrede
  */
 public class DataListenerExample extends AbstractDataHandler<String> {
 
-	private static final Logger LOG = Logger.getLogger(DataListenerExample.class.getName());
-	
-	static AtomicInteger counter = new AtomicInteger(0);
-	static Object l = new Object();
+    private static final Logger LOG = Logger.getLogger(DataListenerExample.class.getName());
 
-	/**
-	 * The actual callback that is notified upon arrival of events. In contrast 
-	 * to an EventListener, here the event payload is passed to the callback.
-	 */	
-	@Override
-	public void handleEvent(String data) {
-		counter.getAndIncrement();
-		if (counter.get() % 100 == 0) {
-			LOG.info("Event #" + counter.get() + " received with payload: " + data);
-		}
-		if (counter.get() == 1000) {
-			synchronized (l) {
-				l.notifyAll();
-			}
-		}
-	}	
-	
-	public static void main(String[] args) throws InterruptedException, InitializeException {
+    static AtomicInteger counter = new AtomicInteger(0);
+    static Object l = new Object();
 
-		// get a factory instance to create new RSB domain objects
-		Factory factory = Factory.getInstance();
+    /**
+     * The actual callback that is notified upon arrival of events. In contrast
+     * to an EventListener, here the event payload is passed to the callback.
+     */
+    @Override
+    public void handleEvent(String data) {
+        counter.getAndIncrement();
+        if (counter.get() % 100 == 0) {
+            LOG.info("Event #" + counter.get() + " received with payload: " + data);
+        }
+        if (counter.get() == 1000) {
+            synchronized (l) {
+                l.notifyAll();
+            }
+        }
+    }
 
-		// create a Listener instance on the specified scope that will receive
-		// events and dispatches them asynchronously to all registered handlers
-		Listener sub = factory.createListener("/example/informer");
+    public static void main(String[] args) throws InterruptedException, InitializeException {
 
-		// activate the listener to be ready for work
-		sub.activate();
+        // get a factory instance to create new RSB domain objects
+        Factory factory = Factory.getInstance();
 
-		// add a DataHandler, here the DataListenerExample that is notified directly 
-		// with the data extracted from the received event
-		sub.addHandler(new DataListenerExample(), true);
+        // create a Listener instance on the specified scope that will receive
+        // events and dispatches them asynchronously to all registered handlers
+        Listener sub = factory.createListener("/example/informer");
 
-		// wait that enough events are received
-		while (!allEventsDelivered()) {
-			synchronized (l) {
-				l.wait(1000);
-				LOG.fine("Wake-Up!!!");
-			}
-		}		
+        // activate the listener to be ready for work
+        sub.activate();
 
-		// as there is no explicit removal model in java, always manually
-		// deactivate the listener if it is not needed anymore
-		sub.deactivate();
-	};
+        // add a DataHandler, here the DataListenerExample that is notified directly
+        // with the data extracted from the received event
+        sub.addHandler(new DataListenerExample(), true);
 
-	private synchronized static boolean allEventsDelivered() {
-		return !(counter.get() != 1000);
-	}
+        // wait that enough events are received
+        while (!allEventsDelivered()) {
+            synchronized (l) {
+                l.wait(1000);
+                LOG.fine("Wake-Up!!!");
+            }
+        }
 
+        // as there is no explicit removal model in java, always manually
+        // deactivate the listener if it is not needed anymore
+        sub.deactivate();
+    };
+
+    private synchronized static boolean allEventsDelivered() {
+        return !(counter.get() != 1000);
+    }
 
 }
+// mark-end::body
