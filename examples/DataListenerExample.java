@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010,2011,2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -26,6 +26,7 @@
  * ============================================================
  */
 
+// mark-start::body
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -41,60 +42,60 @@ import rsb.Listener;
  */
 public class DataListenerExample extends AbstractDataHandler<String> {
 
-	private static final Logger LOG = Logger.getLogger(DataListenerExample.class.getName());
+    private static final Logger LOG = Logger.getLogger(DataListenerExample.class.getName());
 
-	static AtomicInteger counter = new AtomicInteger(0);
-	static Object l = new Object();
+    static AtomicInteger counter = new AtomicInteger(0);
+    static Object l = new Object();
 
-	/**
-	 * The actual callback that is notified upon arrival of events. In contrast
-	 * to an EventListener, here the event payload is passed to the callback.
-	 */
-	@Override
-	public void handleEvent(String data) {
-		counter.getAndIncrement();
-		if (counter.get() % 100 == 0) {
-			LOG.info("Event #" + counter.get() + " received with payload: " + data);
-		}
-		if (counter.get() == 1000) {
-			synchronized (l) {
-				l.notifyAll();
-			}
-		}
-	}
+    /**
+     * The actual callback that is notified upon arrival of events. In contrast
+     * to an EventListener, here the event payload is passed to the callback.
+     */
+    @Override
+    public void handleEvent(String data) {
+        counter.getAndIncrement();
+        if (counter.get() % 100 == 0) {
+            LOG.info("Event #" + counter.get() + " received with payload: " + data);
+        }
+        if (counter.get() == 1000) {
+            synchronized (l) {
+                l.notifyAll();
+            }
+        }
+    }
 
-	public static void main(String[] args) throws InterruptedException, InitializeException {
+    public static void main(String[] args) throws InterruptedException, InitializeException {
 
-		// get a factory instance to create new RSB domain objects
-		Factory factory = Factory.getInstance();
+        // get a factory instance to create new RSB domain objects
+        Factory factory = Factory.getInstance();
 
-		// create a Listener instance on the specified scope that will receive
-		// events and dispatches them asynchronously to all registered handlers
-		Listener sub = factory.createListener("/example/informer");
+        // create a Listener instance on the specified scope that will receive
+        // events and dispatches them asynchronously to all registered handlers
+        Listener sub = factory.createListener("/example/informer");
 
-		// activate the listener to be ready for work
-		sub.activate();
+        // activate the listener to be ready for work
+        sub.activate();
 
-		// add a DataHandler, here the DataListenerExample that is notified directly
-		// with the data extracted from the received event
-		sub.addHandler(new DataListenerExample(), true);
+        // add a DataHandler, here the DataListenerExample that is notified directly
+        // with the data extracted from the received event
+        sub.addHandler(new DataListenerExample(), true);
 
-		// wait that enough events are received
-		while (!allEventsDelivered()) {
-			synchronized (l) {
-				l.wait(1000);
-				LOG.fine("Wake-Up!!!");
-			}
-		}
+        // wait that enough events are received
+        while (!allEventsDelivered()) {
+            synchronized (l) {
+                l.wait(1000);
+                LOG.fine("Wake-Up!!!");
+            }
+        }
 
-		// as there is no explicit removal model in java, always manually
-		// deactivate the listener if it is not needed anymore
-		sub.deactivate();
-	};
+        // as there is no explicit removal model in java, always manually
+        // deactivate the listener if it is not needed anymore
+        sub.deactivate();
+    };
 
-	private synchronized static boolean allEventsDelivered() {
-		return !(counter.get() != 1000);
-	}
-
+    private synchronized static boolean allEventsDelivered() {
+        return !(counter.get() != 1000);
+    }
 
 }
+// mark-end::body

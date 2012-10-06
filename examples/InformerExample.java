@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010, 2011, 2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -26,6 +26,7 @@
  * ============================================================
  */
 
+// mark-start::body
 import rsb.Factory;
 import rsb.Informer;
 
@@ -36,28 +37,29 @@ import rsb.Informer;
  */
 public class InformerExample {
 
-	public static void main(String[] args) throws Throwable {
+    public static void main(String[] args) throws Throwable {
 
-		// Get a factory instance to create new RSB domain objects
-		Factory factory = Factory.getInstance();
+        // Get a factory instance to create new RSB domain objects
+        Factory factory = Factory.getInstance();
 
-		// Create an informer on scope "/exmaple/informer" to send event
-		// notifications.
-		Informer<Object> informer = factory.createInformer("/example/informer");
+        // Create an informer on scope "/exmaple/informer" to send event
+        // notifications.
+        Informer<Object> informer = factory.createInformer("/example/informer");
 
-		// Activate the informer to be ready for work
-		informer.activate();
+        // Activate the informer to be ready for work
+        informer.activate();
 
-		// Send several events using a method that accepts the data and
-		// automatically creates an appropriate event internally.
-		for (int i = 1; i <= 1000; i++) {
-			informer.send("<message val=\"Hello World!\" nr=\"" + i + "\"/>");
-		}
+        // Send several events using a method that accepts the data and
+        // automatically creates an appropriate event internally.
+        for (int i = 1; i <= 1000; i++) {
+            informer.send("<message val=\"Hello World!\" nr=\"" + i + "\"/>");
+        }
 
-		// As there is no explicit removal model in java, always manually
-		// deactivate the informer if it is not needed anymore
-		informer.deactivate();
+        // As there is no explicit removal model in java, always manually
+        // deactivate the informer if it is not needed anymore
+        informer.deactivate();
 
-	}
+    }
 
 }
+// mark-end::body
