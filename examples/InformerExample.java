@@ -30,30 +30,22 @@
 import rsb.Factory;
 import rsb.Informer;
 
-/**
- * An example how to use the {@link rsb.Informer} class to send events.
- *
- * @author swrede
- */
 public class InformerExample {
 
     public static void main(String[] args) throws Throwable {
 
-        // Get a factory instance to create new RSB domain objects
+        // Get a factory instance to create RSB objects.
         Factory factory = Factory.getInstance();
 
-        // Create an informer on scope "/exmaple/informer" to send event
-        // notifications.
+        // Create an informer on scope "/exmaple/informer".
         Informer<Object> informer = factory.createInformer("/example/informer");
 
         // Activate the informer to be ready for work
         informer.activate();
 
-        // Send several events using a method that accepts the data and
+        // Send and event using a method that accepts the data and
         // automatically creates an appropriate event internally.
-        for (int i = 1; i <= 1000; i++) {
-            informer.send("<message val=\"Hello World!\" nr=\"" + i + "\"/>");
-        }
+        informer.send("example payload");
 
         // As there is no explicit removal model in java, always manually
         // deactivate the informer if it is not needed anymore
