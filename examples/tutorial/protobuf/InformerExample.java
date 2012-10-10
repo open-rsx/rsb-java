@@ -1,10 +1,9 @@
-package tutorial.protobuf;
 /**
  * ============================================================
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010-2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -27,59 +26,49 @@ package tutorial.protobuf;
  * ============================================================
  */
 
+// mark-start::body
+package tutorial.protobuf;
+
 import com.google.protobuf.ByteString;
 
 import rsb.Factory;
 import rsb.Informer;
-import rsb.Scope;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
+
 import tutorial.protobuf.ImageMessage.SimpleImage;
 import tutorial.protobuf.ImageMessage.SimpleImage.Builder;
 
-/**
- * An example how to use the {@link rsb.Informer} class to send events.
- *
- * @author swrede
- */
 public class InformerExample {
 
-	public static void main(String[] args) throws Throwable {
+    public static void main(String[] args) throws Throwable {
 
-		// Instantiate generic ProtocolBufferConverter with SimpleImage exemplar
-		ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
+        // See RegistrationExample.java.
+        ProtocolBufferConverter<SimpleImage> converter
+            = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
 
-		// get a factory instance to create new RSB domain objects
-		Factory factory = Factory.getInstance();
+        DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
 
-		// register converter for SimpleImage's
-		DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+        // Create an informer on scope "/example/protobuf" to send
+        // SimpleImage data.
+        Factory factory = Factory.getInstance();
+        Informer<SimpleImage> informer = factory.createInformer("/example/protobuf");
+        informer.activate();
 
-		// create an informer on scope "/example/informer" to send event
-		// notifications. This informer is capable of sending Strings.
-		Informer<SimpleImage> informer = factory.createInformer(new Scope(
-				"/example/informer"));
+        // Send a SimpleImage datum..
+        try {
+            Builder img = SimpleImage.newBuilder();
+            img.setHeight(100);
+            img.setWidth(100);
+            byte[] bytes = new byte[100*100];
+            ByteString bs = ByteString.copyFrom(bytes);
+            img.setData(bs);
+            informer.send(img.build());
+        } finally {
+            informer.deactivate();
+        }
 
-		// activate the informer to be ready for work
-		informer.activate();
-
-		// send several events using a method that accepts the data and
-		// automatically creates an appropriate event internally.
-		for (int i = 0; i < 100; i++) {
-			Builder img = SimpleImage.newBuilder();
-			img.setHeight(100);
-			img.setWidth(100);
-			byte[] bytes = new byte[100*100];
-			ByteString bs = ByteString.copyFrom(bytes);
-			img.setData(bs);
-			informer.send(img.build());
-			System.out.println("Sending image...");
-		}
-
-		// as there is no explicit removal model in java, always manually
-		// deactivate the informer if it is not needed anymore
-		informer.deactivate();
-
-	}
+    }
 
 }
+// mark-end::body

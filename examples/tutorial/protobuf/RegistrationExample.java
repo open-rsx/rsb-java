@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010-2012 CoR-Lab, Bielefeld University
+ * Copyright (C) 2012 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -29,53 +29,28 @@
 // mark-start::body
 package tutorial.protobuf;
 
-import rsb.AbstractDataHandler;
 import rsb.Factory;
-import rsb.Listener;
-import rsb.Scope;
 
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
 
 import tutorial.protobuf.ImageMessage.SimpleImage;
 
-public class ListenerExample {
+public class RegistrationExample {
 
     public static void main(String[] args) throws Throwable {
 
-        // See RegistrationExample.java.
+        // Instantiate generic ProtocolBufferConverter with
+        // SimpleImage exemplar.
         ProtocolBufferConverter<SimpleImage> converter
             = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
 
-        // register converter for SimpleImage's.
+        // Register converter for the SimpleImage type.
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
 
-        // Create a Listener instance on the specified scope that will
-        // receive events and dispatch them asynchronously to the
-        // registered handlers.
+        // The factory now uses the modified set of converters.
         Factory factory = Factory.getInstance();
-        Listener listener = factory.createListener("/example/protobuf");
-        listener.activate();
 
-        // Add a DataHandler that is called with the SimpleImage datum
-        // contained in received events.
-        try {
-            listener.addHandler(new AbstractDataHandler<SimpleImage>() {
-
-                @Override
-                public void handleEvent(SimpleImage e) {
-                    System.out.println("SimpleImage data received");
-                }
-
-            }, true);
-
-            // Wait for events.
-            while (true) {
-                Thread.sleep(1);
-            }
-        } finally {
-            listener.deactivate();
-        }
     }
 
 }
