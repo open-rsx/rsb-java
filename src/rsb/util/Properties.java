@@ -132,7 +132,7 @@ public class Properties {
 
     public void resetDefaults() {
         propsMap = new java.util.HashMap<String, ValidProperty>();
-        propsMap.put("RSB.Version", new ValidProperty("0.1"));
+        propsMap.put("RSB.Version", new ValidProperty("0.8"));
         // String localhost = "localhost";
         // try {
         // localhost = InetAddress.getLocalHost().getHostName();
