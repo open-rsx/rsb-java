@@ -27,12 +27,12 @@
  */
 package rsb.transport.socket;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -50,11 +50,9 @@ public class BusConnectionTest {
 
 	@Test
 	public void testBusConnection() throws UnknownHostException {
-//		def __init__(self,
-//				  65                   host = None, port = None, socket_ = None,
-//				  66                   isServer = False):
 		InetAddress addr = InetAddress.getLocalHost();
 		BusConnection bus1 = new BusConnection(addr,55555,false);
+		assertNotNull(bus1);
 	}
 
 	@Rule
@@ -66,7 +64,9 @@ public class BusConnectionTest {
 		// instantiate Socket object
 		// precondition: server is running!!!
 		Socket socket1 = new Socket(InetAddress.getLocalHost(),55555);
+		assertNotNull(socket1);
 		Socket socket2 = new Socket(InetAddress.getLocalHost(),55555);
+		assertNotNull(socket2);
 		InetAddress addr = InetAddress.getLocalHost();
 		BusConnection bus1 = new BusConnection(addr,55555);
 	    bus1.activate();
@@ -111,9 +111,7 @@ public class BusConnectionTest {
 	}
 
 
-
-
-	private void saveRawNotification(ByteBuffer buf_notificaton) {
+//	private void saveRawNotification(ByteBuffer buf_notificaton) {
 //		System.out.println("Extra bytes read: " + rbc.read(buf_notification));
 
 //		File file = new File("pbuf.data");
@@ -136,8 +134,16 @@ public class BusConnectionTest {
 //		} catch (IOException e) {
 //		}
 
+	@Test
+	public void testServerConnection(){
+		try {
+			// prototyping code that works with rsb_listener example
+			InetAddress addr = InetAddress.getLocalHost();
+			BusConnection bus = new BusConnection(addr,55555,true);	
+		    bus.activate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
-
 
 }
