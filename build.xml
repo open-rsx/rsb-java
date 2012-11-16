@@ -134,19 +134,19 @@
 
 	<target name="compile" depends="init, protocol" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" destdir="${build.dir}/classes" debug="on" deprecation="on">
+		<javac srcdir="${src}" destdir="${build.dir}/classes" target="1.5" debug="on" deprecation="on">
 			<compilerarg value="-Xlint" />
 			<classpath refid="compile.classpath" />
 		</javac>
 		<!-- Compile the examples -->
-		<javac srcdir="examples" destdir="${examples.dir}" debug="on" deprecation="on">
+		<javac srcdir="examples" destdir="${examples.dir}" target="1.5" debug="on" deprecation="on">
 			<compilerarg value="-Xlint" />
 			<classpath refid="examples.classpath" />
 		</javac>
 	</target>
 
 	<target name="test-compile" depends="compile">
-		<javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test" debug="on" deprecation="on">
+		<javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test" target="1.5" debug="on" deprecation="on">
 			<classpath refid="test.classpath" />
 		</javac>
 		<copy todir="${test.dir}">
