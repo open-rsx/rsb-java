@@ -1,3 +1,5 @@
 /build*
 /dist
 /generated-protocol
+/target
+
