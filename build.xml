@@ -218,14 +218,13 @@
             <assertions>
                 <enable />
             </assertions>
-            <!--    <test name="rsb.EventIdTest"/>
-                 <test name="rsb.util.UUIDToolsTest"/> -->
             <batchtest fork="yes" todir="${dir.report.unittests.xml}">
                 <fileset dir="test">
                     <include name="**/*Test*.java" />
                 </fileset>
             </batchtest>
         </junit>
+
     </target>
 
     <target name="coverage" depends="test-compile" description="JUnit tests">
@@ -316,6 +315,7 @@
         <delete dir="${dist.dir}" />
         <delete dir="${cobertura.out.dir}" />
         <delete file="cobertura.ser" />
+        <delete dir="${dir.report.unittests.xml}" />
         <delete dir="${dir.doc}" />
     </target>
 
