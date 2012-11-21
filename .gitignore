@@ -1,3 +1,6 @@
 /build*
 /dist
 /generated-protocol
+/doc
+/testreports
+/coverage
