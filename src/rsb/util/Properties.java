@@ -230,46 +230,53 @@ public class Properties {
 
     public void loadFile(String fn) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
-                                                                         new FileInputStream(fn)));
-        String section = "";
-        while (reader.ready()) {
-            String line = reader.readLine();
-            int index = line.indexOf('#');
-            if (index != -1) {
-                line = line.substring(0, index);
+                new FileInputStream(fn)));
+        try {
+
+            String section = "";
+            while (reader.ready()) {
+                String line = reader.readLine();
+                int index = line.indexOf('#');
+                if (index != -1) {
+                    line = line.substring(0, index);
+                }
+                line = line.trim();
+                if (line.equals("")) {
+                    continue;
+                }
+                if (line.startsWith("[") && line.endsWith("]")) {
+                    section = line.substring(1, line.length() - 1);
+                    continue;
+                }
+                index = line.indexOf('=');
+                if (index == -1) {
+                    System.err.println("Illegal line in configuration file: `"
+                            + line + "'");
+                    continue;
+                }
+                String key = section + "." + line.substring(0, index).trim();
+                if ((key.startsWith("transport.spread.converter") && !key
+                        .startsWith("transport.spread.converter.java"))
+                        || (key.startsWith("transport") && !key
+                                .startsWith("transport.spread"))
+                        || (key.startsWith("plugins") && !key
+                                .startsWith("plugins.java"))) {
+                    continue;
+                }
+                String value = line.substring(index + 1).trim();
+                try {
+                    setProperty(key, value);
+                } catch (InvalidPropertyException ex) {
+                    System.err
+                            .println("An exception occurred reading configuration from file '"
+                                    + fn + "': " + ex.getMessage());
+                }
             }
-            line = line.trim();
-            if (line.equals("")) {
-                continue;
-            }
-            if (line.startsWith("[") && line.endsWith("]")) {
-                section = line.substring(1, line.length() - 1);
-                continue;
-            }
-            index = line.indexOf('=');
-            if (index == -1) {
-                System.err.println("Illegal line in configuration file: `"
-                                   + line + "'");
-                continue;
-            }
-            String key = section + "." + line.substring(0, index).trim();
-            if ((key.startsWith("transport.spread.converter") && !key
-                 .startsWith("transport.spread.converter.java"))
-                || (key.startsWith("transport") && !key
-                    .startsWith("transport.spread"))
-                || (key.startsWith("plugins") && !key
-                    .startsWith("plugins.java"))) {
-                continue;
-            }
-            String value = line.substring(index + 1).trim();
-            try {
-                setProperty(key, value);
-            } catch (InvalidPropertyException ex) {
-                System.err
-                    .println("An exception occurred reading configuration from file '"
-                             + fn + "': " + ex.getMessage());
-            }
+
+        } finally {
+            reader.close();
         }
+
     }
 
     public void loadEnv() {
