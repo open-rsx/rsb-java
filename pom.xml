@@ -2,6 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<!-- General project settings. -->
 	<groupId>rsb</groupId>
 	<artifactId>rsb</artifactId>
 	<version>0.8.0-SNAPSHOT</version>
@@ -10,6 +11,20 @@
 	<name>RSB</name>
 	<url>https://code.cor-lab.org/projects/rsb/</url>
 
+	<description>The Robotics Service Bus (RSB) is a message-oriented, event-driven middleware aiming at scalable integration of robotics systems in diverse environments. Being fundamentally a bus architecture, RSB structures heterogeneous systems of service providers and consumers using broadcast communication over a hierarchy of logically unified channels instead of a large number of point-to-point connections. Nevertheless RSB comes with a collection of communication patterns and other tools for structuring communication, but does not require a particular functional or decomposition style.</description>
+
+	<organization>
+		<name>CoR-Lab</name>
+		<url>http://www.cor-lab.org/</url>
+	</organization>
+
+	<scm>
+		<developerConnection>scm:git:https://code.cor-lab.org/git/rsb.git.java</developerConnection>
+		<url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
+	</scm>
+
+	<!-- Properties that can be overridden using e.g. 'mvn -Dspread.daemon=/some/path 
+		package'. -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<pbuf.protopath>${env.prefix}/share/rsbprotocol</pbuf.protopath>
@@ -20,8 +35,10 @@
 	</properties>
 
 	<build>
+		<!-- Set up the source and test source folders. -->
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
+		<!-- Use the source dir also for resources. -->
 		<resources>
 			<resource>
 				<directory>src</directory>
@@ -51,19 +68,22 @@
 									<version>1.6</version>
 								</requireJavaVersion>
 								<requireFilesExist>
-									<message>Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.</message>
+									<message>Google Protocol Buffers compiler not found at
+										'${pbuf.protoc}'. Please set pbuf.protoc.</message>
 									<files>
 										<file>${pbuf.protoc}</file>
 									</files>
 								</requireFilesExist>
 								<requireFilesExist>
-									<message>RSB protocol property pbuf.protopath does not point to a valid installation of RSBProtocol at '${pbuf.protopath}'</message>
+									<message>RSB protocol property pbuf.protopath does not point to
+										a valid installation of RSBProtocol at '${pbuf.protopath}'</message>
 									<files>
 										<file>${pbuf.protopath}/rsb/protocol/Notification.proto</file>
 									</files>
 								</requireFilesExist>
 								<requireFilesExist>
-									<message>Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.</message>
+									<message>Spread daemon not found at '${spread.daemon}'. Please
+										set spread.daemon.</message>
 									<files>
 										<file>${spread.daemon}</file>
 									</files>
@@ -143,6 +163,7 @@
 					</execution>
 				</executions>
 				<dependencies>
+					<!-- All this is needed to get ant-contrib in the ant task above. -->
 					<dependency>
 						<groupId>ant-contrib</groupId>
 						<artifactId>ant-contrib</artifactId>
@@ -162,6 +183,7 @@
 				</dependencies>
 			</plugin>
 
+			<!-- Add the spread and protobuf-generated sources to the build. -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -183,6 +205,7 @@
 				</executions>
 			</plugin>
 
+			<!-- Unit testing settings. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -199,6 +222,7 @@
 				</dependencies>
 			</plugin>
 
+			<!-- Settings for generating cobertura test coverage reports. -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
@@ -233,6 +257,8 @@
 
 	<reporting>
 		<plugins>
+			<!-- Some more cobertura settings, also to get the generated report included 
+				in the generated maven site. -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
@@ -244,9 +270,17 @@
 					</formats>
 				</configuration>
 			</plugin>
+			
+			<!-- Just so maven doesn't complain about a missing version. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
 		</plugins>
 	</reporting>
 
+	<!-- All direct dependencies need to be specified here. -->
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -261,4 +295,5 @@
 			<version>${pbuf.version}</version>
 		</dependency>
 	</dependencies>
+
 </project>
