@@ -32,6 +32,7 @@
 		<pbuf.version>2.4.1</pbuf.version>
 		<pbuf.outpath>target/generated-protocol</pbuf.outpath>
 		<spread.daemon>/usr/sbin/spread</spread.daemon>
+		<target.java.version>1.6</target.java.version>
 	</properties>
 
 	<build>
@@ -61,6 +62,7 @@
 							<goal>enforce</goal>
 						</goals>
 						<configuration>
+							<!-- This makes it fail when the first check fails. -->
 							<failFast>true</failFast>
 							<rules>
 								<requireJavaVersion>
@@ -99,8 +101,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>${target.java.version}</source>
+					<target>${target.java.version}</target>
 				</configuration>
 			</plugin>
 
@@ -270,7 +272,45 @@
 					</formats>
 				</configuration>
 			</plugin>
-			
+
+			<!-- Generate cross-referenced HTML for the sources. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+
+			<!-- Also generate a PMD report. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.7.1</version>
+				<configuration>
+					<targetJdk>${target.java.version}</targetJdk>
+					<rulesets>
+						<ruleset>/rulesets/basic.xml</ruleset>
+						<ruleset>/rulesets/braces.xml</ruleset>
+						<ruleset>/rulesets/clone.xml</ruleset>
+						<ruleset>/rulesets/codesize.xml</ruleset>
+						<!-- <ruleset>/rulesets/controversial.xml</ruleset> -->
+						<ruleset>/rulesets/coupling.xml</ruleset>
+						<ruleset>/rulesets/design.xml</ruleset>
+						<ruleset>/rulesets/finalizers.xml</ruleset>
+						<ruleset>/rulesets/imports.xml</ruleset>
+						<ruleset>/rulesets/junit.xml</ruleset>
+						<ruleset>/rulesets/logging-java.xml</ruleset>
+						<ruleset>/rulesets/naming.xml</ruleset>
+						<ruleset>/rulesets/optimizations.xml</ruleset>
+						<ruleset>/rulesets/strings.xml</ruleset>
+						<ruleset>/rulesets/typeresolution.xml</ruleset>
+						<ruleset>/rulesets/unusedcode.xml</ruleset>
+					</rulesets>
+					<excludes>
+						<exclude>**/protocol/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
 			<!-- Just so maven doesn't complain about a missing version. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
