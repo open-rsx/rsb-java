@@ -69,6 +69,7 @@
 	</taskdef>
 
 	<target name="gitversion" description="Get patch version from git">
+		<mkdir dir="${build.dir}" />
 		<exec executable="${git.executable}" output="${git.versionfile}" failifexecutionfails="false" errorproperty="git.version.failed">
 			<arg value="describe" />
 			<arg value="--tags" />
