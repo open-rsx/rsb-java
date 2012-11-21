@@ -32,6 +32,49 @@
 		</resources>
 
 		<plugins>
+			<!-- Check the availability of different external dependencies. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.1.1</version>
+				<executions>
+					<execution>
+						<id>enforce-external-dependencies</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<failFast>true</failFast>
+							<rules>
+								<requireJavaVersion>
+									<!-- This defines the minimum version. -->
+									<version>1.6</version>
+								</requireJavaVersion>
+								<requireFilesExist>
+									<message>Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.</message>
+									<files>
+										<file>${pbuf.protoc}</file>
+									</files>
+								</requireFilesExist>
+								<requireFilesExist>
+									<message>RSB protocol property pbuf.protopath does not point to a valid installation of RSBProtocol at '${pbuf.protopath}'</message>
+									<files>
+										<file>${pbuf.protopath}/rsb/protocol/Notification.proto</file>
+									</files>
+								</requireFilesExist>
+								<requireFilesExist>
+									<message>Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.</message>
+									<files>
+										<file>${spread.daemon}</file>
+									</files>
+								</requireFilesExist>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Compiler settings -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
@@ -41,9 +84,11 @@
 				</configuration>
 			</plugin>
 
+			<!-- Different steps realized using ant. -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
+					<!-- Generate protobuf classes. -->
 					<execution>
 						<id>generate-protocol</id>
 						<phase>generate-sources</phase>
@@ -67,6 +112,8 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
+
+					<!-- Start spread before running tests. -->
 					<execution>
 						<id>start-spread</id>
 						<phase>generate-test-resources</phase>
@@ -74,14 +121,20 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath" />
+								<if>
+									<not>
+										<equals arg1="${skipTests}" arg2="true" />
+									</not>
+									<then>
+										<forget>
+											<exec executable="${spread.daemon}">
+												<arg line="-n localhost -c ${basedir}/etc/spread.conf" />
+											</exec>
+										</forget>
 
-								<forget>
-									<exec executable="${spread.daemon}">
-										<arg line="-n localhost -c ${basedir}/etc/spread.conf" />
-									</exec>
-								</forget>
-
-								<sleep seconds="10" />
+										<sleep seconds="10" />
+									</then>
+								</if>
 							</tasks>
 						</configuration>
 						<goals>
