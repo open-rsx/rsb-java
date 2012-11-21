@@ -229,16 +229,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12.4</version>
 				<configuration>
-					<workingDirectory>${basedir}</workingDirectory>
 					<forkMode>pertest</forkMode>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit47</artifactId>
-						<version>2.12.4</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 
 			<!-- Settings for generating cobertura test coverage reports. -->
