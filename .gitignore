@@ -2,4 +2,7 @@
 /dist
 /generated-protocol
 /target
+/doc
+/testreports
+/coverage
 
