@@ -106,6 +106,22 @@
 				</configuration>
 			</plugin>
 
+			<!-- Settings for the generated JAR. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
+						</manifest>
+						<!-- <manifestEntries> <key>value</key> </manifestEntries> -->
+					</archive>
+				</configuration>
+			</plugin>
+
 			<!-- Different steps realized using ant. -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
