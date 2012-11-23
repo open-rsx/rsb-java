@@ -27,6 +27,7 @@
     <property name="cobertura.out.dir" value="coverage" />
     <property name="instrumented.dir" value="${build.dir}/instrumented" />
     <property name="spread.daemon" location="/usr/sbin/spread" />
+    <property name="rsb.java.compatibility" value="1.5" />
 
     <property name="git.executable" value="git" />
     <property name="git.versionfile" location="${build.dir}/gitversion" />
@@ -204,19 +205,19 @@
 
     <target name="compile" depends="init, protocol" description="compile the source ">
         <!-- Compile the java code from ${src} into ${build} -->
-        <javac srcdir="${src}" destdir="${build.dir}/classes" target="1.5" debug="on" deprecation="on">
+        <javac srcdir="${src}" destdir="${build.dir}/classes" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" includeantruntime="false">
             <compilerarg value="-Xlint" />
             <classpath refid="compile.classpath" />
         </javac>
         <!-- Compile the examples -->
-        <javac srcdir="examples" destdir="${examples.dir}" target="1.5" debug="on" deprecation="on">
+        <javac srcdir="examples" destdir="${examples.dir}" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" includeantruntime="false">
             <compilerarg value="-Xlint" />
             <classpath refid="examples.classpath" />
         </javac>
     </target>
 
     <target name="test-compile" depends="compile">
-        <javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test" target="1.5" debug="on" deprecation="on">
+        <javac destdir="${test.dir}" includeAntRuntime="true" srcdir="test" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" bootclasspath="${rsb.java.compatibility}" includeantruntime="false">
             <classpath refid="test.classpath" />
         </javac>
         <copy todir="${test.dir}">
@@ -364,7 +365,7 @@
     </target>
 
     <target name="doc">
-        <javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true" windowtitle="RSBJava">
+        <javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true" windowtitle="rsb-java">
 
             <fileset dir="." defaultexcludes="yes">
                 <exclude name="**/jaxen/**/*" />
