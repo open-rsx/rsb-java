@@ -293,17 +293,17 @@
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.3</version>
 			</plugin>
-			
+
 			<!-- Generate Javadoc -->
 			<plugin>
-        			<groupId>org.apache.maven.plugins</groupId>
-        			<artifactId>maven-javadoc-plugin</artifactId>
-        			<version>2.9</version>
-        			<configuration>
-          				<show>public</show>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<show>public</show>
 					<excludePackageNames>spread:tutorial.protobuf</excludePackageNames>
-        			</configuration>
-      			</plugin>
+				</configuration>
+			</plugin>
 
 			<!-- Also generate a PMD report. -->
 			<plugin>
@@ -333,6 +333,10 @@
 					<excludes>
 						<exclude>**/protocol/*.java</exclude>
 					</excludes>
+					<excludeRoots>
+						<excludeRoot>target/generated-protocol</excludeRoot>
+						<excludeRoot>spread-4.0.0</excludeRoot>
+					</excludeRoots>
 				</configuration>
 			</plugin>
 
