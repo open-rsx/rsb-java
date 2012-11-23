@@ -30,6 +30,7 @@
 
     <property name="git.executable" value="git" />
     <property name="git.versionfile" location="${build.dir}/gitversion" />
+    <property name="git.branchfile" location="${build.dir}/gitbranch" />
 
     <!-- availability checks for external dependencies -->
     <fail message="Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.">
@@ -74,8 +75,9 @@
         <exec executable="${git.executable}" output="${git.versionfile}" failifexecutionfails="false" errorproperty="git.version.failed">
             <arg value="describe" />
             <arg value="--tags" />
+            <arg value="--long" />
             <arg value="--match" />
-            <arg value="*.*" />
+            <arg value="release-*.*" />
         </exec>
 
         <loadfile srcfile="${git.versionfile}" property="git.version.patch" failonerror="false">
@@ -89,14 +91,46 @@
             </filterchain>
         </loadfile>
 
+        <exec executable="${git.executable}" output="${git.branchfile}" failifexecutionfails="false" errorproperty="git.branch.failed">
+            <arg value="rev-parse" />
+            <arg value="--abbrev-ref" />
+            <arg value="HEAD" />
+        </exec>
+
+        <loadfile srcfile="${git.branchfile}" property="git.branch" failonerror="false">
+            <filterchain>
+                <headfilter lines="1" skip="0" />
+                <striplinebreaks />
+            </filterchain>
+        </loadfile>
+
         <condition property="version" value="${version.major}.${git.version.patch}" else="${version.major}.0">
             <and>
                 <isset property="git.version.patch" />
                 <length string="${git.version.patch}" trim="yes" length="0" when="greater" />
+                <isset property="git.branch" />
+                <matches pattern="^[0-9]+\.[0-9]+$" string="${git.branch}" />
             </and>
         </condition>
-        
-        <echo>Defined RSB version from GIT: ${version}</echo>
+
+        <loadfile srcfile="${git.versionfile}" property="git.version.commit" failonerror="false">
+            <filterchain>
+                <headfilter lines="1" skip="0" />
+                <tokenfilter>
+                    <containsregex pattern=".*-(g[0-9a-fA-F]+)$" replace="\1" flags="gi" />
+                </tokenfilter>
+                <striplinebreaks />
+            </filterchain>
+        </loadfile>
+
+        <condition property="commit" value="${git.version.commit}" else="archive">
+            <and>
+                <isset property="git.version.commit" />
+                <length string="${git.version.commit}" trim="yes" length="0" when="greater" />
+            </and>
+        </condition>
+
+        <echo>Defined RSB version from GIT: ${version}-${commit}</echo>
     </target>
 
     <target name="init" depends="gitversion">
