@@ -230,8 +230,9 @@
         <jar jarfile="${dist.dir}/lib/${jarname}" basedir="${build.dir}/classes">
             <manifest>
                 <attribute name="Implementation-Vendor" value="CoR-Lab Bielefeld University" />
-                <attribute name="Implementation-Title" value="RSBJava" />
+                <attribute name="Implementation-Title" value="rsb-java" />
                 <attribute name="Implementation-Version" value="${version}" />
+                <attribute name="Last-Commit" value="${commit}" />
             </manifest>
         </jar>
     </target>

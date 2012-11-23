@@ -32,9 +32,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
 public class Properties {
@@ -130,6 +133,25 @@ public class Properties {
         resetDefaults();
     }
 
+    private Manifest getManifest() {
+        Class<?> clazz = getClass();
+        String className = clazz.getSimpleName() + ".class";
+        String classPath = clazz.getResource(className).toString();
+        if (!classPath.startsWith("jar")) {
+            // class not from JAR
+            return null;
+        }
+        String manifestPath = classPath.substring(0,
+                classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+        try {
+            return new Manifest(new URL(manifestPath).openStream());
+        } catch (MalformedURLException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public void resetDefaults() {
         propsMap = new java.util.HashMap<String, ValidProperty>();
         if (getClass().getPackage() != null
@@ -138,6 +160,14 @@ public class Properties {
                     .getPackage().getImplementationVersion()));
         } else {
             propsMap.put("RSB.Version", new ValidProperty("unknown"));
+        }
+        Manifest manifest = getManifest();
+        if (manifest != null
+                && manifest.getMainAttributes().getValue("Last-Commit") != null) {
+            propsMap.put("RSB.LastCommit", new ValidProperty(manifest
+                    .getMainAttributes().getValue("Last-Commit")));
+        } else {
+            propsMap.put("RSB.LastCommit", new ValidProperty("archive"));
         }
         // String localhost = "localhost";
         // try {
