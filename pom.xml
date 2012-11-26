@@ -5,7 +5,7 @@
 	<!-- General project settings. -->
 	<groupId>rsb</groupId>
 	<artifactId>rsb</artifactId>
-	<version>0.8.0-SNAPSHOT</version>
+	<version>0.8-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>RSB</name>
@@ -67,8 +67,15 @@
 							<rules>
 								<requireJavaVersion>
 									<!-- This defines the minimum version. -->
-									<version>1.6</version>
+									<version>${target.java.version}</version>
 								</requireJavaVersion>
+								<requireFilesExist>
+									<message>Could not find 'gitversion' and 'gitbranch' files, please run mvnprep.sh before building with Maven.</message>
+									<files>
+										<file>gitversion</file>
+										<file>gitbranch</file>
+									</files>
+								</requireFilesExist>
 								<requireFilesExist>
 									<message>Google Protocol Buffers compiler not found at
 										'${pbuf.protoc}'. Please set pbuf.protoc.</message>
@@ -103,6 +110,24 @@
 				<configuration>
 					<source>${target.java.version}</source>
 					<target>${target.java.version}</target>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+
+			<!-- Settings for the generated JAR. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
+						</manifest>
+						<!-- <manifestEntries> <key>value</key> </manifestEntries> -->
+					</archive>
 				</configuration>
 			</plugin>
 
@@ -213,15 +238,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12.4</version>
 				<configuration>
-					<workingDirectory>${basedir}</workingDirectory>
+					<forkMode>pertest</forkMode>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit47</artifactId>
-						<version>2.12.4</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 
 			<!-- Settings for generating cobertura test coverage reports. -->
@@ -254,6 +272,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.2</version>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -278,6 +301,17 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.3</version>
+			</plugin>
+
+			<!-- Generate Javadoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<show>public</show>
+					<excludePackageNames>spread:tutorial.protobuf</excludePackageNames>
+				</configuration>
 			</plugin>
 
 			<!-- Also generate a PMD report. -->
@@ -308,6 +342,10 @@
 					<excludes>
 						<exclude>**/protocol/*.java</exclude>
 					</excludes>
+					<excludeRoots>
+						<excludeRoot>target/generated-protocol</excludeRoot>
+						<excludeRoot>spread-4.0.0</excludeRoot>
+					</excludeRoots>
 				</configuration>
 			</plugin>
 
