@@ -129,8 +129,8 @@ public class Properties {
 
     protected static Properties singleton = null;
 
-    public Properties() {
-        resetDefaults();
+    protected Properties() {
+        initializeMap();
     }
 
     private Manifest getManifest() {
@@ -152,7 +152,7 @@ public class Properties {
         }
     }
 
-    public void resetDefaults() {
+    protected void initializeMap() {
         propsMap = new java.util.HashMap<String, ValidProperty>();
         if (getClass().getPackage() != null
                 && getClass().getPackage().getImplementationVersion() != null) {
@@ -169,12 +169,7 @@ public class Properties {
         } else {
             propsMap.put("RSB.LastCommit", new ValidProperty("archive"));
         }
-        // String localhost = "localhost";
-        // try {
-        // localhost = InetAddress.getLocalHost().getHostName();
-        // } catch (UnknownHostException e) {
-        // e.printStackTrace();
-        // }
+
         propsMap.put("RSB.Properties.Dump", new BooleanProperty("FALSE"));
         propsMap.put("RSB.LogAppender", new ValidProperty("CERR"));
         propsMap.put("RSB.Network.Interface", new ValidProperty("UNSET"));
@@ -211,52 +206,93 @@ public class Properties {
                      new ValidProperty("String"));
     }
 
+	/**
+	 * Factory method for Properties singleton.
+	 * Initializes default configuration, loads the 
+	 * RSB config files from standard locations
+	 * and parses RSB environment variables.
+	 * 
+	 */
     public static Properties getInstance() {
         if (singleton == null) {
-            // Read configuration properties in the following order:
-            // 1. from /etc/rsb.conf, if the file exists
-            // 2. from ${HOME}/.config/rsb.conf, if the file exists
-            // 3. from $(pwd)/rsb.conf, if the file exists
-            // 4. from environment
-            // properties set at a later point will overwrite already existing
-            // ones
+            // properties set at a later point will overwrite already existing ones
+        	// constructor initializes property map with defaults
             singleton = new Properties();
 
-            try {
-                singleton.loadFile("/etc/rsb.conf");
-            } catch (FileNotFoundException ex) {
-            } catch (IOException ex) {
-                System.err.println("Caught IOException trying to read "
-                                   + "/etc/rsb.conf: " + ex.getMessage());
-            }
-
-            final String homeDir = System.getProperty("user.home");
-            try {
-                singleton.loadFile(homeDir + "/.config/rsb.conf");
-            } catch (FileNotFoundException ex) {
-            } catch (IOException ex) {
-                System.err.println("Caught IOException trying to read "
-                                   + homeDir + "/.config/rsb.conf: " + ex.getMessage());
-            }
-
-            final String workDir = System.getProperty("user.dir");
-            try {
-                singleton.loadFile(workDir + "/rsb.conf");
-            } catch (FileNotFoundException ex) {
-            } catch (IOException ex) {
-                System.err.println("Caught IOException trying to read "
-                                   + workDir + "rsb.conf: " + ex.getMessage());
-            }
-
-            singleton.loadEnv();
-
-            singleton.trimProperties();
-            if (singleton.getPropertyAsBool("RSB.Properties.Dump")) {
-                dumpProperties();
-            }
+            // further initialization code (files, env)
+            singleton.initialize();
         }
         return singleton;
     }
+    
+    
+    /**
+     * Reset properties to default values as specified by environment
+     * on Singleton instance.
+     * 
+     */
+    public synchronized Properties reset() {
+    	// constructor initializes property map with defaults
+        singleton.initializeMap();
+
+        // further initialization code (files, env)
+        singleton.initialize();
+        
+        return singleton;
+    }  	
+
+	/**
+	 * 
+	 */
+	protected void initialize() {
+		// parse rsb.conf files in standard locations
+		loadFiles();
+		
+		// parse environment
+		loadEnv();
+		
+		trimProperties();
+		
+		// be verbose or not
+		if (getPropertyAsBool("RSB.Properties.Dump")) {
+		    dumpProperties();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	protected void loadFiles() {
+        // Read configuration properties in the following order:
+        // 1. from /etc/rsb.conf, if the file exists
+        // 2. from ${HOME}/.config/rsb.conf, if the file exists
+        // 3. from $(pwd)/rsb.conf, if the file exists
+		try {
+		    loadFile("/etc/rsb.conf");
+		} catch (FileNotFoundException ex) {
+		} catch (IOException ex) {
+		    System.err.println("Caught IOException trying to read "
+		                       + "/etc/rsb.conf: " + ex.getMessage());
+		}
+
+		final String homeDir = System.getProperty("user.home");
+		try {
+		    loadFile(homeDir + "/.config/rsb.conf");
+		} catch (FileNotFoundException ex) {
+		} catch (IOException ex) {
+		    System.err.println("Caught IOException trying to read "
+		                       + homeDir + "/.config/rsb.conf: " + ex.getMessage());
+		}
+
+		final String workDir = System.getProperty("user.dir");
+		try {
+		    loadFile(workDir + "/rsb.conf");
+		} catch (FileNotFoundException ex) {
+		} catch (IOException ex) {
+		    System.err.println("Caught IOException trying to read "
+		                       + workDir + "rsb.conf: " + ex.getMessage());
+		}
+	}
 
     public void loadFile(String fn) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -366,6 +402,9 @@ public class Properties {
 
     public void setProperty(String key, String value)
         throws InvalidPropertyException {
+    	// ignore RSC settings
+    	if (key.startsWith("rsc")) return;
+    	
         if (propsMap.containsKey(key)) {
             if (!propsMap.get(key).setValidValue(value)) {
                 throw new InvalidPropertyException("Trying to set property '"
