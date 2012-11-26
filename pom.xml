@@ -70,6 +70,13 @@
 									<version>${target.java.version}</version>
 								</requireJavaVersion>
 								<requireFilesExist>
+									<message>Could not find 'gitversion' and 'gitbranch' files, please run mvnprep.sh before building with Maven.</message>
+									<files>
+										<file>gitversion</file>
+										<file>gitbranch</file>
+									</files>
+								</requireFilesExist>
+								<requireFilesExist>
 									<message>Google Protocol Buffers compiler not found at
 										'${pbuf.protoc}'. Please set pbuf.protoc.</message>
 									<files>
