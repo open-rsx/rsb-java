@@ -103,6 +103,8 @@
 				<configuration>
 					<source>${target.java.version}</source>
 					<target>${target.java.version}</target>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
 
