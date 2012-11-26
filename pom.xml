@@ -67,7 +67,7 @@
 							<rules>
 								<requireJavaVersion>
 									<!-- This defines the minimum version. -->
-									<version>1.6</version>
+									<version>${target.java.version}</version>
 								</requireJavaVersion>
 								<requireFilesExist>
 									<message>Google Protocol Buffers compiler not found at
