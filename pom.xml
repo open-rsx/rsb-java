@@ -70,7 +70,8 @@
 									<version>${target.java.version}</version>
 								</requireJavaVersion>
 								<requireFilesExist>
-									<message>Could not find 'gitversion' and 'gitbranch' files, please run mvnprep.sh before building with Maven.</message>
+									<message>Could not find 'gitversion' and 'gitbranch' files,
+										please run mvnprep.sh before building with Maven.</message>
 									<files>
 										<file>gitversion</file>
 										<file>gitbranch</file>
@@ -364,4 +365,20 @@
 		</dependency>
 	</dependencies>
 
+	<!-- Since we're not descending from the "ai-common" project, we have to 
+		specify our default repository ourself -->
+	<distributionManagement>
+		<!-- use the following if you're not using a snapshot version. -->
+		<repository>
+			<id>citec</id>
+			<name>CIT-EC Repository</name>
+			<url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-releases/</url>
+		</repository>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>citec</id>
+			<name>CIT-EC Repository</name>
+			<url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
