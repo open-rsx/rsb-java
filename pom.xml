@@ -116,6 +116,31 @@
 				</configuration>
 			</plugin>
 
+			<!-- Load the last git commit from gitversion. -->
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<properties>
+								<git.version.file>gitversion</git.version.file>
+							</properties>
+							<source>
+								def file = new File(project.properties["git.version.file"])
+								commit = file.getText().replaceFirst(/^.*-/,"")
+								project.properties["git.commit"] = commit
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Settings for the generated JAR. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -127,7 +152,9 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
 						</manifest>
-						<!-- <manifestEntries> <key>value</key> </manifestEntries> -->
+						<manifestEntries>
+							<Last-Commit>${git.commit}</Last-Commit>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
