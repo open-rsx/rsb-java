@@ -119,6 +119,9 @@ public class SpreadPortTest {
 
 		}
 
+		// TODO: Don't know why this is needed, sometimes spread is too slow?
+		Thread.sleep(200);
+		
 		int numEvents = 100;
 
 		// send events
