@@ -28,10 +28,14 @@
 
 package rsb.transport.socket;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
+import rsb.util.Properties;
 
 /**
  * Instances of this class provide access to a socket-based bus.
@@ -47,9 +51,12 @@ import rsb.protocol.NotificationType.Notification;
  * @author swrede
  *
  */
-public class Bus {
+public abstract class Bus {
 
-	protected static Logger log = Logger.getLogger(Bus.class.getName());
+	private final static Logger log = Logger.getLogger(Bus.class.getName());
+	private final static rsb.util.Properties prop = Properties.getInstance();
+	InetAddress address;
+	int port;
 
 	ConcurrentLinkedQueue<BusConnection> connections = new ConcurrentLinkedQueue<BusConnection>();
 
@@ -82,4 +89,19 @@ public class Bus {
 
 // TODO implement InPushConnector support for internal notification
 
+	public static Bus createBusClient() throws IOException, RSBException {
+		InetAddress addr = InetAddress.getByName(prop.getProperty("transport.socket.host"));
+		BusClient client = new BusClient(addr, prop.getPropertyAsInt("transport.socket.port"));
+		client.activate();
+		return client;
+	}
+
+	public static Bus createBusServer() throws IOException {
+		InetAddress addr = InetAddress.getByName(prop.getProperty("transport.socket.host"));
+		BusServer server = new BusServer(addr, prop.getPropertyAsInt("transport.socket.port"));
+		server.activate();
+		return server;
+	}
+	
+	
 }

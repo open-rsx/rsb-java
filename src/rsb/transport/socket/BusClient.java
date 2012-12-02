@@ -28,17 +28,35 @@
 
 package rsb.transport.socket;
 
+import java.io.IOException;
 import java.net.InetAddress;
+
+import rsb.RSBException;
 
 /**
  * @author swrede
  *
  */
 public class BusClient extends Bus {
+	
+	BusConnection connection;
+	Thread worker;
 
 	public BusClient(InetAddress host, int port) {
-		BusConnection con = new BusConnection(host, port);
-		super.addConnection(con);
+		this.address = host;
+		this.port = port;
 	}
 
+	public void activate() throws IOException, RSBException {
+		connection = new BusConnection(address, port);
+		connection.activate();
+		connection.handshake();
+		worker = new Thread(connection);
+		worker.start();
+		super.addConnection(connection);
+	}	
+	
+	public void deactivate() {
+		connection.deactivate();
+	}
 }

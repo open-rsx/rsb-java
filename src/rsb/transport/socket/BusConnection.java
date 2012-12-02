@@ -28,9 +28,7 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -39,8 +37,10 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
+import rsb.Event;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
+import rsb.transport.EventBuilder;
 
 /**
  * Instances of this class implement connections to a socket-based
@@ -58,66 +58,46 @@ import rsb.protocol.NotificationType.Notification;
  * @author swrede
  *
  */
-public class BusConnection {
+public class BusConnection implements Runnable {
 
 	private static Logger log = Logger.getLogger(BusConnection.class.getName());
 
 	protected static final int HANDSHAKE        = 0x00000000;
 
 	Socket socket;
-	ServerSocket server;
 	ReadableByteChannel reader;
 	WritableByteChannel writer;
 	InetAddress address;
 	int port;
 	boolean isServer = false;
+	boolean isShutdown = false;
 
-	public BusConnection(InetAddress addr, int port, boolean isServer) {
+	protected BusConnection(InetAddress addr, int port, boolean isServer) {
 		address = addr;
 		this.port = port;
 		this.isServer = isServer;
 	}
 
-	public BusConnection(InetAddress addr, int port) {
+	protected BusConnection(InetAddress addr, int port) {
 		address = addr;
 		this.port = port;
 	}
 
-	public void activate() throws IOException, RSBException {
-		// TODO implement auto mode
-		if (isServer) {
-			try {
-				server = new ServerSocket(port);
-			} catch (BindException ex) {
-				throw new RSBException(ex);
-			}
-		} else {
-			// instantiate Socket object
-			socket = new Socket(address,port);
-			log.info("Client Socket established at local port: " + socket.getLocalPort());
-
-			// get i/o streams
-			reader = Channels.newChannel(socket.getInputStream());
-			writer = Channels.newChannel(socket.getOutputStream());
-		}
-		// do RSB handshake
-		connect();
-
+	public BusConnection(Socket socket, boolean isServer) {
+		this.socket = socket;
+		this.port = socket.getLocalPort();
+		this.address = socket.getInetAddress();
+		this.isServer = isServer;
 	}
 
-	/**
-	 * Safely close I/O streams and sockets.
-	 *
-	 * @throws RSBException
-	 */
-	public void deactivate() {
-			try {
-				if (writer!=null && writer.isOpen()) writer.close();
-				if (reader!=null && reader.isOpen()) reader.close();
-				if (socket!=null && socket.isConnected()) socket.close();
-			} catch (IOException e) {
-				log.warning("Exception during deactivation of BusConnection: " + e.getMessage());
-			}
+	public void activate() throws IOException, RSBException {
+		if (socket == null && !isServer) {
+			socket = new Socket(address,port);
+		} else {
+			throw new RSBException("Invalid call to activate. Socket equals null and server mode requested.");
+		}
+		reader = Channels.newChannel(socket.getInputStream());
+		writer = Channels.newChannel(socket.getOutputStream());
 	}
 
 	/**
@@ -125,27 +105,47 @@ public class BusConnection {
 	 *
 	 * @throws RSBException
 	 */
-	protected void connect() throws RSBException {
-		ByteBuffer buf_handshake = ByteBuffer.allocateDirect(4);
-		buf_handshake.asIntBuffer().put(HANDSHAKE);
+	public void handshake() throws RSBException {
+		if (isServer) {
+			// TODO implement server handshake protocol
+		} else {
+			ByteBuffer buf_handshake = ByteBuffer.allocateDirect(4);
+			buf_handshake.asIntBuffer().put(HANDSHAKE);
 
-		System.out.print("Request:" + buf_handshake.getInt());
+			System.out.print("Request:" + buf_handshake.getInt());
+			try {
+				writer.write(buf_handshake);
+				// read
+				ByteBuffer bb = ByteBuffer.allocateDirect(4);
+				bb.order(ByteOrder.LITTLE_ENDIAN);
+				System.out.println("Bytes read: " + reader.read(bb));
+				// check if reply = 0x00000000;
+				bb.rewind();
+				if (HANDSHAKE==bb.getInt()) {
+					log.info("RSB Handshake successfull!");
+				} else {
+					throw new RSBException("RSB Handshake failed in SocketTransport at " + address.toString() + ":" + port);
+				}
+			} catch (IOException e) {
+				throw new RSBException(e);
+			} // write(HANDSHAKE);			
+		}
+	}	
+	
+	/**
+	 * Safely close I/O streams and sockets.
+	 *
+	 * @throws RSBException
+	 */
+	public void deactivate() {
+		this.isShutdown = true;
 		try {
-			writer.write(buf_handshake);
-			// read
-			ByteBuffer bb = ByteBuffer.allocateDirect(4);
-			bb.order(ByteOrder.LITTLE_ENDIAN);
-			System.out.println("Bytes read: " + reader.read(bb));
-			// check if reply = 0x00000000;
-			bb.rewind();
-			if (HANDSHAKE==bb.getInt()) {
-				log.info("RSB Handshake successfull!");
-			} else {
-				throw new RSBException("RSB Handshake failed in SocketTransport at " + address.toString() + ":" + port);
-			}
+			if (writer!=null && writer.isOpen()) writer.close();
+			if (reader!=null && reader.isOpen()) reader.close();
+			if (socket!=null && socket.isConnected()) socket.close();
 		} catch (IOException e) {
-			throw new RSBException(e);
-		} // write(HANDSHAKE);
+			log.warning("Exception during deactivation of BusConnection: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -190,6 +190,28 @@ public class BusConnection {
 		return n;
 	}
 
+	public void run() {
+		// TODO implement reading from Socket
+		// process packet
+		int i = 0;
+		while (!isShutdown) {
+			i++;
+			System.out.println("Waiting for Notification #" + i);
+			Notification n;
+			try {
+				n = this.readNotification();
+				// convert to Event
+				Event e = EventBuilder.fromNotification(n);
+	
+				System.out.println("Scope: " + e.getScope());
+				System.out.println("Id: " + e.getId());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}			
+		}		
+	}	
+	
 	public void sendNotification(Notification notification) {
 		// TODO implement sending of notification to socket
 	}
