@@ -57,6 +57,8 @@ public class BusClient extends Bus {
 	}	
 	
 	public void deactivate() {
-		connection.deactivate();
+		if (connection!=null) {
+			connection.deactivate();
+		}
 	}
 }
