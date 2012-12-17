@@ -231,7 +231,7 @@ public class SpreadWrapper implements RSBObject {
 			throws InitializeException {
 		SpreadException ex = null;
 		String hostmsg = "";
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < props.getPropertyAsInt("transport.spread.retry"); i++) {
 			try {
 				// if spreadhost is null, a connection to localhost is tried
 				conn = new SpreadConnection();

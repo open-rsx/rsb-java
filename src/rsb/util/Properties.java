@@ -197,6 +197,7 @@ public class Properties {
         propsMap.put("transport.spread.enabled", new BooleanProperty("TRUE"));
         propsMap.put("transport.spread.port", new IntegerProperty("4803"));
         propsMap.put("transport.spread.host", new ValidProperty("localhost"));
+        propsMap.put("transport.spread.retry", new IntegerProperty("50"));
         propsMap.put("transport.spread.tcpnodelay", new BooleanProperty("TRUE"));
         propsMap.put("transport.spread.converter.java.utf-8-string",
                      new ValidProperty("String"));
