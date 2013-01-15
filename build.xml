@@ -4,7 +4,7 @@
         Build file for Java Bindings of Robotics Service Bus Middleware
     </description>
 
-    <property name="version.major" value="0.8"/>
+    <property name="version.major" value="0.9"/>
 
     <!-- set global properties for this build -->
     <property file="build.properties" />
