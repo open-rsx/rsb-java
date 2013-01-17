@@ -136,7 +136,11 @@ public class Properties {
     private Manifest getManifest() {
         Class<?> clazz = getClass();
         String className = clazz.getSimpleName() + ".class";
-        String classPath = clazz.getResource(className).toString();
+        URL classResource = clazz.getResource(className);
+        if (classResource == null) {
+            return null;
+        }
+        String classPath = classResource.toString();
         if (!classPath.startsWith("jar")) {
             // class not from JAR
             return null;
