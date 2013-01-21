@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2011 CoR-Lab, Bielefeld University
+ * Copyright (C) 2011, 2013 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,6 +25,7 @@
  *
  * ============================================================
  */
+
 package rsb.converter;
 
 /**
@@ -32,21 +33,23 @@ package rsb.converter;
  */
 public class DefaultConverters {
 
-	/*
-	 * Convenience method to register default converters for default wire type.
-	 */
-	public static void register() {
-		// TODO add missing converters for default types
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new StringConverter());
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new StringConverter("US-ASCII", "ascii-string"));
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new Uint64Converter());
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new EventIdConverter());
-		DefaultConverterRepository.getDefaultConverterRepository()
-				.addConverter(new NullConverter());
-	}
+    /*
+     * Convenience method to register default converters for default wire type.
+     */
+    public static void register() {
+        // TODO add missing converters for default types
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(new StringConverter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(new StringConverter("US-ASCII", "ascii-string"));
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(new BoolConverter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(new Uint64Converter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(new EventIdConverter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+            .addConverter(new NullConverter());
+    }
 
 }
