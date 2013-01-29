@@ -114,6 +114,7 @@
             </and>
         </condition>
 
+        <!-- Extract hash from gitversion file, if possible -->
         <loadfile srcfile="${git.versionfile}" property="git.version.commit" failonerror="false">
             <filterchain>
                 <headfilter lines="1" skip="0" />
@@ -123,12 +124,38 @@
                 <striplinebreaks />
             </filterchain>
         </loadfile>
+        
+        <!-- Extract hash using git log for shallow copies -->
+        <exec executable="${git.executable}" outputproperty="git.version.commit.online" failifexecutionfails="false" errorproperty="git.version.commit.failed">
+            <arg value="log" />
+            <arg value="-1" />
+            <arg value="--pretty=format:g%h" />
+        </exec>
 
-        <condition property="commit" value="${git.version.commit}" else="archive">
+        <!-- First, try to load the hash from the version file so that it is available in archives. -->
+        <condition property="commit" value="${git.version.commit}">
             <and>
                 <isset property="git.version.commit" />
                 <length string="${git.version.commit}" trim="yes" length="0" when="greater" />
             </and>
+        </condition>
+        
+        <!-- Second, use the one defined from git log which works even on shallow copies but should not override the one from the versio file -->
+        <condition property="commit" value="${git.version.commit.online}">
+            <and>
+                <isset property="git.version.commit.online" />
+                <length string="${git.version.commit.online}" trim="yes" length="0" when="greater" />
+                <not>
+                    <isset property="commit" />
+                </not>
+            </and>
+        </condition>
+        
+        <!-- If we cannot define anything real, use a default hash name -->
+        <condition property="commit" value="archive">
+            <not>
+                <isset property="commit" />
+            </not>
         </condition>
 
         <echo>Defined RSB version from GIT: ${version}-${commit}</echo>
