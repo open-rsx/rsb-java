@@ -87,5 +87,12 @@ public class StringConverterTest {
 		StringConverter c = new StringConverter("US-ASCII", "ascii-string");
 		c.deserialize("ascii-string", buffer);
 	}
+	
+	@Test
+	public void testNullValue() throws ConversionException {
+		StringConverter c = new StringConverter();
+		// should not throw
+		c.serialize(String.class, null);
+	}
 
 }

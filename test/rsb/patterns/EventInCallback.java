@@ -25,35 +25,26 @@
  *
  * ============================================================
  */
+
 package rsb.patterns;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rsb.Event;
-import rsb.RSBException;
 
 /**
  * @author swrede
- * @param <T> return type of remote method
- * @param <U> type of parameter for remote method
  *
  */
-public class RemoteDataMethod<T, U> extends AbstractRemoteMethod<T, U> {
+public class EventInCallback implements EventCallback {
 
-	public RemoteDataMethod(Server server, String name) {
-		super(server, name);
-	}
-
+	public AtomicInteger counter = new AtomicInteger();	
+	
 	@Override
-	public Future<T> call(U data) throws RSBException {
-		// build event and send it over the informer as request
-		final Event request = new Event(data.getClass());
-		request.setData(data);
-		return sendRequest(request);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void completeRequest(Future<T> request, Event event) {
-		request.complete((T) event.getData());
+	public Event invoke(Event request) throws Throwable {
+		// intentionally left blank
+		counter.incrementAndGet();
+		return null;
 	}
 
 }

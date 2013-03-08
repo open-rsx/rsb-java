@@ -28,13 +28,16 @@
 package rsb.patterns;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rsb.Event;
@@ -44,7 +47,9 @@ import rsb.RSBException;
 import rsb.Scope;
 
 public class RemoteServerTest {
-
+	
+	public final static Logger log = Logger.getLogger(RemoteServerTest.class.getCanonicalName());
+	
 	@Test
 	public void testRemoteServerScopeDouble() {
 		final Factory factory = Factory.getInstance();
@@ -129,5 +134,80 @@ public class RemoteServerTest {
 			assertTrue("Received wrong result from server callback.",result.equals("testdata"));
 		}
 	}
+	
+//	@Test
+//	public void testCallMethodBlindRPC() throws RSBException, InterruptedException, ExecutionException {
+//		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
+//		ReplyDataCallback dataCallback = new ReplyDataCallback();
+//		ReplyEventCallback eventCallback = new ReplyEventCallback();
+//		// TODO new type of callback needed?
+//		server.addMethod("callme", dataCallback);
+//		server.addMethod("callme2", eventCallback);
+//		server.activate();
+//		final RemoteServer remote = getRemoteServer();
+//		assertNotNull("RemoteServer construction failed",remote);
+//		remote.activate();
+//		String result1 = null;
+//		String result2 = null;
+//		for (int i = 0; i < 100; i++) {
+//			// TODO what about return the sent event? I think we should do that?!
+//			remote.call("callme","testdata");
+//			Event event = new Event(String.class);
+//			event.setData("testdata2");
+//			Event event2 = remote.call("callme2",event);
+//			result2 = (String) event2.getData();
+//			Event event3 = new Event(String.class);
+//			event3.setData("testdata2");
+//			//remote.callAsync("callme2", event3);
+//			// TODO hwo to get an exception when no result-object is available?
+//			// TODO construct some kind of status future?
+//			// TODO first start with non-async case
+//			Future<String> future = remote.callAsync("callme", "testdata");
+//		}
+//		// TODO make this test nicer, remove sleep...
+//		Thread.sleep(500);
+//		// check result of blocking call
+//		assertEquals("Incorrect number of event callback invocations!",200,dataCallback.counter.get());
+//		assertEquals("Incorrect number of data callback invocations!",200,eventCallback.counter.get());
+//		assertTrue("Received wrong result from server callback.",result1.equals("testdata"));
+//		assertTrue("Received wrong result from server callback.",result2.equals("testdata2"));
+//		// TODO check result of async calls
+//	}	
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testCallMethodWithoutParameter() throws RSBException {
+		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
+		DataInCallback dataCallback = new DataInCallback();
+		EventInCallback eventCallback = new EventInCallback();
+		List<Future<Event>> resultsEvents = new ArrayList<Future<Event>>();
+		// TODO new type of callback needed?
+		server.addMethod("callme", dataCallback);
+		server.addMethod("callme2", eventCallback);
+		log.info("prepared server");
+		server.activate();
+		log.info("activated server");
+		final RemoteServer remote = getRemoteServer();
+		assertNotNull("RemoteServer construction failed",remote);
+		remote.activate();
 
+		for (int i = 0; i < 100; i++) {
+			// optional use of reply value is possible
+			Event event = remote.call("callme");
+			// but can also be ignored
+			remote.call("callme2");
+			// asynchronous completion
+			resultsEvents.add((Future<Event>) remote.callAsync("callme2"));
+		}
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// TODO check result of blocking call
+		assertEquals("Incorrect number of data callback invocations!",100,dataCallback.counter.get());
+		assertEquals("Incorrect number of eve t callback invocations!",200,eventCallback.counter.get());		
+		// TODO check result of async calls
+	}			
 }

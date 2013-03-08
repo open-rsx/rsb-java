@@ -103,6 +103,11 @@ class LocalMethod<T, U> extends Method implements Handler  {
 			reply.getMetaData().setUserInfo("rsb:error?", "1");
 			reply.setData(error);
 		}
+		
+		// handle method calls without return parameters
+		if (reply == null) {
+			reply = new Event();
+		}
 
 		reply.setScope(REPLY_SCOPE);
 		reply.setMethod("REPLY");
