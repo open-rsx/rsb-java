@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Event;
@@ -49,6 +49,19 @@ import rsb.Scope;
 public class RemoteServerTest {
 	
 	public final static Logger log = Logger.getLogger(RemoteServerTest.class.getCanonicalName());
+	
+	DataInCallback dataInCallback = new DataInCallback();
+	EventInCallback eventInCallback = new EventInCallback();
+	ReplyDataCallback dataCallback = new ReplyDataCallback();
+	ReplyEventCallback eventCallback = new ReplyEventCallback();
+	
+	@Before
+	public void resetCounters() {
+		dataCallback.counter.set(0);
+		eventCallback.counter.set(0);
+		dataInCallback.counter.set(0);
+		eventInCallback.counter.set(0);
+	}
 	
 	@Test
 	public void testRemoteServerScopeDouble() {
@@ -89,34 +102,28 @@ public class RemoteServerTest {
 
 	@Test
 	public void testCallMethod() throws RSBException, InterruptedException, ExecutionException {
-		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
-		ReplyDataCallback dataCallback = new ReplyDataCallback();
-		ReplyEventCallback eventCallback = new ReplyEventCallback();
-		server.addMethod("callme", dataCallback);
-		server.addMethod("callme2", eventCallback);
-		server.activate();
-		final RemoteServer remote = getRemoteServer();
+		final RemoteServer remote = setupActiveObjects();
 		assertNotNull("RemoteServer construction failed",remote);
-		remote.activate();
 		String result1 = null;
 		String result2 = null;
 		List<Future<Event>> resultsEvents = new ArrayList<Future<Event>>();
 		List<Future<String>> resultsData = new ArrayList<Future<String>>();
 		for (int i = 0; i < 100; i++) {
-			result1 = remote.call("callme","testdata");
+			result1 = remote.call("callmedc","testdata");
 			Event event = new Event(String.class);
 			event.setData("testdata2");
-			Event event2 = remote.call("callme2",event);
+			Event event2 = remote.call("callmeec",event);
 			result2 = (String) event2.getData();
 			Event event3 = new Event(String.class);
 			event3.setData("testdata2");
-			resultsEvents.add(remote.callAsync("callme2", event3));
-			Future<String> future = remote.callAsync("callme", "testdata");
+			resultsEvents.add(remote.callAsync("callmeec", event3));
+			Future<String> future = remote.callAsync("callmedc", "testdata");
 			resultsData.add(future);
 		}
 		// TODO make this test nicer, remove sleep...
 		Thread.sleep(500);
 		// check result of blocking call
+		result1.equals("adf");
 		assertEquals("Incorrect number of event callback invocations!",200,dataCallback.counter.get());
 		assertEquals("Incorrect number of data callback invocations!",200,eventCallback.counter.get());
 		assertTrue("Received wrong result from server callback.",result1.equals("testdata"));
@@ -134,70 +141,36 @@ public class RemoteServerTest {
 			assertTrue("Received wrong result from server callback.",result.equals("testdata"));
 		}
 	}
-	
-//	@Test
-//	public void testCallMethodBlindRPC() throws RSBException, InterruptedException, ExecutionException {
-//		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
-//		ReplyDataCallback dataCallback = new ReplyDataCallback();
-//		ReplyEventCallback eventCallback = new ReplyEventCallback();
-//		// TODO new type of callback needed?
-//		server.addMethod("callme", dataCallback);
-//		server.addMethod("callme2", eventCallback);
-//		server.activate();
-//		final RemoteServer remote = getRemoteServer();
-//		assertNotNull("RemoteServer construction failed",remote);
-//		remote.activate();
-//		String result1 = null;
-//		String result2 = null;
-//		for (int i = 0; i < 100; i++) {
-//			// TODO what about return the sent event? I think we should do that?!
-//			remote.call("callme","testdata");
-//			Event event = new Event(String.class);
-//			event.setData("testdata2");
-//			Event event2 = remote.call("callme2",event);
-//			result2 = (String) event2.getData();
-//			Event event3 = new Event(String.class);
-//			event3.setData("testdata2");
-//			//remote.callAsync("callme2", event3);
-//			// TODO hwo to get an exception when no result-object is available?
-//			// TODO construct some kind of status future?
-//			// TODO first start with non-async case
-//			Future<String> future = remote.callAsync("callme", "testdata");
-//		}
-//		// TODO make this test nicer, remove sleep...
-//		Thread.sleep(500);
-//		// check result of blocking call
-//		assertEquals("Incorrect number of event callback invocations!",200,dataCallback.counter.get());
-//		assertEquals("Incorrect number of data callback invocations!",200,eventCallback.counter.get());
-//		assertTrue("Received wrong result from server callback.",result1.equals("testdata"));
-//		assertTrue("Received wrong result from server callback.",result2.equals("testdata2"));
-//		// TODO check result of async calls
-//	}	
-	
+
 	@SuppressWarnings("unchecked")
-	@Test
-	public void testCallMethodWithoutParameter() throws RSBException {
+	private RemoteServer setupActiveObjects() throws RSBException {
 		final LocalServer server = Factory.getInstance().createLocalServer(new Scope("/example/server"));
-		DataInCallback dataCallback = new DataInCallback();
-		EventInCallback eventCallback = new EventInCallback();
-		List<Future<Event>> resultsEvents = new ArrayList<Future<Event>>();
 		// TODO new type of callback needed?
-		server.addMethod("callme", dataCallback);
-		server.addMethod("callme2", eventCallback);
+		server.addMethod("callmedi", dataInCallback);
+		server.addMethod("callmeei", eventInCallback);
+		server.addMethod("callmedc", dataCallback);
+		server.addMethod("callmeec", eventCallback);	
+		
 		log.info("prepared server");
 		server.activate();
 		log.info("activated server");
 		final RemoteServer remote = getRemoteServer();
 		assertNotNull("RemoteServer construction failed",remote);
 		remote.activate();
-
+		return remote;
+	}
+	
+	@Test
+	public void testCallMethodWithoutParameter() throws RSBException {
+		List<Future<Event>> resultsEvents = new ArrayList<Future<Event>>();
+		RemoteServer remote = setupActiveObjects();
 		for (int i = 0; i < 100; i++) {
 			// optional use of reply value is possible
-			Event event = remote.call("callme");
+			Event event = remote.call("callmedi");
 			// but can also be ignored
-			remote.call("callme2");
+			remote.call("callmeei");
 			// asynchronous completion
-			resultsEvents.add((Future<Event>) remote.callAsync("callme2"));
+			resultsEvents.add((Future<Event>) remote.callAsync("callmeei"));
 		}
 		try {
 			Thread.sleep(500);
@@ -206,8 +179,9 @@ public class RemoteServerTest {
 			e.printStackTrace();
 		}
 		// TODO check result of blocking call
-		assertEquals("Incorrect number of data callback invocations!",100,dataCallback.counter.get());
-		assertEquals("Incorrect number of eve t callback invocations!",200,eventCallback.counter.get());		
+		assertEquals("Incorrect number of data callback invocations!",100,dataInCallback.counter.get());
+		assertEquals("Incorrect number of event callback invocations!",200,eventInCallback.counter.get());		
 		// TODO check result of async calls
-	}			
+	}	
+
 }

@@ -124,6 +124,8 @@ public class StringConverter implements Converter<ByteBuffer> {
 			throws ConversionException {
 
 		try {
+			
+			// TODO handle null values
 
 			String string = (String) data;
 
