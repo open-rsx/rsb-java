@@ -77,13 +77,17 @@ public class Event {
 	 *            event.
 	 */
 	public Event(final Scope scope, final Class<?> type, final Object data) {
-	    this(type);
-	    this.scope = scope;
-		this.data = data;
+		this(type, data);
+		this.scope = scope;
 	}
 
 	public Event(final Class<?> type) {
 		setType(type);
+	}
+
+	public Event(final Class<?> type, final Object data) {
+		this(type);
+		this.data = data;
 	}
 
 	/**
