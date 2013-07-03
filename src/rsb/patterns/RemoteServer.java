@@ -191,8 +191,11 @@ public class RemoteServer extends Server {
      * @return An event with the resulting data
      * @throws RSBException
      *             communication errors or server-side errors
+     * @throws TimeoutException
+     *             timeout waiting for the reply
      */
-    public Event call(final String name, final Event event) throws RSBException {
+    public Event call(final String name, final Event event)
+            throws RSBException, TimeoutException {
         Event result = callInternal(name, event, true, this.timeout);
         return result;
     }
@@ -211,9 +214,11 @@ public class RemoteServer extends Server {
      * @return An event with the resulting data
      * @throws RSBException
      *             communication errors or server-side errors
+     * @throws TimeoutException
+     *             timeout waiting for the reply
      */
     public Event call(final String name, final Event event, final double timeout)
-            throws RSBException {
+            throws RSBException, TimeoutException {
         Event result = callInternal(name, event, true, timeout);
         return result;
     }
@@ -228,8 +233,10 @@ public class RemoteServer extends Server {
      * @return An event with the resulting data
      * @throws RSBException
      *             communication errors or server-side errors
+     * @throws TimeoutException
+     *             timeout waiting for the reply
      */
-    public Event call(final String name) throws RSBException {
+    public Event call(final String name) throws RSBException, TimeoutException {
         Event event = new Event();
         event.setData(null);
         event.setType(Void.class);
@@ -248,9 +255,11 @@ public class RemoteServer extends Server {
      * @return An event with the resulting data
      * @throws RSBException
      *             communication errors or server-side errors
+     * @throws TimeoutException
+     *             timeout waiting for the reply
      */
     public Event call(final String name, final double timeout)
-            throws RSBException {
+            throws RSBException, TimeoutException {
         Event event = new Event();
         event.setData(null);
         event.setType(Void.class);
@@ -269,9 +278,11 @@ public class RemoteServer extends Server {
      * @return An event with the resulting data
      * @throws RSBException
      *             communication errors or server-side errors
+     * @throws TimeoutException
+     *             timeout waiting for the reply
      */
     public <ReplyType, RequestType> ReplyType call(final String name,
-            final RequestType data) throws RSBException {
+            final RequestType data) throws RSBException, TimeoutException {
         return this.<ReplyType, RequestType> callInternal(name, data, false,
                 timeout);
     }
@@ -290,9 +301,12 @@ public class RemoteServer extends Server {
      * @return An event with the resulting data
      * @throws RSBException
      *             communication errors or server-side errors
+     * @throws TimeoutException
+     *             timeout waiting for the reply
      */
     public <ReplyType, RequestType> ReplyType call(final String name,
-            final RequestType data, final double timeout) throws RSBException {
+            final RequestType data, final double timeout) throws RSBException,
+            TimeoutException {
         return this.<ReplyType, RequestType> callInternal(name, data, false,
                 timeout);
     }
@@ -327,7 +341,8 @@ public class RemoteServer extends Server {
     // are bound to occur as the originally intended target (the template)
     // method is not called in that situation.
     private <U, T> U callInternal(final String name, final T data,
-            boolean isEvent, final double timeout) throws RSBException {
+            boolean isEvent, final double timeout) throws RSBException,
+            TimeoutException {
         Future<U> future = callAsyncInternal(name, data, isEvent);
         U result;
         try {
@@ -335,9 +350,6 @@ public class RemoteServer extends Server {
         } catch (ExecutionException exception) {
             LOG.warning("Exception during remote call: "
                     + exception.getMessage() + "; Re-throwing it.");
-            throw new RSBException(exception);
-        } catch (TimeoutException exception) {
-            LOG.warning("Timeout during remote call; Throwing exception.");
             throw new RSBException(exception);
         }
         return result;

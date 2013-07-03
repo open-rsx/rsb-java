@@ -29,16 +29,12 @@
 // mark-start::body
 import java.lang.System;
 
-import java.util.concurrent.ExecutionException;
-
-import rsb.InitializeException;
-import rsb.RSBException;
 import rsb.Factory;
 import rsb.patterns.RemoteServer;
 
 public class ClientExample {
 
-    public static void main(String[] args) throws RSBException, InterruptedException, ExecutionException, InitializeException {
+    public static void main(String[] args) throws Throwable {
         // Get remote server object to call exposed request methods of
         // participants
         RemoteServer server
