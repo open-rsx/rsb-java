@@ -162,6 +162,7 @@ public class Event {
 	 *             an {@link Informer} so far
 	 * @deprecated use {@link #getId()} instead
 	 */
+	@Deprecated
 	public ParticipantId getSenderId() {
 		return getId().getParticipantId();
 	}
@@ -183,6 +184,7 @@ public class Event {
 	 *             an {@link Informer} so far
 	 * @deprecated use {@link #getId()} instead
 	 */
+	@Deprecated
 	public long getSequenceNumber() {
 		return getId().getSequenceNumber();
 	}
