@@ -45,7 +45,7 @@ import rsb.transport.TransportFactory;
  * 
  * @author jmoringe
  * @author swrede
- * 
+ * @author jwienke
  */
 public class RemoteServer extends Server {
 
@@ -118,26 +118,119 @@ public class RemoteServer extends Server {
         this.timeout = DEFAULT_TIMEOUT;
     }
 
+    /**
+     * Returns the timeout used when waiting for replies from a server.
+     * 
+     * @return timeout in seconds
+     */
     public double getTimeout() {
         return timeout;
     }
 
+    /**
+     * Calls a method of the server using the method name and request data
+     * encapsulated in an {@link Event} instance. The method returns immediately
+     * with a {@link Future} instance.
+     * 
+     * @param name
+     *            name of the method to call
+     * @param event
+     *            request data
+     * @return A {@link Future} instance to retrieve the result {@link Event}
+     * @throws RSBException
+     *             communication errors or server-side errors
+     */
     public Future<Event> callAsync(final String name, final Event event)
             throws RSBException {
         return callAsyncInternal(name, event, true);
     }
 
     /**
-     * Async call returning an rsb.patterns.Future object
+     * Calls a method of the server without request parameter using the method
+     * name. The method returns immediately with a {@link Future} instance.
      * 
      * @param name
-     * @param data
-     * @return
+     *            name of the method to call
+     * @return A {@link Future} instance to retrieve the result {@link Event}
      * @throws RSBException
+     *             communication errors or server-side errors
      */
-    public <T, U> Future<T> callAsync(final String name, final U data)
-            throws RSBException {
+    public Future<Event> callAsync(String name) throws RSBException {
+        Event event = new Event();
+        event.setData(null);
+        event.setType(Void.class);
+        return callAsyncInternal(name, event, true);
+    }
+
+    /**
+     * Calls a method of the server using the method name and plain request
+     * data. The method returns immediately with a {@link Future} instance.
+     * 
+     * @param name
+     *            name of the method to call
+     * @param data
+     *            the data to transfer as the method's request parameter
+     * @return A {@link Future} instance to retrieve the result data
+     * @throws RSBException
+     *             communication errors or server-side errors
+     */
+    public <ReplyType, RequestType> Future<ReplyType> callAsync(
+            final String name, final RequestType data) throws RSBException {
         return callAsyncInternal(name, data, false);
+    }
+
+    /**
+     * Calls a method of the server using the method name and request data
+     * encapsulated in an {@link Event} instance. The method blocks until the
+     * server replied or until the timeout is reached.
+     * 
+     * @param name
+     *            name of the method to call
+     * @param event
+     *            request data
+     * @return An event with the resulting data
+     * @throws RSBException
+     *             communication errors or server-side errors
+     */
+    public Event call(final String name, final Event event) throws RSBException {
+        Event result = callInternal(name, event, true);
+        return result;
+    }
+
+    /**
+     * Calls a method of the server without request parameter using the method
+     * name. The method blocks until the server replied or until the timeout is
+     * reached.
+     * 
+     * @param name
+     *            name of the method to call
+     * @return An event with the resulting data
+     * @throws RSBException
+     *             communication errors or server-side errors
+     */
+    public Event call(final String name) throws RSBException {
+        Event event = new Event();
+        event.setData(null);
+        event.setType(Void.class);
+        return this.call(name, event);
+    }
+
+    /**
+     * Calls a method of the server using the method name and plain request
+     * data. The method blocks until the server replied or until the timeout is
+     * reached.
+     * 
+     * @param name
+     *            name of the method to call
+     * @param event
+     *            request data
+     * @return An event with the resulting data
+     * @throws RSBException
+     *             communication errors or server-side errors
+     */
+    public <ReplyType, RequestType> ReplyType call(final String name,
+            final RequestType data) throws RSBException {
+        return this.<ReplyType, RequestType> callInternal(name, data, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -162,44 +255,7 @@ public class RemoteServer extends Server {
                 throw new RSBException(exception);
             }
         }
-        // if (isEvent) {
-        // return method.callA((Event) data);
-        // } else {
-        // return method.callAsyncData(data);
-        // }
         return method.call(data);
-    }
-
-    public Event call(final String name, final Event event) throws RSBException {
-        Event result = callInternal(name, event, true);
-        return result;
-    }
-
-    /**
-     * Blocking call directly returning the data or throwing an exception upon
-     * timeout, interruption or failure.
-     * 
-     * @param name
-     * @param data
-     * @return
-     * @throws RSBException
-     */
-    public <U, T> U call(final String name, final T data) throws RSBException {
-        return this.<U, T> callInternal(name, data, false);
-    }
-
-    public Event call(final String name) throws RSBException {
-        Event event = new Event();
-        event.setData(null);
-        event.setType(Void.class);
-        return this.call(name, event);
-    }
-
-    public Future<Event> callAsync(String name) throws RSBException {
-        Event event = new Event();
-        event.setData(null);
-        event.setType(Void.class);
-        return callAsyncInternal(name, event, true);
     }
 
     // internal methods are to prevent recursive calls from call(string, event)
