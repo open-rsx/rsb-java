@@ -37,7 +37,12 @@ import rsb.Event;
  *
  * @author jmoringe
  */
-public interface EventCallback {
+public abstract class EventCallback implements Callback {
+
+    @Override
+    public Event internalInvoke(Event request) throws Throwable {
+        return invoke(request);
+    }
 
     /**
      * This method is called to invoke the actual behavior of an
@@ -49,5 +54,5 @@ public interface EventCallback {
      * as the result of the calling the method.
      * @throw Throwable Can throw anything.
      */
-    public Event invoke(Event request) throws Throwable;
+    public abstract Event invoke(Event request) throws Throwable;
 };

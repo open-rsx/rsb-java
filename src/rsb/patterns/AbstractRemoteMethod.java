@@ -134,7 +134,7 @@ public abstract class AbstractRemoteMethod<T, U> extends Method implements Handl
 		if (request!=null) {
 			LOG.fine("Found pending reply for id: " + replyId);
 			try {
-				// an error occured at the server side
+				// an error occurred at the server side
 				if (event.getMetaData().getUserInfo("rsb:error?")!=null) {
 					final String error = (String) event.getData();
 					request.error(new RSBException(error));

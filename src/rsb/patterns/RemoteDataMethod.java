@@ -32,8 +32,8 @@ import rsb.RSBException;
 
 /**
  * @author swrede
- * @param <T>
- * @param <U>
+ * @param <T> return type of remote method
+ * @param <U> type of parameter for remote method
  *
  */
 public class RemoteDataMethod<T, U> extends AbstractRemoteMethod<T, U> {

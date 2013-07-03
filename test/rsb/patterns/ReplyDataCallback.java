@@ -29,26 +29,22 @@ package rsb.patterns;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
-class ReplyDataCallback implements DataCallback<String, String> {
+class ReplyDataCallback extends DataCallback<String, String> {
 
-	private final static Logger LOG = Logger.getLogger(ReplyDataCallback.class.getName());
+    AtomicBoolean flag = new AtomicBoolean(false);
+    public AtomicInteger counter = new AtomicInteger();
 
-	AtomicBoolean flag = new AtomicBoolean(false);
-	public AtomicInteger counter = new AtomicInteger();
+    @Override
+    public String invoke(String request) throws Throwable {
+        if (flag.get() == false) {
+            flag.set(true);
+        }
+        counter.incrementAndGet();
+        return request;
+    }
 
-	@Override
-	public String invoke(String request) throws Throwable {
-		LOG.fine("ReplyCallback invoked with Request value: " + request);
-		if (flag.get()==false) {
-			flag.set(true);
-		}
-		counter.incrementAndGet();
-		return request;
-	}
-
-	public boolean wasCalled() {
-		return flag.get();
-	}
+    public boolean wasCalled() {
+        return flag.get();
+    }
 }

@@ -35,7 +35,7 @@ import rsb.patterns.LocalServer;
 
 public class ServerExample {
 
-    public static class EchoCallback implements EventCallback {
+    public static class EchoCallback extends EventCallback {
 
         @Override
         public Event invoke(Event request) throws Throwable {
@@ -47,7 +47,8 @@ public class ServerExample {
     public static void main(String[] args) throws InitializeException {
         // Get local server object which allows to expose remotely
         // callable methods.
-        LocalServer server = Factory.getInstance().createLocalServer("/example/server");
+        LocalServer server = Factory.getInstance().createLocalServer(
+                "/example/server");
         server.activate();
 
         // Add method an "echo" method, implemented by EchoCallback.

@@ -29,7 +29,6 @@ package rsb.patterns;
 
 import java.util.logging.Logger;
 
-import rsb.Event;
 import rsb.InitializeException;
 import rsb.Scope;
 import rsb.transport.PortConfiguration;
@@ -70,17 +69,10 @@ public class LocalServer extends Server {
 		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
 	}
 
-	public <U, T> void addMethod(String name, DataCallback<U, T> callback)
+	public void addMethod(String name, Callback callback)
 			throws InitializeException {
 		LOG.fine("Registering new data method " + name + " with signature object: " + callback);
-		LocalMethod<U, T> method = new LocalMethod<U, T>(this, name,callback);
-		addAndActivate(name, method);
-	}
-
-
-	public void addMethod(String name, EventCallback callback) throws InitializeException {
-		LOG.fine("Registering new event method " + name + " with signature object: " + callback);
-		LocalMethod<Event, Event> method = new LocalMethod<Event, Event>(this, name, callback);
+		LocalMethod method = new LocalMethod(this, name,callback);
 		addAndActivate(name, method);
 	}
 
@@ -89,7 +81,7 @@ public class LocalServer extends Server {
 	 * @param method
 	 * @throws InitializeException
 	 */
-	private <U, T> void addAndActivate(String name, LocalMethod<?, ?> method)
+	private void addAndActivate(String name, LocalMethod method)
 			throws InitializeException {
 		if (methods.containsKey(name)) {
 			LOG.warning("Method with name " + name + " already registered. Overwriting it!");
