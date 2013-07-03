@@ -39,8 +39,7 @@ public class ServerExample {
 
         @Override
         public Event invoke(Event request) throws Throwable {
-            request.setData(((String) request.getData()));
-            return request;
+            return new Event(String.class, request.getData());
         }
 
     }
