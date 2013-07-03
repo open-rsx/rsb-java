@@ -65,11 +65,7 @@ public class DefaultConverterRepository<WireType> implements ConverterRepository
 				LOG.fine("skipping ascii-string converter for Serialization map");
 			} else {
 			    // all other converters are added at this point
-			    if (s.getDatatype() == null) {
-				outStrategy.addConverter("null", converterMap.get(s));
-			    } else {
 				outStrategy.addConverter(s.getDatatype().getName(), converterMap.get(s));
-			    }
 			}
 		}
 		return outStrategy;

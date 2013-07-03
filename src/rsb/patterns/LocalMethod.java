@@ -133,10 +133,9 @@ class LocalMethod<T, U> extends Method implements Handler  {
 		// return result of invocation
 		if (result != null) {
 		    reply.setType(result.getClass());
-		    reply.setData(result);
 		} else {
-		    reply.setType(null);
-		    reply.setData(null);
+		    reply.setType(Void.class);
 		}
+		reply.setData(result);
 	}
 };

@@ -28,13 +28,10 @@
 package rsb;
 
 /**
- * This execption indicates that a method is called on an object
+ * This exception indicates that a method is called on an object
  * that is not in the correct state to perform the requested service.
- * For instance, it is not possible to create object with the XcfManager
- * if it is not correctly activated.
  *
  * @author swrede
- *
  */
 public class InvalidStateException extends RuntimeException {
 
@@ -50,9 +47,6 @@ public class InvalidStateException extends RuntimeException {
 		super(cause);
 	}
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -2396672331593990574L;
 
 }

@@ -41,36 +41,41 @@ public class NullConverter implements Converter<ByteBuffer> {
     private ConverterSignature signature;
 
     public NullConverter() {
-	signature = new ConverterSignature("void", null);
+        signature = new ConverterSignature("void", Void.class);
     }
 
     @Override
     public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object data)
-	throws ConversionException {
+            throws ConversionException {
 
-	if (data != null) {
-	    throw new ConversionException("The only acceptable value is null.");
-	}
+        if (data != null) {
+            throw new ConversionException("The only acceptable value is null.");
+        }
+        if (typeInfo != Void.class) {
+            throw new ConversionException("The only acceptable class is Void.");
+        }
 
-	byte[] backing = new byte[0];
-	ByteBuffer serialized =  ByteBuffer.wrap(backing);
-	return new WireContents<ByteBuffer>(serialized, signature.getSchema());
+        byte[] backing = new byte[0];
+        ByteBuffer serialized = ByteBuffer.wrap(backing);
+        return new WireContents<ByteBuffer>(serialized, signature.getSchema());
     }
 
     @Override
     public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer bytes)
-	throws ConversionException {
+            throws ConversionException {
 
-	if (!wireSchema.equals(signature.getSchema())) {
-	    throw new ConversionException("Unexpected wire schema '"
-					  + wireSchema + "', expected '" + signature.getSchema() + "'.");
-	}
+        if (!wireSchema.equals(signature.getSchema())) {
+            throw new ConversionException("Unexpected wire schema '"
+                    + wireSchema + "', expected '" + signature.getSchema()
+                    + "'.");
+        }
 
-	return new UserData<ByteBuffer>(null, null);
+        return new UserData<ByteBuffer>(null, Void.class);
     }
 
     @Override
     public ConverterSignature getSignature() {
-	return signature;
+        return signature;
     }
+    
 }

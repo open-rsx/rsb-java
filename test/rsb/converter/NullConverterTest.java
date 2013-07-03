@@ -48,14 +48,14 @@ public class NullConverterTest {
 	@Test
 	public void serialize() throws Throwable {
 		NullConverter c = new NullConverter();
-		WireContents<ByteBuffer> buf = c.serialize(null, null);
+		WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
 		assertNotNull(buf);
 	}
 
 	@Test
 	public void roundtrip() throws Throwable {
 		NullConverter c = new NullConverter();
-		WireContents<ByteBuffer> buf = c.serialize(null, null);
+		WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
 		assertNotNull(buf);
 		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
 				.getData();
@@ -65,7 +65,13 @@ public class NullConverterTest {
 	@Test(expected = ConversionException.class)
 	public void serializationNotNull() throws Throwable {
 		NullConverter c = new NullConverter();
-		c.serialize(null, new LinkedList<Integer>());
+		c.serialize(LinkedList.class, new LinkedList<Integer>());
+	}
+	
+	@Test(expected = ConversionException.class)
+	public void serializationWrongType() throws Throwable {
+	    NullConverter c = new NullConverter();
+	    c.serialize(LinkedList.class, null);
 	}
 
 }

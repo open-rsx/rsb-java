@@ -110,12 +110,7 @@ public class Informer<T extends Object> extends Participant {
 							"Event scope not a sub-scope of informer scope.");
 				}
 			}
-			// TODO check performance of isAssignableFrom
-			if (ctx.getTypeInfo() == null && event.getType() != null) {
-			    throw new IllegalArgumentException("Type of event data does not match the Informer data type.");
-			} else if (ctx.getTypeInfo() != null
-				   && event.getType() != null
-				   && !ctx.getTypeInfo().isAssignableFrom(event.getType())) {
+			if (!ctx.getTypeInfo().isAssignableFrom(event.getType())) {
 			    throw new IllegalArgumentException(
 						"Type of event data does not match nor is a sub-class of the Informer data type.");
 			}
@@ -140,6 +135,9 @@ public class Informer<T extends Object> extends Participant {
 	}
 
 	private void initMembers(final Class<?> type) {
+	    if (type == null) {
+	        throw new IllegalArgumentException("Informer type must not be null.");
+	    }
 		this.type = type;
 		state = new InformerStateInactive(this);
 		LOG.fine("New informer instance created: [Scope:" + getScope()
@@ -226,7 +224,7 @@ public class Informer<T extends Object> extends Participant {
 	/**
 	 * Returns the class describing the type of data sent by this informer.
 	 *
-	 * @return string declarator
+	 * @return class
 	 */
 	public Class<?> getTypeInfo() {
 		return type;
@@ -234,8 +232,6 @@ public class Informer<T extends Object> extends Participant {
 
 	/**
 	 * Set the class object describing the type of data sent by this informer.
-	 *
-	 * @return string declarator
 	 */
 	public void setTypeInfo(final Class<?> typeInfo) {
 		type = typeInfo;
