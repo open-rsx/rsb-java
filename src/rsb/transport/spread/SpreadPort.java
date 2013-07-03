@@ -419,12 +419,7 @@ public class SpreadPort extends AbstractPort {
 			throws ConversionException {
 		Converter<ByteBuffer> converter = null;
 		// convert data
-		if (event.getType() == null) {
-			// special handling for void type
-			converter = outStrategy.getConverter("null");
-		} else {
-			converter = outStrategy.getConverter(event.getType().getName());
-		}
+		converter = outStrategy.getConverter(event.getType().getName());
 		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
 				event.getType(), event.getData());
 		return convertedDataBuffer;

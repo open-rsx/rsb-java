@@ -51,7 +51,7 @@ import java.util.Set;
 public class Event {
 
 	private EventId id = null;
-	private Class<?> type;
+	private Class<?> type = Object.class;
 	private Scope scope;
 	private String method;
 	private Object data;
@@ -77,13 +77,13 @@ public class Event {
 	 *            event.
 	 */
 	public Event(final Scope scope, final Class<?> type, final Object data) {
-		this.scope = scope;
-		this.type = type;
+	    this(type);
+	    this.scope = scope;
 		this.data = data;
 	}
 
 	public Event(final Class<?> type) {
-		this.type = type;
+		setType(type);
 	}
 
 	/**
@@ -104,9 +104,13 @@ public class Event {
 	 * @param type
 	 *            the Java type to set for the Event payload
 	 */
-	public void setType(final Class<?> type) {
-		this.type = type;
-	}
+    public void setType(final Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException(
+                    "Event types must be class instances. For no data use Void.class.");
+        }
+        this.type = type;
+    }
 
 	/**
 	 * @return the data
@@ -245,7 +249,7 @@ public class Event {
 		result = prime * result + ((method == null) ? 0 : method.hashCode());
 		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + type.hashCode();
 		result = prime * result + causes.hashCode();
 		return result;
 	}
@@ -302,11 +306,7 @@ public class Event {
 		} else if (!scope.equals(other.scope)) {
 			return false;
 		}
-		if (type == null) {
-			if (other.type != null) {
-				return false;
-			}
-		} else if (!type.equals(other.type)) {
+		if (!type.equals(other.type)) {
 			return false;
 		}
 		if (!causes.equals(other.causes)) {
