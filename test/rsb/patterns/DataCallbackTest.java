@@ -23,8 +23,7 @@ public class DataCallbackTest {
             
         }
         
-        final Event request = new Event();
-        request.setType(Void.class);
+        final Event request = new Event(Void.class, null);
         Event result = new VoidCallback().internalInvoke(request);
         assertEquals(Void.class, result.getType());
         assertNull(result.getData());
@@ -45,8 +44,7 @@ public class DataCallbackTest {
             
         }
         
-        final Event request = new Event();
-        request.setType(Integer.class);
+        final Event request = new Event(Integer.class, 42);
         Event result = new MyCallback().internalInvoke(request);
         assertEquals(String.class, result.getType());
         assertEquals(testString, result.getData());

@@ -50,6 +50,8 @@ public class RpcIntegrationTest {
             } catch (Throwable t) {
                 // we cannot do anything here in such a case
             }
+        }
+        if (remote != null) {
             try {
                 remote.deactivate();
             } catch (Throwable t) {

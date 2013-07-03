@@ -4,8 +4,7 @@ import rsb.Event;
 
 /**
  * A {@link Callback} implements the functionality of a single method of a
- * {@link LocalServer}. Implementations of such classes have to be provided by
- * RSB client programs.
+ * {@link LocalServer}.
  * 
  * Clients usually should not implement this interface directly. Instead use one
  * of the specialized implementing classes like {@link DataCallback} or
