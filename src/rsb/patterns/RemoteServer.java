@@ -175,19 +175,20 @@ public class RemoteServer extends Server {
 	public <U, T> U call(final String name, final T data) throws RSBException {
 		return this.<U, T>callInternal(name, data, false);
 	}
-	
 
-	public Event call(final String name) throws RSBException {
-		Event event = new Event();
-		event.setData(null);
-		return this.call(name, event);
-	}
-	
-	public Future<?> callAsync(String name) throws RSBException {
-		Event event = new Event();
-		event.setData(null);
-		return callAsyncInternal(name,event,true);
-	}	
+    public Event call(final String name) throws RSBException {
+        Event event = new Event();
+        event.setData(null);
+        event.setType(Void.class);
+        return this.call(name, event);
+    }
+
+    public Future<Event> callAsync(String name) throws RSBException {
+        Event event = new Event();
+        event.setData(null);
+        event.setType(Void.class);
+        return callAsyncInternal(name, event, true);
+    }
 
 	// internal methods are to prevent recursive calls from call(string, event) to call(string, event), which
 	// are bound to occur as the originally intended target (the template) method is not called in that situation.

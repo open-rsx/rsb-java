@@ -38,19 +38,23 @@ import rsb.Factory;
 import rsb.InitializeException;
 import rsb.Scope;
 
+/**
+ * @author swrede
+ * @author jwienke
+ */
 public class RemoteServerTest {
 
     private static final Scope SCOPE = new Scope("/example/test");
     private Factory factory;
-    
+
     @Before
     public void setUp() {
         factory = Factory.getInstance();
     }
-    
+
     @Test
     public void constructionWithTimeout() {
-        
+
         final double desiredTimeout = 10;
         final RemoteServer remote = factory.createRemoteServer(SCOPE,
                 desiredTimeout);

@@ -33,22 +33,20 @@ import rsb.Event;
 
 /**
  * @author swrede
- *
+ * 
  */
-public class ReplyEventCallback implements EventCallback {
+public class ReplyEventCallback extends EventCallback {
 
-	public AtomicInteger counter = new AtomicInteger();
+    public AtomicInteger counter = new AtomicInteger();
 
-	/* (non-Javadoc)
-	 * @see rsb.patterns.EventCallback#invoke(rsb.Event)
-	 */
-	@Override
-	public Event invoke(Event request) throws Throwable {
-		Event reply = new Event(String.class);
-		reply.setData(request.getData());
-		reply.getMetaData().setUserInfo("replyTo", request.getId().getAsUUID().toString());
-		counter.incrementAndGet();
-		return reply;
-	}
+    @Override
+    public Event invoke(Event request) throws Throwable {
+        Event reply = new Event(String.class);
+        reply.setData(request.getData());
+        reply.getMetaData().setUserInfo("replyTo",
+                request.getId().getAsUUID().toString());
+        counter.incrementAndGet();
+        return reply;
+    }
 
 }

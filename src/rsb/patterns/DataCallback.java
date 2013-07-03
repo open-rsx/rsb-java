@@ -29,23 +29,58 @@ package rsb.patterns;
 
 import java.lang.Throwable;
 
+import rsb.Event;
+
 /**
- * Implementations of this interface are used to provide the behavior
- * of exposed methods.
- *
+ * Implement the user behavior for a {@link LocalServer} method with a simple
+ * signature without events. This makes implementing callbacks simple, because
+ * no RSB {@link Event} instances need to be used. However, this e.g. prevents
+ * setting timestamps or further meta data of events. If you need such a
+ * behavior, please use {@link EventCallback}.
+ * 
+ * In case you either do not need a request paramter or do not return any data,
+ * specify the respective java generics parameter as {@link Void}. You can then
+ * safely return <code>null</code> if you have no result. In other cases,
+ * <code>null</code> is explicitly not allowed.
+ * TODO check the null assumption
+ * 
  * @author jmoringe
+ * @author jwienke
+ * @param <ReplyType>
+ *            The type of data produced as replies to the implemented
+ *            functionality.
+ * @param <RequestType>
+ *            The type of data required as request parameter
  */
-public interface DataCallback<T, U> {
+public abstract class DataCallback<ReplyType, RequestType> implements Callback {
+
+    @Override
+    public Event internalInvoke(Event request) throws Throwable {
+        @SuppressWarnings("unchecked")
+        ReplyType result = invoke((RequestType) request.getData());
+        // wrap return data in event instance
+        Event reply = new Event();
+        // null needs to be specifically handled
+        if (result != null) {
+            // TODO do we need to pass in a Class object for the reply type to
+            // correctly handle subclasses?
+            reply.setType(result.getClass());
+        } else {
+            reply.setType(Void.class);
+        }
+        reply.setData(result);
+        return reply;
+    }
 
     /**
-     * This method is called to invoke the actual behavior of an
-     * exposed method.
-     *
-     * @param U The argument passed to the associated method by the
-     * remote caller.
-     * @return A result that should be returned to the remote caller
-     * as the result of the calling the method.
+     * This method is called to invoke the actual behavior of an exposed method.
+     * 
+     * @param U
+     *            The argument passed to the associated method by the remote
+     *            caller.
+     * @return A result that should be returned to the remote caller as the
+     *         result of the calling the method.
      * @throw Throwable Can throw anything.
      */
-    public T invoke(U request) throws Throwable;
+    public abstract ReplyType invoke(RequestType request) throws Throwable;
 };
