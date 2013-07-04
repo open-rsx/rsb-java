@@ -27,6 +27,7 @@
  */
 package rsb.patterns;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,8 +149,8 @@ public abstract class Server<MethodType extends Method> extends Participant {
      * 
      * @return A Collection containing all methods.
      */
-    public Collection<MethodType> getMethods() {
-        return this.methods.values();
+    public synchronized Collection<MethodType> getMethods() {
+        return new ArrayList<MethodType>(this.methods.values());
     }
 
     /**
@@ -160,7 +161,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
      * @return {@link Method} instance or <code>null</code> if no method exists
      *         with this name
      */
-    public MethodType getMethod(final String name) {
+    public synchronized MethodType getMethod(final String name) {
         return this.methods.get(name);
     }
 
@@ -172,7 +173,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
      * @return <code>true</code> if a method is registered with the given name,
      *         else <code>false</code>
      */
-    public boolean hasMethod(final String name) {
+    public synchronized boolean hasMethod(final String name) {
         return this.methods.containsKey(name);
     }
 
@@ -190,7 +191,8 @@ public abstract class Server<MethodType extends Method> extends Participant {
      *             method with the given name already exists and shall not be
      *             overwritten
      */
-    protected void addMethod(final String name, final MethodType method,
+    protected synchronized void addMethod(final String name,
+            final MethodType method,
             final boolean overwrite) {
         assert (name != null);
         assert (method != null);
@@ -202,17 +204,17 @@ public abstract class Server<MethodType extends Method> extends Participant {
     }
 
     @Override
-    public boolean isActive() {
+    public synchronized boolean isActive() {
         return this.state.isActive();
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public synchronized void activate() throws InitializeException {
         this.state = this.state.activate();
     }
 
     @Override
-    public void deactivate() {
+    public synchronized void deactivate() {
         this.state = this.state.deactivate();
     }
 
