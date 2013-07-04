@@ -109,6 +109,8 @@ public class Router extends FilterObservable implements EventHandler {
 			case INOUT:
 				outPort.activate();
 				break;
+			case NONE:
+			    break;
 			}
 		} catch (RSBException e) {
 			stopEventProcessor();

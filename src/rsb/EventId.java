@@ -156,8 +156,12 @@ public class EventId {
 	public static String formatSequenceNumber(final long value) {
 		final StringBuilder builder = new StringBuilder();
 		final Formatter formatter = new Formatter(builder);
-		formatter.format("%08x", value);
-		return builder.toString();
+        try {
+            formatter.format("%08x", value);
+            return builder.toString();
+        } finally {
+            formatter.close();
+        }
 	}
 
 	@Override

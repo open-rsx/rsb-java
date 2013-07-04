@@ -32,7 +32,6 @@ package tutorial.protobuf;
 import rsb.AbstractDataHandler;
 import rsb.Factory;
 import rsb.Listener;
-import rsb.Scope;
 
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;

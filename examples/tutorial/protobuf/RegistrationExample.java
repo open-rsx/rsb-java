@@ -49,6 +49,7 @@ public class RegistrationExample {
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
 
         // The factory now uses the modified set of converters.
+        @SuppressWarnings("unused")
         Factory factory = Factory.getInstance();
 
     }

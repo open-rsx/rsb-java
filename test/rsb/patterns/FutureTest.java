@@ -30,8 +30,6 @@ package rsb.patterns;
 
 import static org.junit.Assert.*;
 
-import java.util.logging.Logger;
-
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CancellationException;
@@ -42,32 +40,28 @@ import rsb.patterns.Future;
 
 /**
  * @author jmoringe
- *
+ * 
  */
 public class FutureTest {
 
-    final static private Logger LOG = Logger.getLogger(FutureTest.class.getName());
-
     @Test
     public void testSimpleGet() throws ExecutionException, TimeoutException {
-	Future<Integer> future = new Future();
-	future.complete(1);
-	assertTrue(future.get() == 1);
+        Future<Integer> future = new Future<Integer>();
+        future.complete(1);
+        assertTrue(future.get() == 1);
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testCancel() throws ExecutionException, TimeoutException {
-	Future<Integer> future = new Future();
-	future.cancel(true);
-	future.get();
+        Future<Integer> future = new Future<Integer>();
+        future.cancel(true);
+        future.get();
     }
 
-    @Test(expected=TimeoutException.class)
+    @Test(expected = TimeoutException.class)
     public void testTimeout() throws ExecutionException, TimeoutException {
-	Future<Integer> future = new Future();
-	future.get(10);
+        Future<Integer> future = new Future<Integer>();
+        future.get(10);
     }
-
-
 
 }

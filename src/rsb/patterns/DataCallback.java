@@ -59,7 +59,7 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
         @SuppressWarnings("unchecked")
         ReplyType result = invoke((RequestType) request.getData());
         // wrap return data in event instance
-        Class type;
+        Class<?> type;
         // null needs to be specifically handled
         if (result != null) {
             type = result.getClass();
@@ -80,4 +80,5 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
      * @throw Throwable Can throw anything.
      */
     public abstract ReplyType invoke(RequestType request) throws Throwable;
+    
 };

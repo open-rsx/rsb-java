@@ -38,26 +38,28 @@ import org.junit.Test;
 
 /**
  * Unit tests for the {@link rsb.filter.OriginFilter} class.
- *
+ * 
  * @author jmoringe
  */
 public class OriginFilterTest {
-        @Test
-        public void testTransform() {
-                ParticipantId origin1 = new ParticipantId();
-                Event e1 = new Event(new Scope("/images"), String.class, "bla");
-		e1.setId(origin1, 234);
 
-                ParticipantId origin2 = new ParticipantId();
-                Event e2 = new Event(new Scope("/images"), String.class, "bla");
-		e2.setId(origin2, 0);
+    @Test
+    public void testTransform() {
+        ParticipantId origin1 = new ParticipantId();
+        Event e1 = new Event(new Scope("/images"), String.class, "bla");
+        e1.setId(origin1, 234);
 
-		OriginFilter f1 = new OriginFilter(origin1);
-		assertTrue(f1.transform(e1) != null);
-                assertTrue(f1.transform(e2) == null);
+        ParticipantId origin2 = new ParticipantId();
+        Event e2 = new Event(new Scope("/images"), String.class, "bla");
+        e2.setId(origin2, 0);
 
-                OriginFilter f2 = new OriginFilter(origin1, true);
-		assertTrue(f2.transform(e1) == null);
-                assertTrue(f2.transform(e2) != null);
-        }
+        OriginFilter f1 = new OriginFilter(origin1);
+        assertTrue(f1.transform(e1) != null);
+        assertTrue(f1.transform(e2) == null);
+
+        OriginFilter f2 = new OriginFilter(origin1, true);
+        assertTrue(f2.transform(e1) == null);
+        assertTrue(f2.transform(e2) != null);
+    }
+    
 };
