@@ -49,9 +49,9 @@ public class ServerTest {
 
     public class ShutdownCallback extends DataCallback<String, String> {
 
-        Server server;
+        Server<?> server;
 
-        public ShutdownCallback(final Server server) {
+        public ShutdownCallback(final Server<?> server) {
             this.server = server;
         }
 
@@ -70,13 +70,13 @@ public class ServerTest {
      */
     @Test
     public void testServer() {
-        final Server server = this.getServer();
+        final Server<?> server = this.getServer();
         assertNotNull(server);
     }
 
-    private Server getServer() {
+    private Server<?> getServer() {
         final Factory factory = Factory.getInstance();
-        final Server server = factory.createLocalServer(new Scope(
+        final Server<?> server = factory.createLocalServer(new Scope(
                 "/example/server"));
         return server;
     }
