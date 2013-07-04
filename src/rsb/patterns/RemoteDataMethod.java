@@ -45,9 +45,7 @@ public class RemoteDataMethod<T, U> extends AbstractRemoteMethod<T, U> {
 	@Override
 	public Future<T> call(U data) throws RSBException {
 		// build event and send it over the informer as request
-		final Event request = new Event(data.getClass());
-		request.setData(data);
-		return sendRequest(request);
+		return sendRequest(new Event(data.getClass(), data));
 	}
 
 	@SuppressWarnings("unchecked")

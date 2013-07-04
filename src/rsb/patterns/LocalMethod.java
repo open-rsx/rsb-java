@@ -38,19 +38,19 @@ import rsb.filter.MethodFilter;
 
 /**
  * Objects of this class implement and make available methods of a local server.
- * 
+ *
  * The actual behavior of methods is implemented by invoking arbitrary
  * user-supplied functions.
- * 
+ *
  * @author jmoringe
  * @author swrede
  * @author jwienke
- * 
+ *
  * @param <T>
  *            return type of supplied handler method
  * @param <U>
  *            parameter object type of supplied handler method
- * 
+ *
  */
 class LocalMethod extends Method implements Handler {
 
@@ -62,7 +62,7 @@ class LocalMethod extends Method implements Handler {
     /**
      * Create a new {@link LocalMethod} object that is exposed under the name @a
      * name by @a server.
-     * 
+     *
      * @param server
      *            The local server object to which the method will be
      *            associated.
@@ -96,10 +96,8 @@ class LocalMethod extends Method implements Handler {
             final String error = exception.toString() + " Details: "
                     + exception.getMessage() + "\n" + sw.toString();
             // return error information
-            reply = new Event();
-            reply.setType(String.class);
+            reply = new Event(String.class, error);
             reply.getMetaData().setUserInfo("rsb:error?", "1");
-            reply.setData(error);
         }
 
         reply.setScope(REPLY_SCOPE);

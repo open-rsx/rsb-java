@@ -121,13 +121,11 @@ public class SpreadPortTest {
 
 		// TODO: Don't know why this is needed, sometimes spread is too slow?
 		Thread.sleep(200);
-		
+
 		int numEvents = 100;
 
 		// send events
-		Event event = new Event(String.class);
-		event.setData("a test string " + numEvents);
-		event.setScope(sendScope);
+		Event event = new Event(sendScope, String.class, "a test string " + numEvents);
 		event.setId(new ParticipantId(), 42);
 
 		outPort.push(event);
@@ -159,8 +157,7 @@ public class SpreadPortTest {
 	@Test
 	public void longGroupNames() throws Throwable {
 
-		Event event = new Event(String.class);
-		event.setData("a test string");
+		Event event = new Event(String.class, "a test string");
 		event.setScope(new Scope(
 				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
 		event.setId(new ParticipantId(), 452334);
@@ -174,9 +171,7 @@ public class SpreadPortTest {
 
 		// create an event to send
 		final Scope scope = new Scope("/a/test/scope/again");
-		Event event = new Event(String.class);
-		event.setData("a test string");
-		event.setScope(scope);
+		Event event = new Event(scope, String.class, "a test string");
 		event.setId(new ParticipantId(), 634);
 
 		// create a receiver to wait for event

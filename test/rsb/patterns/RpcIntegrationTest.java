@@ -34,7 +34,7 @@ public class RpcIntegrationTest {
             public Void invoke(Void request) throws Throwable {
                 return null;
             }
-            
+
         });
         server.activate();
         remote = Factory.getInstance().createRemoteServer(scope);
@@ -70,22 +70,19 @@ public class RpcIntegrationTest {
 
     @Test
     public void roundtripEventSyntax() throws Throwable {
-        final Event request = new Event();
-        request.setType(String.class);
-        request.setData(TEST_DATA);
-        Event reply = remote.call(METHOD_NAME, request);
+        Event reply
+            = remote.call(METHOD_NAME, new Event(String.class, TEST_DATA));
         assertEquals(reply.getData(), TEST_DATA);
     }
-    
+
     @Test
     public void roundtripEventFutureSyntax() throws Throwable {
-        final Event request = new Event();
-        request.setType(String.class);
-        request.setData(TEST_DATA);
-        Future<Event> reply = remote.callAsync(METHOD_NAME, request);
+        Future<Event> reply
+            = remote.callAsync(METHOD_NAME,
+                               new Event(String.class, TEST_DATA));
         assertEquals(reply.get().getData(), TEST_DATA);
     }
-    
+
     @Test
     public void roundtripDataFutureSyntax() throws Throwable {
         Future<String> reply = remote.callAsync(METHOD_NAME, TEST_DATA);
@@ -98,7 +95,7 @@ public class RpcIntegrationTest {
         assertEquals(Void.class, reply.getType());
         assertEquals(null, reply.getData());
     }
-    
+
     @Test
     public void roundtripVoidVoidAsync() throws Throwable {
         Future<Event> reply = remote.callAsync(VOID_VOID_METHOD_NAME);

@@ -33,7 +33,7 @@ import rsb.Event;
 
 /**
  * @author swrede
- * 
+ *
  */
 public class ReplyEventCallback extends EventCallback {
 
@@ -41,8 +41,7 @@ public class ReplyEventCallback extends EventCallback {
 
     @Override
     public Event invoke(Event request) throws Throwable {
-        Event reply = new Event(String.class);
-        reply.setData(request.getData());
+        Event reply = new Event(String.class, request.getData());
         reply.getMetaData().setUserInfo("replyTo",
                 request.getId().getAsUUID().toString());
         counter.incrementAndGet();

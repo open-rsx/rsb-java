@@ -42,7 +42,7 @@ import rsb.transport.TransportFactory;
 /**
  * Objects of this class represent remote servers in a way that allows calling
  * methods on them as if they were local.
- * 
+ *
  * @author jmoringe
  * @author swrede
  * @author jwienke
@@ -63,7 +63,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -79,7 +79,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -95,7 +95,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -108,7 +108,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -120,7 +120,7 @@ public class RemoteServer extends Server {
 
     /**
      * Returns the timeout used when waiting for replies from a server.
-     * 
+     *
      * @return timeout in seconds
      */
     public double getTimeout() {
@@ -131,7 +131,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method returns immediately
      * with a {@link Future} instance.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -148,7 +148,7 @@ public class RemoteServer extends Server {
     /**
      * Calls a method of the server without request parameter using the method
      * name. The method returns immediately with a {@link Future} instance.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @return A {@link Future} instance to retrieve the result {@link Event}
@@ -156,16 +156,13 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      */
     public Future<Event> callAsync(String name) throws RSBException {
-        Event event = new Event();
-        event.setData(null);
-        event.setType(Void.class);
-        return callAsyncInternal(name, event, true);
+        return callAsyncInternal(name, new Event(Void.class, null), true);
     }
 
     /**
      * Calls a method of the server using the method name and plain request
      * data. The method returns immediately with a {@link Future} instance.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param data
@@ -183,7 +180,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method blocks until the
      * server replied or until the timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -204,7 +201,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method blocks until the
      * server replied or until the specified timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -227,7 +224,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server without request parameter using the method
      * name. The method blocks until the server replied or until the timeout is
      * reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @return An event with the resulting data
@@ -237,17 +234,14 @@ public class RemoteServer extends Server {
      *             timeout waiting for the reply
      */
     public Event call(final String name) throws RSBException, TimeoutException {
-        Event event = new Event();
-        event.setData(null);
-        event.setType(Void.class);
-        return this.call(name, event);
+        return this.call(name, new Event(Void.class, null));
     }
 
     /**
      * Calls a method of the server without request parameter using the method
      * name. The method blocks until the server replied or until the specified
      * timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param timeout
@@ -260,17 +254,14 @@ public class RemoteServer extends Server {
      */
     public Event call(final String name, final double timeout)
             throws RSBException, TimeoutException {
-        Event event = new Event();
-        event.setData(null);
-        event.setType(Void.class);
-        return this.call(name, event, timeout);
+        return this.call(name, new Event(Void.class, null), timeout);
     }
 
     /**
      * Calls a method of the server using the method name and plain request
      * data. The method blocks until the server replied or until the timeout is
      * reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -291,7 +282,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server using the method name and plain request
      * data. The method blocks until the server replied or until the specified
      * timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event

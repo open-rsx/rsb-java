@@ -37,13 +37,13 @@ import rsb.Event;
  * no RSB {@link Event} instances need to be used. However, this e.g. prevents
  * setting timestamps or further meta data of events. If you need such a
  * behavior, please use {@link EventCallback}.
- * 
+ *
  * In case you either do not need a request paramter or do not return any data,
  * specify the respective java generics parameter as {@link Void}. You can then
  * safely return <code>null</code> if you have no result. In other cases,
  * <code>null</code> is explicitly not allowed.
  * TODO check the null assumption
- * 
+ *
  * @author jmoringe
  * @author jwienke
  * @param <ReplyType>
@@ -59,22 +59,19 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
         @SuppressWarnings("unchecked")
         ReplyType result = invoke((RequestType) request.getData());
         // wrap return data in event instance
-        Event reply = new Event();
+        Class type;
         // null needs to be specifically handled
         if (result != null) {
-            // TODO do we need to pass in a Class object for the reply type to
-            // correctly handle subclasses?
-            reply.setType(result.getClass());
+            type = result.getClass();
         } else {
-            reply.setType(Void.class);
+            type = Void.class;
         }
-        reply.setData(result);
-        return reply;
+        return new Event(type, result);
     }
 
     /**
      * This method is called to invoke the actual behavior of an exposed method.
-     * 
+     *
      * @param U
      *            The argument passed to the associated method by the remote
      *            caller.

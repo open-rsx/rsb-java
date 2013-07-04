@@ -178,7 +178,7 @@ public class InformerTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendWrongType() throws RSBException {
-		informerString.send(new Event(defaultScope, Object.class,"not allowed"));
+		informerString.send(new Event(defaultScope, Object.class, "not allowed"));
 	}
 
 	/**
@@ -194,46 +194,27 @@ public class InformerTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendEventNullScope() throws Throwable {
-		Event e = new Event();
-		e.setType(informerString.getTypeInfo());
+		Event e = new Event(informerString.getTypeInfo(), "foo");
 		e.setScope(null);
-		e.setData("foo");
 		informerString.send(e);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendEventWrongScope() throws Throwable {
-		Event e = new Event();
-		e.setType(informerString.getTypeInfo());
-		e.setScope(new Scope("/blubb"));
-		e.setData("foo");
-		informerString.send(e);
+		informerString.send(new Event(new Scope("/blubb"),
+					      informerString.getTypeInfo(),
+					      "foo"));
 	}
 
 	@Test
 	public void testSendEventSubScope() throws Throwable {
-		Event e = new Event();
-		e.setType(informerString.getTypeInfo());
-		e.setScope(defaultScope.concat(new Scope("/blubb")));
-		e.setData("foo");
-		informerString.send(e);
-	}
-
-	public void testSendEventNullType() throws Throwable {
-		Event e = new Event();
-		e.setType(null);
-		e.setScope(defaultScope);
-		e.setData("foo");
-		informerString.send(e);
+		informerString.send(new Event(defaultScope.concat(new Scope("/blubb")),
+					      informerString.getTypeInfo(), "foo"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testSendEventWrongType() throws Throwable {
 		informerString.setTypeInfo(String.class);
-		Event e = new Event();
-		e.setType(Boolean.class);
-		e.setScope(defaultScope);
-		e.setData("foo");
-		informerString.send(e);
+		informerString.send(new Event(defaultScope, Boolean.class, "foo"));
 	}
 }

@@ -128,8 +128,7 @@ public class Informer<T extends Object> extends Participant {
 		}
 
 		protected Event send(final T data) throws RSBException {
-			final Event event = new Event(getScope(), data.getClass(), (Object) data);
-			return send(event);
+			return send(new Event(getScope(), data.getClass(), (Object) data));
 		}
 
 	}

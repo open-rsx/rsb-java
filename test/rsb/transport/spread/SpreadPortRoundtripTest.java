@@ -112,9 +112,7 @@ public class SpreadPortRoundtripTest {
 			builder.append('c');
 		}
 
-		Event event = new Event(String.class);
-		event.setData(builder.toString());
-		event.setScope(scope);
+		Event event = new Event(scope, String.class, builder.toString());
 		event.setId(new ParticipantId(), 42);
 		event.getMetaData().setUserInfo("foo", "a long string");
 		event.getMetaData().setUserInfo("barbar", "a long string again");
