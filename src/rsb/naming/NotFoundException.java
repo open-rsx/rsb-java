@@ -30,47 +30,47 @@ package rsb.naming;
 import rsb.RSBException;
 
 /**
- * This exception type represents any case where a symbolic name
- * was could not be resolved to an RSB resource. For instance,
- * if a RemoteServer object is to be created using a server name that
- * is not existing, a NameNotFoundException is thrown.
- *
+ * This exception type represents any case where a symbolic name was could not
+ * be resolved to an RSB resource. For instance, if a RemoteServer object is to
+ * be created using a server name that is not existing, a NameNotFoundException
+ * is thrown.
+ * 
  * @author swrede
- *
+ * 
  */
 public class NotFoundException extends RSBException {
 
-	/**
+    /**
 	 *
 	 */
-	private static final long serialVersionUID = -8852918216048184478L;
+    private static final long serialVersionUID = -8852918216048184478L;
 
-	/**
+    /**
 	 *
 	 */
-	public NotFoundException() {
-	}
+    public NotFoundException() {
+    }
 
-	/**
-	 * @param message
-	 */
-	public NotFoundException(String message) {
-		super(message);
-	}
+    /**
+     * @param message
+     */
+    public NotFoundException(final String message) {
+        super(message);
+    }
 
-	/**
-	 * @param cause
-	 */
-	public NotFoundException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * @param cause
+     */
+    public NotFoundException(final Throwable cause) {
+        super(cause);
+    }
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public NotFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * @param message
+     * @param cause
+     */
+    public NotFoundException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
 }

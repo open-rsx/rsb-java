@@ -29,25 +29,25 @@ package rsb.util;
 
 public class InvalidPropertyException extends RuntimeException {
 
-	public InvalidPropertyException() {
-		super();
-	}
+    public InvalidPropertyException() {
+        super();
+    }
 
-	public InvalidPropertyException(String message) {
-		super(message);
-	}
+    public InvalidPropertyException(final String message) {
+        super(message);
+    }
 
-	public InvalidPropertyException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public InvalidPropertyException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public InvalidPropertyException(Throwable cause) {
-		super(cause);
-	}
+    public InvalidPropertyException(final Throwable cause) {
+        super(cause);
+    }
 
-	/**
-	 * Serial version UID.
-	 */
-	private static final long serialVersionUID = 5696967985100081449L;
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 5696967985100081449L;
 
 }

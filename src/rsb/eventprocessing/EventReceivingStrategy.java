@@ -35,34 +35,34 @@ import rsb.transport.EventHandler;
  * An interface for strategies that dispatch received events to {@link Handler}
  * s. Implementations have the task of freeing the caller of
  * {@link #handle(rsb.Event)} to dispatch the event in its thread.
- *
+ * 
  * @author jwienke
  */
 public interface EventReceivingStrategy extends EventHandler {
 
-	/**
-	 * Adds a filter that is applied for all registered handlers some time after
-	 * this method call.
-	 *
-	 * @param filter
-	 *            filter to add, not <code>null</code>
-	 */
-	void addFilter(Filter filter);
+    /**
+     * Adds a filter that is applied for all registered handlers some time after
+     * this method call.
+     * 
+     * @param filter
+     *            filter to add, not <code>null</code>
+     */
+    void addFilter(Filter filter);
 
-	/**
-	 * Removes a filter that is remove for all registered handlers some time
-	 * after this method call.
-	 *
-	 * @param filter
-	 *            filter to remove, not <code>null</code>
-	 */
-	void removeFilter(Filter filter);
+    /**
+     * Removes a filter that is remove for all registered handlers some time
+     * after this method call.
+     * 
+     * @param filter
+     *            filter to remove, not <code>null</code>
+     */
+    void removeFilter(Filter filter);
 
-	void addHandler(Handler handler, boolean wait);
+    void addHandler(Handler handler, boolean wait);
 
-	void removeHandler(Handler handler, boolean wait)
-			throws InterruptedException;
+    void removeHandler(Handler handler, boolean wait)
+            throws InterruptedException;
 
-	void shutdownAndWait() throws InterruptedException;
+    void shutdownAndWait() throws InterruptedException;
 
 }

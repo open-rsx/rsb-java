@@ -33,48 +33,50 @@ import java.util.concurrent.TimeUnit;
 import rsb.Event;
 
 /**
- * A time and space limited queue of RSB {@link Event}s that discards
- * past events older than a specified time limit. It will additionally
- * discard old events when reaching a set maximum capacity.
- *
+ * A time and space limited queue of RSB {@link Event}s that discards past
+ * events older than a specified time limit. It will additionally discard old
+ * events when reaching a set maximum capacity.
+ * 
  * @author dklotz
  */
 public class TimeLimitedQueue extends LimitedQueue<Event> {
 
-	private long timeWindow;
+    private final long timeWindow;
 
-	public TimeLimitedQueue(int capacity, long timeWindow, TimeUnit unit) {
-		super(capacity);
-		this.timeWindow = TimeUnit.MICROSECONDS.convert(timeWindow, unit);
-	}
+    public TimeLimitedQueue(final int capacity, final long timeWindow,
+            final TimeUnit unit) {
+        super(capacity);
+        this.timeWindow = TimeUnit.MICROSECONDS.convert(timeWindow, unit);
+    }
 
-	private synchronized void discardOldEvents(long currentTime) {
-		if (queue.isEmpty()) {
-			return;
-		}
+    private synchronized void discardOldEvents(final long currentTime) {
+        if (this.queue.isEmpty()) {
+            return;
+        }
 
-		Event oldestEvent = queue.peek();
-		long oldestTime = oldestEvent.getMetaData().getCreateTime();
+        Event oldestEvent = this.queue.peek();
+        long oldestTime = oldestEvent.getMetaData().getCreateTime();
 
-		while (((currentTime - oldestTime) > timeWindow) && !queue.isEmpty()) {
-			// Discard the oldest element
-			queue.poll();
+        while (((currentTime - oldestTime) > this.timeWindow)
+                && !this.queue.isEmpty()) {
+            // Discard the oldest element
+            this.queue.poll();
 
-			// Get the age of the next oldest element
-			oldestEvent = queue.peek();
-			oldestTime = oldestEvent.getMetaData().getCreateTime();
-		}
-	}
+            // Get the age of the next oldest element
+            oldestEvent = this.queue.peek();
+            oldestTime = oldestEvent.getMetaData().getCreateTime();
+        }
+    }
 
-	@Override
-	public boolean add(Event e) {
-		// Discard events outside the time window.
-		// TODO: Do we always want to use the create time?
-		long currentTime = e.getMetaData().getCreateTime();
-		discardOldEvents(currentTime);
+    @Override
+    public boolean add(final Event e) {
+        // Discard events outside the time window.
+        // TODO: Do we always want to use the create time?
+        final long currentTime = e.getMetaData().getCreateTime();
+        this.discardOldEvents(currentTime);
 
-		return super.add(e);
-	}
+        return super.add(e);
+    }
 
-	// TODO: Shouldn't the "offer" methods also be overwritten in such a queue?
+    // TODO: Shouldn't the "offer" methods also be overwritten in such a queue?
 }

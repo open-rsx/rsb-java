@@ -30,31 +30,31 @@ package rsb;
 import java.util.logging.Logger;
 
 /**
- * Interface for State-pattern in the Listener class.
- * Currently, just used for explicit de-/allocation
- * of resources.
- *
+ * Interface for State-pattern in the Listener class. Currently, just used for
+ * explicit de-/allocation of resources.
+ * 
  * @author swrede
- *
+ * 
  */
 public abstract class ListenerState {
 
-	protected final static Logger LOG = Logger.getLogger(InformerState.class.getName());
+    protected final static Logger LOG = Logger.getLogger(InformerState.class
+            .getName());
 
-	protected Listener s;
+    protected Listener s;
 
-	protected ListenerState (Listener ctx) {
-		s = ctx;
-	}
+    protected ListenerState(final Listener ctx) {
+        this.s = ctx;
+    }
 
-	protected void activate() throws InitializeException {
-		LOG.warning("invalid state exception during activate call");
-		throw new InvalidStateException("subscriber already activated");
-	}
+    protected void activate() throws InitializeException {
+        LOG.warning("invalid state exception during activate call");
+        throw new InvalidStateException("subscriber already activated");
+    }
 
-	protected void deactivate() {
-		LOG.warning("invalid state exception during deactivate call");
-		throw new InvalidStateException("subscriber already deactivated");
-	}
+    protected void deactivate() {
+        LOG.warning("invalid state exception during deactivate call");
+        throw new InvalidStateException("subscriber already deactivated");
+    }
 
 }

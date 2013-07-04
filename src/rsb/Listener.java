@@ -45,159 +45,166 @@ import rsb.transport.TransportFactory;
  * particular filtering of incoming events. Each time a event is received from
  * an Informer, an Event object is dispatched to all Handlers associated to the
  * Listener.
- *
+ * 
  * @author swrede
  * @author jschaefe
  * @author jwienke
  */
 public class Listener extends Participant {
 
-	protected class ListenerStateActive extends ListenerState {
-		public ListenerStateActive(Listener ctx) {
-			super(ctx);
-		}
+    protected class ListenerStateActive extends ListenerState {
 
-		protected void deactivate() {
-			getRouter().deactivate();
-			s.state = new ListenerStateInactive(s);
-		}
+        public ListenerStateActive(final Listener ctx) {
+            super(ctx);
+        }
 
-	}
+        @Override
+        protected void deactivate() {
+            Listener.this.getRouter().deactivate();
+            this.s.state = new ListenerStateInactive(this.s);
+        }
 
-	protected class ListenerStateInactive extends ListenerState {
+    }
 
-		public ListenerStateInactive(Listener ctx) {
-			super(ctx);
-		}
+    protected class ListenerStateInactive extends ListenerState {
 
-		protected void activate() throws InitializeException {
-			getRouter().activate();
-			s.state = new ListenerStateActive(s);
-		}
+        public ListenerStateInactive(final Listener ctx) {
+            super(ctx);
+        }
 
-	}
+        @Override
+        protected void activate() throws InitializeException {
+            Listener.this.getRouter().activate();
+            this.s.state = new ListenerStateActive(this.s);
+        }
 
-	protected final static Logger LOG = Logger.getLogger(Listener.class.getName());
+    }
 
-	/** class state variable */
-	private ListenerState state;
+    protected final static Logger LOG = Logger.getLogger(Listener.class
+            .getName());
 
-	@SuppressWarnings({ "deprecation", "unused" })
-	private ErrorHandler errorHandler;
+    /** class state variable */
+    private ListenerState state;
 
-	private ArrayList<Filter> filters = new ArrayList<Filter>();
-	private ArrayList<Handler> handlers = new ArrayList<Handler>();
+    @SuppressWarnings({ "deprecation", "unused" })
+    private ErrorHandler errorHandler;
 
-	Listener(Scope scope) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
-		initMembers();
-	}
+    private final ArrayList<Filter> filters = new ArrayList<Filter>();
+    private final ArrayList<Handler> handlers = new ArrayList<Handler>();
 
-	Listener(String scope) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
-		initMembers();
-	}
+    Listener(final Scope scope) {
+        super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+        this.initMembers();
+    }
 
-	Listener(String scope, TransportFactory tfac) {
-		super(scope, tfac, PortConfiguration.IN);
-		initMembers();
-	}
+    Listener(final String scope) {
+        super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+        this.initMembers();
+    }
 
-	Listener(Scope scope, TransportFactory tfac) {
-		super(scope, tfac, PortConfiguration.IN);
-		initMembers();
-	}
+    Listener(final String scope, final TransportFactory tfac) {
+        super(scope, tfac, PortConfiguration.IN);
+        this.initMembers();
+    }
 
-	/**
-	 * @param scope
-	 *            scope of this listener.
-	 */
-	private void initMembers() {
-		this.state = new ListenerStateInactive(this);
-		errorHandler = new DefaultErrorHandler(LOG);
-		LOG.fine("New Listener instance: [scope=" + getScope() + "]");
-	}
+    Listener(final Scope scope, final TransportFactory tfac) {
+        super(scope, tfac, PortConfiguration.IN);
+        this.initMembers();
+    }
 
-	@Override
-	public void activate() throws InitializeException {
-		state.activate();
-		// TODO probably breaks re-activation
-		getRouter().addFilter(new ScopeFilter(getScope()));
-	}
+    /**
+     * @param scope
+     *            scope of this listener.
+     */
+    private void initMembers() {
+        this.state = new ListenerStateInactive(this);
+        this.errorHandler = new DefaultErrorHandler(LOG);
+        LOG.fine("New Listener instance: [scope=" + this.getScope() + "]");
+    }
 
-	@Override
-	public void deactivate() {
-		state.deactivate();
-	}
+    @Override
+    public void activate() throws InitializeException {
+        this.state.activate();
+        // TODO probably breaks re-activation
+        this.getRouter().addFilter(new ScopeFilter(this.getScope()));
+    }
 
-	public List<Filter> getFilters() {
-		return filters;
-	}
+    @Override
+    public void deactivate() {
+        this.state.deactivate();
+    }
 
-	public Iterator<Filter> getFilterIterator() {
-		Iterator<Filter> it = filters.iterator();
-		return it;
-	}
+    public List<Filter> getFilters() {
+        return this.filters;
+    }
 
-	public void addFilter(Filter filter) {
-		filters.add(filter);
-		getRouter().addFilter(filter);
-	}
+    public Iterator<Filter> getFilterIterator() {
+        final Iterator<Filter> it = this.filters.iterator();
+        return it;
+    }
 
-	public List<Handler> getHandlers() {
-		return handlers;
-	}
+    public void addFilter(final Filter filter) {
+        this.filters.add(filter);
+        this.getRouter().addFilter(filter);
+    }
 
-	public Iterator<Handler> getHandlerIterator() {
-		Iterator<Handler> it = handlers.iterator();
-		return it;
-	}
+    public List<Handler> getHandlers() {
+        return this.handlers;
+    }
 
-	/**
-	 * Register an event handler on this Listener to be notified about incoming
-	 * events. All received events will be send to the registered listeners.
-	 *
-	 * @param handler
-	 *            the handler instance to be registered
-	 * @param wait
-	 *            if set to @c true, this method will return only after the
-	 *            handler has completely been installed and will receive the
-	 *            next available message. Otherwise it may return earlier.
-	 */
-	public void addHandler(Handler handler, boolean wait) {
-		handlers.add(handler);
-		getRouter().addHandler(handler, wait);
-	}
+    public Iterator<Handler> getHandlerIterator() {
+        final Iterator<Handler> it = this.handlers.iterator();
+        return it;
+    }
 
-	/**
-	 * Remove an event listener from this Listener.
-	 *
-	 * @param handler
-	 *            the listener instance to be removed.
-	 * @param wait
-	 *            if set to @c true, this method will return only after the
-	 *            handler has been completely removed from the event processing
-	 *            and will not be called anymore from this listener.
-	 * @throws InterruptedException
-	 *             thrown if the method is interrupted while waiting for the
-	 *             handler to be removed
-	 */
-	public void removeHandler(Handler handler, boolean wait)
-			throws InterruptedException {
-		handlers.remove(handler);
-		getRouter().removeHandler(handler, wait);
-	}
+    /**
+     * Register an event handler on this Listener to be notified about incoming
+     * events. All received events will be send to the registered listeners.
+     * 
+     * @param handler
+     *            the handler instance to be registered
+     * @param wait
+     *            if set to @c true, this method will return only after the
+     *            handler has completely been installed and will receive the
+     *            next available message. Otherwise it may return earlier.
+     */
+    public void addHandler(final Handler handler, final boolean wait) {
+        this.handlers.add(handler);
+        this.getRouter().addHandler(handler, wait);
+    }
 
-	/**
-	 * @deprecated not yet designed
-	 */
-	public void setErrorHandler(ErrorHandler handler) {
-		errorHandler = handler;
-	}
+    /**
+     * Remove an event listener from this Listener.
+     * 
+     * @param handler
+     *            the listener instance to be removed.
+     * @param wait
+     *            if set to @c true, this method will return only after the
+     *            handler has been completely removed from the event processing
+     *            and will not be called anymore from this listener.
+     * @throws InterruptedException
+     *             thrown if the method is interrupted while waiting for the
+     *             handler to be removed
+     */
+    public void removeHandler(final Handler handler, final boolean wait)
+            throws InterruptedException {
+        this.handlers.remove(handler);
+        this.getRouter().removeHandler(handler, wait);
+    }
 
-	@Override
-	public boolean isActive() {
-		return state.getClass() == ListenerStateActive.class;
-	}
+    /**
+     * @param handler
+     *            an error handler to call on errors
+     * @deprecated not yet designed
+     */
+    @Deprecated
+    public void setErrorHandler(final ErrorHandler handler) {
+        this.errorHandler = handler;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.state.getClass() == ListenerStateActive.class;
+    }
 
 }

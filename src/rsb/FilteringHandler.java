@@ -35,50 +35,50 @@ import rsb.filter.Filter;
 /**
  * A decorator for {@link Handler}s that allows additional filtering for each
  * handler. Filters are a conjunction, hence one failure prevents delivery.
- *
+ * 
  * @author jwienke
  */
 public class FilteringHandler implements Handler {
 
-	private Handler decorated;
-	private Set<Filter> filters = new HashSet<Filter>();
+    private final Handler decorated;
+    private final Set<Filter> filters = new HashSet<Filter>();
 
-	/**
-	 * Creates a filtering handler that wraps another handler and takes one
-	 * additional filter.
-	 *
-	 * @param decorated
-	 *            handler to wrap and call if filter matches
-	 * @param filter
-	 *            the additional filter to apply
-	 */
-	public FilteringHandler(Handler decorated, Filter filter) {
-		this.decorated = decorated;
-		this.filters.add(filter);
-	}
+    /**
+     * Creates a filtering handler that wraps another handler and takes one
+     * additional filter.
+     * 
+     * @param decorated
+     *            handler to wrap and call if filter matches
+     * @param filter
+     *            the additional filter to apply
+     */
+    public FilteringHandler(final Handler decorated, final Filter filter) {
+        this.decorated = decorated;
+        this.filters.add(filter);
+    }
 
-	/**
-	 * Creates a filtering handler that wraps another handler and takes a set of
-	 * filters to apply.
-	 *
-	 * @param decorated
-	 *            handler to wrap and call if filter matches
-	 * @param filters
-	 *            the additional filters to apply
-	 */
-	public FilteringHandler(Handler decorated, Set<Filter> filters) {
-		this.decorated = decorated;
-		this.filters.addAll(filters);
-	}
+    /**
+     * Creates a filtering handler that wraps another handler and takes a set of
+     * filters to apply.
+     * 
+     * @param decorated
+     *            handler to wrap and call if filter matches
+     * @param filters
+     *            the additional filters to apply
+     */
+    public FilteringHandler(final Handler decorated, final Set<Filter> filters) {
+        this.decorated = decorated;
+        this.filters.addAll(filters);
+    }
 
-	@Override
-	public void internalNotify(Event e) {
-		for (Filter f : filters) {
-			if (f.transform(e) == null) {
-				return;
-			}
-		}
-		decorated.internalNotify(e);
-	}
+    @Override
+    public void internalNotify(final Event e) {
+        for (final Filter f : this.filters) {
+            if (f.transform(e) == null) {
+                return;
+            }
+        }
+        this.decorated.internalNotify(e);
+    }
 
 }

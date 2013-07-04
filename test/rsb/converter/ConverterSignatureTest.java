@@ -27,34 +27,32 @@
  */
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 /**
  * @author swrede
- *
  */
 public class ConverterSignatureTest {
 
-	/**
-	 * Test method for {@link rsb.converter.ConverterSignature#ConverterSignature(java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	public void testConverterSignature() {
-		ConverterSignature sig = new ConverterSignature("utf-8-string", String.class);
-		assertTrue(sig.getSchema().contentEquals("utf-8-string"));
-		assertTrue(sig.getDatatype().getName().contentEquals("java.lang.String"));
-	}
+    @Test
+    public void testConverterSignature() {
+        final ConverterSignature sig = new ConverterSignature("utf-8-string",
+                String.class);
+        assertTrue(sig.getSchema().contentEquals("utf-8-string"));
+        assertTrue(sig.getDatatype().getName()
+                .contentEquals("java.lang.String"));
+    }
 
-	/**
-	 * Test method for {@link rsb.converter.ConverterSignature#equals(java.lang.Object)}.
-	 */
-	@Test
-	public void testEqualsObject() {
-		ConverterSignature sig1 = new ConverterSignature("utf-8-string", String.class);
-		ConverterSignature sig2 = new ConverterSignature("utf-8-string", String.class);
-		assertEquals(sig1, sig2);
-	}
+    @Test
+    public void testEqualsObject() {
+        final ConverterSignature sig1 = new ConverterSignature("utf-8-string",
+                String.class);
+        final ConverterSignature sig2 = new ConverterSignature("utf-8-string",
+                String.class);
+        assertEquals(sig1, sig2);
+    }
 
 }

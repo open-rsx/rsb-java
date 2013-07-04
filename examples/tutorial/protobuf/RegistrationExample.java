@@ -30,27 +30,26 @@
 package tutorial.protobuf;
 
 import rsb.Factory;
-
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
-
 import tutorial.protobuf.ImageMessage.SimpleImage;
 
 public class RegistrationExample {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
 
         // Instantiate generic ProtocolBufferConverter with
         // SimpleImage exemplar.
-        ProtocolBufferConverter<SimpleImage> converter
-            = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
+        final ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(
+                SimpleImage.getDefaultInstance());
 
         // Register converter for the SimpleImage type.
-        DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(converter);
 
         // The factory now uses the modified set of converters.
         @SuppressWarnings("unused")
-        Factory factory = Factory.getInstance();
+        final Factory factory = Factory.getInstance();
 
     }
 

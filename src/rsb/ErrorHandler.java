@@ -30,18 +30,19 @@ package rsb;
 /**
  * @deprecated not yet designed
  */
+@Deprecated
 public interface ErrorHandler {
 
-	// public interface ConnectionErrorHandler extends ErrorHandler {
-	// public void handleError(ConnectionLostError ex);
-	// }
-	//
-	// public void connectionLost();
-	// public void lostConnectionToMemoryServer();
-	//
+    // public interface ConnectionErrorHandler extends ErrorHandler {
+    // public void handleError(ConnectionLostError ex);
+    // }
+    //
+    // public void connectionLost();
+    // public void lostConnectionToMemoryServer();
+    //
 
-	public void error(RSBException exception);
+    public void error(RSBException exception);
 
-	public void warning(RSBException exception);
+    public void warning(RSBException exception);
 
 }

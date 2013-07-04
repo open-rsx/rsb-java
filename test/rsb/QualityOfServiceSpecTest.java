@@ -27,7 +27,8 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -39,32 +40,32 @@ import rsb.QualityOfServiceSpec.Reliability;
  */
 public class QualityOfServiceSpecTest {
 
-	@Test
-	public void defaultSettings() {
-		QualityOfServiceSpec spec = new QualityOfServiceSpec();
-		assertEquals(QualityOfServiceSpec.Ordering.UNORDERED,
-				spec.getOrdering());
-		assertEquals(QualityOfServiceSpec.Reliability.RELIABLE,
-				spec.getReliability());
-	}
+    @Test
+    public void defaultSettings() {
+        final QualityOfServiceSpec spec = new QualityOfServiceSpec();
+        assertEquals(QualityOfServiceSpec.Ordering.UNORDERED,
+                spec.getOrdering());
+        assertEquals(QualityOfServiceSpec.Reliability.RELIABLE,
+                spec.getReliability());
+    }
 
-	@Test
-	public void constructor() {
-		final QualityOfServiceSpec.Ordering ordering = Ordering.ORDERED;
-		final QualityOfServiceSpec.Reliability reliability = Reliability.UNRELIABLE;
-		QualityOfServiceSpec spec = new QualityOfServiceSpec(ordering,
-				reliability);
-		assertEquals(ordering, spec.getOrdering());
-		assertEquals(reliability, spec.getReliability());
-	}
+    @Test
+    public void constructor() {
+        final QualityOfServiceSpec.Ordering ordering = Ordering.ORDERED;
+        final QualityOfServiceSpec.Reliability reliability = Reliability.UNRELIABLE;
+        final QualityOfServiceSpec spec = new QualityOfServiceSpec(ordering,
+                reliability);
+        assertEquals(ordering, spec.getOrdering());
+        assertEquals(reliability, spec.getReliability());
+    }
 
-	@Test
-	public void comparison() {
-		assertEquals(new QualityOfServiceSpec(), new QualityOfServiceSpec());
-		assertFalse(new QualityOfServiceSpec().equals(new QualityOfServiceSpec(
-				Ordering.ORDERED, Reliability.RELIABLE)));
-		assertFalse(new QualityOfServiceSpec().equals(new QualityOfServiceSpec(
-				Ordering.UNORDERED, Reliability.UNRELIABLE)));
-	}
+    @Test
+    public void comparison() {
+        assertEquals(new QualityOfServiceSpec(), new QualityOfServiceSpec());
+        assertFalse(new QualityOfServiceSpec().equals(new QualityOfServiceSpec(
+                Ordering.ORDERED, Reliability.RELIABLE)));
+        assertFalse(new QualityOfServiceSpec().equals(new QualityOfServiceSpec(
+                Ordering.UNORDERED, Reliability.UNRELIABLE)));
+    }
 
 }

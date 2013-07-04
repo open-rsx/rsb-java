@@ -31,39 +31,47 @@ import rsb.RSBException;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class BusClientTest {
 
-	/**
-	 * Test method for {@link rsb.transport.socket.BusClient#BusClient(java.net.InetAddress, int)}.
-	 * @throws RSBException 
-	 * @throws IOException 
-	 */
-	@Test
-	public void testBusClient() throws IOException, RSBException {
-		InetAddress addr = InetAddress.getLocalHost();
-		BusClient client = new BusClient(addr, 55555);
-		//client.activate();
-		assertNotNull(client);
-		client.deactivate();
-	}
+    /**
+     * Test method for
+     * {@link rsb.transport.socket.BusClient#BusClient(java.net.InetAddress, int)}
+     * .
+     * 
+     * @throws RSBException
+     * @throws IOException
+     */
+    @Test
+    public void testBusClient() throws IOException, RSBException {
+        final InetAddress addr = InetAddress.getLocalHost();
+        final BusClient client = new BusClient(addr, 55555);
+        // client.activate();
+        assertNotNull(client);
+        client.deactivate();
+    }
 
-	/**
-	 * Test method for {@link rsb.transport.socket.Bus#handleOutgoing(rsb.protocol.NotificationType.Notification)}.
-	 * @throws RSBException 
-	 * @throws IOException 
-	 * @throws InterruptedException 
-	 */
-	@Test
-	public void testHandleIncoming() throws IOException, RSBException, InterruptedException {
-		InetAddress addr = InetAddress.getLocalHost();
-		BusClient client = new BusClient(addr, 55555);
-		// TODO add here some automated setup of the server side once it is implemtend in Java
-		//client.activate()
-		assertNotNull(client);
-		//Thread.sleep(100);
-		client.deactivate();		
-	}
+    /**
+     * Test method for
+     * {@link rsb.transport.socket.Bus#handleOutgoing(rsb.protocol.NotificationType.Notification)}
+     * .
+     * 
+     * @throws RSBException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testHandleIncoming() throws IOException, RSBException,
+            InterruptedException {
+        final InetAddress addr = InetAddress.getLocalHost();
+        final BusClient client = new BusClient(addr, 55555);
+        // TODO add here some automated setup of the server side once it is
+        // implemtend in Java
+        // client.activate()
+        assertNotNull(client);
+        // Thread.sleep(100);
+        client.deactivate();
+    }
 
 }

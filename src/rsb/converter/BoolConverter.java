@@ -31,50 +31,52 @@ package rsb.converter;
 import java.nio.ByteBuffer;
 
 /**
- * A converter with wire type {@link ByteBuffer} that is capable of
- * handling boolean values.
- *
+ * A converter with wire type {@link ByteBuffer} that is capable of handling
+ * boolean values.
+ * 
  * @author jmoringe
  */
 public class BoolConverter implements Converter<ByteBuffer> {
 
-    private ConverterSignature signature;
+    private final ConverterSignature signature;
 
     public BoolConverter() {
-        signature = new ConverterSignature("bool", Boolean.class);
+        this.signature = new ConverterSignature("bool", Boolean.class);
     }
 
     @Override
-    public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object data)
-        throws ConversionException {
+    public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
+            final Object data) throws ConversionException {
 
         try {
-            Boolean value = (Boolean) data;
-            byte[] backing = new byte[1];
+            final Boolean value = (Boolean) data;
+            final byte[] backing = new byte[1];
             backing[0] = (byte) (value ? 1 : 0);
-            ByteBuffer serialized =  ByteBuffer.wrap(backing);
-            return new WireContents<ByteBuffer>(serialized, signature.getSchema());
-        } catch (ClassCastException e) {
-            throw new ConversionException("Input data for serializing must be boolean values.", e);
+            final ByteBuffer serialized = ByteBuffer.wrap(backing);
+            return new WireContents<ByteBuffer>(serialized,
+                    this.signature.getSchema());
+        } catch (final ClassCastException e) {
+            throw new ConversionException(
+                    "Input data for serializing must be boolean values.", e);
         }
     }
 
     @Override
-    public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer bytes)
-        throws ConversionException {
+    public UserData<ByteBuffer> deserialize(final String wireSchema,
+            final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(signature.getSchema())) {
+        if (!wireSchema.equals(this.signature.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                                          + wireSchema + "', expected '"
-                                          + signature.getSchema() + "'.");
+                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + "'.");
         }
 
-        boolean result = (bytes.get(0) == 1);
+        final boolean result = (bytes.get(0) == 1);
         return new UserData<ByteBuffer>(result, Boolean.class);
     }
 
     @Override
     public ConverterSignature getSignature() {
-        return signature;
+        return this.signature;
     }
 }

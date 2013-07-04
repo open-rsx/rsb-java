@@ -32,28 +32,27 @@ package tutorial.protobuf;
 import rsb.AbstractDataHandler;
 import rsb.Factory;
 import rsb.Listener;
-
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
-
 import tutorial.protobuf.ImageMessage.SimpleImage;
 
 public class ListenerExample {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
 
         // See RegistrationExample.java.
-        ProtocolBufferConverter<SimpleImage> converter
-            = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
+        final ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(
+                SimpleImage.getDefaultInstance());
 
         // register converter for SimpleImage's.
-        DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(converter);
 
         // Create a Listener instance on the specified scope that will
         // receive events and dispatch them asynchronously to the
         // registered handlers.
-        Factory factory = Factory.getInstance();
-        Listener listener = factory.createListener("/example/protobuf");
+        final Factory factory = Factory.getInstance();
+        final Listener listener = factory.createListener("/example/protobuf");
         listener.activate();
 
         // Add a DataHandler that is called with the SimpleImage datum
@@ -62,7 +61,7 @@ public class ListenerExample {
             listener.addHandler(new AbstractDataHandler<SimpleImage>() {
 
                 @Override
-                public void handleEvent(SimpleImage e) {
+                public void handleEvent(final SimpleImage e) {
                     System.out.println("SimpleImage data received");
                 }
 

@@ -33,32 +33,33 @@ import java.util.logging.Logger;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class FilterObservable {
 
-	private final static Logger LOG = Logger.getLogger(FilterObservable.class.getName());
+    private final static Logger LOG = Logger.getLogger(FilterObservable.class
+            .getName());
 
-	List<FilterObserver> observers = new ArrayList<FilterObserver>();
+    List<FilterObserver> observers = new ArrayList<FilterObserver>();
 
-	public void addObserver(final FilterObserver observer) {
-		LOG.finest("Added observer" + observer);
-		observers.add(observer);
-	}
+    public void addObserver(final FilterObserver observer) {
+        LOG.finest("Added observer" + observer);
+        this.observers.add(observer);
+    }
 
-	public void removeObserver(final FilterObserver observer) {
-		LOG.finest("Removed observer" + observer);
-		observers.remove(observer);
-	}
+    public void removeObserver(final FilterObserver observer) {
+        LOG.finest("Removed observer" + observer);
+        this.observers.remove(observer);
+    }
 
-	public void notifyObservers(final Filter filter, final FilterAction action) {
-		for (FilterObserver observer : observers) {
-			// perform double dispatch
-			filter.dispachToObserver(observer, action);
-		}
-	}
+    public void notifyObservers(final Filter filter, final FilterAction action) {
+        for (final FilterObserver observer : this.observers) {
+            // perform double dispatch
+            filter.dispachToObserver(observer, action);
+        }
+    }
 
-	public void clearObservers() {
-		observers.clear();
-	}
+    public void clearObservers() {
+        this.observers.clear();
+    }
 }

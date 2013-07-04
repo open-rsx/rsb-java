@@ -29,13 +29,13 @@ package rsb.transport.spread;
 
 public class ConnectionLostException extends RuntimeException {
 
-	/**
-	 * Serial version UID.
-	 */
-	private static final long serialVersionUID = 8534009312901101329L;
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 8534009312901101329L;
 
-	public ConnectionLostException(String msg) {
-		super(msg);
-	}
+    public ConnectionLostException(final String msg) {
+        super(msg);
+    }
 
 }

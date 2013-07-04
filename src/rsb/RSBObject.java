@@ -32,22 +32,28 @@ package rsb;
  */
 public interface RSBObject {
 
-	/**
-	 * Activates all network resources that belong to a specific object.
-	 */
-	public void activate() throws RSBException;
+    /**
+     * Activates all network resources that belong to a specific object.
+     * 
+     * @throws RSBException
+     *             generic error related to RSB
+     */
+    public void activate() throws RSBException;
 
-	/**
-	 * Deactivate all network resources that are owned by a specific object in
-	 * order to reactivate it.
-	 */
-	public void deactivate() throws RSBException;
+    /**
+     * Deactivate all network resources that are owned by a specific object in
+     * order to reactivate it.
+     * 
+     * @throws RSBException
+     *             generic error related to RSB
+     */
+    public void deactivate() throws RSBException;
 
-	/**
-	 * Tells wether this class is currently active or not.
-	 *
-	 * @return <code>true</code> if active
-	 */
-	boolean isActive();
+    /**
+     * Tells whether this class is currently active or not.
+     * 
+     * @return <code>true</code> if active
+     */
+    boolean isActive();
 
 }

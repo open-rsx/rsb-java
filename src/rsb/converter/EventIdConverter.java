@@ -29,57 +29,57 @@ package rsb.converter;
 
 import java.nio.ByteBuffer;
 
-import com.google.protobuf.ByteString;
-
 import rsb.ParticipantId;
 import rsb.protocol.EventIdType.EventId;
 
+import com.google.protobuf.ByteString;
+
 /**
  * A converter for {@link EventId} instances.
- *
+ * 
  * @author jwienke
  */
 public class EventIdConverter implements Converter<ByteBuffer> {
 
-	private ProtocolBufferConverter<EventId> converter = new ProtocolBufferConverter<EventId>(
-			EventId.getDefaultInstance());
+    private final ProtocolBufferConverter<EventId> converter = new ProtocolBufferConverter<EventId>(
+            EventId.getDefaultInstance());
 
-	@Override
-	public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object obj)
-			throws ConversionException {
+    @Override
+    public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
+            final Object obj) throws ConversionException {
 
-		try {
+        try {
 
-			rsb.EventId id = (rsb.EventId) obj;
+            final rsb.EventId id = (rsb.EventId) obj;
 
-			EventId.Builder idBuilder = EventId.newBuilder();
-			idBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
-					.toByteArray()));
-			idBuilder.setSequenceNumber((int) id.getSequenceNumber());
+            final EventId.Builder idBuilder = EventId.newBuilder();
+            idBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
+                    .toByteArray()));
+            idBuilder.setSequenceNumber((int) id.getSequenceNumber());
 
-			EventId builtId = idBuilder.build();
-			return converter.serialize(builtId.getClass(), builtId);
+            final EventId builtId = idBuilder.build();
+            return this.converter.serialize(builtId.getClass(), builtId);
 
-		} catch (ClassCastException e) {
-			throw new ConversionException(
-					"Input data for serializing must be strings.", e);
-		}
+        } catch (final ClassCastException e) {
+            throw new ConversionException(
+                    "Input data for serializing must be strings.", e);
+        }
 
-	}
+    }
 
-	@Override
-	public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer buffer)
-			throws ConversionException {
-		EventId protocolId = (EventId) converter
-				.deserialize(wireSchema, buffer).getData();
-		rsb.EventId id = new rsb.EventId(new ParticipantId(protocolId
-				.getSenderId().toByteArray()), protocolId.getSequenceNumber());
-		return new UserData<ByteBuffer>(id, id.getClass());
-	}
+    @Override
+    public UserData<ByteBuffer> deserialize(final String wireSchema,
+            final ByteBuffer buffer) throws ConversionException {
+        final EventId protocolId = (EventId) this.converter.deserialize(
+                wireSchema, buffer).getData();
+        final rsb.EventId id = new rsb.EventId(new ParticipantId(protocolId
+                .getSenderId().toByteArray()), protocolId.getSequenceNumber());
+        return new UserData<ByteBuffer>(id, id.getClass());
+    }
 
-	@Override
-	public ConverterSignature getSignature() {
-		return converter.getSignature();
-	}
+    @Override
+    public ConverterSignature getSignature() {
+        return this.converter.getSignature();
+    }
 
 }

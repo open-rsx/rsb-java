@@ -27,29 +27,26 @@
  */
 
 // mark-start::body
-import java.lang.System;
-import java.lang.Thread;
-
 import rsb.AbstractEventHandler;
-import rsb.Factory;
 import rsb.Event;
+import rsb.Factory;
 import rsb.Listener;
 
 public class EventListenerExample extends AbstractEventHandler {
 
     @Override
-    public void handleEvent(Event event) {
+    public void handleEvent(final Event event) {
         System.out.println("Received event " + event.toString());
     }
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         // Get a factory instance to create new RSB objects.
-        Factory factory = Factory.getInstance();
+        final Factory factory = Factory.getInstance();
 
         // Create a Listener instance on the specified scope that will
         // receive events and dispatch them asynchronously to all
         // registered handlers; activate the listener.
-        Listener listener = factory.createListener("/example/informer");
+        final Listener listener = factory.createListener("/example/informer");
         listener.activate();
 
         try {

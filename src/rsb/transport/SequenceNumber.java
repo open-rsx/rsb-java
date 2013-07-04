@@ -30,43 +30,42 @@ package rsb.transport;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Atomic uint32 implementation respecting
- * size of ProtocolBuffer uint32 type.
- *
+ * Atomic uint32 implementation respecting size of ProtocolBuffer uint32 type.
+ * 
  * @author swrede
- *
+ * 
  */
 public class SequenceNumber {
 
-	AtomicInteger count = new AtomicInteger();
+    AtomicInteger count = new AtomicInteger();
 
-	// uint32 max: 4.294.967.295
-	public final static long MAX_VALUE = (long) 2*Integer.MAX_VALUE+1;
+    // uint32 max: 4.294.967.295
+    public final static long MAX_VALUE = (long) 2 * Integer.MAX_VALUE + 1;
 
-	public SequenceNumber() {
-	}
+    public SequenceNumber() {
+    }
 
-	public SequenceNumber(long value) {
-		if (Math.abs(value) > (SequenceNumber.MAX_VALUE)) {
-			throw new IllegalArgumentException("Value larger than uint32");
-		}
-		count = new AtomicInteger((int) value);
-	}
+    public SequenceNumber(final long value) {
+        if (Math.abs(value) > (SequenceNumber.MAX_VALUE)) {
+            throw new IllegalArgumentException("Value larger than uint32");
+        }
+        this.count = new AtomicInteger((int) value);
+    }
 
-	public synchronized long incrementAndGet() {
-		// respect uint32 size
-		long inc = get()+1;
-		if (inc > SequenceNumber.MAX_VALUE) {
-			// reset to zero
-			count = new AtomicInteger();
-		} else {
-			count.incrementAndGet();
-		}
-		return (long) count.get() & 0xffffffffL;
-	}
+    public synchronized long incrementAndGet() {
+        // respect uint32 size
+        final long inc = this.get() + 1;
+        if (inc > SequenceNumber.MAX_VALUE) {
+            // reset to zero
+            this.count = new AtomicInteger();
+        } else {
+            this.count.incrementAndGet();
+        }
+        return this.count.get() & 0xffffffffL;
+    }
 
-	public long get() {
-		return (long) count.get() & 0xffffffffL;
-	}
+    public long get() {
+        return this.count.get() & 0xffffffffL;
+    }
 
 }

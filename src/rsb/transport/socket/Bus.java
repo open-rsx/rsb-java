@@ -38,70 +38,75 @@ import rsb.protocol.NotificationType.Notification;
 import rsb.util.Properties;
 
 /**
- * Instances of this class provide access to a socket-based bus.
- * It is transparent for clients (connectors) of this class whether
- * is accessed by running the bus server or by connecting to the bus
- * server as a client.
- *
- * This class offers methods for sending and receiving events to this
- * bus as well as registration of internal Connectors (inward) and
- * Connections (outward) which allow to send event notifications to
- * external participants.
- *
+ * Instances of this class provide access to a socket-based bus. It is
+ * transparent for clients (connectors) of this class whether is accessed by
+ * running the bus server or by connecting to the bus server as a client.
+ * 
+ * This class offers methods for sending and receiving events to this bus as
+ * well as registration of internal Connectors (inward) and Connections
+ * (outward) which allow to send event notifications to external participants.
+ * 
  * @author swrede
- *
+ * 
  */
 public abstract class Bus {
 
-	private final static Logger log = Logger.getLogger(Bus.class.getName());
-	private final static rsb.util.Properties prop = Properties.getInstance();
-	InetAddress address;
-	int port;
+    private final static Logger log = Logger.getLogger(Bus.class.getName());
+    private final static rsb.util.Properties prop = Properties.getInstance();
+    InetAddress address;
+    int port;
 
-	ConcurrentLinkedQueue<BusConnection> connections = new ConcurrentLinkedQueue<BusConnection>();
+    ConcurrentLinkedQueue<BusConnection> connections = new ConcurrentLinkedQueue<BusConnection>();
 
-	public void handleIncoming() {
-		// TODO handle incoming notifications and dispatch these to connectors
-	}
+    public void handleIncoming() {
+        // TODO handle incoming notifications and dispatch these to connectors
+    }
 
-	/**
-	 * Distribute event notification to connected participants.
-	 */
-	public void handleOutgoing(Notification notification) {
-		// TODO check if Bus needs to be locked
-		// 1. Broadcast notification to connections
-		for (BusConnection con : connections) {
-			// TODO add exception handling
-			con.sendNotification(notification);
-		}
-		// TODO 2. Broadcast notification to internal connectors
-	}
+    /**
+     * Distribute event notification to connected participants.
+     * 
+     * @param notification
+     *            the notification to distribute
+     */
+    public void handleOutgoing(final Notification notification) {
+        // TODO check if Bus needs to be locked
+        // 1. Broadcast notification to connections
+        for (final BusConnection con : this.connections) {
+            // TODO add exception handling
+            con.sendNotification(notification);
+        }
+        // TODO 2. Broadcast notification to internal connectors
+    }
 
-	public void addConnection(BusConnection con) {
-		connections.add(con);
-	}
+    public void addConnection(final BusConnection con) {
+        this.connections.add(con);
+    }
 
-	public void removeConnection(BusConnection con) {
-		if (connections.remove(con)==false) {
-			log.warning("Couldn't remove BusConnection " + con + " from connection queue.");
-		}
-	}
+    public void removeConnection(final BusConnection con) {
+        if (this.connections.remove(con) == false) {
+            log.warning("Couldn't remove BusConnection " + con
+                    + " from connection queue.");
+        }
+    }
 
-// TODO implement InPushConnector support for internal notification
+    // TODO implement InPushConnector support for internal notification
 
-	public static Bus createBusClient() throws IOException, RSBException {
-		InetAddress addr = InetAddress.getByName(prop.getProperty("transport.socket.host"));
-		BusClient client = new BusClient(addr, prop.getPropertyAsInt("transport.socket.port"));
-		client.activate();
-		return client;
-	}
+    public static Bus createBusClient() throws IOException, RSBException {
+        final InetAddress addr = InetAddress.getByName(prop
+                .getProperty("transport.socket.host"));
+        final BusClient client = new BusClient(addr,
+                prop.getPropertyAsInt("transport.socket.port"));
+        client.activate();
+        return client;
+    }
 
-	public static Bus createBusServer() throws IOException {
-		InetAddress addr = InetAddress.getByName(prop.getProperty("transport.socket.host"));
-		BusServer server = new BusServer(addr, prop.getPropertyAsInt("transport.socket.port"));
-		server.activate();
-		return server;
-	}
-	
-	
+    public static Bus createBusServer() throws IOException {
+        final InetAddress addr = InetAddress.getByName(prop
+                .getProperty("transport.socket.host"));
+        final BusServer server = new BusServer(addr,
+                prop.getPropertyAsInt("transport.socket.port"));
+        server.activate();
+        return server;
+    }
+
 }

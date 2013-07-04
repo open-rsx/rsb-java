@@ -27,7 +27,8 @@
  */
 package rsb.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -35,16 +36,16 @@ import rsb.Event;
 
 public class MethodFilterTest {
 
-	@Test
-	public void test() {
-		MethodFilter filter = new MethodFilter("REQUEST");
-		Event event = new Event();
-		event.setMethod("REQUEST");
-		assertNotNull(filter.transform(event));
-		event.setMethod("REPLY");
-		assertNull(filter.transform(event));
-		event.setMethod("request");
-		assertNotNull(filter.transform(event));
-	}
+    @Test
+    public void test() {
+        final MethodFilter filter = new MethodFilter("REQUEST");
+        final Event event = new Event();
+        event.setMethod("REQUEST");
+        assertNotNull(filter.transform(event));
+        event.setMethod("REPLY");
+        assertNull(filter.transform(event));
+        event.setMethod("request");
+        assertNotNull(filter.transform(event));
+    }
 
 }

@@ -27,9 +27,9 @@
  */
 package rsb.filter;
 
-import rsb.ParticipantId;
 import rsb.Event;
 import rsb.EventId;
+import rsb.ParticipantId;
 
 /**
  * Events matched by this filter have to originate from a particular
@@ -43,28 +43,28 @@ public class OriginFilter extends AbstractFilter {
     ParticipantId origin;
     boolean invert = false;
 
-    public OriginFilter(ParticipantId origin, boolean invert) {
+    public OriginFilter(final ParticipantId origin, final boolean invert) {
         super(OriginFilter.class);
         this.origin = origin;
         this.invert = invert;
     }
 
-    public OriginFilter(ParticipantId origin) {
+    public OriginFilter(final ParticipantId origin) {
         this(origin, false);
     }
 
     public ParticipantId getOrigin() {
-        return origin;
+        return this.origin;
     }
 
     public boolean isInverted() {
-        return invert;
+        return this.invert;
     }
 
     @Override
-    public Event transform(Event e) {
-        boolean matches = e.getId().getParticipantId().equals(origin);
-        matches = invert ? !matches : matches;
+    public Event transform(final Event e) {
+        boolean matches = e.getId().getParticipantId().equals(this.origin);
+        matches = this.invert ? !matches : matches;
         if (matches) {
             return e;
         } else {
@@ -75,19 +75,21 @@ public class OriginFilter extends AbstractFilter {
     /*
      * Helper method for double dispatch of Filter registrations
      */
-    public void dispachToObserver(FilterObserver o, FilterAction a) {
+    @Override
+    public void dispachToObserver(final FilterObserver o, final FilterAction a) {
         o.notify(this, a);
     }
 
-    public void skip(EventId id) {
+    @Override
+    public void skip(final EventId id) {
         super.skip(id);
     }
 
     @Override
-    public boolean equals(Object that) {
+    public boolean equals(final Object that) {
         return that instanceof OriginFilter
-                && origin.equals(((OriginFilter) that).origin)
-                && (invert == ((OriginFilter) that).invert);
+                && this.origin.equals(((OriginFilter) that).origin)
+                && (this.invert == ((OriginFilter) that).invert);
     }
 
 }

@@ -41,8 +41,8 @@ import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.converter.Converter;
 import rsb.converter.ConversionException;
+import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
@@ -65,430 +65,444 @@ import com.google.protobuf.ByteString;
 
 /**
  * A port which connects to a spread daemon network.
- *
+ * 
  * @author swrede
  */
 public class SpreadPort extends AbstractPort {
 
-	private ReceiverTask receiver;
-	private EventHandler eventHandler;
-	private static final int MIN_DATA_SIZE = 5;
-	private static final int MAX_MSG_SIZE = 100000;
+    private ReceiverTask receiver;
+    private final EventHandler eventHandler;
+    private static final int MIN_DATA_SIZE = 5;
+    private static final int MAX_MSG_SIZE = 100000;
 
-	private final static Logger log = Logger.getLogger(SpreadPort.class
-			.getName());
+    private final static Logger log = Logger.getLogger(SpreadPort.class
+            .getName());
 
-	private interface QoSHandler {
-		void apply(DataMessage message) throws SerializeException;
-	}
+    private interface QoSHandler {
 
-	private class UnreliableHandler implements QoSHandler {
-		@Override
-		public void apply(DataMessage message) throws SerializeException {
-			message.getSpreadMessage().setUnreliable();
-		}
-	}
+        void apply(DataMessage message) throws SerializeException;
+    }
 
-	private class ReliableHandler implements QoSHandler {
-		@Override
-		public void apply(DataMessage message) throws SerializeException {
-			message.getSpreadMessage().setReliable();
-		}
-	}
+    private class UnreliableHandler implements QoSHandler {
 
-	private class FifoHandler implements QoSHandler {
-		@Override
-		public void apply(DataMessage message) throws SerializeException {
-			message.getSpreadMessage().setFifo();
-		}
-	}
+        @Override
+        public void apply(final DataMessage message) throws SerializeException {
+            message.getSpreadMessage().setUnreliable();
+        }
+    }
 
-	/**
-	 * The message service type used for sending messages via spread.
-	 */
-	private QoSHandler spreadServiceHandler;
+    private class ReliableHandler implements QoSHandler {
 
-	/**
-	 * Protocol for optimization based on registered filters: TypeFilter: Some
-	 * types may be received via special spread groups, e.g. SystemEvents. Port
-	 * could join groups for registered types only and send events of this type
-	 * to the same groups IdentityFilter: This depends on whether the component
-	 * is filtering for it's own identity, to receive private messages (could
-	 * use spread's private groups here, but that would prevent us from
-	 * intercepting this communication), or filtering for another components
-	 * identity, e.g. a publisher. ScopeFilter: Restricts visibility according
-	 * to the group encoding rules based on the Scope concept. XPathFilter: no
-	 * way to optimize this on the Port
-	 */
+        @Override
+        public void apply(final DataMessage message) throws SerializeException {
+            message.getSpreadMessage().setReliable();
+        }
+    }
 
-	private SpreadWrapper spread = null;
-	// TODO instantiate matching strategy, initially in the constructor, later
-	// per configuration
-	private ConverterSelectionStrategy<ByteBuffer> inStrategy;
-	private ConverterSelectionStrategy<ByteBuffer> outStrategy;
+    private class FifoHandler implements QoSHandler {
 
-	/**
-	 * @param sw
-	 * @param eventHandler
-	 *            if <code>null</code>, no receiving of events will be done
-	 * @param strategy
-	 * @param outStrategy
-	 */
-	public SpreadPort(SpreadWrapper sw, EventHandler eventHandler,
-			ConverterSelectionStrategy<ByteBuffer> inStrategy,
-			ConverterSelectionStrategy<ByteBuffer> outStrategy) {
-		spread = sw;
-		this.eventHandler = eventHandler;
-		this.inStrategy = inStrategy;
-		this.outStrategy = outStrategy;
+        @Override
+        public void apply(final DataMessage message) throws SerializeException {
+            message.getSpreadMessage().setFifo();
+        }
+    }
 
-		// TODO initial hack to get QoS from properties, replace this with a
-		// real participant config
-		Ordering ordering = new QualityOfServiceSpec().getOrdering();
-		try {
-			ordering = Ordering.valueOf(Properties.getInstance().getProperty(
-					"qualityofservice.ordering"));
-		} catch (InvalidPropertyException e) {
-		}
-		Reliability reliability = new QualityOfServiceSpec().getReliability();
-		try {
-			reliability = Reliability.valueOf(Properties.getInstance()
-					.getProperty("qualityofservice.reliability"));
-		} catch (InvalidPropertyException e) {
-		}
-		setQualityOfServiceSpec(new QualityOfServiceSpec(ordering, reliability));
-	}
+    /**
+     * The message service type used for sending messages via spread.
+     */
+    private QoSHandler spreadServiceHandler;
 
-	public void activate() throws InitializeException {
-		receiver = new ReceiverTask(spread, eventHandler, inStrategy);
-		// activate spread connection
-		if (!spread.isActive()) {
-			spread.activate();
-		}
-		receiver.setPriority(Thread.NORM_PRIORITY + 2);
-		receiver.setName("ReceiverTask [grp=" + spread.getPrivateGroup() + "]");
-		receiver.start();
-	}
+    /**
+     * Protocol for optimization based on registered filters: TypeFilter: Some
+     * types may be received via special spread groups, e.g. SystemEvents. Port
+     * could join groups for registered types only and send events of this type
+     * to the same groups IdentityFilter: This depends on whether the component
+     * is filtering for it's own identity, to receive private messages (could
+     * use spread's private groups here, but that would prevent us from
+     * intercepting this communication), or filtering for another components
+     * identity, e.g. a publisher. ScopeFilter: Restricts visibility according
+     * to the group encoding rules based on the Scope concept. XPathFilter: no
+     * way to optimize this on the Port
+     */
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
-	 * rsb.filter.FilterAction)
-	 */
-	@Override
-	public void notify(ScopeFilter e, FilterAction a) {
-		log.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
-				+ " called");
-		switch (a) {
-		case ADD:
-			// TODO add reference handling from xcf4j
-			joinSpreadGroup(e.getScope());
-			break;
-		case REMOVE:
-			// TODO add reference handling from xcf4j
-			leaveSpreadGroup(e.getScope());
-			break;
-		case UPDATE:
-			log.info("Update of ScopeFilter requested on SpreadSport");
-			break;
-		default:
-			break;
-		}
-	}
+    private SpreadWrapper spread = null;
+    // TODO instantiate matching strategy, initially in the constructor, later
+    // per configuration
+    private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
+    private final ConverterSelectionStrategy<ByteBuffer> outStrategy;
 
-	/**
-	 * Creates the md5 hashed spread group names.
-	 *
-	 * @param scope
-	 *            scope to create group name
-	 * @return truncated md5 hash to fit into spread group
-	 */
-	private String spreadGroupName(Scope scope) {
+    /**
+     * @param sw
+     * @param eventHandler
+     *            if <code>null</code>, no receiving of events will be done
+     * @param inStrategy
+     *            converters to use for receiving data
+     * @param outStrategy
+     *            converters to use for sending data
+     */
+    public SpreadPort(final SpreadWrapper sw, final EventHandler eventHandler,
+            final ConverterSelectionStrategy<ByteBuffer> inStrategy,
+            final ConverterSelectionStrategy<ByteBuffer> outStrategy) {
+        this.spread = sw;
+        this.eventHandler = eventHandler;
+        this.inStrategy = inStrategy;
+        this.outStrategy = outStrategy;
 
-		try {
+        // TODO initial hack to get QoS from properties, replace this with a
+        // real participant config
+        Ordering ordering = new QualityOfServiceSpec().getOrdering();
+        try {
+            ordering = Ordering.valueOf(Properties.getInstance().getProperty(
+                    "qualityofservice.ordering"));
+        } catch (final InvalidPropertyException e) {
+        }
+        Reliability reliability = new QualityOfServiceSpec().getReliability();
+        try {
+            reliability = Reliability.valueOf(Properties.getInstance()
+                    .getProperty("qualityofservice.reliability"));
+        } catch (final InvalidPropertyException e) {
+        }
+        this.setQualityOfServiceSpec(new QualityOfServiceSpec(ordering,
+                reliability));
+    }
 
-			MessageDigest digest = MessageDigest.getInstance("md5");
-			digest.reset();
-			digest.update(scope.toString().getBytes());
-			byte[] sum = digest.digest();
-			assert sum.length == 16;
+    @Override
+    public void activate() throws InitializeException {
+        this.receiver = new ReceiverTask(this.spread, this.eventHandler,
+                this.inStrategy);
+        // activate spread connection
+        if (!this.spread.isActive()) {
+            this.spread.activate();
+        }
+        this.receiver.setPriority(Thread.NORM_PRIORITY + 2);
+        this.receiver.setName("ReceiverTask [grp="
+                + this.spread.getPrivateGroup() + "]");
+        this.receiver.start();
+    }
 
-			StringBuilder hexString = new StringBuilder();
-			for (int i = 0; i < sum.length; i++) {
-				String s = Integer.toHexString(0xFF & sum[i]);
-				if (s.length() == 1) {
-					s = '0' + s;
-				}
-				hexString.append(s);
-			}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
+     * rsb.filter.FilterAction)
+     */
+    @Override
+    public void notify(final ScopeFilter e, final FilterAction a) {
+        log.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
+                + " called");
+        switch (a) {
+        case ADD:
+            // TODO add reference handling from xcf4j
+            this.joinSpreadGroup(e.getScope());
+            break;
+        case REMOVE:
+            // TODO add reference handling from xcf4j
+            this.leaveSpreadGroup(e.getScope());
+            break;
+        case UPDATE:
+            log.info("Update of ScopeFilter requested on SpreadSport");
+            break;
+        default:
+            break;
+        }
+    }
 
-			return hexString.toString().substring(0, 31);
+    /**
+     * Creates the md5 hashed spread group names.
+     * 
+     * @param scope
+     *            scope to create group name
+     * @return truncated md5 hash to fit into spread group
+     */
+    private String spreadGroupName(final Scope scope) {
 
-		} catch (NoSuchAlgorithmException e) {
-			assert false : "There must be an md5 algorith available";
-			throw new RuntimeException("Unable to find md5 algorithm", e);
-		}
+        try {
 
-	}
+            final MessageDigest digest = MessageDigest.getInstance("md5");
+            digest.reset();
+            digest.update(scope.toString().getBytes());
+            final byte[] sum = digest.digest();
+            assert sum.length == 16;
 
-	private EventId.Builder createEventIdBuilder(final rsb.EventId id) {
-		rsb.protocol.EventIdType.EventId.Builder eventIdBuilder = rsb.protocol.EventIdType.EventId
-				.newBuilder();
-		eventIdBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
-				.toByteArray()));
-		eventIdBuilder.setSequenceNumber((int) id.getSequenceNumber());
-		return eventIdBuilder;
-	}
+            final StringBuilder hexString = new StringBuilder();
+            for (final byte element : sum) {
+                String s = Integer.toHexString(0xFF & element);
+                if (s.length() == 1) {
+                    s = '0' + s;
+                }
+                hexString.append(s);
+            }
 
-	private void fillMandatoryNotificationFields(
-			Notification.Builder notificationBuilder, Event event) {
-		notificationBuilder.setEventId(createEventIdBuilder(event.getId()));
-	}
+            return hexString.toString().substring(0, 31);
 
-	private void fillNotificationHeader(Builder notificationBuilder,
-			Event event, String wireSchema) {
+        } catch (final NoSuchAlgorithmException e) {
+            assert false : "There must be an md5 algorith available";
+            throw new RuntimeException("Unable to find md5 algorithm", e);
+        }
 
-		// notification metadata
-		notificationBuilder.setWireSchema(ByteString.copyFromUtf8(wireSchema));
-		notificationBuilder.setScope(ByteString.copyFromUtf8(event.getScope()
-				.toString()));
-		if (event.getMethod() != null) {
-			notificationBuilder.setMethod(ByteString.copyFromUtf8(event
-					.getMethod()));
-		}
+    }
 
-		EventMetaData.Builder metaDataBuilder = EventMetaData.newBuilder();
-		metaDataBuilder.setCreateTime(event.getMetaData().getCreateTime());
-		metaDataBuilder.setSendTime(event.getMetaData().getSendTime());
-		for (String key : event.getMetaData().userInfoKeys()) {
-			UserInfo.Builder infoBuilder = UserInfo.newBuilder();
-			infoBuilder.setKey(ByteString.copyFromUtf8(key));
-			infoBuilder.setValue(ByteString.copyFromUtf8(event.getMetaData()
-					.getUserInfo(key)));
-			metaDataBuilder.addUserInfos(infoBuilder.build());
-		}
-		for (String key : event.getMetaData().userTimeKeys()) {
-			UserTime.Builder timeBuilder = UserTime.newBuilder();
-			timeBuilder.setKey(ByteString.copyFromUtf8(key));
-			timeBuilder.setTimestamp(event.getMetaData().getUserTime(key));
-			metaDataBuilder.addUserTimes(timeBuilder.build());
-		}
-		notificationBuilder.setMetaData(metaDataBuilder.build());
-		for (rsb.EventId cause : event.getCauses()) {
-			notificationBuilder.addCauses(createEventIdBuilder(cause));
-		}
+    private EventId.Builder createEventIdBuilder(final rsb.EventId id) {
+        final rsb.protocol.EventIdType.EventId.Builder eventIdBuilder = rsb.protocol.EventIdType.EventId
+                .newBuilder();
+        eventIdBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
+                .toByteArray()));
+        eventIdBuilder.setSequenceNumber((int) id.getSequenceNumber());
+        return eventIdBuilder;
+    }
 
-	}
+    private void fillMandatoryNotificationFields(
+            final Notification.Builder notificationBuilder, final Event event) {
+        notificationBuilder
+                .setEventId(this.createEventIdBuilder(event.getId()));
+    }
 
-	private class Fragment {
-		public FragmentedNotification.Builder fragmentBuilder = null;
-		public Notification.Builder notificationBuilder = null;
+    private void fillNotificationHeader(final Builder notificationBuilder,
+            final Event event, final String wireSchema) {
 
-		public Fragment(FragmentedNotification.Builder fragmentBuilder,
-				Notification.Builder notificationBuilder) {
-			this.fragmentBuilder = fragmentBuilder;
-			this.notificationBuilder = notificationBuilder;
-		}
-	}
+        // notification metadata
+        notificationBuilder.setWireSchema(ByteString.copyFromUtf8(wireSchema));
+        notificationBuilder.setScope(ByteString.copyFromUtf8(event.getScope()
+                .toString()));
+        if (event.getMethod() != null) {
+            notificationBuilder.setMethod(ByteString.copyFromUtf8(event
+                    .getMethod()));
+        }
 
-	@Override
-	public void push(Event event) throws ConversionException {
+        final EventMetaData.Builder metaDataBuilder = EventMetaData
+                .newBuilder();
+        metaDataBuilder.setCreateTime(event.getMetaData().getCreateTime());
+        metaDataBuilder.setSendTime(event.getMetaData().getSendTime());
+        for (final String key : event.getMetaData().userInfoKeys()) {
+            final UserInfo.Builder infoBuilder = UserInfo.newBuilder();
+            infoBuilder.setKey(ByteString.copyFromUtf8(key));
+            infoBuilder.setValue(ByteString.copyFromUtf8(event.getMetaData()
+                    .getUserInfo(key)));
+            metaDataBuilder.addUserInfos(infoBuilder.build());
+        }
+        for (final String key : event.getMetaData().userTimeKeys()) {
+            final UserTime.Builder timeBuilder = UserTime.newBuilder();
+            timeBuilder.setKey(ByteString.copyFromUtf8(key));
+            timeBuilder.setTimestamp(event.getMetaData().getUserTime(key));
+            metaDataBuilder.addUserTimes(timeBuilder.build());
+        }
+        notificationBuilder.setMetaData(metaDataBuilder.build());
+        for (final rsb.EventId cause : event.getCauses()) {
+            notificationBuilder.addCauses(this.createEventIdBuilder(cause));
+        }
 
-		WireContents<ByteBuffer> convertedDataBuffer;
-		try {
-			convertedDataBuffer = convertEvent(event);
-		} catch (NoSuchConverterException ex) {
-			log.warning(ex.getMessage());
-			return;
-		}
-		int dataSize = convertedDataBuffer.getSerialization().limit();
+    }
 
-		event.getMetaData().setSendTime(0);
+    private class Fragment {
 
-		// find out how many messages are required to send the data
-		// int requiredParts = 1;
-		// if (dataSize > 0) {
-		// requiredParts = (int) Math.ceil((float) dataSize
-		// / (float) MAX_MSG_SIZE);
-		// }
+        public FragmentedNotification.Builder fragmentBuilder = null;
+        public Notification.Builder notificationBuilder = null;
 
-		// create a list of fragmented messages
-		List<Fragment> fragments = new ArrayList<Fragment>();
-		int cursor = 0;
-		int currentFragment = 0;
-		// "currentFragment == 0" is required for the case when dataSize == 0
-		while (cursor < dataSize || currentFragment == 0) {
+        public Fragment(final FragmentedNotification.Builder fragmentBuilder,
+                final Notification.Builder notificationBuilder) {
+            this.fragmentBuilder = fragmentBuilder;
+            this.notificationBuilder = notificationBuilder;
+        }
+    }
 
-			FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
-					.newBuilder();
-			Notification.Builder notificationBuilder = Notification
-					.newBuilder();
+    @Override
+    public void push(final Event event) throws ConversionException {
 
-			fillMandatoryNotificationFields(notificationBuilder, event);
+        WireContents<ByteBuffer> convertedDataBuffer;
+        try {
+            convertedDataBuffer = this.convertEvent(event);
+        } catch (final NoSuchConverterException ex) {
+            log.warning(ex.getMessage());
+            return;
+        }
+        final int dataSize = convertedDataBuffer.getSerialization().limit();
 
-			// for the first notification we also need to set the whole head
-			// with meta data etc.
-			if (currentFragment == 0) {
-				fillNotificationHeader(notificationBuilder, event,
-						convertedDataBuffer.getWireSchema());
-			}
+        event.getMetaData().setSendTime(0);
 
-			// determine how much space can still be used for data
-			// TODO this is really suboptimal with the java API...
-			FragmentedNotification.Builder fragmentBuilderClone = fragmentBuilder
-					.clone();
-			fragmentBuilderClone.setNotification(notificationBuilder.clone());
-			int currentNotificationSize = fragmentBuilderClone.buildPartial()
-					.getSerializedSize();
-			if (currentNotificationSize > MAX_MSG_SIZE - MIN_DATA_SIZE) {
-				throw new RuntimeException(
-						"There is not enough space for data in this message.");
-			}
-			int maxDataPartSize = MAX_MSG_SIZE - currentNotificationSize;
+        // find out how many messages are required to send the data
+        // int requiredParts = 1;
+        // if (dataSize > 0) {
+        // requiredParts = (int) Math.ceil((float) dataSize
+        // / (float) MAX_MSG_SIZE);
+        // }
 
-			int fragmentDataSize = maxDataPartSize;
-			if (cursor + fragmentDataSize > dataSize) {
-				fragmentDataSize = dataSize - cursor;
-			}
-			ByteString dataPart = ByteString.copyFrom(convertedDataBuffer
-					.getSerialization().array(), cursor, fragmentDataSize);
+        // create a list of fragmented messages
+        final List<Fragment> fragments = new ArrayList<Fragment>();
+        int cursor = 0;
+        int currentFragment = 0;
+        // "currentFragment == 0" is required for the case when dataSize == 0
+        while (cursor < dataSize || currentFragment == 0) {
 
-			notificationBuilder.setData(dataPart);
-			fragmentBuilder.setDataPart(currentFragment);
-			// optimistic guess
-			fragmentBuilder.setNumDataParts(1);
+            final FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
+                    .newBuilder();
+            final Notification.Builder notificationBuilder = Notification
+                    .newBuilder();
 
-			fragments.add(new Fragment(fragmentBuilder, notificationBuilder));
+            this.fillMandatoryNotificationFields(notificationBuilder, event);
 
-			cursor += fragmentDataSize;
-			currentFragment++;
+            // for the first notification we also need to set the whole head
+            // with meta data etc.
+            if (currentFragment == 0) {
+                this.fillNotificationHeader(notificationBuilder, event,
+                        convertedDataBuffer.getWireSchema());
+            }
 
-		}
+            // determine how much space can still be used for data
+            // TODO this is really suboptimal with the java API...
+            final FragmentedNotification.Builder fragmentBuilderClone = fragmentBuilder
+                    .clone();
+            fragmentBuilderClone.setNotification(notificationBuilder.clone());
+            final int currentNotificationSize = fragmentBuilderClone
+                    .buildPartial().getSerializedSize();
+            if (currentNotificationSize > MAX_MSG_SIZE - MIN_DATA_SIZE) {
+                throw new RuntimeException(
+                        "There is not enough space for data in this message.");
+            }
+            final int maxDataPartSize = MAX_MSG_SIZE - currentNotificationSize;
 
-		// check how many fragments we really need to send
-		if (fragments.size() > 1) {
-			for (Fragment fragment : fragments) {
-				fragment.fragmentBuilder.setNumDataParts(fragments.size());
-			}
-		}
+            int fragmentDataSize = maxDataPartSize;
+            if (cursor + fragmentDataSize > dataSize) {
+                fragmentDataSize = dataSize - cursor;
+            }
+            final ByteString dataPart = ByteString.copyFrom(convertedDataBuffer
+                    .getSerialization().array(), cursor, fragmentDataSize);
 
-		// send all fragments
-		for (Fragment fragment : fragments) {
+            notificationBuilder.setData(dataPart);
+            fragmentBuilder.setDataPart(currentFragment);
+            // optimistic guess
+            fragmentBuilder.setNumDataParts(1);
 
-			fragment.fragmentBuilder
-					.setNotification(fragment.notificationBuilder);
+            fragments.add(new Fragment(fragmentBuilder, notificationBuilder));
 
-			// build final notification
-			FragmentedNotification serializedFragment = fragment.fragmentBuilder
-					.build();
+            cursor += fragmentDataSize;
+            currentFragment++;
 
-			// send message on spread
-			// TODO remove data message
-			DataMessage dm = new DataMessage();
-			try {
-				dm.setData(serializedFragment.toByteArray());
-			} catch (SerializeException ex) {
-				throw new RuntimeException(
-						"Unable to set binary data for a spread message.", ex);
-			}
+        }
 
-			// send to all super scopes
-			List<Scope> scopes = event.getScope().superScopes(true);
-			for (Scope scope : scopes) {
-				dm.addGroup(spreadGroupName(scope));
-			}
+        // check how many fragments we really need to send
+        if (fragments.size() > 1) {
+            for (final Fragment fragment : fragments) {
+                fragment.fragmentBuilder.setNumDataParts(fragments.size());
+            }
+        }
 
-			// apply QoS
-			try {
-				spreadServiceHandler.apply(dm);
-			} catch (SerializeException ex) {
-				throw new RuntimeException(
-						"Unable to apply quality of service settings for a spread message.",
-						ex);
-			}
+        // send all fragments
+        for (final Fragment fragment : fragments) {
 
-			boolean sent = spread.send(dm);
-			assert (sent);
+            fragment.fragmentBuilder
+                    .setNotification(fragment.notificationBuilder);
 
-		}
+            // build final notification
+            final FragmentedNotification serializedFragment = fragment.fragmentBuilder
+                    .build();
 
-	}
+            // send message on spread
+            // TODO remove data message
+            final DataMessage dm = new DataMessage();
+            try {
+                dm.setData(serializedFragment.toByteArray());
+            } catch (final SerializeException ex) {
+                throw new RuntimeException(
+                        "Unable to set binary data for a spread message.", ex);
+            }
 
-	private WireContents<ByteBuffer> convertEvent(Event event)
-			throws ConversionException {
-		Converter<ByteBuffer> converter = null;
-		// convert data
-		converter = outStrategy.getConverter(event.getType().getName());
-		WireContents<ByteBuffer> convertedDataBuffer = converter.serialize(
-				event.getType(), event.getData());
-		return convertedDataBuffer;
-	}
+            // send to all super scopes
+            final List<Scope> scopes = event.getScope().superScopes(true);
+            for (final Scope scope : scopes) {
+                dm.addGroup(this.spreadGroupName(scope));
+            }
 
-	private void joinSpreadGroup(Scope scope) {
-		if (spread.isActive()) {
-			// join group
-			try {
-				spread.join(spreadGroupName(scope));
-			} catch (SpreadException e) {
-				throw new RuntimeException(
-						"Unable to join spread group for scope '" + scope
-								+ "' with hash '" + spreadGroupName(scope)
-								+ "'.", e);
-			}
-		} else {
-			log.severe("Couldn't set up network filter, spread inactive.");
-		}
-	}
+            // apply QoS
+            try {
+                this.spreadServiceHandler.apply(dm);
+            } catch (final SerializeException ex) {
+                throw new RuntimeException(
+                        "Unable to apply quality of service settings for a spread message.",
+                        ex);
+            }
 
-	private void leaveSpreadGroup(Scope scope) {
-		if (spread.isActive()) {
-			spread.leave(spreadGroupName(scope));
-		} else {
-			log.severe("Couldn't remove group filter, spread inactive.");
-		}
-	}
+            final boolean sent = this.spread.send(dm);
+            assert (sent);
 
-	public void deactivate() throws RSBException {
-		if (spread.isActive()) {
-			log.fine("deactivating SpreadPort");
-			spread.deactivate();
-		}
-		try {
-			receiver.join();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        }
 
-	@Override
-	public String getType() {
-		return "SpreadPort";
-	}
+    }
 
-	@Override
-	public void setQualityOfServiceSpec(QualityOfServiceSpec qos) {
+    private WireContents<ByteBuffer> convertEvent(final Event event)
+            throws ConversionException {
+        Converter<ByteBuffer> converter = null;
+        // convert data
+        converter = this.outStrategy.getConverter(event.getType().getName());
+        final WireContents<ByteBuffer> convertedDataBuffer = converter
+                .serialize(event.getType(), event.getData());
+        return convertedDataBuffer;
+    }
 
-		if (qos.getReliability() == QualityOfServiceSpec.Reliability.UNRELIABLE
-				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.UNORDERED) {
-			spreadServiceHandler = new UnreliableHandler();
-		} else if (qos.getReliability() == QualityOfServiceSpec.Reliability.UNRELIABLE
-				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.ORDERED) {
-			spreadServiceHandler = new FifoHandler();
-		} else if (qos.getReliability() == QualityOfServiceSpec.Reliability.RELIABLE
-				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.UNORDERED) {
-			spreadServiceHandler = new ReliableHandler();
-		} else if (qos.getReliability() == QualityOfServiceSpec.Reliability.RELIABLE
-				&& qos.getOrdering() == QualityOfServiceSpec.Ordering.ORDERED) {
-			spreadServiceHandler = new FifoHandler();
-		} else {
-			assert false;
-		}
+    private void joinSpreadGroup(final Scope scope) {
+        if (this.spread.isActive()) {
+            // join group
+            try {
+                this.spread.join(this.spreadGroupName(scope));
+            } catch (final SpreadException e) {
+                throw new RuntimeException(
+                        "Unable to join spread group for scope '" + scope
+                                + "' with hash '" + this.spreadGroupName(scope)
+                                + "'.", e);
+            }
+        } else {
+            log.severe("Couldn't set up network filter, spread inactive.");
+        }
+    }
 
-	}
+    private void leaveSpreadGroup(final Scope scope) {
+        if (this.spread.isActive()) {
+            this.spread.leave(this.spreadGroupName(scope));
+        } else {
+            log.severe("Couldn't remove group filter, spread inactive.");
+        }
+    }
 
-	@Override
-	public boolean isActive() {
-		return spread.isActive();
-	}
+    @Override
+    public void deactivate() throws RSBException {
+        if (this.spread.isActive()) {
+            log.fine("deactivating SpreadPort");
+            this.spread.deactivate();
+        }
+        try {
+            this.receiver.join();
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getType() {
+        return "SpreadPort";
+    }
+
+    @Override
+    public void setQualityOfServiceSpec(final QualityOfServiceSpec qos) {
+
+        if (qos.getReliability() == QualityOfServiceSpec.Reliability.UNRELIABLE
+                && qos.getOrdering() == QualityOfServiceSpec.Ordering.UNORDERED) {
+            this.spreadServiceHandler = new UnreliableHandler();
+        } else if (qos.getReliability() == QualityOfServiceSpec.Reliability.UNRELIABLE
+                && qos.getOrdering() == QualityOfServiceSpec.Ordering.ORDERED) {
+            this.spreadServiceHandler = new FifoHandler();
+        } else if (qos.getReliability() == QualityOfServiceSpec.Reliability.RELIABLE
+                && qos.getOrdering() == QualityOfServiceSpec.Ordering.UNORDERED) {
+            this.spreadServiceHandler = new ReliableHandler();
+        } else if (qos.getReliability() == QualityOfServiceSpec.Reliability.RELIABLE
+                && qos.getOrdering() == QualityOfServiceSpec.Ordering.ORDERED) {
+            this.spreadServiceHandler = new FifoHandler();
+        } else {
+            assert false;
+        }
+
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.spread.isActive();
+    }
 }

@@ -28,17 +28,13 @@
 
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
-
 import java.util.LinkedList;
 
 import org.junit.Test;
-
-import rsb.converter.ConversionException;
-import rsb.converter.BoolConverter;
-import rsb.converter.WireContents;
 
 /**
  * @author jmoringe
@@ -47,41 +43,39 @@ public class BoolConverterTest {
 
     @Test
     public void serialize() throws Throwable {
-        BoolConverter c = new BoolConverter();
-        Boolean b = true;
-        WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b);
+        final BoolConverter c = new BoolConverter();
+        final Boolean b = true;
+        final WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b);
         assertNotNull(buf);
     }
 
     @Test
     public void roundtrip() throws Throwable {
-        BoolConverter c = new BoolConverter();
+        final BoolConverter c = new BoolConverter();
         {
-            Boolean b1 = false;
-            WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b1);
+            final Boolean b1 = false;
+            final WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b1);
             assertNotNull(buf);
-            Object o
-                = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-                .getData();
-            Boolean b2 = (Boolean) o;
+            final Object o = c.deserialize(buf.getWireSchema(),
+                    buf.getSerialization()).getData();
+            final Boolean b2 = (Boolean) o;
             assertEquals(b1, b2);
         }
 
         {
-            Boolean b1 = true;
-            WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b1);
+            final Boolean b1 = true;
+            final WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b1);
             assertNotNull(buf);
-            Object o
-                = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-                .getData();
-            Boolean b2 = (Boolean) o;
+            final Object o = c.deserialize(buf.getWireSchema(),
+                    buf.getSerialization()).getData();
+            final Boolean b2 = (Boolean) o;
             assertEquals(b1, b2);
         }
     }
 
     @Test(expected = ConversionException.class)
     public void serializationNotABoolError() throws Throwable {
-        BoolConverter c = new BoolConverter();
+        final BoolConverter c = new BoolConverter();
         c.serialize(Boolean.class, new LinkedList<Integer>());
     }
 

@@ -27,7 +27,8 @@
  */
 package rsb.patterns;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
 
@@ -49,14 +50,14 @@ public class RemoteServerTest {
 
     @Before
     public void setUp() {
-        factory = Factory.getInstance();
+        this.factory = Factory.getInstance();
     }
 
     @Test
     public void constructionWithTimeout() {
 
         final double desiredTimeout = 10;
-        final RemoteServer remote = factory.createRemoteServer(SCOPE,
+        final RemoteServer remote = this.factory.createRemoteServer(SCOPE,
                 desiredTimeout);
         assertNotNull("RemoteServer construction failed", remote);
         assertEquals("Timeout not resepected upon construction",
@@ -66,35 +67,35 @@ public class RemoteServerTest {
 
     @Test
     public void constructionWithScope() {
-        final RemoteServer remote = factory.createRemoteServer(SCOPE);
+        final RemoteServer remote = this.factory.createRemoteServer(SCOPE);
         assertNotNull("RemoteServer construction failed", remote);
         assertEquals(SCOPE, remote.getScope());
     }
 
     @Test
     public void constructionWithScopeString() {
-        final RemoteServer remote = factory
-                .createRemoteServer(SCOPE.toString());
+        final RemoteServer remote = this.factory.createRemoteServer(SCOPE
+                .toString());
         assertNotNull("RemoteServer construction failed", remote);
         assertEquals(SCOPE, remote.getScope());
     }
 
     @Test
     public void testActivate() throws InitializeException {
-        final RemoteServer remote = factory
-                .createRemoteServer(SCOPE.toString());
+        final RemoteServer remote = this.factory.createRemoteServer(SCOPE
+                .toString());
         remote.activate();
         remote.deactivate();
     }
 
     @Test
     public void testAddMethod() throws InitializeException {
-        final RemoteServer remote = factory
-                .createRemoteServer(SCOPE.toString());
+        final RemoteServer remote = this.factory.createRemoteServer(SCOPE
+                .toString());
         final String methodName = "callme";
         remote.addMethod(methodName);
         remote.activate();
-        Collection<Method> methods = remote.getMethods();
+        final Collection<Method> methods = remote.getMethods();
         assertEquals(1, methods.size());
         assertEquals(methodName, methods.iterator().next().getName());
         remote.deactivate();

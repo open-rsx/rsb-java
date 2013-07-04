@@ -28,15 +28,13 @@
 
 package rsb.patterns;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
-
-import rsb.patterns.Future;
 
 /**
  * @author jmoringe
@@ -46,21 +44,21 @@ public class FutureTest {
 
     @Test
     public void testSimpleGet() throws ExecutionException, TimeoutException {
-        Future<Integer> future = new Future<Integer>();
+        final Future<Integer> future = new Future<Integer>();
         future.complete(1);
         assertTrue(future.get() == 1);
     }
 
     @Test(expected = CancellationException.class)
     public void testCancel() throws ExecutionException, TimeoutException {
-        Future<Integer> future = new Future<Integer>();
+        final Future<Integer> future = new Future<Integer>();
         future.cancel(true);
         future.get();
     }
 
     @Test(expected = TimeoutException.class)
     public void testTimeout() throws ExecutionException, TimeoutException {
-        Future<Integer> future = new Future<Integer>();
+        final Future<Integer> future = new Future<Integer>();
         future.get(10);
     }
 

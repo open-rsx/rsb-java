@@ -28,17 +28,13 @@
 
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
-
 import java.util.LinkedList;
 
 import org.junit.Test;
-
-import rsb.converter.ConversionException;
-import rsb.converter.Uint64Converter;
-import rsb.converter.WireContents;
 
 /**
  * @author jmoringe
@@ -47,40 +43,40 @@ public class Uint64ConverterTest {
 
     @Test
     public void serialize() throws Throwable {
-	Uint64Converter c = new Uint64Converter();
-	Long l = 2431709L;
-	WireContents<ByteBuffer> buf = c.serialize(Long.class, l);
-	assertNotNull(buf);
+        final Uint64Converter c = new Uint64Converter();
+        final Long l = 2431709L;
+        final WireContents<ByteBuffer> buf = c.serialize(Long.class, l);
+        assertNotNull(buf);
     }
 
     @Test
     public void roundtrip() throws Throwable {
-	Uint64Converter c = new Uint64Converter();
-	{
-	    Long l1 = 24398L;
-	    WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
-	    assertNotNull(buf);
-	    Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-		.getData();
-	    Long l2 = (Long) o;
-	    assertEquals(l1, l2);
-	}
+        final Uint64Converter c = new Uint64Converter();
+        {
+            final Long l1 = 24398L;
+            final WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
+            assertNotNull(buf);
+            final Object o = c.deserialize(buf.getWireSchema(),
+                    buf.getSerialization()).getData();
+            final Long l2 = (Long) o;
+            assertEquals(l1, l2);
+        }
 
-	{
-	    Long l1 = 130236144L;
-	    WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
-	    assertNotNull(buf);
-	    Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-		.getData();
-	    Long l2 = (Long) o;
-	    assertEquals(l1, l2);
-	}
+        {
+            final Long l1 = 130236144L;
+            final WireContents<ByteBuffer> buf = c.serialize(Long.class, l1);
+            assertNotNull(buf);
+            final Object o = c.deserialize(buf.getWireSchema(),
+                    buf.getSerialization()).getData();
+            final Long l2 = (Long) o;
+            assertEquals(l1, l2);
+        }
     }
 
     @Test(expected = ConversionException.class)
     public void serializationNotALongError() throws Throwable {
-	Uint64Converter c = new Uint64Converter();
-	c.serialize(Long.class, new LinkedList<Integer>());
+        final Uint64Converter c = new Uint64Converter();
+        c.serialize(Long.class, new LinkedList<Integer>());
     }
 
 }

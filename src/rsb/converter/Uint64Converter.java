@@ -31,59 +31,62 @@ package rsb.converter;
 import java.nio.ByteBuffer;
 
 /**
- * A converter with wire type {@link ByteBuffer} that is capable of
- * handling unsigned integers that fit into 64 bits.
- *
+ * A converter with wire type {@link ByteBuffer} that is capable of handling
+ * unsigned integers that fit into 64 bits.
+ * 
  * @author jmoringe
  */
 public class Uint64Converter implements Converter<ByteBuffer> {
 
-    private ConverterSignature signature;
+    private final ConverterSignature signature;
 
     public Uint64Converter() {
-	signature = new ConverterSignature("uint64", Long.class);
+        this.signature = new ConverterSignature("uint64", Long.class);
     }
 
     @Override
-    public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object data)
-	throws ConversionException {
+    public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
+            final Object data) throws ConversionException {
 
-	try {
-	    long value = (Long) data;
-	    byte[] backing = new byte[8];
-	    for (int i = 0; i < 8; ++i) {
-		backing[i] = (byte) ((value & (0xff << (i * 8))) >> (i * 8));
-	    }
-	    ByteBuffer serialized =  ByteBuffer.wrap(backing);
-	    return new WireContents<ByteBuffer>(serialized, signature.getSchema());
+        try {
+            final long value = (Long) data;
+            final byte[] backing = new byte[8];
+            for (int i = 0; i < 8; ++i) {
+                backing[i] = (byte) ((value & (0xff << (i * 8))) >> (i * 8));
+            }
+            final ByteBuffer serialized = ByteBuffer.wrap(backing);
+            return new WireContents<ByteBuffer>(serialized,
+                    this.signature.getSchema());
 
-	} catch (ClassCastException e) {
-	    throw new ConversionException("Input data for serializing must be long values.", e);
-	}
+        } catch (final ClassCastException e) {
+            throw new ConversionException(
+                    "Input data for serializing must be long values.", e);
+        }
     }
 
     @Override
-    public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer bytes)
-	throws ConversionException {
+    public UserData<ByteBuffer> deserialize(final String wireSchema,
+            final ByteBuffer bytes) throws ConversionException {
 
-	if (!wireSchema.equals(signature.getSchema())) {
-	    throw new ConversionException("Unexpected wire schema '"
-					  + wireSchema + "', expected '" + signature.getSchema() + "'.");
-	}
+        if (!wireSchema.equals(this.signature.getSchema())) {
+            throw new ConversionException("Unexpected wire schema '"
+                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + "'.");
+        }
 
-	long result = 0;
-	for (int i = 0; i < 8; ++i) {
-	    long value = (long) bytes.get(i);
-	    if (value < 0L) {
-		value = 256L + value;
-	    }
-	    result |= (value << (i * 8));
-	}
-	return new UserData<ByteBuffer>(result, Long.class);
+        long result = 0;
+        for (int i = 0; i < 8; ++i) {
+            long value = bytes.get(i);
+            if (value < 0L) {
+                value = 256L + value;
+            }
+            result |= (value << (i * 8));
+        }
+        return new UserData<ByteBuffer>(result, Long.class);
     }
 
     @Override
     public ConverterSignature getSignature() {
-	return signature;
+        return this.signature;
     }
 }

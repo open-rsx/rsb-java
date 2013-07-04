@@ -27,7 +27,7 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,56 +39,58 @@ import rsb.transport.TransportFactory;
 
 /**
  * User-level test for RSBJava.
- *
+ * 
  * @author jwienke
  */
 public class UserLevelTest {
 
-	@Test(timeout = 15000)
-	public void roundtrip() throws Throwable {
+    @Test(timeout = 15000)
+    public void roundtrip() throws Throwable {
 
-		// register converters
-		DefaultConverters.register();
+        // register converters
+        DefaultConverters.register();
 
-		final Scope scope = new Scope("/example/informer");
+        final Scope scope = new Scope("/example/informer");
 
-		// set up a receiver for events
-		final Set<String> receivedMessages = new HashSet<String>();
-		Listener listener = new Listener(scope, TransportFactory.getInstance());
-		listener.activate();
-		listener.addHandler(new AbstractEventHandler() {
+        // set up a receiver for events
+        final Set<String> receivedMessages = new HashSet<String>();
+        final Listener listener = new Listener(scope,
+                TransportFactory.getInstance());
+        listener.activate();
+        listener.addHandler(new AbstractEventHandler() {
 
-			@Override
-			public void handleEvent(Event e) {
-				synchronized (receivedMessages) {
-					receivedMessages.add((String) e.getData());
-					receivedMessages.notify();
-				}
-			}
-		}, true);
+            @Override
+            public void handleEvent(final Event e) {
+                synchronized (receivedMessages) {
+                    receivedMessages.add((String) e.getData());
+                    receivedMessages.notify();
+                }
+            }
+        }, true);
 
-		// send events
-		Set<String> sentMessages = new HashSet<String>();
-		Informer<String> informer = new Informer<String>(scope);
-		informer.activate();
-		for (int i = 0; i < 100; ++i) {
-			String message = "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
-			informer.send(message);
-			sentMessages.add(message);
-		}
+        // send events
+        final Set<String> sentMessages = new HashSet<String>();
+        final Informer<String> informer = new Informer<String>(scope);
+        informer.activate();
+        for (int i = 0; i < 100; ++i) {
+            final String message = "<message val=\"Hello World!\" nr=\"" + i
+                    + "\"/>";
+            informer.send(message);
+            sentMessages.add(message);
+        }
 
-		// wait for receiving all events that were sent
-		synchronized (receivedMessages) {
-			while (receivedMessages.size() < sentMessages.size()) {
-				receivedMessages.wait();
-			}
-		}
+        // wait for receiving all events that were sent
+        synchronized (receivedMessages) {
+            while (receivedMessages.size() < sentMessages.size()) {
+                receivedMessages.wait();
+            }
+        }
 
-		assertEquals(sentMessages, receivedMessages);
+        assertEquals(sentMessages, receivedMessages);
 
-		informer.deactivate();
-		listener.deactivate();
+        informer.deactivate();
+        listener.deactivate();
 
-	}
+    }
 
 }

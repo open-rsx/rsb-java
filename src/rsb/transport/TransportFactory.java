@@ -30,23 +30,24 @@ package rsb.transport;
 import rsb.transport.spread.SpreadFactory;
 
 /**
- *
+ * 
  * @author swrede
  */
 public abstract class TransportFactory {
 
-	public static TransportFactory getInstance() {
-		return new SpreadFactory();
-	};
+    public static TransportFactory getInstance() {
+        return new SpreadFactory();
+    };
 
-	public final Port createPort() {
-		return createPort(null);
-	}
+    public final Port createPort() {
+        return this.createPort(null);
+    }
 
-	/**
-	 * @param handler
-	 *            may be <code>null</code> if no handler is required
-	 */
-	public abstract Port createPort(EventHandler handler);
+    /**
+     * @param handler
+     *            may be <code>null</code> if no handler is required
+     * @return A port with the given handler
+     */
+    public abstract Port createPort(EventHandler handler);
 
 }

@@ -39,17 +39,17 @@ public class DefaultConverters {
     public static void register() {
         // TODO add missing converters for default types
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(new StringConverter());
+                .addConverter(new StringConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(new StringConverter("US-ASCII", "ascii-string"));
+                .addConverter(new StringConverter("US-ASCII", "ascii-string"));
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(new BoolConverter());
+                .addConverter(new BoolConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(new Uint64Converter());
+                .addConverter(new Uint64Converter());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(new EventIdConverter());
+                .addConverter(new EventIdConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
-            .addConverter(new NullConverter());
+                .addConverter(new NullConverter());
     }
 
 }

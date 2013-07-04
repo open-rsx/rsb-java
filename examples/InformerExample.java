@@ -32,13 +32,14 @@ import rsb.Informer;
 
 public class InformerExample {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
 
         // Get a factory instance to create RSB objects.
-        Factory factory = Factory.getInstance();
+        final Factory factory = Factory.getInstance();
 
         // Create an informer on scope "/exmaple/informer".
-        Informer<Object> informer = factory.createInformer("/example/informer");
+        final Informer<Object> informer = factory
+                .createInformer("/example/informer");
 
         // Activate the informer to be ready for work
         informer.activate();

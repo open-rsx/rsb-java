@@ -27,7 +27,8 @@
  */
 package rsb.transport.spread;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -56,178 +57,182 @@ import rsb.transport.EventHandler;
  */
 public class SpreadPortTest {
 
-	private SpreadWrapper outWrapper;
-	private SpreadPort outPort;
+    private SpreadWrapper outWrapper;
+    private SpreadPort outPort;
 
-	@Before
-	public void setUp() throws Throwable {
+    @Before
+    public void setUp() throws Throwable {
 
-		outWrapper = new SpreadWrapper();
-		outPort = new SpreadPort(outWrapper, null, getConverterStrategy("utf-8-string"),getConverterStrategy(String.class.getName()));
-		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-				Ordering.ORDERED, Reliability.RELIABLE));
-		outPort.activate();
+        this.outWrapper = new SpreadWrapper();
+        this.outPort = new SpreadPort(this.outWrapper, null,
+                this.getConverterStrategy("utf-8-string"),
+                this.getConverterStrategy(String.class.getName()));
+        this.outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
+                Ordering.ORDERED, Reliability.RELIABLE));
+        this.outPort.activate();
 
-	}
+    }
 
-	/**
-	 * @return
-	 */
-	private UnambiguousConverterMap<ByteBuffer> getConverterStrategy(String key) {
-		UnambiguousConverterMap<ByteBuffer> strategy = new UnambiguousConverterMap<ByteBuffer>();
-		strategy.addConverter(key, new StringConverter());
-		return strategy;
-	}
+    private UnambiguousConverterMap<ByteBuffer> getConverterStrategy(
+            final String key) {
+        final UnambiguousConverterMap<ByteBuffer> strategy = new UnambiguousConverterMap<ByteBuffer>();
+        strategy.addConverter(key, new StringConverter());
+        return strategy;
+    }
 
-	@After
-	public void tearDown() throws Throwable {
-		outPort.deactivate();
-	}
+    @After
+    public void tearDown() throws Throwable {
+        this.outPort.deactivate();
+    }
 
-	@Test(timeout = 10000)
-	public void hierarchicalSending() throws Throwable {
+    @Test(timeout = 10000)
+    public void hierarchicalSending() throws Throwable {
 
-		final Scope sendScope = new Scope("/this/is/a/hierarchy");
+        final Scope sendScope = new Scope("/this/is/a/hierarchy");
 
-		List<Scope> receiveScopes = sendScope.superScopes(true);
+        final List<Scope> receiveScopes = sendScope.superScopes(true);
 
-		// install event handlers for all receive scopes
-		final Map<Scope, List<Event>> receivedEventsByScope = new HashMap<Scope, List<Event>>();
-		final List<SpreadPort> inPorts = new ArrayList<SpreadPort>();
-		for (Scope scope : receiveScopes) {
+        // install event handlers for all receive scopes
+        final Map<Scope, List<Event>> receivedEventsByScope = new HashMap<Scope, List<Event>>();
+        final List<SpreadPort> inPorts = new ArrayList<SpreadPort>();
+        for (final Scope scope : receiveScopes) {
 
-			final List<Event> receivedEvents = new ArrayList<Event>();
-			receivedEventsByScope.put(scope, receivedEvents);
-			SpreadWrapper inWrapper = new SpreadWrapper();
-			SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+            final List<Event> receivedEvents = new ArrayList<Event>();
+            receivedEventsByScope.put(scope, receivedEvents);
+            final SpreadWrapper inWrapper = new SpreadWrapper();
+            final SpreadPort inPort = new SpreadPort(inWrapper,
+                    new EventHandler() {
 
-				@Override
-				public void handle(Event e) {
-					synchronized (receivedEventsByScope) {
-						receivedEvents.add(e);
-						receivedEventsByScope.notify();
-					}
-				}
+                        @Override
+                        public void handle(final Event e) {
+                            synchronized (receivedEventsByScope) {
+                                receivedEvents.add(e);
+                                receivedEventsByScope.notify();
+                            }
+                        }
 
-			},getConverterStrategy("utf-8-string"),getConverterStrategy(String.class.getName()));
+                    }, this.getConverterStrategy("utf-8-string"),
+                    this.getConverterStrategy(String.class.getName()));
 
-			inPort.activate();
+            inPort.activate();
 
-			inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
+            inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
-			inPorts.add(inPort);
+            inPorts.add(inPort);
 
-		}
+        }
 
-		// TODO: Don't know why this is needed, sometimes spread is too slow?
-		Thread.sleep(200);
+        // TODO: Don't know why this is needed, sometimes spread is too slow?
+        Thread.sleep(200);
 
-		int numEvents = 100;
+        final int numEvents = 100;
 
-		// send events
-		Event event = new Event(sendScope, String.class, "a test string " + numEvents);
-		event.setId(new ParticipantId(), 42);
+        // send events
+        final Event event = new Event(sendScope, String.class, "a test string "
+                + numEvents);
+        event.setId(new ParticipantId(), 42);
 
-		outPort.push(event);
+        this.outPort.push(event);
 
-		// wait for all receivers to get the scope
-		for (Scope scope : receiveScopes) {
-			synchronized (receivedEventsByScope) {
-				while (receivedEventsByScope.get(scope).size() != 1) {
-					receivedEventsByScope.wait();
-				}
+        // wait for all receivers to get the scope
+        for (final Scope scope : receiveScopes) {
+            synchronized (receivedEventsByScope) {
+                while (receivedEventsByScope.get(scope).size() != 1) {
+                    receivedEventsByScope.wait();
+                }
 
-				Event receivedEvent = receivedEventsByScope.get(scope).get(0);
+                final Event receivedEvent = receivedEventsByScope.get(scope)
+                        .get(0);
 
-				// normalize times as they are not important for this test
-				event.getMetaData().setReceiveTime(
-						receivedEvent.getMetaData().getReceiveTime());
+                // normalize times as they are not important for this test
+                event.getMetaData().setReceiveTime(
+                        receivedEvent.getMetaData().getReceiveTime());
 
-				assertEquals(event, receivedEvent);
-			}
-		}
+                assertEquals(event, receivedEvent);
+            }
+        }
 
-		// deactivate ports
-		for (SpreadPort inPort : inPorts) {
-			inPort.deactivate();
-		}
+        // deactivate ports
+        for (final SpreadPort inPort : inPorts) {
+            inPort.deactivate();
+        }
 
-	}
+    }
 
-	@Test
-	public void longGroupNames() throws Throwable {
+    @Test
+    public void longGroupNames() throws Throwable {
 
-		Event event = new Event(String.class, "a test string");
-		event.setScope(new Scope(
-				"/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
-		event.setId(new ParticipantId(), 452334);
+        final Event event = new Event(String.class, "a test string");
+        event.setScope(new Scope(
+                "/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
+        event.setId(new ParticipantId(), 452334);
 
-		outPort.push(event);
+        this.outPort.push(event);
 
-	}
+    }
 
-	@Test(timeout = 10000)
-	public void sendMetaData() throws Throwable {
+    @Test(timeout = 10000)
+    public void sendMetaData() throws Throwable {
 
-		// create an event to send
-		final Scope scope = new Scope("/a/test/scope/again");
-		Event event = new Event(scope, String.class, "a test string");
-		event.setId(new ParticipantId(), 634);
+        // create an event to send
+        final Scope scope = new Scope("/a/test/scope/again");
+        final Event event = new Event(scope, String.class, "a test string");
+        event.setId(new ParticipantId(), 634);
 
-		// create a receiver to wait for event
-		final List<Event> receivedEvents = new ArrayList<Event>();
-		SpreadWrapper inWrapper = new SpreadWrapper();
-		SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+        // create a receiver to wait for event
+        final List<Event> receivedEvents = new ArrayList<Event>();
+        final SpreadWrapper inWrapper = new SpreadWrapper();
+        final SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
 
-			@Override
-			public void handle(Event e) {
-				synchronized (receivedEvents) {
-					receivedEvents.add(e);
-					receivedEvents.notify();
-				}
-			}
+            @Override
+            public void handle(final Event e) {
+                synchronized (receivedEvents) {
+                    receivedEvents.add(e);
+                    receivedEvents.notify();
+                }
+            }
 
-		}, getConverterStrategy("utf-8-string"),
-				getConverterStrategy(String.class.getName()));
-		inPort.activate();
-		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
+        }, this.getConverterStrategy("utf-8-string"),
+                this.getConverterStrategy(String.class.getName()));
+        inPort.activate();
+        inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
-		Thread.sleep(500);
+        Thread.sleep(500);
 
-		// send event
-		long beforeSend = System.currentTimeMillis() * 1000;
-		outPort.push(event);
-		long afterSend = System.currentTimeMillis() * 1000;
+        // send event
+        final long beforeSend = System.currentTimeMillis() * 1000;
+        this.outPort.push(event);
+        final long afterSend = System.currentTimeMillis() * 1000;
 
-		assertTrue(event.getMetaData().getSendTime() >= beforeSend);
-		assertTrue(event.getMetaData().getSendTime() <= afterSend);
+        assertTrue(event.getMetaData().getSendTime() >= beforeSend);
+        assertTrue(event.getMetaData().getSendTime() <= afterSend);
 
-		// wait for receiving the event
-		synchronized (receivedEvents) {
-			while (receivedEvents.size() != 1) {
-				receivedEvents.wait();
-			}
+        // wait for receiving the event
+        synchronized (receivedEvents) {
+            while (receivedEvents.size() != 1) {
+                receivedEvents.wait();
+            }
 
-			Event receivedEvent = receivedEvents.get(0);
+            final Event receivedEvent = receivedEvents.get(0);
 
-			// first check that there is a receive time in the event
-			assertTrue(receivedEvent.getMetaData().getReceiveTime() >= beforeSend);
-			assertTrue(receivedEvent.getMetaData().getReceiveTime() >= receivedEvent
-					.getMetaData().getSendTime());
-			assertTrue(receivedEvent.getMetaData().getReceiveTime() <= System
-					.currentTimeMillis() * 1000);
+            // first check that there is a receive time in the event
+            assertTrue(receivedEvent.getMetaData().getReceiveTime() >= beforeSend);
+            assertTrue(receivedEvent.getMetaData().getReceiveTime() >= receivedEvent
+                    .getMetaData().getSendTime());
+            assertTrue(receivedEvent.getMetaData().getReceiveTime() <= System
+                    .currentTimeMillis() * 1000);
 
-			// now adapt this time to use the normal equals method for comparing
-			// all other fields
-			event.getMetaData().setReceiveTime(
-					receivedEvent.getMetaData().getReceiveTime());
-			receivedEvent.getMetaData().setSendTime(
-					event.getMetaData().getSendTime());
+            // now adapt this time to use the normal equals method for comparing
+            // all other fields
+            event.getMetaData().setReceiveTime(
+                    receivedEvent.getMetaData().getReceiveTime());
+            receivedEvent.getMetaData().setSendTime(
+                    event.getMetaData().getSendTime());
 
-			assertEquals(event, receivedEvent);
-		}
+            assertEquals(event, receivedEvent);
+        }
 
-		inPort.deactivate();
-	}
+        inPort.deactivate();
+    }
 
 }

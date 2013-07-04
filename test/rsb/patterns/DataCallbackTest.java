@@ -1,6 +1,7 @@
 package rsb.patterns;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -17,13 +18,14 @@ public class DataCallbackTest {
         class VoidCallback extends DataCallback<Void, Void> {
 
             @Override
-            public Void invoke(Void request) throws Throwable {
+            public Void invoke(final Void request) throws Throwable {
                 return null;
             }
 
         }
 
-        Event result = new VoidCallback().internalInvoke(new Event(Void.class, null));
+        final Event result = new VoidCallback().internalInvoke(new Event(
+                Void.class, null));
         assertEquals(Void.class, result.getType());
         assertNull(result.getData());
 
@@ -37,13 +39,14 @@ public class DataCallbackTest {
         class MyCallback extends DataCallback<String, Integer> {
 
             @Override
-            public String invoke(Integer request) throws Throwable {
+            public String invoke(final Integer request) throws Throwable {
                 return testString;
             }
 
         }
 
-        Event result = new MyCallback().internalInvoke(new Event(Integer.class, 42));
+        final Event result = new MyCallback().internalInvoke(new Event(
+                Integer.class, 42));
         assertEquals(String.class, result.getType());
         assertEquals(testString, result.getData());
 

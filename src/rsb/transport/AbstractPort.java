@@ -32,13 +32,13 @@ import rsb.converter.ConversionException;
 import rsb.filter.AbstractFilterObserver;
 
 /**
- *
+ * 
  * @author swrede
  */
 public abstract class AbstractPort extends AbstractFilterObserver implements
-		Port {
+        Port {
 
-	@Override
-	public abstract void push(Event event) throws ConversionException;
+    @Override
+    public abstract void push(Event event) throws ConversionException;
 
 }

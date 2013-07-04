@@ -27,9 +27,9 @@
  */
 package rsb.eventprocessing;
 
-import java.util.concurrent.Callable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import rsb.Event;
 import rsb.Handler;
@@ -40,52 +40,53 @@ import rsb.filter.Filter;
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
 
-	private final Handler handler;
-	private final Set<Filter> filters;
-	private final Event event;
-	private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks;
+    private final Handler handler;
+    private final Set<Filter> filters;
+    private final Event event;
+    private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks;
 
-	MatchAndDispatchTask(Handler handler, Set<Filter> filters, Event event,
-			Map<Handler, Set<MatchAndDispatchTask>> handlerTasks) {
-		this.handler = handler;
-		this.filters = filters;
-		this.event = event;
-		this.handlerTasks = handlerTasks;
-	}
+    MatchAndDispatchTask(final Handler handler, final Set<Filter> filters,
+            final Event event,
+            final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks) {
+        this.handler = handler;
+        this.filters = filters;
+        this.event = event;
+        this.handlerTasks = handlerTasks;
+    }
 
-	@Override
-	public Boolean call() throws Exception {
-		try {
-			if (match(event)) {
-				try {
-					handler.internalNotify(event);
-				} catch (Throwable ex) {
-					// TODO add logger, re-throw exception to user-specified
-					// exception handler
-					ex.printStackTrace();
-				}
-				return true;
-			}
-			return false;
-		} finally {
-			synchronized (handlerTasks) {
-				handlerTasks.get(handler).remove(this);
-			}
-			handlerTasks.notifyAll();
-		}
-	}
+    @Override
+    public Boolean call() throws Exception {
+        try {
+            if (this.match(this.event)) {
+                try {
+                    this.handler.internalNotify(this.event);
+                } catch (final Throwable ex) {
+                    // TODO add logger, re-throw exception to user-specified
+                    // exception handler
+                    ex.printStackTrace();
+                }
+                return true;
+            }
+            return false;
+        } finally {
+            synchronized (this.handlerTasks) {
+                this.handlerTasks.get(this.handler).remove(this);
+            }
+            this.handlerTasks.notifyAll();
+        }
+    }
 
-	public boolean match(Event event) {
-		Event result = event;
-		synchronized (filters) {
-			for (Filter filter : filters) {
-				result = filter.transform(result);
-				if (result == null) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    public boolean match(final Event event) {
+        Event result = event;
+        synchronized (this.filters) {
+            for (final Filter filter : this.filters) {
+                result = filter.transform(result);
+                if (result == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 }

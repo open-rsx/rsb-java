@@ -27,18 +27,16 @@
  */
 
 // mark-start::body
-import java.lang.System;
-
 import rsb.Factory;
 import rsb.patterns.RemoteServer;
 
 public class ClientExample {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         // Get remote server object to call exposed request methods of
         // participants
-        RemoteServer server
-            = Factory.getInstance().createRemoteServer("/example/server");
+        final RemoteServer server = Factory.getInstance().createRemoteServer(
+                "/example/server");
         server.activate();
 
         // Call remote method and deactivate the server.

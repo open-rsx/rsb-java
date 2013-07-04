@@ -38,17 +38,17 @@ import rsb.filter.FilterObserver;
  */
 public interface Port extends RSBObject, FilterObserver {
 
-	public void push(Event e) throws ConversionException;
+    public void push(Event e) throws ConversionException;
 
-	public String getType();
+    public String getType();
 
-	/**
-	 * Sets the quality of service requirements on sending and receiving event
-	 * notifications.
-	 *
-	 * @param spec
-	 *            new spec to apply
-	 */
-	public void setQualityOfServiceSpec(QualityOfServiceSpec spec);
+    /**
+     * Sets the quality of service requirements on sending and receiving event
+     * notifications.
+     * 
+     * @param spec
+     *            new spec to apply
+     */
+    public void setQualityOfServiceSpec(QualityOfServiceSpec spec);
 
 }

@@ -55,91 +55,91 @@ import rsb.transport.EventHandler;
 
 /**
  * Test for {@link SpreadPort}.
- *
+ * 
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
 public class SpreadPortRoundtripTest {
 
-	private int size;
+    private final int size;
 
-	public SpreadPortRoundtripTest(int size) {
-		this.size = size;
-	}
+    public SpreadPortRoundtripTest(final int size) {
+        this.size = size;
+    }
 
-	@Parameters
-	public static Collection<Object[]> data() {
-		Object[][] data = new Object[][] { { 100 }, { 90000 }, { 110000 },
-				{ 350000 } };
-		return Arrays.asList(data);
-	}
+    @Parameters
+    public static Collection<Object[]> data() {
+        final Object[][] data = new Object[][] { { 100 }, { 90000 },
+                { 110000 }, { 350000 } };
+        return Arrays.asList(data);
+    }
 
-	@Test(timeout = 4000)
-	public void roundtrip() throws Throwable {
+    @Test(timeout = 4000)
+    public void roundtrip() throws Throwable {
 
-		SpreadWrapper outWrapper = new SpreadWrapper();
-		UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
-		inStrategy.addConverter("utf-8-string", new StringConverter());
-		UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
-		outStrategy.addConverter(String.class.getName(), new StringConverter());
-		SpreadPort outPort = new SpreadPort(outWrapper, null, inStrategy,
-				outStrategy);
-		outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-				Ordering.ORDERED, Reliability.RELIABLE));
+        final SpreadWrapper outWrapper = new SpreadWrapper();
+        final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
+        inStrategy.addConverter("utf-8-string", new StringConverter());
+        final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
+        outStrategy.addConverter(String.class.getName(), new StringConverter());
+        final SpreadPort outPort = new SpreadPort(outWrapper, null, inStrategy,
+                outStrategy);
+        outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
+                Ordering.ORDERED, Reliability.RELIABLE));
 
-		final List<Event> receivedEvents = new ArrayList<Event>();
-		SpreadWrapper inWrapper = new SpreadWrapper();
-		SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+        final List<Event> receivedEvents = new ArrayList<Event>();
+        final SpreadWrapper inWrapper = new SpreadWrapper();
+        final SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
 
-			@Override
-			public void handle(Event e) {
-				synchronized (receivedEvents) {
-					receivedEvents.add(e);
-					receivedEvents.notify();
-				}
-			}
+            @Override
+            public void handle(final Event e) {
+                synchronized (receivedEvents) {
+                    receivedEvents.add(e);
+                    receivedEvents.notify();
+                }
+            }
 
-		}, inStrategy, outStrategy);
+        }, inStrategy, outStrategy);
 
-		inPort.activate();
-		outPort.activate();
+        inPort.activate();
+        outPort.activate();
 
-		final Scope scope = new Scope("/a/test/scope");
-		inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
+        final Scope scope = new Scope("/a/test/scope");
+        inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < size; ++i) {
-			builder.append('c');
-		}
+        final StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < this.size; ++i) {
+            builder.append('c');
+        }
 
-		Event event = new Event(scope, String.class, builder.toString());
-		event.setId(new ParticipantId(), 42);
-		event.getMetaData().setUserInfo("foo", "a long string");
-		event.getMetaData().setUserInfo("barbar", "a long string again");
-		event.getMetaData().setUserTime("asdasd", 324234);
-		event.getMetaData().setUserTime("xxx", 42);
-		event.addCause(new EventId(new ParticipantId(), 23434));
-		event.addCause(new EventId(new ParticipantId(), 42));
+        final Event event = new Event(scope, String.class, builder.toString());
+        event.setId(new ParticipantId(), 42);
+        event.getMetaData().setUserInfo("foo", "a long string");
+        event.getMetaData().setUserInfo("barbar", "a long string again");
+        event.getMetaData().setUserTime("asdasd", 324234);
+        event.getMetaData().setUserTime("xxx", 42);
+        event.addCause(new EventId(new ParticipantId(), 23434));
+        event.addCause(new EventId(new ParticipantId(), 42));
 
-		outPort.push(event);
+        outPort.push(event);
 
-		synchronized (receivedEvents) {
-			while (receivedEvents.size() != 1) {
-				receivedEvents.wait();
-			}
+        synchronized (receivedEvents) {
+            while (receivedEvents.size() != 1) {
+                receivedEvents.wait();
+            }
 
-			Event receivedEvent = receivedEvents.get(0);
+            final Event receivedEvent = receivedEvents.get(0);
 
-			// normalize times as they are not important for this test
-			event.getMetaData().setReceiveTime(
-					receivedEvent.getMetaData().getReceiveTime());
+            // normalize times as they are not important for this test
+            event.getMetaData().setReceiveTime(
+                    receivedEvent.getMetaData().getReceiveTime());
 
-			assertEquals(event, receivedEvent);
-		}
+            assertEquals(event, receivedEvent);
+        }
 
-		inPort.deactivate();
-		outPort.deactivate();
+        inPort.deactivate();
+        outPort.deactivate();
 
-	}
+    }
 
 }

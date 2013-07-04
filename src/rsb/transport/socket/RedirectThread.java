@@ -32,12 +32,12 @@ import java.net.Socket;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class RedirectThread extends Thread {
 
-	public RedirectThread(Socket s) {
-		// TODO Auto-generated constructor stub
-	}
+    public RedirectThread(final Socket s) {
+        // TODO Auto-generated constructor stub
+    }
 
 }

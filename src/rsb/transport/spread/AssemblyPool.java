@@ -32,124 +32,134 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.protobuf.ByteString;
-
-
 import rsb.EventId;
 import rsb.ParticipantId;
-import rsb.protocol.NotificationType;
 import rsb.protocol.FragmentedNotificationType;
+import rsb.protocol.NotificationType;
+import rsb.protocol.NotificationType.Notification;
+
+import com.google.protobuf.ByteString;
 
 /**
  * A class that assembles fragmented messages received over spread in form of
  * {@link Notification}s.
- *
+ * 
  * @author jwienke
  */
 public class AssemblyPool {
 
-	/**
-	 * Assembles a fragmented notification.
-	 *
-	 * @author jwienke
-	 */
-	private class Assembly {
+    /**
+     * Assembles a fragmented notification.
+     * 
+     * @author jwienke
+     */
+    private class Assembly {
 
-		private Map<Integer, FragmentedNotificationType.FragmentedNotification> notifications
-		    = new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
-		private int requiredParts = 0;
+        private final Map<Integer, FragmentedNotificationType.FragmentedNotification> notifications = new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
+        private int requiredParts = 0;
 
-		public Assembly(FragmentedNotificationType.FragmentedNotification initialNotification) {
-			assert (initialNotification.getNumDataParts() > 1);
-			notifications.put(initialNotification.getDataPart(),
-					initialNotification);
-			requiredParts = initialNotification.getNumDataParts();
-		}
+        public Assembly(
+                final FragmentedNotificationType.FragmentedNotification initialNotification) {
+            assert (initialNotification.getNumDataParts() > 1);
+            this.notifications.put(initialNotification.getDataPart(),
+                    initialNotification);
+            this.requiredParts = initialNotification.getNumDataParts();
+        }
 
-		public FragmentedNotificationType.FragmentedNotification getInitialFragment() {
-			return notifications.get(0);
-		}
+        public FragmentedNotificationType.FragmentedNotification getInitialFragment() {
+            return this.notifications.get(0);
+        }
 
-		public ByteBuffer add(FragmentedNotificationType.FragmentedNotification notification) {
-			assert !notifications.containsKey(notification.getDataPart());
-			notifications.put(notification.getDataPart(), notification);
+        public ByteBuffer add(
+                final FragmentedNotificationType.FragmentedNotification notification) {
+            assert !this.notifications.containsKey(notification.getDataPart());
+            this.notifications.put(notification.getDataPart(), notification);
 
-			if (notifications.size() == requiredParts) {
+            if (this.notifications.size() == this.requiredParts) {
 
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				for (int part = 0; part < requiredParts; ++part) {
-					assert notifications.containsKey(part);
+                final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                for (int part = 0; part < this.requiredParts; ++part) {
+                    assert this.notifications.containsKey(part);
 
-					ByteString currentData
-					    = notifications.get(part).getNotification().getData();
-					stream.write(currentData.toByteArray(), 0,
-							currentData.size());
+                    final ByteString currentData = this.notifications.get(part)
+                            .getNotification().getData();
+                    stream.write(currentData.toByteArray(), 0,
+                            currentData.size());
 
-				}
-				return ByteBuffer.wrap(stream.toByteArray());
+                }
+                return ByteBuffer.wrap(stream.toByteArray());
 
-			} else {
-				return null;
-			}
+            } else {
+                return null;
+            }
 
-		}
+        }
 
-	}
+    }
 
-	private Map<EventId, Assembly> assemblies = new HashMap<EventId, Assembly>();
+    private final Map<EventId, Assembly> assemblies = new HashMap<EventId, Assembly>();
 
-        public class DataAndNotification {
-		private ByteBuffer		      data;
-		private NotificationType.Notification notification;
+    /**
+     * Collects the raw data from the wire as well as a notification causing
+     * them.
+     */
+    public class DataAndNotification {
 
-		public DataAndNotification(ByteBuffer		         data,
-					   NotificationType.Notification notification) {
-			this.data	  = data;
-			this.notification = notification;
-		}
+        private final ByteBuffer data;
+        private final NotificationType.Notification notification;
 
-		public ByteBuffer getData() {
-			return this.data;
-		}
+        public DataAndNotification(final ByteBuffer data,
+                final NotificationType.Notification notification) {
+            this.data = data;
+            this.notification = notification;
+        }
 
-		public NotificationType.Notification getNotification() {
-			return this.notification;
-		}
-        };
+        public ByteBuffer getData() {
+            return this.data;
+        }
 
-	/**
-	 * Adds a new message to the assembly pool and joins the data of all
-	 * notifications of the same event, if all fragments were received.
-	 *
-	 * @param notification
-	 *            newly received notification
-	 * @return joined data or <code>null</code> if not event was completed with
-	 *         this notification
-	 */
-	public DataAndNotification insert(FragmentedNotificationType.FragmentedNotification notification) {
+        public NotificationType.Notification getNotification() {
+            return this.notification;
+        }
+    };
 
-		assert notification.getNumDataParts() > 0;
-		if (notification.getNumDataParts() == 1) {
-		        return new DataAndNotification(ByteBuffer.wrap(notification.getNotification().getData().toByteArray()),
-						       notification.getNotification());
-		}
+    /**
+     * Adds a new message to the assembly pool and joins the data of all
+     * notifications of the same event, if all fragments were received.
+     * 
+     * @param notification
+     *            newly received notification
+     * @return joined data or <code>null</code> if not event was completed with
+     *         this notification
+     */
+    public DataAndNotification insert(
+            final FragmentedNotificationType.FragmentedNotification notification) {
 
-		EventId id = new EventId(new ParticipantId(notification.getNotification().getEventId().getSenderId().toByteArray()),
-					 notification.getNotification().getEventId().getSequenceNumber());
-		if (!assemblies.containsKey(id)) {
-			assemblies.put(id, new Assembly(notification));
-			return null;
-		}
+        assert notification.getNumDataParts() > 0;
+        if (notification.getNumDataParts() == 1) {
+            return new DataAndNotification(ByteBuffer.wrap(notification
+                    .getNotification().getData().toByteArray()),
+                    notification.getNotification());
+        }
 
-		Assembly assembly = assemblies.get(id);
-		assert assembly != null;
-		ByteBuffer joinedData = assembly.add(notification);
-		if (joinedData != null) {
-			assemblies.remove(id);
-			return new DataAndNotification(joinedData, assembly.getInitialFragment().getNotification());
-		} else {
-			return null;
-		}
-	}
+        final EventId id = new EventId(new ParticipantId(notification
+                .getNotification().getEventId().getSenderId().toByteArray()),
+                notification.getNotification().getEventId().getSequenceNumber());
+        if (!this.assemblies.containsKey(id)) {
+            this.assemblies.put(id, new Assembly(notification));
+            return null;
+        }
+
+        final Assembly assembly = this.assemblies.get(id);
+        assert assembly != null;
+        final ByteBuffer joinedData = assembly.add(notification);
+        if (joinedData != null) {
+            this.assemblies.remove(id);
+            return new DataAndNotification(joinedData, assembly
+                    .getInitialFragment().getNotification());
+        } else {
+            return null;
+        }
+    }
 
 }

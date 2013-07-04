@@ -43,178 +43,187 @@ import rsb.protocol.NotificationType.Notification;
 import rsb.transport.EventBuilder;
 
 /**
- * Instances of this class implement connections to a socket-based
- * bus.
- *
+ * Instances of this class implement connections to a socket-based bus.
+ * 
  * The basic operations provided by this class are receiving an event
- * notifications by calling receiveNotification and submitting an
- * event to the bus by calling sendNotification. This class implements
- * the fundamental RSB protocol for socket connections, e.g., the
- * basic handshaking and the encoding/decoding of data packages for
- * event notifications.
- *
- * @see <a href="http://docs.cor-lab.de/rsb-manual/trunk/html/specification-socket.html">RSB Specification for Socket Transport</a>
- *
+ * notifications by calling receiveNotification and submitting an event to the
+ * bus by calling sendNotification. This class implements the fundamental RSB
+ * protocol for socket connections, e.g., the basic handshaking and the
+ * encoding/decoding of data packages for event notifications.
+ * 
+ * @see <a
+ *      href="http://docs.cor-lab.de/rsb-manual/trunk/html/specification-socket.html">RSB
+ *      Specification for Socket Transport</a>
+ * 
  * @author swrede
- *
  */
 public class BusConnection implements Runnable {
 
-	private static Logger log = Logger.getLogger(BusConnection.class.getName());
+    private static Logger log = Logger.getLogger(BusConnection.class.getName());
 
-	protected static final int HANDSHAKE        = 0x00000000;
+    protected static final int HANDSHAKE = 0x00000000;
 
-	Socket socket;
-	ReadableByteChannel reader;
-	WritableByteChannel writer;
-	InetAddress address;
-	int port;
-	boolean isServer = false;
-	boolean isShutdown = false;
+    Socket socket;
+    ReadableByteChannel reader;
+    WritableByteChannel writer;
+    InetAddress address;
+    int port;
+    boolean isServer = false;
+    boolean isShutdown = false;
 
-	protected BusConnection(InetAddress addr, int port, boolean isServer) {
-		address = addr;
-		this.port = port;
-		this.isServer = isServer;
-	}
+    protected BusConnection(final InetAddress addr, final int port,
+            final boolean isServer) {
+        this.address = addr;
+        this.port = port;
+        this.isServer = isServer;
+    }
 
-	protected BusConnection(InetAddress addr, int port) {
-		address = addr;
-		this.port = port;
-	}
+    protected BusConnection(final InetAddress addr, final int port) {
+        this.address = addr;
+        this.port = port;
+    }
 
-	public BusConnection(Socket socket, boolean isServer) {
-		this.socket = socket;
-		this.port = socket.getLocalPort();
-		this.address = socket.getInetAddress();
-		this.isServer = isServer;
-	}
+    public BusConnection(final Socket socket, final boolean isServer) {
+        this.socket = socket;
+        this.port = socket.getLocalPort();
+        this.address = socket.getInetAddress();
+        this.isServer = isServer;
+    }
 
-	public void activate() throws IOException, RSBException {
-		if (socket == null && !isServer) {
-			socket = new Socket(address,port);
-		} else {
-			throw new RSBException("Invalid call to activate. Socket equals null and server mode requested.");
-		}
-		reader = Channels.newChannel(socket.getInputStream());
-		writer = Channels.newChannel(socket.getOutputStream());
-	}
+    public void activate() throws IOException, RSBException {
+        if (this.socket == null && !this.isServer) {
+            this.socket = new Socket(this.address, this.port);
+        } else {
+            throw new RSBException(
+                    "Invalid call to activate. Socket equals null and server mode requested.");
+        }
+        this.reader = Channels.newChannel(this.socket.getInputStream());
+        this.writer = Channels.newChannel(this.socket.getOutputStream());
+    }
 
-	/**
-	 * Perform simple handshake as specified in RSB socket protocol.
-	 *
-	 * @throws RSBException
-	 */
-	public void handshake() throws RSBException {
-		if (isServer) {
-			// TODO implement server handshake protocol
-		} else {
-			ByteBuffer buf_handshake = ByteBuffer.allocateDirect(4);
-			buf_handshake.asIntBuffer().put(HANDSHAKE);
+    /**
+     * Perform simple handshake as specified in RSB socket protocol.
+     * 
+     * @throws RSBException
+     */
+    public void handshake() throws RSBException {
+        if (this.isServer) {
+            // TODO implement server handshake protocol
+        } else {
+            final ByteBuffer buf_handshake = ByteBuffer.allocateDirect(4);
+            buf_handshake.asIntBuffer().put(HANDSHAKE);
 
-			System.out.print("Request:" + buf_handshake.getInt());
-			try {
-				writer.write(buf_handshake);
-				// read
-				ByteBuffer bb = ByteBuffer.allocateDirect(4);
-				bb.order(ByteOrder.LITTLE_ENDIAN);
-				System.out.println("Bytes read: " + reader.read(bb));
-				// check if reply = 0x00000000;
-				bb.rewind();
-				if (HANDSHAKE==bb.getInt()) {
-					log.info("RSB Handshake successfull!");
-				} else {
-					throw new RSBException("RSB Handshake failed in SocketTransport at " + address.toString() + ":" + port);
-				}
-			} catch (IOException e) {
-				throw new RSBException(e);
-			} // write(HANDSHAKE);			
-		}
-	}	
-	
-	/**
-	 * Safely close I/O streams and sockets.
-	 *
-	 * @throws RSBException
-	 */
-	public void deactivate() {
-		this.isShutdown = true;
-		try {
-			if (writer!=null && writer.isOpen()) writer.close();
-			if (reader!=null && reader.isOpen()) reader.close();
-			if (socket!=null && socket.isConnected()) socket.close();
-		} catch (IOException e) {
-			log.warning("Exception during deactivation of BusConnection: " + e.getMessage());
-		}
-	}
+            System.out.print("Request:" + buf_handshake.getInt());
+            try {
+                this.writer.write(buf_handshake);
+                // read
+                final ByteBuffer bb = ByteBuffer.allocateDirect(4);
+                bb.order(ByteOrder.LITTLE_ENDIAN);
+                System.out.println("Bytes read: " + this.reader.read(bb));
+                // check if reply = 0x00000000;
+                bb.rewind();
+                if (HANDSHAKE == bb.getInt()) {
+                    log.info("RSB Handshake successfull!");
+                } else {
+                    throw new RSBException(
+                            "RSB Handshake failed in SocketTransport at "
+                                    + this.address.toString() + ":" + this.port);
+                }
+            } catch (final IOException e) {
+                throw new RSBException(e);
+            } // write(HANDSHAKE);
+        }
+    }
 
-	/**
-	 * Extract length of next notification blob.
-	 *
-	 * @return Number of bytes
-	 * @throws IOException
-	 */
-	protected int readLength() throws IOException {
-		ByteBuffer bb = ByteBuffer.allocateDirect(4);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		System.out.println("Bytes read: " + reader.read(bb));
-		bb.rewind();
-		return bb.getInt();
-	}
+    /**
+     * Safely close I/O streams and sockets.
+     */
+    public void deactivate() {
+        this.isShutdown = true;
+        try {
+            if (this.writer != null && this.writer.isOpen()) {
+                this.writer.close();
+            }
+            if (this.reader != null && this.reader.isOpen()) {
+                this.reader.close();
+            }
+            if (this.socket != null && this.socket.isConnected()) {
+                this.socket.close();
+            }
+        } catch (final IOException e) {
+            log.warning("Exception during deactivation of BusConnection: "
+                    + e.getMessage());
+        }
+    }
 
-	/**
-	 * Read a single Socket transport packet (length + notification)
-	 * and decode it into an RSB notification object.
-	 *
-	 * @return Notification object
-	 * @throws IOException
-	 */
-	public Notification readNotification() throws IOException {
-		// get size
-		int length = readLength();
-		byte[] buf = new byte[length];
-		ByteBuffer buf_notification = ByteBuffer.wrap(buf);
-		// Why does the following not work?!?
-		// ByteBuffer buf_notification = ByteBuffer.allocateDirect(length);
-		buf_notification.order(ByteOrder.LITTLE_ENDIAN);
-		System.out.println("Bytes to be read: " + buf_notification.remaining());
-		Notification n = null;
-		try {
-			System.out.println("Bytes read: " + reader.read(buf_notification));
-			//saveRawNotification(buf_notification);
-			buf_notification.rewind();
-			n = Notification.parseFrom(buf);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return n;
-	}
+    /**
+     * Extract length of next notification blob.
+     * 
+     * @return Number of bytes
+     * @throws IOException
+     */
+    protected int readLength() throws IOException {
+        final ByteBuffer bb = ByteBuffer.allocateDirect(4);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        System.out.println("Bytes read: " + this.reader.read(bb));
+        bb.rewind();
+        return bb.getInt();
+    }
 
-	public void run() {
-		// TODO implement reading from Socket
-		// process packet
-		int i = 0;
-		while (!isShutdown) {
-			i++;
-			System.out.println("Waiting for Notification #" + i);
-			Notification n;
-			try {
-				n = this.readNotification();
-				// convert to Event
-				Event e = EventBuilder.fromNotification(n);
-	
-				System.out.println("Scope: " + e.getScope());
-				System.out.println("Id: " + e.getId());
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}			
-		}		
-	}	
-	
-	public void sendNotification(Notification notification) {
-		// TODO implement sending of notification to socket
-	}
+    /**
+     * Read a single Socket transport packet (length + notification) and decode
+     * it into an RSB notification object.
+     * 
+     * @return Notification object
+     * @throws IOException
+     */
+    public Notification readNotification() throws IOException {
+        // get size
+        final int length = this.readLength();
+        final byte[] buf = new byte[length];
+        final ByteBuffer buf_notification = ByteBuffer.wrap(buf);
+        // Why does the following not work?!?
+        // ByteBuffer buf_notification = ByteBuffer.allocateDirect(length);
+        buf_notification.order(ByteOrder.LITTLE_ENDIAN);
+        System.out.println("Bytes to be read: " + buf_notification.remaining());
+        Notification n = null;
+        try {
+            System.out.println("Bytes read: "
+                    + this.reader.read(buf_notification));
+            // saveRawNotification(buf_notification);
+            buf_notification.rewind();
+            n = Notification.parseFrom(buf);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        return n;
+    }
 
+    @Override
+    public void run() {
+        // TODO implement reading from Socket
+        // process packet
+        int i = 0;
+        while (!this.isShutdown) {
+            i++;
+            System.out.println("Waiting for Notification #" + i);
+            Notification n;
+            try {
+                n = this.readNotification();
+                // convert to Event
+                final Event e = EventBuilder.fromNotification(n);
+
+                System.out.println("Scope: " + e.getScope());
+                System.out.println("Id: " + e.getId());
+            } catch (final IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void sendNotification(final Notification notification) {
+        // TODO implement sending of notification to socket
+    }
 
 }

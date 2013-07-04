@@ -32,22 +32,24 @@ package rsb.converter;
  * converter has a wire type describing the actual message that is written on
  * the wire and a data type that indicates which data it can serialize on the
  * wire.
- *
+ * 
  * @author swrede
+ * @param <WireType>
+ *            the kind of wire registered converters can deal with
  */
 public interface ConverterRepository<WireType> {
 
-	/**
-	 * This method queries the converter map for seralizable data types and
-	 * returns an UnambiguousConverterMap for the chosen <WireType> to the
-	 * caller.
-	 *
-	 * @return ConverterSelectionStrategy object for serialization
-	 */
-	public abstract ConverterSelectionStrategy<WireType> getConvertersForSerialization();
+    /**
+     * This method queries the converter map for seralizable data types and
+     * returns an UnambiguousConverterMap for the chosen <WireType> to the
+     * caller.
+     * 
+     * @return ConverterSelectionStrategy object for serialization
+     */
+    public abstract ConverterSelectionStrategy<WireType> getConvertersForSerialization();
 
-	public abstract ConverterSelectionStrategy<WireType> getConvertersForDeserialization();
+    public abstract ConverterSelectionStrategy<WireType> getConvertersForDeserialization();
 
-	public abstract void addConverter(Converter<WireType> converter);
+    public abstract void addConverter(Converter<WireType> converter);
 
 }

@@ -27,97 +27,92 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class ParticipantIdTest {
 
-	/**
-	 * Test method for {@link rsb.EventId#EventId()}.
-	 */
-	@Test
-	public void testEventId() {
-		new ParticipantId();
-	}
+    @SuppressWarnings("unused")
+    @Test
+    public void testEventId() {
+        new ParticipantId();
+    }
 
-	/**
-	 * Test method for {@link rsb.EventId#EventId(java.lang.String)}.
-	 */
-	@Test
-	public void testEventIdString() {
-		ParticipantId id = new ParticipantId();
-		String s = id.toString();
-		ParticipantId id2 = new ParticipantId(s);
-		assertTrue(id.equals(id2));
-	}
+    @Test
+    public void testEventIdString() {
+        final ParticipantId id = new ParticipantId();
+        final String s = id.toString();
+        final ParticipantId id2 = new ParticipantId(s);
+        assertTrue(id.equals(id2));
+    }
 
-	/**
-	 * Test method for {@link rsb.EventId#toString()}.
-	 */
-	@Test
-	public void testToString() {
-		ParticipantId id = new ParticipantId();
-		String s = id.toString();
-		assertTrue(s.length() > 0);
-	}
+    @Test
+    public void testToString() {
+        final ParticipantId id = new ParticipantId();
+        final String s = id.toString();
+        assertTrue(s.length() > 0);
+    }
 
-	@Test
-	public void testToByteArray() {
-		ParticipantId id = new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
+    @Test
+    public void testToByteArray() {
+        final ParticipantId id = new ParticipantId(
+                "2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
 
-		byte[] data = new byte[16];
+        final byte[] data = new byte[16];
 
-		data[0] = (byte) 42;
-		data[1] = (byte) 75;
-		data[2] = (byte) 137;
-		data[3] = (byte) 223;
-		data[4] = (byte) 213;
-		data[5] = (byte) 162;
-		data[6] = (byte) 70;
-		data[7] = (byte) 113;
-		data[8] = (byte) 175;
-		data[9] = (byte) 46;
-		data[10] = (byte) 126;
-		data[11] = (byte) 127;
-		data[12] = (byte) 127;
-		data[13] = (byte) 248;
-		data[14] = (byte) 150;
-		data[15] = (byte) 29;
+        data[0] = (byte) 42;
+        data[1] = (byte) 75;
+        data[2] = (byte) 137;
+        data[3] = (byte) 223;
+        data[4] = (byte) 213;
+        data[5] = (byte) 162;
+        data[6] = (byte) 70;
+        data[7] = (byte) 113;
+        data[8] = (byte) 175;
+        data[9] = (byte) 46;
+        data[10] = (byte) 126;
+        data[11] = (byte) 127;
+        data[12] = (byte) 127;
+        data[13] = (byte) 248;
+        data[14] = (byte) 150;
+        data[15] = (byte) 29;
 
-		assertArrayEquals(data, id.toByteArray());
+        assertArrayEquals(data, id.toByteArray());
 
-	}
+    }
 
-	@Test
-	public void testFromByteArray() {
+    @Test
+    public void testFromByteArray() {
 
-		byte[] data = new byte[16];
+        final byte[] data = new byte[16];
 
-		data[0] = (byte) 42;
-		data[1] = (byte) 75;
-		data[2] = (byte) 137;
-		data[3] = (byte) 223;
-		data[4] = (byte) 213;
-		data[5] = (byte) 162;
-		data[6] = (byte) 70;
-		data[7] = (byte) 113;
-		data[8] = (byte) 175;
-		data[9] = (byte) 46;
-		data[10] = (byte) 126;
-		data[11] = (byte) 127;
-		data[12] = (byte) 127;
-		data[13] = (byte) 248;
-		data[14] = (byte) 150;
-		data[15] = (byte) 29;
+        data[0] = (byte) 42;
+        data[1] = (byte) 75;
+        data[2] = (byte) 137;
+        data[3] = (byte) 223;
+        data[4] = (byte) 213;
+        data[5] = (byte) 162;
+        data[6] = (byte) 70;
+        data[7] = (byte) 113;
+        data[8] = (byte) 175;
+        data[9] = (byte) 46;
+        data[10] = (byte) 126;
+        data[11] = (byte) 127;
+        data[12] = (byte) 127;
+        data[13] = (byte) 248;
+        data[14] = (byte) 150;
+        data[15] = (byte) 29;
 
-		assertEquals(new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"), new ParticipantId(
-				data));
+        assertEquals(new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"),
+                new ParticipantId(data));
 
-	}
+    }
 
 }

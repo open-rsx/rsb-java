@@ -36,8 +36,8 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import rsb.ParticipantId;
-import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.EventIdType.EventId;
+import rsb.protocol.NotificationType.Notification;
 
 import com.google.protobuf.ByteString;
 
@@ -46,56 +46,43 @@ import com.google.protobuf.ByteString;
  */
 public class ProtocolBufferConverterTest {
 
-	final static Logger LOG = Logger
-			.getLogger(ProtocolBufferConverterTest.class.getName());
+    final static Logger LOG = Logger
+            .getLogger(ProtocolBufferConverterTest.class.getName());
 
-	WireContents<ByteBuffer> buffer;
-	ProtocolBufferConverter<Notification> converter = new ProtocolBufferConverter<Notification>(
-			Notification.getDefaultInstance());
+    WireContents<ByteBuffer> buffer;
+    ProtocolBufferConverter<Notification> converter = new ProtocolBufferConverter<Notification>(
+            Notification.getDefaultInstance());
 
-	/**
-	 * Test method for
-	 * {@link rsb.converter.ProtocolBufferConverter#serialize(java.lang.String, java.lang.Object)}
-	 * .
-	 *
-	 * @throws ConversionException
-	 */
-	public void testSerialize() throws ConversionException {
-		Notification.Builder notificationBuilder = Notification.newBuilder();
-		// notification metadata
-		EventId.Builder eventIdBuilder = EventId.newBuilder();
-		eventIdBuilder.setSequenceNumber(23);
-		eventIdBuilder.setSenderId(ByteString.copyFrom(new ParticipantId()
-				.toByteArray()));
-		notificationBuilder.setEventId(eventIdBuilder);
-		notificationBuilder.setWireSchema(ByteString
-				.copyFromUtf8("rsb.notification"));
-		notificationBuilder.setScope(ByteString.copyFromUtf8("rsb"));
+    public void testSerialize() throws ConversionException {
+        final Notification.Builder notificationBuilder = Notification
+                .newBuilder();
+        // notification metadata
+        final EventId.Builder eventIdBuilder = EventId.newBuilder();
+        eventIdBuilder.setSequenceNumber(23);
+        eventIdBuilder.setSenderId(ByteString.copyFrom(new ParticipantId()
+                .toByteArray()));
+        notificationBuilder.setEventId(eventIdBuilder);
+        notificationBuilder.setWireSchema(ByteString
+                .copyFromUtf8("rsb.notification"));
+        notificationBuilder.setScope(ByteString.copyFromUtf8("rsb"));
 
-		buffer = converter.serialize(Notification.class,
-				notificationBuilder.build());
-		assertNotNull(buffer);
-	}
+        this.buffer = this.converter.serialize(Notification.class,
+                notificationBuilder.build());
+        assertNotNull(this.buffer);
+    }
 
-	/**
-	 * Test method for
-	 * {@link rsb.converter.ProtocolBufferConverter#deserialize(java.lang.String, java.nio.ByteBuffer)}
-	 * .
-	 *
-	 * @throws ConversionException
-	 */
-	public void testDeserialize() throws ConversionException {
-		assertNotNull(buffer);
-		UserData<Notification> result = converter.deserialize(
-				".rsb.protocol.Notification", buffer.getSerialization());
-		Notification n = (Notification) result.getData();
-		assertEquals(23, n.getEventId().getSequenceNumber());
-	}
+    public void testDeserialize() throws ConversionException {
+        assertNotNull(this.buffer);
+        final UserData<Notification> result = this.converter.deserialize(
+                ".rsb.protocol.Notification", this.buffer.getSerialization());
+        final Notification n = (Notification) result.getData();
+        assertEquals(23, n.getEventId().getSequenceNumber());
+    }
 
-	@Test
-	public void testRoundtrip() throws ConversionException {
-		testSerialize();
-		testDeserialize();
-	}
+    @Test
+    public void testRoundtrip() throws ConversionException {
+        this.testSerialize();
+        this.testDeserialize();
+    }
 
 }

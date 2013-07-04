@@ -30,16 +30,17 @@ package rsb;
 /**
  * An interface for handlers that are interested in whole {@link Event}
  * instances.
- *
+ * 
  * @author swrede
  * @see Event
  */
 public abstract class AbstractEventHandler implements Handler {
 
-	public void internalNotify(final Event event) {
-		handleEvent(event);
-	};
+    @Override
+    public void internalNotify(final Event event) {
+        this.handleEvent(event);
+    };
 
-	public abstract void handleEvent(Event event);
+    public abstract void handleEvent(Event event);
 
 }

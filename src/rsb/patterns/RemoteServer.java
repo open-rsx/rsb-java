@@ -60,7 +60,7 @@ public class RemoteServer extends Server {
      */
     public static final double DEFAULT_TIMEOUT = 25.0;
 
-    private double timeout;
+    private final double timeout;
 
     /**
      * Create a new RemoteServer object that provides its methods under the
@@ -73,7 +73,7 @@ public class RemoteServer extends Server {
      *            The amount of seconds methods calls should wait for their
      *            replies to arrive before failing.
      */
-    public RemoteServer(final Scope scope, double timeout) {
+    public RemoteServer(final Scope scope, final double timeout) {
         super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
         this.timeout = timeout;
     }
@@ -89,7 +89,7 @@ public class RemoteServer extends Server {
      *            The amount of seconds methods calls should wait for their
      *            replies to arrive before failing.
      */
-    public RemoteServer(final String scope, double timeout) {
+    public RemoteServer(final String scope, final double timeout) {
         super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
         this.timeout = timeout;
     }
@@ -126,7 +126,7 @@ public class RemoteServer extends Server {
      * @return timeout in seconds
      */
     public double getTimeout() {
-        return timeout;
+        return this.timeout;
     }
 
     /**
@@ -144,10 +144,10 @@ public class RemoteServer extends Server {
      */
     public Future<Event> callAsync(final String name, final Event event)
             throws RSBException {
-        Future<Event> future = new Future<Event>();
-        EventFuturePreparator futurePreparator = new EventFuturePreparator(
+        final Future<Event> future = new Future<Event>();
+        final EventFuturePreparator futurePreparator = new EventFuturePreparator(
                 future);
-        callAsyncEvent(name, event, futurePreparator);
+        this.callAsyncEvent(name, event, futurePreparator);
         return future;
     }
 
@@ -161,11 +161,11 @@ public class RemoteServer extends Server {
      * @throws RSBException
      *             communication errors or server-side errors
      */
-    public Future<Event> callAsync(String name) throws RSBException {
-        Event event = new Event();
+    public Future<Event> callAsync(final String name) throws RSBException {
+        final Event event = new Event();
         event.setData(null);
         event.setType(Void.class);
-        return callAsync(name, new Event(Void.class, null));
+        return this.callAsync(name, new Event(Void.class, null));
     }
 
     /**
@@ -182,10 +182,10 @@ public class RemoteServer extends Server {
      */
     public <ReplyType, RequestType> Future<ReplyType> callAsync(
             final String name, final RequestType data) throws RSBException {
-        Future<ReplyType> future = new Future<ReplyType>();
-        DataFuturePreparator<ReplyType> resultPreparator = new DataFuturePreparator<ReplyType>(
+        final Future<ReplyType> future = new Future<ReplyType>();
+        final DataFuturePreparator<ReplyType> resultPreparator = new DataFuturePreparator<ReplyType>(
                 future);
-        callAsyncData(name, data, resultPreparator);
+        this.callAsyncData(name, data, resultPreparator);
         return future;
     }
 
@@ -210,7 +210,7 @@ public class RemoteServer extends Server {
      */
     public Event call(final String name, final Event event)
             throws RSBException, ExecutionException, TimeoutException {
-        return call(name, event, getTimeout());
+        return this.call(name, event, this.getTimeout());
     }
 
     /**
@@ -236,10 +236,10 @@ public class RemoteServer extends Server {
      */
     public Event call(final String name, final Event event, final double timeout)
             throws RSBException, ExecutionException, TimeoutException {
-        Future<Event> future = new Future<Event>();
-        EventFuturePreparator futurePreparator = new EventFuturePreparator(
+        final Future<Event> future = new Future<Event>();
+        final EventFuturePreparator futurePreparator = new EventFuturePreparator(
                 future);
-        callAsyncEvent(name, event, futurePreparator);
+        this.callAsyncEvent(name, event, futurePreparator);
         return future
                 .get((long) (timeout * 1000000000.0), TimeUnit.NANOSECONDS);
     }
@@ -297,7 +297,7 @@ public class RemoteServer extends Server {
      * 
      * @param name
      *            name of the method to call
-     * @param event
+     * @param data
      *            request data
      * @return An event with the resulting data
      * @throws RSBException
@@ -312,7 +312,7 @@ public class RemoteServer extends Server {
     public <ReplyType, RequestType> ReplyType call(final String name,
             final RequestType data) throws RSBException, ExecutionException,
             TimeoutException {
-        return call(name, data, getTimeout());
+        return this.call(name, data, this.getTimeout());
     }
 
     /**
@@ -322,7 +322,7 @@ public class RemoteServer extends Server {
      * 
      * @param name
      *            name of the method to call
-     * @param event
+     * @param data
      *            request data
      * @param timeout
      *            seconds to wait for the reply
@@ -339,10 +339,10 @@ public class RemoteServer extends Server {
     public <ReplyType, RequestType> ReplyType call(final String name,
             final RequestType data, final double timeout) throws RSBException,
             ExecutionException, TimeoutException {
-        Future<ReplyType> future = new Future<ReplyType>();
-        DataFuturePreparator<ReplyType> resultPreparator = new DataFuturePreparator<ReplyType>(
+        final Future<ReplyType> future = new Future<ReplyType>();
+        final DataFuturePreparator<ReplyType> resultPreparator = new DataFuturePreparator<ReplyType>(
                 future);
-        callAsyncData(name, data, resultPreparator);
+        this.callAsyncData(name, data, resultPreparator);
         return future
                 .get((long) (timeout * 1000000000.0), TimeUnit.NANOSECONDS);
     }
@@ -354,8 +354,8 @@ public class RemoteServer extends Server {
         }
 
         @Override
-        public void result(Event resultEvent) {
-            Future<Event> future = getFuture();
+        public void result(final Event resultEvent) {
+            final Future<Event> future = this.getFuture();
             if (future != null) {
                 future.complete(resultEvent);
             }
@@ -372,8 +372,8 @@ public class RemoteServer extends Server {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void result(Event resultEvent) {
-            Future<DataType> future = getFuture();
+        public void result(final Event resultEvent) {
+            final Future<DataType> future = this.getFuture();
             if (future != null) {
                 future.complete((DataType) resultEvent.getData());
             }
@@ -385,18 +385,18 @@ public class RemoteServer extends Server {
             final FuturePreparator<?> resultPreparator) throws RSBException {
         RemoteMethod method = null;
         // get method, either new or cached
-        if (!methods.containsKey(name)) {
+        if (!this.methods.containsKey(name)) {
             try {
-                method = addMethod(name);
-            } catch (InitializeException exception) {
+                method = this.addMethod(name);
+            } catch (final InitializeException exception) {
                 LOG.warning("Exception during method activation: "
                         + exception.getMessage() + " Re-throwing it.");
                 throw new RSBException(exception);
             }
         } else {
             try {
-                method = (RemoteMethod) methods.get(name);
-            } catch (ClassCastException exception) {
+                method = (RemoteMethod) this.methods.get(name);
+            } catch (final ClassCastException exception) {
                 LOG.warning("Exception during method activation: "
                         + exception.getMessage() + " Re-throwing it.");
                 throw new RSBException(exception);
@@ -406,9 +406,9 @@ public class RemoteServer extends Server {
     }
 
     private <RequestType> void callAsyncData(final String name,
-            final RequestType requestData, FuturePreparator<?> resultPreparator)
-            throws RSBException {
-        Event request = new Event();
+            final RequestType requestData,
+            final FuturePreparator<?> resultPreparator) throws RSBException {
+        final Event request = new Event();
         // null needs to be specifically handled
         if (requestData != null) {
             request.setType(requestData.getClass());
@@ -416,15 +416,15 @@ public class RemoteServer extends Server {
             request.setType(Void.class);
         }
         request.setData(requestData);
-        callAsyncEvent(name, request, resultPreparator);
+        this.callAsyncEvent(name, request, resultPreparator);
     }
 
     protected RemoteMethod addMethod(final String name)
             throws InitializeException {
         LOG.fine("Registering new method " + name);
 
-        RemoteMethod method = new RemoteMethod(this, name);
-        methods.put(name, method);
+        final RemoteMethod method = new RemoteMethod(this, name);
+        this.methods.put(name, method);
 
         if (this.isActive()) {
             method.activate();

@@ -28,10 +28,10 @@
 package rsb;
 
 /**
- *  A class describing the configuration of Participant instances.
- *
+ * A class describing the configuration of Participant instances.
+ * 
  * @author swrede
- *
+ * 
  */
 public class ParticipantConfig {
 

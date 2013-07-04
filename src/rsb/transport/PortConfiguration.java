@@ -28,14 +28,14 @@
 package rsb.transport;
 
 /**
- * Minimal domain object to pass port configuration
- * to Router objects from Pattern objects
- *
+ * Minimal domain object to pass port configuration to Router objects from
+ * Pattern objects
+ * 
  * @author swrede
- *
+ * 
  */
 public enum PortConfiguration {
 
-	IN, INOUT, OUT, NONE;
+    IN, INOUT, OUT, NONE;
 
 }

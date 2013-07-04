@@ -29,12 +29,10 @@ package rsb.filter;
 
 /**
  * @author swrede
- *
+ * 
  */
 public enum FilterAction {
 
-	ADD,
-	REMOVE,
-	UPDATE
+    ADD, REMOVE, UPDATE
 
 }

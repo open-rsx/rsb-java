@@ -27,7 +27,7 @@
  */
 package rsb.transport.socket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -38,40 +38,48 @@ import rsb.protocol.NotificationType.Notification;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class BusTest {
 
-	/**
-	 * Test method for {@link rsb.transport.socket.Bus#handleOutgoing(rsb.protocol.NotificationType.Notification)}.
-	 * @throws UnknownHostException
-	 */
-	@Test
-	public void testHandleOutgoing() throws UnknownHostException {
-		Bus bus = new BusClient(InetAddress.getLocalHost(), 55555);
-		BusConnection con = new BusConnection(InetAddress.getLocalHost(), 55555);
-		bus.addConnection(con);
-		bus.addConnection(con);
-		assertTrue(bus.connections.size()==2);
-		Notification n = Notification.getDefaultInstance();
-		bus.handleOutgoing(n);
-		bus.removeConnection(con);
-		assertTrue(bus.connections.size()==1);
-	}
+    /**
+     * Test method for
+     * {@link rsb.transport.socket.Bus#handleOutgoing(rsb.protocol.NotificationType.Notification)}
+     * .
+     * 
+     * @throws UnknownHostException
+     */
+    @Test
+    public void testHandleOutgoing() throws UnknownHostException {
+        final Bus bus = new BusClient(InetAddress.getLocalHost(), 55555);
+        final BusConnection con = new BusConnection(InetAddress.getLocalHost(),
+                55555);
+        bus.addConnection(con);
+        bus.addConnection(con);
+        assertTrue(bus.connections.size() == 2);
+        final Notification n = Notification.getDefaultInstance();
+        bus.handleOutgoing(n);
+        bus.removeConnection(con);
+        assertTrue(bus.connections.size() == 1);
+    }
 
-	/**
-	 * Test method for {@link rsb.transport.socket.Bus#addConnection(rsb.transport.socket.BusConnection)}.
-	 * @throws UnknownHostException
-	 */
-	@Test
-	public void testAddandRemoveConnection() throws UnknownHostException {
-		Bus bus = new BusClient(InetAddress.getLocalHost(), 55555);
-		assertTrue(bus.connections.isEmpty());
-		BusConnection con = new BusConnection(InetAddress.getLocalHost(), 55555);
-		bus.addConnection(con);
-		assertTrue(bus.connections.size()==1);
-		bus.removeConnection(con);
-		assertTrue(bus.connections.isEmpty());
-	}
+    /**
+     * Test method for
+     * {@link rsb.transport.socket.Bus#addConnection(rsb.transport.socket.BusConnection)}
+     * .
+     * 
+     * @throws UnknownHostException
+     */
+    @Test
+    public void testAddandRemoveConnection() throws UnknownHostException {
+        final Bus bus = new BusClient(InetAddress.getLocalHost(), 55555);
+        assertTrue(bus.connections.isEmpty());
+        final BusConnection con = new BusConnection(InetAddress.getLocalHost(),
+                55555);
+        bus.addConnection(con);
+        assertTrue(bus.connections.size() == 1);
+        bus.removeConnection(con);
+        assertTrue(bus.connections.isEmpty());
+    }
 
 }

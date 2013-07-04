@@ -34,27 +34,28 @@ import java.util.Map;
  * @author swrede
  * @author jmoringe
  * @param <WireType>
- *
+ * 
  */
 public class UnambiguousConverterMap<WireType> implements
-		ConverterSelectionStrategy<WireType> {
+        ConverterSelectionStrategy<WireType> {
 
-	Map<String,Converter<WireType> > converters = new HashMap<String,Converter<WireType> >();
+    Map<String, Converter<WireType>> converters = new HashMap<String, Converter<WireType>>();
 
-	@Override
-	public Converter<WireType> getConverter(String key)
-			throws NoSuchConverterException {
-		if (converters.containsKey(key)) {
-			return converters.get(key);
-		}
-		throw new NoSuchConverterException("No converter with key " + key + " registered in ConverterMap");
-	}
+    @Override
+    public Converter<WireType> getConverter(final String key)
+            throws NoSuchConverterException {
+        if (this.converters.containsKey(key)) {
+            return this.converters.get(key);
+        }
+        throw new NoSuchConverterException("No converter with key " + key
+                + " registered in ConverterMap");
+    }
 
-	public void addConverter(String key, Converter<WireType> c) {
-		if (converters.containsKey(key)) {
-			throw new IllegalArgumentException();
-		}
-		converters.put(key, c);
-	}
+    public void addConverter(final String key, final Converter<WireType> c) {
+        if (this.converters.containsKey(key)) {
+            throw new IllegalArgumentException();
+        }
+        this.converters.put(key, c);
+    }
 
 }

@@ -29,39 +29,40 @@
 // mark-start::body
 package tutorial.protobuf;
 
-import com.google.protobuf.ByteString;
-
 import rsb.Factory;
 import rsb.Informer;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.ProtocolBufferConverter;
-
 import tutorial.protobuf.ImageMessage.SimpleImage;
 import tutorial.protobuf.ImageMessage.SimpleImage.Builder;
 
+import com.google.protobuf.ByteString;
+
 public class InformerExample {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
 
         // See RegistrationExample.java.
-        ProtocolBufferConverter<SimpleImage> converter
-            = new ProtocolBufferConverter<SimpleImage>(SimpleImage.getDefaultInstance());
+        final ProtocolBufferConverter<SimpleImage> converter = new ProtocolBufferConverter<SimpleImage>(
+                SimpleImage.getDefaultInstance());
 
-        DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(converter);
 
         // Create an informer on scope "/example/protobuf" to send
         // SimpleImage data.
-        Factory factory = Factory.getInstance();
-        Informer<SimpleImage> informer = factory.createInformer("/example/protobuf");
+        final Factory factory = Factory.getInstance();
+        final Informer<SimpleImage> informer = factory
+                .createInformer("/example/protobuf");
         informer.activate();
 
         // Send a SimpleImage datum..
         try {
-            Builder img = SimpleImage.newBuilder();
+            final Builder img = SimpleImage.newBuilder();
             img.setHeight(100);
             img.setWidth(100);
-            byte[] bytes = new byte[100*100];
-            ByteString bs = ByteString.copyFrom(bytes);
+            final byte[] bytes = new byte[100 * 100];
+            final ByteString bs = ByteString.copyFrom(bytes);
             img.setData(bs);
             informer.send(img.build());
         } finally {

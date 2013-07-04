@@ -36,22 +36,28 @@ import rsb.transport.Port;
 import rsb.transport.TransportFactory;
 
 /**
- *
+ * 
  * @author swrede
  */
 public class SpreadFactory extends TransportFactory {
 
-	@Override
-	public Port createPort(EventHandler handler) {
-		ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository.getDefaultConverterRepository().getConvertersForDeserialization();
-//		inStrategy.addConverter("utf-8-string", new StringConverter());
-//		inStrategy.addConverter("ascii-string", new StringConverter("US-ASCII", "ascii-string"));
+    @Override
+    public Port createPort(final EventHandler handler) {
+        final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
+                .getDefaultConverterRepository()
+                .getConvertersForDeserialization();
+        // inStrategy.addConverter("utf-8-string", new StringConverter());
+        // inStrategy.addConverter("ascii-string", new
+        // StringConverter("US-ASCII", "ascii-string"));
 
-		ConverterSelectionStrategy<ByteBuffer> outStrategy = DefaultConverterRepository.getDefaultConverterRepository().getConvertersForSerialization();
-//		outStrategy.addConverter("String", new StringConverter());
+        final ConverterSelectionStrategy<ByteBuffer> outStrategy = DefaultConverterRepository
+                .getDefaultConverterRepository()
+                .getConvertersForSerialization();
+        // outStrategy.addConverter("String", new StringConverter());
 
-		SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler, inStrategy, outStrategy);
-		return sp;
-	}
+        final SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler,
+                inStrategy, outStrategy);
+        return sp;
+    }
 
 }

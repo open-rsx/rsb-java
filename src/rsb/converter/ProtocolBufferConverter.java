@@ -33,52 +33,59 @@ import java.util.logging.Logger;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 
-public class ProtocolBufferConverter<MessageType extends Message> implements Converter<ByteBuffer> {
+public class ProtocolBufferConverter<MessageType extends Message> implements
+        Converter<ByteBuffer> {
 
-	final static Logger LOG = Logger.getLogger(ProtocolBufferConverter.class.getName());
+    final static Logger LOG = Logger.getLogger(ProtocolBufferConverter.class
+            .getName());
 
-	MessageType defaultInstance;
-	ConverterSignature signature;
+    MessageType defaultInstance;
+    ConverterSignature signature;
 
-	public ProtocolBufferConverter(MessageType instance) {
-		defaultInstance = instance;
-		LOG.fine("Result of instance.getClass().getName() " + instance.getClass().getName());
-		signature = new ConverterSignature(getWireSchema(),instance.getClass());
-	}
+    public ProtocolBufferConverter(final MessageType instance) {
+        this.defaultInstance = instance;
+        LOG.fine("Result of instance.getClass().getName() "
+                + instance.getClass().getName());
+        this.signature = new ConverterSignature(this.getWireSchema(),
+                instance.getClass());
+    }
 
-	@Override
-	public WireContents<ByteBuffer> serialize(
-			Class<?> typeInfo, Object obj) throws ConversionException {
-		@SuppressWarnings("unchecked")
-		ByteBuffer serialized = ByteBuffer.wrap(((MessageType) obj).toByteArray());
-		return new WireContents<ByteBuffer>(serialized,getWireSchema());
-	}
+    @Override
+    public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
+            final Object obj) throws ConversionException {
+        @SuppressWarnings("unchecked")
+        final ByteBuffer serialized = ByteBuffer.wrap(((MessageType) obj)
+                .toByteArray());
+        return new WireContents<ByteBuffer>(serialized, this.getWireSchema());
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public UserData<MessageType> deserialize(String wireSchema,
-			ByteBuffer buffer) throws ConversionException {
-		assert(wireSchema.contentEquals(getWireSchema()));
+    @SuppressWarnings("unchecked")
+    @Override
+    public UserData<MessageType> deserialize(final String wireSchema,
+            final ByteBuffer buffer) throws ConversionException {
+        assert (wireSchema.contentEquals(this.getWireSchema()));
 
-		MessageType result;
-		try {
-			result = (MessageType) defaultInstance.newBuilderForType().mergeFrom(buffer.array()).build();
-		} catch (InvalidProtocolBufferException e) {
-			throw new ConversionException(
-					"Error deserializing wire data because of a protobuf problem.",
-					e);
-		}
-		return new UserData<MessageType>(result, result.getClass());
-	}
+        MessageType result;
+        try {
+            result = (MessageType) this.defaultInstance.newBuilderForType()
+                    .mergeFrom(buffer.array()).build();
+        } catch (final InvalidProtocolBufferException e) {
+            throw new ConversionException(
+                    "Error deserializing wire data because of a protobuf problem.",
+                    e);
+        }
+        return new UserData<MessageType>(result, result.getClass());
+    }
 
-	private String getWireSchema() {
-		LOG.fine("Detected wire type: " + defaultInstance.getDescriptorForType().getFullName());
-		return "." + defaultInstance.getDescriptorForType().getFullName();
-	}
+    private String getWireSchema() {
+        LOG.fine("Detected wire type: "
+                + this.defaultInstance.getDescriptorForType().getFullName());
+        return "." + this.defaultInstance.getDescriptorForType().getFullName();
+    }
 
-	@Override
-	public ConverterSignature getSignature() {
-		return signature;
-	}
+    @Override
+    public ConverterSignature getSignature() {
+        return this.signature;
+    }
 
 }

@@ -27,7 +27,8 @@
  */
 package rsb.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -36,94 +37,89 @@ import rsb.Scope;
 
 /**
  * @author swrede
- *
  */
 public class FilterObservableTest {
 
-	private final class TestObserver implements FilterObserver {
-		boolean notified_of = false;
-		boolean notified_tf = false;
-		boolean notified_sf = false;
-		boolean notified_af = false;
+    private final class TestObserver implements FilterObserver {
 
-		@Override
-		public void notify(OriginFilter event, FilterAction action) {
-			notified_of = true;
-		}
+        boolean notified_of = false;
+        boolean notified_tf = false;
+        boolean notified_sf = false;
+        boolean notified_af = false;
 
-		@Override
-		public void notify(TypeFilter event, FilterAction action) {
-			notified_tf = true;
-		}
+        @Override
+        public void notify(final OriginFilter event, final FilterAction action) {
+            this.notified_of = true;
+        }
 
-		@Override
-		public void notify(ScopeFilter event, FilterAction action) {
-			notified_sf = true;
-		}
+        @Override
+        public void notify(final TypeFilter event, final FilterAction action) {
+            this.notified_tf = true;
+        }
 
-		@Override
-		public void notify(AbstractFilter event, FilterAction action) {
-			notified_af = true;
-		}
-	}
+        @Override
+        public void notify(final ScopeFilter event, final FilterAction action) {
+            this.notified_sf = true;
+        }
 
-	/**
-	 * Test method for
-	 * {@link rsb.filter.FilterObservable#addObserver(rsb.filter.FilterObserver)}
-	 * .
-	 */
-	@Test
-	public void testAddObserver() {
-		FilterObservable fo = new FilterObservable();
-		fo.addObserver(new TestObserver());
-		assertTrue(fo.observers.size() == 1);
-	}
+        @Override
+        public void notify(final AbstractFilter event, final FilterAction action) {
+            this.notified_af = true;
+        }
+    }
 
-	/**
-	 * Test method for
-	 * {@link rsb.filter.FilterObservable#removeObserver(rsb.filter.FilterObserver)}
-	 * .
-	 */
-	@Test
-	public void testRemoveObserver() {
-		FilterObservable fo = new FilterObservable();
-		TestObserver to = new TestObserver();
-		fo.addObserver(to);
-		fo.removeObserver(to);
-		assertTrue(fo.observers.size() == 0);
-	}
+    /**
+     * Test method for
+     * {@link rsb.filter.FilterObservable#addObserver(rsb.filter.FilterObserver)}
+     * .
+     */
+    @Test
+    public void testAddObserver() {
+        final FilterObservable fo = new FilterObservable();
+        fo.addObserver(new TestObserver());
+        assertTrue(fo.observers.size() == 1);
+    }
 
-	/**
-	 * Test method for
-	 * {@link rsb.filter.FilterObservable#notifyObservers(rsb.filter.AbstractFilter, rsb.filter.FilterAction)}
-	 * .
-	 */
-	@Test
-	public void testNotifyObservers() {
-		FilterObservable fo = new FilterObservable();
-		TestObserver to = new TestObserver();
-		fo.addObserver(to);
-		fo.notifyObservers((Filter) new ScopeFilter(new Scope("/blub")),
-				FilterAction.ADD);
-		fo.notifyObservers((Filter) new OriginFilter(new ParticipantId()), FilterAction.ADD);
-		fo.notifyObservers((Filter) new TypeFilter(this.getClass()),
-				FilterAction.ADD);
-		assertTrue(to.notified_sf);
-		assertTrue(to.notified_tf);
-		assertTrue(to.notified_of);
-		assertFalse(to.notified_af);
-	}
+    /**
+     * Test method for
+     * {@link rsb.filter.FilterObservable#removeObserver(rsb.filter.FilterObserver)}
+     * .
+     */
+    @Test
+    public void testRemoveObserver() {
+        final FilterObservable fo = new FilterObservable();
+        final TestObserver to = new TestObserver();
+        fo.addObserver(to);
+        fo.removeObserver(to);
+        assertTrue(fo.observers.size() == 0);
+    }
 
-	/**
-	 * Test method for {@link rsb.filter.FilterObservable#clearObservers()}.
-	 */
-	@Test
-	public void testClearObservers() {
-		FilterObservable fo = new FilterObservable();
-		TestObserver to = new TestObserver();
-		fo.addObserver(to);
-		fo.clearObservers();
-		assertTrue(fo.observers.size() == 0);
-	}
+    @Test
+    public void testNotifyObservers() {
+        final FilterObservable fo = new FilterObservable();
+        final TestObserver to = new TestObserver();
+        fo.addObserver(to);
+        fo.notifyObservers(new ScopeFilter(new Scope("/blub")),
+                FilterAction.ADD);
+        fo.notifyObservers(new OriginFilter(new ParticipantId()),
+                FilterAction.ADD);
+        fo.notifyObservers(new TypeFilter(this.getClass()), FilterAction.ADD);
+        assertTrue(to.notified_sf);
+        assertTrue(to.notified_tf);
+        assertTrue(to.notified_of);
+        assertFalse(to.notified_af);
+    }
+
+    /**
+     * Test method for {@link rsb.filter.FilterObservable#clearObservers()}.
+     */
+    @Test
+    public void testClearObservers() {
+        final FilterObservable fo = new FilterObservable();
+        final TestObserver to = new TestObserver();
+        fo.addObserver(to);
+        fo.clearObservers();
+        assertTrue(fo.observers.size() == 0);
+    }
 
 }

@@ -33,63 +33,65 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import rsb.AbstractEventHandler;
 import rsb.Event;
-import rsb.util.QueueAdapter;
 
 /**
- * An adapter similar to the {@link QueueAdapter} that provides access
- * to a queue of RSB {@link Event}s instead of directly to the payload
- * data. It can also be directly registered as handler in an
- * rsb.Listener instance and used for receiving and storing dispatched
- * events.
- *
+ * An adapter similar to the {@link QueueAdapter} that provides access to a
+ * queue of RSB {@link Event}s instead of directly to the payload data. It can
+ * also be directly registered as handler in an rsb.Listener instance and used
+ * for receiving and storing dispatched events.
+ * 
  * @author dklotz
  */
 public class EventQueueAdapter extends AbstractEventHandler {
-	BlockingQueue<Event> queue;
 
-	/**
-	 * Creates an adapter with a preset unlimited queue inside.
-	 */
-	public EventQueueAdapter() {
-		queue = new LinkedBlockingDeque<Event>();
-	}
+    BlockingQueue<Event> queue;
 
-	/**
-	 * Creates an adapter with a preset queue inside that is limited to
-	 * <code>capacity</code> elements.
-	 *
-	 * @param capacity
-	 *            capacity of the internal queue
-	 */
-	public EventQueueAdapter(final int capacity, final boolean discardOldest) {
-		if (!discardOldest) {
-			queue = new LinkedBlockingDeque<Event>(capacity);
-		} else {
-			queue = new LimitedQueue<Event>(capacity);
-		}
-	}
+    /**
+     * Creates an adapter with a preset unlimited queue inside.
+     */
+    public EventQueueAdapter() {
+        this.queue = new LinkedBlockingDeque<Event>();
+    }
 
-	/**
-	 * Creates an adapter with the given queue implementation.
-	 *
-	 * @param queue
-	 *            The queue this adapter should fill.
-	 */
-	public EventQueueAdapter(BlockingQueue<Event> queue) {
-		this.queue = queue;
-	}
+    /**
+     * Creates an adapter with a preset queue inside that is limited to
+     * <code>capacity</code> elements.
+     * 
+     * @param capacity
+     *            capacity of the internal queue
+     * @param discardOldest
+     *            if <code>true</code>, remove older events if the queue is
+     *            full, otherwise block until space is available on inserts
+     */
+    public EventQueueAdapter(final int capacity, final boolean discardOldest) {
+        if (!discardOldest) {
+            this.queue = new LinkedBlockingDeque<Event>(capacity);
+        } else {
+            this.queue = new LimitedQueue<Event>(capacity);
+        }
+    }
 
-	@Override
-	public void handleEvent(Event event) {
-		this.queue.add(event);
-	}
+    /**
+     * Creates an adapter with the given queue implementation.
+     * 
+     * @param queue
+     *            The queue this adapter should fill.
+     */
+    public EventQueueAdapter(final BlockingQueue<Event> queue) {
+        this.queue = queue;
+    }
 
-	/**
-	 * Provides access to the queue filled by this queue adapter.
-	 *
-	 * @return The current with the events received by this adapter.
-	 */
-	public BlockingQueue<Event> getQueue() {
-		return queue;
-	}
+    @Override
+    public void handleEvent(final Event event) {
+        this.queue.add(event);
+    }
+
+    /**
+     * Provides access to the queue filled by this queue adapter.
+     * 
+     * @return The current with the events received by this adapter.
+     */
+    public BlockingQueue<Event> getQueue() {
+        return this.queue;
+    }
 }

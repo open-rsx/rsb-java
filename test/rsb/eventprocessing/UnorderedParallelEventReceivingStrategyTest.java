@@ -27,99 +27,84 @@
  */
 package rsb.eventprocessing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rsb.Event;
 import rsb.AbstractEventHandler;
-import rsb.eventprocessing.UnorderedParallelEventReceivingStrategy;
+import rsb.Event;
 
 /**
  * @author swrede
  */
 public class UnorderedParallelEventReceivingStrategyTest {
 
-	private final class TestHandler extends AbstractEventHandler {
-		boolean notified = false;
-		public Event event;
+    private final class TestHandler extends AbstractEventHandler {
 
-		public boolean isNotified() {
-			return notified;
-		}
+        boolean notified = false;
+        public Event event;
 
-		@Override
-		public void handleEvent(Event e) {
-			event = e;
-			notified = true;
-		}
-	}
+        public boolean isNotified() {
+            return this.notified;
+        }
 
-	@Test
-	public final void testEventDispatcher() {
-		UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
-		assertNotNull(ed);
-		// TODO test configuration
-	}
+        @Override
+        public void handleEvent(final Event e) {
+            this.event = e;
+            this.notified = true;
+        }
+    }
 
-	@Test
-	public final void testEventDispatcherIntIntInt() {
-		UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy(
-				1, 3, 100);
-		assertNotNull(ed);
-	}
+    @Test
+    public final void testEventDispatcher() {
+        final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
+        assertNotNull(ed);
+        // TODO test configuration
+    }
 
-	/**
-	 * Test method for
-	 * {@link rsb.eventprocessing.UnorderedParallelEventReceivingStrategy#addHandler(rsb.event.Handler)}
-	 * .
-	 */
-	@Test
-	public final void testAddHandler() {
-		UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
-		TestHandler h = new TestHandler();
-		ed.addHandler(h, true);
-		assertTrue(ed.getHandlers().contains(h));
-	}
+    @Test
+    public final void testEventDispatcherIntIntInt() {
+        final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy(
+                1, 3, 100);
+        assertNotNull(ed);
+    }
 
-	/**
-	 * Test method for
-	 * {@link rsb.eventprocessing.UnorderedParallelEventReceivingStrategy#removeHandler(rsb.event.Handler)}
-	 * .
-	 */
-	@Test
-	public final void testRemoveSubscription() throws InterruptedException {
-		UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
-		TestHandler h = new TestHandler();
-		ed.addHandler(h, true);
-		ed.removeHandler(h, true);
-		assertTrue(ed.getHandlers().size() == 0);
-	}
+    @Test
+    public final void testAddHandler() {
+        final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
+        final TestHandler h = new TestHandler();
+        ed.addHandler(h, true);
+        assertTrue(ed.getHandlers().contains(h));
+    }
 
-	private AbstractEventHandler getHandler() {
-		return new TestHandler();
-	}
+    @Test
+    public final void testRemoveSubscription() throws InterruptedException {
+        final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
+        final TestHandler h = new TestHandler();
+        ed.addHandler(h, true);
+        ed.removeHandler(h, true);
+        assertTrue(ed.getHandlers().size() == 0);
+    }
 
-	/**
-	 * Test method for
-	 * {@link rsb.eventprocessing.UnorderedParallelEventReceivingStrategy#fire(rsb.Event)}
-	 * .
-	 *
-	 * @throws InterruptedException
-	 */
-	@Test
-	public final void testFire() throws InterruptedException {
-		UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
-		TestHandler l = (TestHandler) getHandler();
-		ed.addHandler(l, true);
-		long beforeFire = System.currentTimeMillis() * 1000;
-		Event event = new Event();
-		ed.handle(event);
-		ed.shutdownAndWait();
-		long afterShutdown = System.currentTimeMillis() * 1000;
-		assertTrue(l.isNotified());
-		assertSame(event, l.event);
-		assertTrue(event.getMetaData().getDeliverTime() >= beforeFire);
-		assertTrue(event.getMetaData().getDeliverTime() <= afterShutdown);
-	}
+    private AbstractEventHandler getHandler() {
+        return new TestHandler();
+    }
+
+    @Test
+    public final void testFire() throws InterruptedException {
+        final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
+        final TestHandler l = (TestHandler) this.getHandler();
+        ed.addHandler(l, true);
+        final long beforeFire = System.currentTimeMillis() * 1000;
+        final Event event = new Event();
+        ed.handle(event);
+        ed.shutdownAndWait();
+        final long afterShutdown = System.currentTimeMillis() * 1000;
+        assertTrue(l.isNotified());
+        assertSame(event, l.event);
+        assertTrue(event.getMetaData().getDeliverTime() >= beforeFire);
+        assertTrue(event.getMetaData().getDeliverTime() <= afterShutdown);
+    }
 }

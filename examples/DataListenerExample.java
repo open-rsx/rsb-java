@@ -37,12 +37,13 @@ import rsb.Listener;
 
 /**
  * A basic example that demonstrated how to receive event payloads.
- *
+ * 
  * @author swrede
  */
 public class DataListenerExample extends AbstractDataHandler<String> {
 
-    private static final Logger LOG = Logger.getLogger(DataListenerExample.class.getName());
+    private static final Logger LOG = Logger
+            .getLogger(DataListenerExample.class.getName());
 
     static AtomicInteger counter = new AtomicInteger(0);
     static Object l = new Object();
@@ -52,10 +53,11 @@ public class DataListenerExample extends AbstractDataHandler<String> {
      * to an EventListener, here the event payload is passed to the callback.
      */
     @Override
-    public void handleEvent(String data) {
+    public void handleEvent(final String data) {
         counter.getAndIncrement();
         if (counter.get() % 100 == 0) {
-            LOG.info("Event #" + counter.get() + " received with payload: " + data);
+            LOG.info("Event #" + counter.get() + " received with payload: "
+                    + data);
         }
         if (counter.get() == 1000) {
             synchronized (l) {
@@ -64,19 +66,21 @@ public class DataListenerExample extends AbstractDataHandler<String> {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException, InitializeException {
+    public static void main(final String[] args) throws InterruptedException,
+            InitializeException {
 
         // get a factory instance to create new RSB domain objects
-        Factory factory = Factory.getInstance();
+        final Factory factory = Factory.getInstance();
 
         // create a Listener instance on the specified scope that will receive
         // events and dispatches them asynchronously to all registered handlers
-        Listener sub = factory.createListener("/example/informer");
+        final Listener sub = factory.createListener("/example/informer");
 
         // activate the listener to be ready for work
         sub.activate();
 
-        // add a DataHandler, here the DataListenerExample that is notified directly
+        // add a DataHandler, here the DataListenerExample that is notified
+        // directly
         // with the data extracted from the received event
         sub.addHandler(new DataListenerExample(), true);
 

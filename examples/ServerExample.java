@@ -38,16 +38,16 @@ public class ServerExample {
     public static class EchoCallback extends EventCallback {
 
         @Override
-        public Event invoke(Event request) throws Throwable {
+        public Event invoke(final Event request) throws Throwable {
             return new Event(String.class, request.getData());
         }
 
     }
 
-    public static void main(String[] args) throws InitializeException {
+    public static void main(final String[] args) throws InitializeException {
         // Get local server object which allows to expose remotely
         // callable methods.
-        LocalServer server = Factory.getInstance().createLocalServer(
+        final LocalServer server = Factory.getInstance().createLocalServer(
                 "/example/server");
         server.activate();
 

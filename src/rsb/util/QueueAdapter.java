@@ -36,45 +36,51 @@ import rsb.AbstractDataHandler;
  * Synchronized queue implementing the rsb.DataHandler interface. Can be
  * directly registered as handler in rsb.Listener instance and used for
  * receiving and storing dispatched events.
- *
+ * 
  * @author swrede
  * @author dklotz
+ * @param <T>
+ *            type of data to be handled
  */
 public class QueueAdapter<T> extends AbstractDataHandler<T> {
-	BlockingQueue<T> queue;
 
-	/**
-	 * Creates an adapter with a preset unlimited queue inside.
-	 */
-	public QueueAdapter() {
-		queue = new LinkedBlockingDeque<T>();
-	}
+    BlockingQueue<T> queue;
 
-	/**
-	 * Creates an adapter with a preset queue inside that is limited to
-	 * <code>capacity</code> elements.
-	 *
-	 * @param capacity
-	 *            capacity of the internal queue
-	 */
-	public QueueAdapter(final int capacity, final boolean discardOldest) {
-		if (!discardOldest) {
-			queue = new LinkedBlockingDeque<T>(capacity);
-		} else {
-			queue = new LimitedQueue<T>(capacity);
-		}
-	}
+    /**
+     * Creates an adapter with a preset unlimited queue inside.
+     */
+    public QueueAdapter() {
+        this.queue = new LinkedBlockingDeque<T>();
+    }
 
-	public QueueAdapter(BlockingQueue<T> queue) {
-		this.queue = queue;
-	}
+    /**
+     * Creates an adapter with a preset queue inside that is limited to
+     * <code>capacity</code> elements.
+     * 
+     * @param capacity
+     *            capacity of the internal queue
+     * @param discardOldest
+     *            if <code>true</code>, remove older events if the queue is
+     *            full, otherwise block until space is available on inserts
+     */
+    public QueueAdapter(final int capacity, final boolean discardOldest) {
+        if (!discardOldest) {
+            this.queue = new LinkedBlockingDeque<T>(capacity);
+        } else {
+            this.queue = new LimitedQueue<T>(capacity);
+        }
+    }
 
-	@Override
-	public void handleEvent(T data) {
-		queue.add(data);
-	}
+    public QueueAdapter(final BlockingQueue<T> queue) {
+        this.queue = queue;
+    }
 
-	public BlockingQueue<T> getQueue() {
-		return queue;
-	}
+    @Override
+    public void handleEvent(final T data) {
+        this.queue.add(data);
+    }
+
+    public BlockingQueue<T> getQueue() {
+        return this.queue;
+    }
 }

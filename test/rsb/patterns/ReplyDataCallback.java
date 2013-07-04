@@ -36,15 +36,15 @@ class ReplyDataCallback extends DataCallback<String, String> {
     public AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public String invoke(String request) throws Throwable {
-        if (flag.get() == false) {
-            flag.set(true);
+    public String invoke(final String request) throws Throwable {
+        if (this.flag.get() == false) {
+            this.flag.set(true);
         }
-        counter.incrementAndGet();
+        this.counter.incrementAndGet();
         return request;
     }
 
     public boolean wasCalled() {
-        return flag.get();
+        return this.flag.get();
     }
 }

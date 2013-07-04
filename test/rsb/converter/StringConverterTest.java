@@ -27,7 +27,8 @@
  */
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -37,55 +38,53 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
-import rsb.converter.ConversionException;
-import rsb.converter.StringConverter;
-import rsb.converter.WireContents;
-
 /**
  * @author swrede
  */
 public class StringConverterTest {
 
-	@Test
-	public void serialize() throws Throwable {
-		StringConverter c = new StringConverter();
-		String s = "testcase";
-		WireContents<ByteBuffer> buf = c.serialize(String.class, s);
-		assertNotNull(buf);
-	}
+    @Test
+    public void serialize() throws Throwable {
+        final StringConverter c = new StringConverter();
+        final String s = "testcase";
+        final WireContents<ByteBuffer> buf = c.serialize(String.class, s);
+        assertNotNull(buf);
+    }
 
-	@Test
-	public void roundtrip() throws Throwable {
-		StringConverter c = new StringConverter();
-		String s1 = "testcase";
-		WireContents<ByteBuffer> buf = c.serialize(String.class, s1);
-		assertNotNull(buf);
-		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-				.getData();
-		String s2 = (String) o;
-		assertEquals(s1, s2);
-	}
+    @Test
+    public void roundtrip() throws Throwable {
+        final StringConverter c = new StringConverter();
+        final String s1 = "testcase";
+        final WireContents<ByteBuffer> buf = c.serialize(String.class, s1);
+        assertNotNull(buf);
+        final Object o = c.deserialize(buf.getWireSchema(),
+                buf.getSerialization()).getData();
+        final String s2 = (String) o;
+        assertEquals(s1, s2);
+    }
 
-	@Test(expected = ConversionException.class)
-	public void serializationNotAStringError() throws Throwable {
-		StringConverter c = new StringConverter();
-		c.serialize(String.class, new LinkedList<Integer>());
-	}
+    @Test(expected = ConversionException.class)
+    public void serializationNotAStringError() throws Throwable {
+        final StringConverter c = new StringConverter();
+        c.serialize(String.class, new LinkedList<Integer>());
+    }
 
-	@Test(expected = ConversionException.class)
-	public void serializationEncodingError() throws Throwable {
-		String withNonAscii = "đħħ←ŋæ¶æŧđ";
-		StringConverter c = new StringConverter("US-ASCII", "ascii-string");
-		c.serialize(String.class, withNonAscii);
-	}
+    @Test(expected = ConversionException.class)
+    public void serializationEncodingError() throws Throwable {
+        final String withNonAscii = "đħħ←ŋæ¶æŧđ";
+        final StringConverter c = new StringConverter("US-ASCII",
+                "ascii-string");
+        c.serialize(String.class, withNonAscii);
+    }
 
-	@Test(expected = ConversionException.class)
-	public void deserializationEncodingError() throws Throwable {
-		String withNonAscii = "đħħ←ŋæ¶æŧđ";
-		CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
-		ByteBuffer buffer = encoder.encode(CharBuffer.wrap(withNonAscii));
-		StringConverter c = new StringConverter("US-ASCII", "ascii-string");
-		c.deserialize("ascii-string", buffer);
-	}
+    @Test(expected = ConversionException.class)
+    public void deserializationEncodingError() throws Throwable {
+        final String withNonAscii = "đħħ←ŋæ¶æŧđ";
+        final CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
+        final ByteBuffer buffer = encoder.encode(CharBuffer.wrap(withNonAscii));
+        final StringConverter c = new StringConverter("US-ASCII",
+                "ascii-string");
+        c.deserialize("ascii-string", buffer);
+    }
 
 }

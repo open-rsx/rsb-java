@@ -27,7 +27,8 @@
  */
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
 
@@ -35,23 +36,23 @@ import org.junit.Test;
 
 import rsb.EventId;
 import rsb.ParticipantId;
-import rsb.converter.WireContents;
 
 /**
  * @author jwienke
  */
 public class EventIdConverterTest {
 
-	@Test
-	public void roundtrip() throws Throwable {
-		EventIdConverter converter = new EventIdConverter();
+    @Test
+    public void roundtrip() throws Throwable {
+        final EventIdConverter converter = new EventIdConverter();
 
-		final EventId id = new EventId(new ParticipantId(), 251);
-		WireContents<ByteBuffer> buf = converter.serialize(id.getClass(), id);
-		assertNotNull(buf);
-		Object o = converter.deserialize(buf.getWireSchema(),
-				buf.getSerialization()).getData();
-		assertEquals(id, o);
-	}
+        final EventId id = new EventId(new ParticipantId(), 251);
+        final WireContents<ByteBuffer> buf = converter.serialize(id.getClass(),
+                id);
+        assertNotNull(buf);
+        final Object o = converter.deserialize(buf.getWireSchema(),
+                buf.getSerialization()).getData();
+        assertEquals(id, o);
+    }
 
 }

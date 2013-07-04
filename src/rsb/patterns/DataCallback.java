@@ -27,8 +27,6 @@
  */
 package rsb.patterns;
 
-import java.lang.Throwable;
-
 import rsb.Event;
 
 /**
@@ -37,13 +35,12 @@ import rsb.Event;
  * no RSB {@link Event} instances need to be used. However, this e.g. prevents
  * setting timestamps or further meta data of events. If you need such a
  * behavior, please use {@link EventCallback}.
- *
+ * 
  * In case you either do not need a request paramter or do not return any data,
  * specify the respective java generics parameter as {@link Void}. You can then
  * safely return <code>null</code> if you have no result. In other cases,
- * <code>null</code> is explicitly not allowed.
- * TODO check the null assumption
- *
+ * <code>null</code> is explicitly not allowed. TODO check the null assumption
+ * 
  * @author jmoringe
  * @author jwienke
  * @param <ReplyType>
@@ -55,9 +52,9 @@ import rsb.Event;
 public abstract class DataCallback<ReplyType, RequestType> implements Callback {
 
     @Override
-    public Event internalInvoke(Event request) throws Throwable {
+    public Event internalInvoke(final Event request) throws Throwable {
         @SuppressWarnings("unchecked")
-        ReplyType result = invoke((RequestType) request.getData());
+        final ReplyType result = this.invoke((RequestType) request.getData());
         // wrap return data in event instance
         Class<?> type;
         // null needs to be specifically handled
@@ -71,14 +68,15 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
 
     /**
      * This method is called to invoke the actual behavior of an exposed method.
-     *
-     * @param U
+     * 
+     * @param request
      *            The argument passed to the associated method by the remote
      *            caller.
      * @return A result that should be returned to the remote caller as the
      *         result of the calling the method.
-     * @throw Throwable Can throw anything.
+     * @throws Throwable
+     *             Can throw anything.
      */
     public abstract ReplyType invoke(RequestType request) throws Throwable;
-    
+
 };

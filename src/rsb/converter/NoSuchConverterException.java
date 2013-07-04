@@ -29,46 +29,46 @@ package rsb.converter;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class NoSuchConverterException extends RuntimeException {
 
-	/**
+    /**
 	 *
 	 */
-	public NoSuchConverterException() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public NoSuchConverterException() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public NoSuchConverterException(String message, Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @param message
+     * @param cause
+     */
+    public NoSuchConverterException(final String message, final Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @param message
-	 */
-	public NoSuchConverterException(String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @param message
+     */
+    public NoSuchConverterException(final String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @param cause
-	 */
-	public NoSuchConverterException(Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @param cause
+     */
+    public NoSuchConverterException(final Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
+    /**
 	 *
 	 */
-	private static final long serialVersionUID = 4919272894409736639L;
+    private static final long serialVersionUID = 4919272894409736639L;
 
 }

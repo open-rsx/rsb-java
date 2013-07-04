@@ -39,123 +39,122 @@ import rsb.filter.Filter;
 
 /**
  * An {@link EventReceivingStrategy} that uses a single thread for all handlers.
- *
+ * 
  * @author jwienke
  */
 public class SingleThreadEventReceivingStrategy implements
-		EventReceivingStrategy {
+        EventReceivingStrategy {
 
-	private Set<Filter> filters = Collections
-			.synchronizedSet(new HashSet<Filter>());
-	private BlockingQueue<Event> events = new SynchronousQueue<Event>();
+    private final Set<Filter> filters = Collections
+            .synchronizedSet(new HashSet<Filter>());
+    private final BlockingQueue<Event> events = new SynchronousQueue<Event>();
 
-	/**
-	 * A thread that matches events and dispatches them to all handlers that are
-	 * registered in his internal set of handlers.
-	 *
-	 * @author jwienke
-	 */
-	private class DispatchThread extends Thread {
+    /**
+     * A thread that matches events and dispatches them to all handlers that are
+     * registered in his internal set of handlers.
+     * 
+     * @author jwienke
+     */
+    private class DispatchThread extends Thread {
 
-		private BlockingQueue<Event> events;
+        private final BlockingQueue<Event> events;
 
-		public DispatchThread(BlockingQueue<Event> events) {
-			this.events = events;
-		}
+        public DispatchThread(final BlockingQueue<Event> events) {
+            this.events = events;
+        }
 
-		private Set<Handler> handlers = Collections
-				.synchronizedSet(new HashSet<Handler>());
+        private final Set<Handler> handlers = Collections
+                .synchronizedSet(new HashSet<Handler>());
 
-		public void addHandler(Handler handler, boolean wait) {
-			handlers.add(handler);
-		}
+        public void addHandler(final Handler handler, final boolean wait) {
+            this.handlers.add(handler);
+        }
 
-		public void removeHandler(Handler handler, boolean wait)
-				throws InterruptedException {
-			handlers.remove(handler);
-		}
+        public void removeHandler(final Handler handler, final boolean wait)
+                throws InterruptedException {
+            this.handlers.remove(handler);
+        }
 
-		@Override
-		public void run() {
+        @Override
+        public void run() {
 
-			try {
+            try {
 
-			        outer:
-				while (!interrupted()) {
+                outer: while (!interrupted()) {
 
-					Event e = events.take();
+                    final Event e = this.events.take();
 
-					// match
-					// TODO blocks filter potentially a long time
-					synchronized (filters) {
-						for (Filter f : filters) {
-							if (f.transform(e) == null) {
-							        continue outer;
-							}
-						}
-					}
+                    // match
+                    // TODO blocks filter potentially a long time
+                    synchronized (SingleThreadEventReceivingStrategy.this.filters) {
+                        for (final Filter f : SingleThreadEventReceivingStrategy.this.filters) {
+                            if (f.transform(e) == null) {
+                                continue outer;
+                            }
+                        }
+                    }
 
-					// dispatch
-					// TODO suboptimal locking. blocks handlers a very long time
-					synchronized (handlers) {
-						for (Handler h : handlers) {
-							h.internalNotify(e);
-						}
-					}
+                    // dispatch
+                    // TODO suboptimal locking. blocks handlers a very long time
+                    synchronized (this.handlers) {
+                        for (final Handler h : this.handlers) {
+                            h.internalNotify(e);
+                        }
+                    }
 
-				}
+                }
 
-			} catch (InterruptedException e) {
-				return;
-			}
+            } catch (final InterruptedException e) {
+                return;
+            }
 
-		}
+        }
 
-	}
+    }
 
-	private DispatchThread thread;
+    private final DispatchThread thread;
 
-	public SingleThreadEventReceivingStrategy() {
-		thread = new DispatchThread(events);
-		thread.start();
-	}
+    public SingleThreadEventReceivingStrategy() {
+        this.thread = new DispatchThread(this.events);
+        this.thread.start();
+    }
 
-	@Override
-	public void handle(Event e) {
-		try {
-			events.put(e);
-		} catch (InterruptedException e1) {
-			// This must not happen
-			assert false;
-			throw new RuntimeException(e1);
-		}
-	}
+    @Override
+    public void handle(final Event e) {
+        try {
+            this.events.put(e);
+        } catch (final InterruptedException e1) {
+            // This must not happen
+            assert false;
+            throw new RuntimeException(e1);
+        }
+    }
 
-	@Override
-	public void addFilter(Filter filter) {
-		filters.add(filter);
-	}
+    @Override
+    public void addFilter(final Filter filter) {
+        this.filters.add(filter);
+    }
 
-	@Override
-	public void removeFilter(Filter filter) {
-		filters.remove(filter);
-	}
+    @Override
+    public void removeFilter(final Filter filter) {
+        this.filters.remove(filter);
+    }
 
-	@Override
-	public void addHandler(Handler handler, boolean wait) {
-		thread.addHandler(handler, wait);
-	}
+    @Override
+    public void addHandler(final Handler handler, final boolean wait) {
+        this.thread.addHandler(handler, wait);
+    }
 
-	@Override
-	public void removeHandler(Handler handler, boolean wait)
-			throws InterruptedException {
-		thread.removeHandler(handler, wait);
-	}
+    @Override
+    public void removeHandler(final Handler handler, final boolean wait)
+            throws InterruptedException {
+        this.thread.removeHandler(handler, wait);
+    }
 
-	@Override
-	public void shutdownAndWait() throws InterruptedException {
-		thread.interrupt();
-		thread.join();
-	}
+    @Override
+    public void shutdownAndWait() throws InterruptedException {
+        this.thread.interrupt();
+        this.thread.join();
+    }
 
 }

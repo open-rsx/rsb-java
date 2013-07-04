@@ -31,22 +31,22 @@ package rsb.converter;
 import java.nio.ByteBuffer;
 
 /**
- * A converter with wire type {@link ByteBuffer} that is capable of
- * handling the null value.
- *
+ * A converter with wire type {@link ByteBuffer} that is capable of handling the
+ * null value.
+ * 
  * @author jmoringe
  */
 public class NullConverter implements Converter<ByteBuffer> {
 
-    private ConverterSignature signature;
+    private final ConverterSignature signature;
 
     public NullConverter() {
-        signature = new ConverterSignature("void", Void.class);
+        this.signature = new ConverterSignature("void", Void.class);
     }
 
     @Override
-    public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object data)
-            throws ConversionException {
+    public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
+            final Object data) throws ConversionException {
 
         if (data != null) {
             throw new ConversionException("The only acceptable value is null.");
@@ -55,18 +55,19 @@ public class NullConverter implements Converter<ByteBuffer> {
             throw new ConversionException("The only acceptable class is Void.");
         }
 
-        byte[] backing = new byte[0];
-        ByteBuffer serialized = ByteBuffer.wrap(backing);
-        return new WireContents<ByteBuffer>(serialized, signature.getSchema());
+        final byte[] backing = new byte[0];
+        final ByteBuffer serialized = ByteBuffer.wrap(backing);
+        return new WireContents<ByteBuffer>(serialized,
+                this.signature.getSchema());
     }
 
     @Override
-    public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer bytes)
-            throws ConversionException {
+    public UserData<ByteBuffer> deserialize(final String wireSchema,
+            final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(signature.getSchema())) {
+        if (!wireSchema.equals(this.signature.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                    + wireSchema + "', expected '" + signature.getSchema()
+                    + wireSchema + "', expected '" + this.signature.getSchema()
                     + "'.");
         }
 
@@ -75,7 +76,7 @@ public class NullConverter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return signature;
+        return this.signature;
     }
-    
+
 }

@@ -31,46 +31,46 @@ import rsb.RSBException;
 
 /**
  * An exception that indicates a conversion error in a {@link Converter}.
- *
+ * 
  * @author jwienke
  */
 public class ConversionException extends RSBException {
 
-	/**
-	 * Serial version id.
-	 */
-	private static final long serialVersionUID = 2803718845375274143L;
+    /**
+     * Serial version id.
+     */
+    private static final long serialVersionUID = 2803718845375274143L;
 
-	/**
-	 * Constructor with a message.
-	 *
-	 * @param message
-	 *            error message
-	 */
-	public ConversionException(String message) {
-		super(message);
-	}
+    /**
+     * Constructor with a message.
+     * 
+     * @param message
+     *            error message
+     */
+    public ConversionException(final String message) {
+        super(message);
+    }
 
-	/**
-	 * Constructor with a root cause.
-	 *
-	 * @param cause
-	 *            root cause
-	 */
-	public ConversionException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructor with a root cause.
+     * 
+     * @param cause
+     *            root cause
+     */
+    public ConversionException(final Throwable cause) {
+        super(cause);
+    }
 
-	/**
-	 * Constructor with message and root cause.
-	 *
-	 * @param message
-	 *            error message
-	 * @param cause
-	 *            root cause
-	 */
-	public ConversionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructor with message and root cause.
+     * 
+     * @param message
+     *            error message
+     * @param cause
+     *            root cause
+     */
+    public ConversionException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
 }

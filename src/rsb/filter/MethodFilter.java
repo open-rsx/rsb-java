@@ -31,28 +31,30 @@ import rsb.Event;
 
 public class MethodFilter extends AbstractFilter {
 
-	//private final static Logger LOG = Logger.getLogger(MethodFilter.class.getName());
+    // private final static Logger LOG =
+    // Logger.getLogger(MethodFilter.class.getName());
 
-	String method;
+    String method;
 
-	public MethodFilter(String method) {
-		super(MethodFilter.class);
-		this.method = method;
-	}
+    public MethodFilter(final String method) {
+        super(MethodFilter.class);
+        this.method = method;
+    }
 
-	@Override
-	public void dispachToObserver(FilterObserver o, FilterAction a) {
-		o.notify(this, a);
+    @Override
+    public void dispachToObserver(final FilterObserver o, final FilterAction a) {
+        o.notify(this, a);
 
-	}
+    }
 
-	@Override
-	public Event transform(Event e) {
-		Event result = null;
-		if (e.getMethod()!=null && e.getMethod().equalsIgnoreCase(method)) {
+    @Override
+    public Event transform(final Event e) {
+        Event result = null;
+        if (e.getMethod() != null
+                && e.getMethod().equalsIgnoreCase(this.method)) {
 
-			result = e;
-		}
-		return result;
-	}
+            result = e;
+        }
+        return result;
+    }
 }

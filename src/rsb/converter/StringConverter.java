@@ -35,139 +35,140 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 
-
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
  * strings with different encodings.
- *
+ * 
  * @author swrede
  * @author jwienke
  */
 public class StringConverter implements Converter<ByteBuffer> {
 
-	private ConverterSignature signature;
-	private ThreadLocal<CharsetEncoder> encoder;
-	private ThreadLocal<CharsetDecoder> decoder;
+    private ConverterSignature signature;
+    private ThreadLocal<CharsetEncoder> encoder;
+    private ThreadLocal<CharsetDecoder> decoder;
 
-	/**
-	 * Creates a converter for UTF-8 encoding with utf-8-string wire schema.
-	 */
-	public StringConverter() {
-		this("UTF-8", "utf-8-string");
-	}
+    /**
+     * Creates a converter for UTF-8 encoding with utf-8-string wire schema.
+     */
+    public StringConverter() {
+        this("UTF-8", "utf-8-string");
+    }
 
-	/**
-	 * Creates a converter that uses the specified encoding for strings.
-	 *
-	 * @param encoding
-	 *            encoding name for the data
-	 * @param wireSchema
-	 *            wire schema of the serialized data
-	 * @throws IllegalArgumentException
-	 *             invalid encoding name
-	 */
-	public StringConverter(final String encoding, String wireSchema) {
+    /**
+     * Creates a converter that uses the specified encoding for strings.
+     * 
+     * @param encoding
+     *            encoding name for the data
+     * @param wireSchema
+     *            wire schema of the serialized data
+     * @throws IllegalArgumentException
+     *             invalid encoding name
+     */
+    public StringConverter(final String encoding, final String wireSchema) {
 
-		if (!Charset.isSupported(encoding)) {
-			throw new IllegalArgumentException("Encoding '" + encoding
-					+ "' is not supported.");
-		}
+        if (!Charset.isSupported(encoding)) {
+            throw new IllegalArgumentException("Encoding '" + encoding
+                    + "' is not supported.");
+        }
 
-		init(Charset.forName(encoding), wireSchema);
+        this.init(Charset.forName(encoding), wireSchema);
 
-	}
+    }
 
-	/**
-	 * Creates a converter that uses the specified charset for strings.
-	 *
-	 * @param charset
-	 *            encoding for the data
-	 * @param wireSchema
-	 *            wire schema of the serialized data
-	 */
-	public StringConverter(Charset charset, String wireSchema) {
-		init(charset, wireSchema);
-	}
+    /**
+     * Creates a converter that uses the specified charset for strings.
+     * 
+     * @param charset
+     *            encoding for the data
+     * @param wireSchema
+     *            wire schema of the serialized data
+     */
+    public StringConverter(final Charset charset, final String wireSchema) {
+        this.init(charset, wireSchema);
+    }
 
-	private void init(final Charset charset, String wireSchema) {
+    private void init(final Charset charset, final String wireSchema) {
 
-		// TODO replace by Java class object for type info
-		signature = new ConverterSignature(wireSchema, String.class);
+        // TODO replace by Java class object for type info
+        this.signature = new ConverterSignature(wireSchema, String.class);
 
-		encoder = new ThreadLocal<CharsetEncoder>() {
+        this.encoder = new ThreadLocal<CharsetEncoder>() {
 
-			@Override
-			protected CharsetEncoder initialValue() {
-				CharsetEncoder encoder = charset.newEncoder();
-				encoder.onMalformedInput(CodingErrorAction.REPORT);
-				encoder.onUnmappableCharacter(CodingErrorAction.REPORT);
-				return encoder;
-			}
+            @Override
+            protected CharsetEncoder initialValue() {
+                final CharsetEncoder encoder = charset.newEncoder();
+                encoder.onMalformedInput(CodingErrorAction.REPORT);
+                encoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+                return encoder;
+            }
 
-		};
-		decoder = new ThreadLocal<CharsetDecoder>() {
+        };
+        this.decoder = new ThreadLocal<CharsetDecoder>() {
 
-			@Override
-			protected CharsetDecoder initialValue() {
-				CharsetDecoder decoder = charset.newDecoder();
-				decoder.onMalformedInput(CodingErrorAction.REPORT);
-				decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
-				return decoder;
-			}
+            @Override
+            protected CharsetDecoder initialValue() {
+                final CharsetDecoder decoder = charset.newDecoder();
+                decoder.onMalformedInput(CodingErrorAction.REPORT);
+                decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+                return decoder;
+            }
 
-		};
+        };
 
-	}
+    }
 
-	@Override
-	public WireContents<ByteBuffer> serialize(Class<?> typeInfo, Object data)
-			throws ConversionException {
+    @Override
+    public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
+            final Object data) throws ConversionException {
 
-		try {
-			
-			// TODO handle null values
+        try {
 
-			String string = (String) data;
+            // TODO handle null values
 
-			ByteBuffer serialized = encoder.get().encode(
-					CharBuffer.wrap(string));
-			return new WireContents<ByteBuffer>(serialized, signature.getSchema());
+            final String string = (String) data;
 
-		} catch (ClassCastException e) {
-			throw new ConversionException(
-					"Input data for serializing must be strings.", e);
-		} catch (CharacterCodingException e) {
-			throw new ConversionException(
-					"Error serializing input data because of a charset problem.",
-					e);
-		}
+            final ByteBuffer serialized = this.encoder.get().encode(
+                    CharBuffer.wrap(string));
+            return new WireContents<ByteBuffer>(serialized,
+                    this.signature.getSchema());
 
-	}
+        } catch (final ClassCastException e) {
+            throw new ConversionException(
+                    "Input data for serializing must be strings.", e);
+        } catch (final CharacterCodingException e) {
+            throw new ConversionException(
+                    "Error serializing input data because of a charset problem.",
+                    e);
+        }
 
-	@Override
-	public UserData<ByteBuffer> deserialize(String wireSchema, ByteBuffer bytes)
-			throws ConversionException {
+    }
 
-		if (!wireSchema.equals(signature.getSchema())) {
-			throw new ConversionException("Unexpected wire schema '"
-					+ wireSchema + "', expected '" + signature.getSchema() + "'.");
-		}
+    @Override
+    public UserData<ByteBuffer> deserialize(final String wireSchema,
+            final ByteBuffer bytes) throws ConversionException {
 
-		try {
+        if (!wireSchema.equals(this.signature.getSchema())) {
+            throw new ConversionException("Unexpected wire schema '"
+                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + "'.");
+        }
 
-			String string = decoder.get().decode(bytes).toString();
-			return new UserData<ByteBuffer>(string, String.class);
+        try {
 
-		} catch (CharacterCodingException e) {
-			throw new ConversionException(
-					"Error deserializing wire data because of a charset problem.",
-					e);
-		}
+            final String string = this.decoder.get().decode(bytes).toString();
+            return new UserData<ByteBuffer>(string, String.class);
 
-	}
+        } catch (final CharacterCodingException e) {
+            throw new ConversionException(
+                    "Error deserializing wire data because of a charset problem.",
+                    e);
+        }
 
-	@Override
-	public ConverterSignature getSignature() {
-		return signature;
-	}
+    }
+
+    @Override
+    public ConverterSignature getSignature() {
+        return this.signature;
+    }
 }

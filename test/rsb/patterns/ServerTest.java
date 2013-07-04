@@ -27,7 +27,9 @@
  */
 package rsb.patterns;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Logger;
 
@@ -49,13 +51,13 @@ public class ServerTest {
 
         Server server;
 
-        public ShutdownCallback(Server server) {
+        public ShutdownCallback(final Server server) {
             this.server = server;
         }
 
         @Override
-        public String invoke(String request) throws Throwable {
-            server.deactivate();
+        public String invoke(final String request) throws Throwable {
+            this.server.deactivate();
             return "shutdown now";
         }
 
@@ -68,13 +70,14 @@ public class ServerTest {
      */
     @Test
     public void testServer() {
-        Server server = getServer();
+        final Server server = this.getServer();
         assertNotNull(server);
     }
 
     private Server getServer() {
-        Factory factory = Factory.getInstance();
-        Server server = factory.createLocalServer(new Scope("/example/server"));
+        final Factory factory = Factory.getInstance();
+        final Server server = factory.createLocalServer(new Scope(
+                "/example/server"));
         return server;
     }
 
@@ -85,7 +88,7 @@ public class ServerTest {
      */
     @Test
     public void testGetMethods() throws InitializeException {
-        LocalServer server = (LocalServer) getServer();
+        final LocalServer server = (LocalServer) this.getServer();
         assertTrue(server.getMethods().size() == 0);
         server.addMethod("callme", new ReplyDataCallback());
         assertTrue(server.getMethods().size() == 1);
@@ -95,7 +98,7 @@ public class ServerTest {
 
     @Test
     public void addMethod() throws InitializeException {
-        LocalServer server = (LocalServer) getServer();
+        final LocalServer server = (LocalServer) this.getServer();
         server.addMethod("callme", new ReplyDataCallback());
         server.addMethod("callmeEvent", new ReplyEventCallback());
         assertTrue(server.getMethods().size() == 2);
@@ -108,7 +111,7 @@ public class ServerTest {
      */
     @Test
     public void testActivate() throws InitializeException {
-        LocalServer server = (LocalServer) getServer();
+        final LocalServer server = (LocalServer) this.getServer();
         assertFalse(server.isActive());
         server.activate();
         assertTrue(server.isActive());
@@ -126,8 +129,8 @@ public class ServerTest {
      */
     @Test
     public void testDeactivate() throws InitializeException {
-        LocalServer server = (LocalServer) getServer();
-        DataCallback<String, String> method = new ReplyDataCallback();
+        final LocalServer server = (LocalServer) this.getServer();
+        final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod("callme", method);
         server.activate();
         assertTrue(server.isActive());
@@ -139,8 +142,8 @@ public class ServerTest {
 
     @Test
     public void testStartServer() throws InitializeException {
-        LocalServer server = (LocalServer) getServer();
-        DataCallback<String, String> method = new ReplyDataCallback();
+        final LocalServer server = (LocalServer) this.getServer();
+        final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod("callme", method);
         server.activate();
         server.addMethod("callmetoo", method);
@@ -149,17 +152,17 @@ public class ServerTest {
 
     @Test
     public void testBlocking() throws InitializeException {
-        final LocalServer server = (LocalServer) getServer();
-        DataCallback<String, String> method = new ShutdownCallback(server);
+        final LocalServer server = (LocalServer) this.getServer();
+        final DataCallback<String, String> method = new ShutdownCallback(server);
         server.addMethod("shutdown", method);
         server.activate();
-        Thread t = new Thread(new Runnable() {
+        final Thread t = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     // must not happen
                 }
                 LOG.info("Shutting down server from callback.");

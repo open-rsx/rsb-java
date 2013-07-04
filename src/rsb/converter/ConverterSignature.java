@@ -30,73 +30,78 @@ package rsb.converter;
 /**
  * Immutable object representing a converter signature. Used to index the
  * converter maps.
- *
+ * 
  * @author swrede
  */
 public class ConverterSignature {
 
-	/** RSB WireSchema */
-	private final String schema;
-	/** Java Type */
-	private final Class<?> datatype;
+    /** RSB WireSchema */
+    private final String schema;
+    /** Java Type */
+    private final Class<?> datatype;
 
-	public ConverterSignature(String schema, Class<?> datatype) {
-	    assert(datatype != null);
-	    assert(schema != null);
-		this.schema = schema;
-		this.datatype = datatype;
-	}
+    public ConverterSignature(final String schema, final Class<?> datatype) {
+        assert (datatype != null);
+        assert (schema != null);
+        this.schema = schema;
+        this.datatype = datatype;
+    }
 
-	public String getSchema() {
-		return schema;
-	}
+    public String getSchema() {
+        return this.schema;
+    }
 
-	public Class<?> getDatatype() {
-		return datatype;
-	}
+    public Class<?> getDatatype() {
+        return this.datatype;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@SuppressWarnings({"PMD.AvoidFinalLocalVariable","PMD.DataflowAnomalyAnalysis"})
-	@Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @SuppressWarnings({ "PMD.AvoidFinalLocalVariable",
+            "PMD.DataflowAnomalyAnalysis" })
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + datatype.hashCode();
-        result = prime * result + schema.hashCode();
+        result = prime * result + this.datatype.hashCode();
+        result = prime * result + this.schema.hashCode();
         return result;
     }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@SuppressWarnings({"PMD.OnlyOneReturn","PMD.CyclomaticComplexity"})
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof ConverterSignature)) {
-			return false;
-		}
-		ConverterSignature other = (ConverterSignature) obj;
-		if (!datatype.equals(other.datatype)) {
-			return false;
-		}
-		if (!schema.equals(other.schema)) {
-			return false;
-		}
-		return true;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @SuppressWarnings({ "PMD.OnlyOneReturn", "PMD.CyclomaticComplexity" })
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ConverterSignature)) {
+            return false;
+        }
+        final ConverterSignature other = (ConverterSignature) obj;
+        if (!this.datatype.equals(other.datatype)) {
+            return false;
+        }
+        if (!this.schema.equals(other.schema)) {
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public String toString() {
-		return "ConverterSignature [schema=" + schema + ", datatype="
-				+ datatype + "]";
-	}
+    @Override
+    public String toString() {
+        return "ConverterSignature [schema=" + this.schema + ", datatype="
+                + this.datatype + "]";
+    }
 
 }

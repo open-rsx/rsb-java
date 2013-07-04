@@ -28,25 +28,25 @@
 package rsb;
 
 /**
- * This exception indicates that a method is called on an object
- * that is not in the correct state to perform the requested service.
- *
+ * This exception indicates that a method is called on an object that is not in
+ * the correct state to perform the requested service.
+ * 
  * @author swrede
  */
 public class InvalidStateException extends RuntimeException {
 
-	public InvalidStateException(String message) {
-		super(message);
-	}
+    public InvalidStateException(final String message) {
+        super(message);
+    }
 
-	public InvalidStateException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public InvalidStateException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public InvalidStateException(Throwable cause) {
-		super(cause);
-	}
+    public InvalidStateException(final Throwable cause) {
+        super(cause);
+    }
 
-	private static final long serialVersionUID = -2396672331593990574L;
+    private static final long serialVersionUID = -2396672331593990574L;
 
 }

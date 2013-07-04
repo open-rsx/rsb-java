@@ -28,50 +28,46 @@
 
 package rsb.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.nio.ByteBuffer;
-
 import java.util.LinkedList;
 
 import org.junit.Test;
-
-import rsb.converter.ConversionException;
-import rsb.converter.NullConverter;
-import rsb.converter.WireContents;
 
 /**
  * @author jmoringe
  */
 public class NullConverterTest {
 
-	@Test
-	public void serialize() throws Throwable {
-		NullConverter c = new NullConverter();
-		WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
-		assertNotNull(buf);
-	}
+    @Test
+    public void serialize() throws Throwable {
+        final NullConverter c = new NullConverter();
+        final WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
+        assertNotNull(buf);
+    }
 
-	@Test
-	public void roundtrip() throws Throwable {
-		NullConverter c = new NullConverter();
-		WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
-		assertNotNull(buf);
-		Object o = c.deserialize(buf.getWireSchema(), buf.getSerialization())
-				.getData();
-		assertNull(o);
-	}
+    @Test
+    public void roundtrip() throws Throwable {
+        final NullConverter c = new NullConverter();
+        final WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
+        assertNotNull(buf);
+        final Object o = c.deserialize(buf.getWireSchema(),
+                buf.getSerialization()).getData();
+        assertNull(o);
+    }
 
-	@Test(expected = ConversionException.class)
-	public void serializationNotNull() throws Throwable {
-		NullConverter c = new NullConverter();
-		c.serialize(LinkedList.class, new LinkedList<Integer>());
-	}
-	
-	@Test(expected = ConversionException.class)
-	public void serializationWrongType() throws Throwable {
-	    NullConverter c = new NullConverter();
-	    c.serialize(LinkedList.class, null);
-	}
+    @Test(expected = ConversionException.class)
+    public void serializationNotNull() throws Throwable {
+        final NullConverter c = new NullConverter();
+        c.serialize(LinkedList.class, new LinkedList<Integer>());
+    }
+
+    @Test(expected = ConversionException.class)
+    public void serializationWrongType() throws Throwable {
+        final NullConverter c = new NullConverter();
+        c.serialize(LinkedList.class, null);
+    }
 
 }

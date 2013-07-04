@@ -33,145 +33,170 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This class provides an implementation
- * of Java's Future interface for use
- * with request invocations.
- *
+ * This class provides an implementation of Java's Future interface for use with
+ * request invocations.
+ * 
  * @author jschaefe
  * @author swrede
  * @author jmoringe
- *
+ * @param <T>
+ *            the type of the result data eventually arriving in this future
+ * 
  * @see java.util.concurrent.Future
  */
 
 public class Future<T> implements java.util.concurrent.Future<T> {
 
-	protected Throwable exception = null;
-	protected T result = null;
+    protected Throwable exception = null;
+    protected T result = null;
 
-	protected boolean hasResult = false;
-	protected boolean cancelled = false;
+    protected boolean hasResult = false;
+    protected boolean cancelled = false;
 
-	public synchronized void complete(final T val) {
-		result = val;
-		hasResult = true;
-		notifyAll();
-	}
+    public synchronized void complete(final T val) {
+        this.result = val;
+        this.hasResult = true;
+        this.notifyAll();
+    }
 
-	public synchronized void error(final Throwable exception) {
-		this.exception = exception;
-		hasResult = true;
-		notifyAll();
-	}
+    public synchronized void error(final Throwable exception) {
+        this.exception = exception;
+        this.hasResult = true;
+        this.notifyAll();
+    }
 
-	/**
-	 * This method makes the waiting thread return with a
-	 * CancellationException but does not cancel the actual
-	 * operation the thread was waiting for.
-	 *
-	 * @param mayInterrupt
-	 * @return false
-	 */
-	public synchronized boolean cancel(boolean mayInterrupt) {
-		cancelled = true;
-		if (mayInterrupt) {
-		    notifyAll();
-		}
-		return true;
-	}
+    /**
+     * This method makes the waiting thread return with a CancellationException
+     * but does not cancel the actual operation the thread was waiting for.
+     * 
+     * @param mayInterrupt
+     * @return false
+     */
+    @Override
+    public synchronized boolean cancel(final boolean mayInterrupt) {
+        this.cancelled = true;
+        if (mayInterrupt) {
+            this.notifyAll();
+        }
+        return true;
+    }
 
-	/**
-	 * Convenience method for get(0, TimeUnit.MILLISECONDS).
-	 * @see Future#get(long, TimeUnit)
-	 */
-	public synchronized T get() throws ExecutionException {
-		try {
-			return get(0, TimeUnit.MILLISECONDS);
-		} catch (TimeoutException e) {
-			// this is not going to happen
-			assert(false);
-			return null;
-		}
-	}
+    /**
+     * Convenience method for get(0, TimeUnit.MILLISECONDS).
+     * 
+     * @see Future#get(long, TimeUnit)
+     */
+    @Override
+    public synchronized T get() throws ExecutionException {
+        try {
+            return this.get(0, TimeUnit.MILLISECONDS);
+        } catch (final TimeoutException e) {
+            // this is not going to happen
+            assert (false);
+            return null;
+        }
+    }
 
-	/**
-	 * Convenience method for get(timeout, TimeUnit.MILLISECONDS).
-	 * @see Future#get(long, TimeUnit)
-	 */
-	public synchronized T get(final long timeout) throws ExecutionException, TimeoutException {
-		return get(timeout, TimeUnit.MILLISECONDS);
-	}
+    /**
+     * Convenience method for get(timeout, TimeUnit.MILLISECONDS).
+     * 
+     * @param timeout
+     *            wait this many milliseconds for a result
+     * @return the result
+     * @throws ExecutionException
+     *             an error occurred in the provider of the result
+     * @throws TimeoutException
+     *             timeout reached and no result received so far
+     * 
+     * @see Future#get(long, TimeUnit)
+     */
+    public synchronized T get(final long timeout) throws ExecutionException,
+            TimeoutException {
+        return this.get(timeout, TimeUnit.MILLISECONDS);
+    }
 
-	/**
-	 * Gets the results passed to this callback object. This
-	 * method blocks until either the results are available, or
-	 * the timeout is reached.
-	 *
-	 * @param timeout number of TimeUnits to wait for results to become
-	 * available
-	 * @param unit TimeUnit to use
-	 * @return the value resulting from the operation
-	 *
-	 * @see Future#get(long, TimeUnit)
-	 * @throws ExecutionException if the operation resulted in an Exception
-	 * @throws TimeoutException if the timeout was reached before results were
-	 * available
-	 */
-	public synchronized T get(final long timeout, TimeUnit unit) throws ExecutionException, TimeoutException {
-		if (timeout == 0) {
-		    // Wait until
-		    // - a result arrives
-		    // - the operation is cancelled
-		    // In case of spurious wakeups, just continue waiting.
-		    while (!hasResult && !cancelled) {
-			try {
-			    wait();
-			} catch (InterruptedException e) {}
-		    }
-		} else {
-		    // Calculate waiting time in milliseconds. Prevent
-		    // waiting forever, if timeout was not 0, but was
-		    // rounded to 0
-		    long timeout_millis = unit.toMillis(timeout);
-		    if (timeout > 0 && timeout_millis == 0) {
-			timeout_millis = 1;
-		    }
+    /**
+     * Gets the results passed to this callback object. This method blocks until
+     * either the results are available, or the timeout is reached.
+     * 
+     * @param timeout
+     *            number of TimeUnits to wait for results to become available
+     * @param unit
+     *            TimeUnit to use
+     * @return the value resulting from the operation
+     * 
+     * @see Future#get(long, TimeUnit)
+     * @throws ExecutionException
+     *             if the operation resulted in an Exception
+     * @throws TimeoutException
+     *             if the timeout was reached before results were available
+     */
+    @Override
+    public synchronized T get(final long timeout, final TimeUnit unit)
+            throws ExecutionException, TimeoutException {
+        if (timeout == 0) {
+            // Wait until
+            // - a result arrives
+            // - the operation is cancelled
+            // In case of spurious wakeups, just continue waiting.
+            while (!this.hasResult && !this.cancelled) {
+                try {
+                    this.wait();
+                } catch (final InterruptedException e) {
+                    // sourious wakeup?
+                }
+            }
+        } else {
+            // Calculate waiting time in milliseconds. Prevent
+            // waiting forever, if timeout was not 0, but was
+            // rounded to 0
+            long timeout_millis = unit.toMillis(timeout);
+            if (timeout > 0 && timeout_millis == 0) {
+                timeout_millis = 1;
+            }
 
-		    // Wait until
-		    // - a result arrives
-		    // - the operation is cancelled
-		    // - the specified timeout is exceeded
-		    // In case of spurious wakeups, just continue waiting.
-		    long waitTime = 0;
-		    while (!hasResult && !cancelled && (waitTime < timeout_millis)) {
-			try {
-			    wait(timeout_millis - waitTime);
-			} catch (InterruptedException e) {}
-			waitTime += timeout_millis; /* TODO(jmoringe): use real clock */
-		    }
-		}
+            // Wait until
+            // - a result arrives
+            // - the operation is cancelled
+            // - the specified timeout is exceeded
+            // In case of spurious wakeups, just continue waiting.
+            long waitTime = 0;
+            while (!this.hasResult && !this.cancelled
+                    && (waitTime < timeout_millis)) {
+                try {
+                    this.wait(timeout_millis - waitTime);
+                } catch (final InterruptedException e) {
+                    // spurious wakeup?
+                }
+                waitTime += timeout_millis; /* TODO(jmoringe): use real clock */
+            }
+        }
 
-		// One of the conditions occurred. Determine which.
-		if (exception != null) { // operation threw an exception
-		    throw new ExecutionException(exception);
-		} else if (isCancelled()) { // cancel() was called before
-		    throw new CancellationException("async operation was cancelled before it completed");
-		} else if (!hasResult) { // no result yet, timeout was hit
-		    throw new TimeoutException();
-		}
-		return result;
-	}
+        // One of the conditions occurred. Determine which.
+        if (this.exception != null) { // operation threw an exception
+            throw new ExecutionException(this.exception);
+        } else if (this.isCancelled()) { // cancel() was called before
+            throw new CancellationException(
+                    "async operation was cancelled before it completed");
+        } else if (!this.hasResult) { // no result yet, timeout was hit
+            throw new TimeoutException();
+        }
+        return this.result;
+    }
 
-	public boolean isCancelled() {
-		return cancelled;
-	}
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
 
-	/**
-	 * Checks whether results are already available.
-	 * @return true if results have already been passed to this callback
-	 */
-	public synchronized boolean isDone() {
-		return hasResult;
-	}
+    /**
+     * Checks whether results are already available.
+     * 
+     * @return true if results have already been passed to this callback
+     */
+    @Override
+    public synchronized boolean isDone() {
+        return this.hasResult;
+    }
 
 }

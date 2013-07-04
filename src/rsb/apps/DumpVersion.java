@@ -1,4 +1,5 @@
 package rsb.apps;
+
 /**
  * ============================================================
  * 
@@ -28,8 +29,9 @@ import rsb.util.Properties;
 
 public class DumpVersion {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         System.out.println("RSB Version: "
-                + Properties.getInstance().getProperty("RSB.Version") + "-" + Properties.getInstance().getProperty("RSB.LastCommit"));
+                + Properties.getInstance().getProperty("RSB.Version") + "-"
+                + Properties.getInstance().getProperty("RSB.LastCommit"));
     }
 }

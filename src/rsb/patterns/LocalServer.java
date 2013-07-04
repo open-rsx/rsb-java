@@ -35,75 +35,78 @@ import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
 /**
- * Objects of this class associate a collection of method objects
- * which are implemented by callback functions with a scope under
- * which these methods are exposed for remote clients.
- *
+ * Objects of this class associate a collection of method objects which are
+ * implemented by callback functions with a scope under which these methods are
+ * exposed for remote clients.
+ * 
  * @author jmoringe
  */
 public class LocalServer extends Server {
 
-	private final static Logger LOG = Logger.getLogger(LocalServer.class.getName());
+    private final static Logger LOG = Logger.getLogger(LocalServer.class
+            .getName());
 
-	/**
-     * Create a new LocalServer object that exposes its methods under
-     * the scope @a scope.
-     *
+    /**
+     * Create a new LocalServer object that exposes its methods under the scope @a
+     * scope.
+     * 
      * @param scope
-     *            The common super-scope under which the methods of
-     *            the newly created server should be provided.
+     *            The common super-scope under which the methods of the newly
+     *            created server should be provided.
      */
-	public LocalServer(final Scope scope) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
-	}
+    public LocalServer(final Scope scope) {
+        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+    }
 
-	/**
-     * Create a new LocalServer object that exposes its methods under
-     * the scope @a scope.
-     *
+    /**
+     * Create a new LocalServer object that exposes its methods under the scope @a
+     * scope.
+     * 
      * @param scope
-     *            The common super-scope under which the methods of
-     *            the newly created server should be provided.
+     *            The common super-scope under which the methods of the newly
+     *            created server should be provided.
      */
-	public LocalServer(final String scope) {
-		super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
-	}
+    public LocalServer(final String scope) {
+        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+    }
 
-	public void addMethod(String name, Callback callback)
-			throws InitializeException {
-		LOG.fine("Registering new data method " + name + " with signature object: " + callback);
-		LocalMethod method = new LocalMethod(this, name,callback);
-		addAndActivate(name, method);
-	}
+    public void addMethod(final String name, final Callback callback)
+            throws InitializeException {
+        LOG.fine("Registering new data method " + name
+                + " with signature object: " + callback);
+        final LocalMethod method = new LocalMethod(this, name, callback);
+        this.addAndActivate(name, method);
+    }
 
-	/**
-	 * @param name
-	 * @param method
-	 * @throws InitializeException
-	 */
-	private void addAndActivate(String name, LocalMethod method)
-			throws InitializeException {
-		if (methods.containsKey(name)) {
-			LOG.warning("Method with name " + name + " already registered. Overwriting it!");
-		}
-		methods.put(name, method);
+    /**
+     * @param name
+     * @param method
+     * @throws InitializeException
+     */
+    private void addAndActivate(final String name, final LocalMethod method)
+            throws InitializeException {
+        if (this.methods.containsKey(name)) {
+            LOG.warning("Method with name " + name
+                    + " already registered. Overwriting it!");
+        }
+        this.methods.put(name, method);
 
-		if (this.isActive()) {
-			method.activate();
-		}
-	}
+        if (this.isActive()) {
+            method.activate();
+        }
+    }
 
-	public synchronized void waitForShutdown() {
-		// Blocks calling thread as long as this Server instance
-		// is in activated state
-		if (isActive()) {
-			try {
-				// Wait until we are done
-				this.wait();
-			} catch (InterruptedException ex) {
-				// Server has been deactivated, return from run
-			}
-		}
-	}
+    public synchronized void waitForShutdown() {
+        // Blocks calling thread as long as this Server instance
+        // is in activated state
+        if (this.isActive()) {
+            try {
+                // Wait until we are done
+                this.wait();
+            } catch (final InterruptedException ex) {
+                // Server has been deactivated, return from run
+            }
+        }
+    }
 
 };

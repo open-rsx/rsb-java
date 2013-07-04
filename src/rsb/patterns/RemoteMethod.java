@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import rsb.EventId;
 import rsb.Event;
+import rsb.EventId;
 import rsb.Handler;
 import rsb.RSBException;
 import rsb.filter.MethodFilter;
@@ -60,12 +60,12 @@ public class RemoteMethod extends Method implements Handler {
      * instance.
      * 
      * @author jwienke
-     * @param FutureDataType
+     * @param <FutureDataType>
      *            the data type of the contents inside the result future
      */
     public static abstract class FuturePreparator<FutureDataType> {
 
-        private WeakReference<Future<FutureDataType>> future;
+        private final WeakReference<Future<FutureDataType>> future;
 
         /**
          * Creates a new instance with a {@link Future} instance that is
@@ -90,7 +90,7 @@ public class RemoteMethod extends Method implements Handler {
          *         case nothing needs to be done.
          */
         public Future<FutureDataType> getFuture() {
-            return future.get();
+            return this.future.get();
         }
 
         /**
@@ -112,9 +112,9 @@ public class RemoteMethod extends Method implements Handler {
          *            exception explaining the error
          */
         public void error(final Throwable error) {
-            Future<FutureDataType> future = this.future.get();
+            final Future<FutureDataType> future = this.future.get();
             if (future != null) {
-                error(error);
+                this.error(error);
             }
         }
     }
@@ -130,28 +130,29 @@ public class RemoteMethod extends Method implements Handler {
      */
     public RemoteMethod(final Server server, final String name) {
         super(server, name);
-        listener = factory.createListener(REPLY_SCOPE);
-        informer = factory.createInformer(REQUEST_SCOPE);
-        listener.addFilter(new MethodFilter("REPLY"));
-        listener.addHandler(this, true);
+        this.listener = this.factory.createListener(this.REPLY_SCOPE);
+        this.informer = this.factory.createInformer(this.REQUEST_SCOPE);
+        this.listener.addFilter(new MethodFilter("REPLY"));
+        this.listener.addHandler(this, true);
     }
 
     /**
-     * @param event
-     * @return
+     * @param request
+     *            the request from the caller
      * @throws RSBException
+     *             in case of communication errors
      */
     void call(final Event request, final FuturePreparator<?> resultPreparator)
             throws RSBException {
         // set metadata
-        request.setScope(REQUEST_SCOPE);
+        request.setScope(this.REQUEST_SCOPE);
         request.setMethod("REQUEST");
         // further metadata is set by informer
 
         synchronized (this) {
-            Event sentEvent = informer.send(request);
+            final Event sentEvent = this.informer.send(request);
             // put future with id as weak ref in pending results table
-            pendingRequests.put(sentEvent.getId(), resultPreparator);
+            this.pendingRequests.put(sentEvent.getId(), resultPreparator);
             LOG.fine("registered future in pending requests with id: "
                     + sentEvent.getId());
         }
@@ -165,15 +166,15 @@ public class RemoteMethod extends Method implements Handler {
             return;
         }
 
-        EventId replyId = event.getCauses().iterator().next();
+        final EventId replyId = event.getCauses().iterator().next();
         LOG.fine("Received reply with id: " + replyId);
 
         // check for reply id in list of pending calls
         FuturePreparator<?> request = null;
         synchronized (this) {
-            if (pendingRequests.containsKey(replyId)) {
-                request = pendingRequests.get(replyId);
-                pendingRequests.remove(replyId);
+            if (this.pendingRequests.containsKey(replyId)) {
+                request = this.pendingRequests.get(replyId);
+                this.pendingRequests.remove(replyId);
             } else {
                 LOG.info("Received a reply for a different RemoteServer instance.");
                 return;
@@ -191,7 +192,7 @@ public class RemoteMethod extends Method implements Handler {
                 request.error(new RSBException(error));
                 return;
             }
-        } catch (IllegalArgumentException exception) {
+        } catch (final IllegalArgumentException exception) {
             // can happen if there is no error user info, so the normal case
         }
         request.result(event);

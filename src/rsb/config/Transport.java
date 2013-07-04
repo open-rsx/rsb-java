@@ -34,16 +34,16 @@ import rsb.converter.ConverterSignature;
 
 /**
  * @author swrede
- *
+ * 
  */
 public class Transport {
 
-	public List<ConverterSignature> getConverters() {
-		ArrayList<ConverterSignature> result = new ArrayList<ConverterSignature>();
-		// TODO add string
-		// this is for Spread transport only currently
-		result.add(new ConverterSignature("utf-8-string", String.class));
-		return result;
-	}
+    public List<ConverterSignature> getConverters() {
+        final ArrayList<ConverterSignature> result = new ArrayList<ConverterSignature>();
+        // TODO add string
+        // this is for Spread transport only currently
+        result.add(new ConverterSignature("utf-8-string", String.class));
+        return result;
+    }
 
 }

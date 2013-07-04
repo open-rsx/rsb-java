@@ -32,21 +32,23 @@ import java.util.logging.Logger;
 @SuppressWarnings("deprecation")
 public class DefaultErrorHandler implements ErrorHandler {
 
-	@SuppressWarnings("PMD.LoggerIsNotStaticFinal")
-	Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
+    @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
+    Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
 
-	public DefaultErrorHandler(final Logger logger) {
-		log = logger;
-	}
+    public DefaultErrorHandler(final Logger logger) {
+        this.log = logger;
+    }
 
-	public void error(final RSBException exception) {
-		log.severe("An error was reported to the ErrorHandler: "
-				+ exception.getMessage());
-	}
+    @Override
+    public void error(final RSBException exception) {
+        this.log.severe("An error was reported to the ErrorHandler: "
+                + exception.getMessage());
+    }
 
-	public void warning(final RSBException exception) {
-		log.severe("A warning was reported to the ErrorHandler: "
-				+ exception.getMessage());
-	}
+    @Override
+    public void warning(final RSBException exception) {
+        this.log.severe("A warning was reported to the ErrorHandler: "
+                + exception.getMessage());
+    }
 
 }

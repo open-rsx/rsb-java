@@ -27,146 +27,152 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 /**
  * Test for {@link MetaData}.
- *
+ * 
  * @author jwienke
  */
 public class MetaDataTest {
 
-	@Test
-	public void testConstruction() {
+    @Test
+    public void testConstruction() {
 
-		MetaData meta = new MetaData();
-		assertTrue(meta.getCreateTime() >= System.currentTimeMillis() * 1000 - 100000);
-		assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
-		assertEquals(0, meta.getReceiveTime());
-		assertEquals(0, meta.getDeliverTime());
-		assertEquals(0, meta.getSendTime());
-		assertTrue(meta.userTimeKeys().isEmpty());
+        final MetaData meta = new MetaData();
+        assertTrue(meta.getCreateTime() >= System.currentTimeMillis() * 1000 - 100000);
+        assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
+        assertEquals(0, meta.getReceiveTime());
+        assertEquals(0, meta.getDeliverTime());
+        assertEquals(0, meta.getSendTime());
+        assertTrue(meta.userTimeKeys().isEmpty());
 
-	}
+    }
 
-	@Test
-	public void testDefaultTimesAuto() {
+    @Test
+    public void testDefaultTimesAuto() {
 
-		MetaData meta = new MetaData();
-		meta.setCreateTime(0);
-		meta.setSendTime(0);
-		meta.setReceiveTime(0);
-		meta.setDeliverTime(0);
+        final MetaData meta = new MetaData();
+        meta.setCreateTime(0);
+        meta.setSendTime(0);
+        meta.setReceiveTime(0);
+        meta.setDeliverTime(0);
 
-		assertTrue(meta.getCreateTime() > System.currentTimeMillis() * 1000 - 100000);
-		assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
-		assertTrue(meta.getSendTime() > System.currentTimeMillis() * 1000 - 100000);
-		assertTrue(meta.getSendTime() <= System.currentTimeMillis() * 1000);
-		assertTrue(meta.getReceiveTime() > System.currentTimeMillis() * 1000 - 100000);
-		assertTrue(meta.getReceiveTime() <= System.currentTimeMillis() * 1000);
-		assertTrue(meta.getDeliverTime() > System.currentTimeMillis() * 1000 - 100000);
-		assertTrue(meta.getDeliverTime() <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getCreateTime() > System.currentTimeMillis() * 1000 - 100000);
+        assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getSendTime() > System.currentTimeMillis() * 1000 - 100000);
+        assertTrue(meta.getSendTime() <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getReceiveTime() > System.currentTimeMillis() * 1000 - 100000);
+        assertTrue(meta.getReceiveTime() <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getDeliverTime() > System.currentTimeMillis() * 1000 - 100000);
+        assertTrue(meta.getDeliverTime() <= System.currentTimeMillis() * 1000);
 
-	}
+    }
 
-	@Test
-	public void testDefaultTimesManual() {
+    @Test
+    public void testDefaultTimesManual() {
 
-		MetaData meta = new MetaData();
-		long time = 13123;
-		meta.setCreateTime(time);
-		meta.setSendTime(time);
-		meta.setReceiveTime(time);
-		meta.setDeliverTime(time);
+        final MetaData meta = new MetaData();
+        final long time = 13123;
+        meta.setCreateTime(time);
+        meta.setSendTime(time);
+        meta.setReceiveTime(time);
+        meta.setDeliverTime(time);
 
-		assertEquals(time, meta.getCreateTime());
-		assertEquals(time, meta.getSendTime());
-		assertEquals(time, meta.getReceiveTime());
-		assertEquals(time, meta.getDeliverTime());
+        assertEquals(time, meta.getCreateTime());
+        assertEquals(time, meta.getSendTime());
+        assertEquals(time, meta.getReceiveTime());
+        assertEquals(time, meta.getDeliverTime());
 
-	}
+    }
 
-	@Test
-	public void testUserTimes() {
+    @Test
+    public void testUserTimes() {
 
-		MetaData meta = new MetaData();
-		String key = "afdadfasfd";
-		long time = 213123;
+        final MetaData meta = new MetaData();
+        final String key = "afdadfasfd";
+        final long time = 213123;
 
-		assertFalse(meta.hasUserTime(key));
-		meta.setUserTime(key, time);
-		assertTrue(meta.hasUserTime(key));
-		assertEquals(time, meta.getUserTime(key));
-		long updatedTime = 634545;
-		meta.setUserTime(key, updatedTime);
-		assertEquals(updatedTime, meta.getUserTime(key));
+        assertFalse(meta.hasUserTime(key));
+        meta.setUserTime(key, time);
+        assertTrue(meta.hasUserTime(key));
+        assertEquals(time, meta.getUserTime(key));
+        final long updatedTime = 634545;
+        meta.setUserTime(key, updatedTime);
+        assertEquals(updatedTime, meta.getUserTime(key));
 
-		assertEquals(1, meta.userTimeKeys().size());
-		assertTrue(meta.userTimeKeys().contains(key));
+        assertEquals(1, meta.userTimeKeys().size());
+        assertTrue(meta.userTimeKeys().contains(key));
 
-		try {
-			meta.getUserTime("unknown");
-			fail();
-		} catch (IllegalArgumentException e) {
-		}
+        try {
+            meta.getUserTime("unknown");
+            fail();
+        } catch (final IllegalArgumentException e) {
+            // expected exception
+        }
 
-		String autoKey = "auto";
-		meta.setUserTime(autoKey, 0);
+        final String autoKey = "auto";
+        meta.setUserTime(autoKey, 0);
 
-		assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis() * 1000 - 100000);
-		assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis() * 1000 - 100000);
+        assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis() * 1000);
 
-	}
+    }
 
-	@Test
-	public void testUserInfos() {
+    @Test
+    public void testUserInfos() {
 
-		MetaData meta = new MetaData();
-		String key = "afdadfasfd";
-		String value = "213123";
+        final MetaData meta = new MetaData();
+        final String key = "afdadfasfd";
+        final String value = "213123";
 
-		assertFalse(meta.hasUserInfo(key));
-		meta.setUserInfo(key, value);
-		assertTrue(meta.hasUserInfo(key));
-		assertEquals(value, meta.getUserInfo(key));
-		String updatedInfo = "foobar";
-		meta.setUserInfo(key, updatedInfo);
-		assertEquals(updatedInfo, meta.getUserInfo(key));
+        assertFalse(meta.hasUserInfo(key));
+        meta.setUserInfo(key, value);
+        assertTrue(meta.hasUserInfo(key));
+        assertEquals(value, meta.getUserInfo(key));
+        final String updatedInfo = "foobar";
+        meta.setUserInfo(key, updatedInfo);
+        assertEquals(updatedInfo, meta.getUserInfo(key));
 
-		assertEquals(1, meta.userInfoKeys().size());
-		assertTrue(meta.userInfoKeys().contains(key));
+        assertEquals(1, meta.userInfoKeys().size());
+        assertTrue(meta.userInfoKeys().contains(key));
 
-		try {
-			meta.getUserInfo("unknown");
-			fail();
-		} catch (IllegalArgumentException e) {
-		}
+        try {
+            meta.getUserInfo("unknown");
+            fail();
+        } catch (final IllegalArgumentException e) {
+            // expected exception
+        }
 
-	}
+    }
 
-	@Test
-	public void testComparison() {
+    @Test
+    public void testComparison() {
 
-		MetaData meta1 = new MetaData();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-		MetaData meta2 = new MetaData();
-		assertFalse(meta1.equals(meta2)); // distinct times + no UUIDs
-		meta2.setCreateTime(meta1.getCreateTime());
-		assertTrue(meta1.equals(meta2));
+        MetaData meta1 = new MetaData();
+        try {
+            Thread.sleep(100);
+        } catch (final InterruptedException e) {
+            // expected exception
+        }
+        MetaData meta2 = new MetaData();
+        assertFalse(meta1.equals(meta2)); // distinct times + no UUIDs
+        meta2.setCreateTime(meta1.getCreateTime());
+        assertTrue(meta1.equals(meta2));
 
-		meta1 = new MetaData();
-		meta2 = new MetaData();
-		meta2.setCreateTime(meta1.getCreateTime());
-		assertEquals(meta1, meta2);
-		meta2.setUserInfo("foo", "bar");
-		assertFalse(meta1.equals(meta2));
-		meta1.setUserInfo("foo", "bar");
-		assertEquals(meta1, meta2);
+        meta1 = new MetaData();
+        meta2 = new MetaData();
+        meta2.setCreateTime(meta1.getCreateTime());
+        assertEquals(meta1, meta2);
+        meta2.setUserInfo("foo", "bar");
+        assertFalse(meta1.equals(meta2));
+        meta1.setUserInfo("foo", "bar");
+        assertEquals(meta1, meta2);
 
-	}
+    }
 }
