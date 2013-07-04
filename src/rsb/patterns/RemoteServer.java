@@ -27,6 +27,7 @@
  */
 package rsb.patterns;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,13 +37,14 @@ import rsb.Event;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.patterns.RemoteMethod.FuturePreparator;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
 /**
  * Objects of this class represent remote servers in a way that allows calling
  * methods on them as if they were local.
- *
+ * 
  * @author jmoringe
  * @author swrede
  * @author jwienke
@@ -63,7 +65,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     *
+     * 
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -79,7 +81,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     *
+     * 
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -95,7 +97,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     *
+     * 
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -108,7 +110,7 @@ public class RemoteServer extends Server {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     *
+     * 
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
@@ -120,7 +122,7 @@ public class RemoteServer extends Server {
 
     /**
      * Returns the timeout used when waiting for replies from a server.
-     *
+     * 
      * @return timeout in seconds
      */
     public double getTimeout() {
@@ -131,7 +133,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method returns immediately
      * with a {@link Future} instance.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param event
@@ -142,13 +144,17 @@ public class RemoteServer extends Server {
      */
     public Future<Event> callAsync(final String name, final Event event)
             throws RSBException {
-        return callAsyncInternal(name, event, true);
+        Future<Event> future = new Future<Event>();
+        EventFuturePreparator futurePreparator = new EventFuturePreparator(
+                future);
+        callAsyncEvent(name, event, futurePreparator);
+        return future;
     }
 
     /**
      * Calls a method of the server without request parameter using the method
      * name. The method returns immediately with a {@link Future} instance.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @return A {@link Future} instance to retrieve the result {@link Event}
@@ -156,13 +162,16 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      */
     public Future<Event> callAsync(String name) throws RSBException {
-        return callAsyncInternal(name, new Event(Void.class, null), true);
+        Event event = new Event();
+        event.setData(null);
+        event.setType(Void.class);
+        return callAsync(name, new Event(Void.class, null));
     }
 
     /**
      * Calls a method of the server using the method name and plain request
      * data. The method returns immediately with a {@link Future} instance.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param data
@@ -173,14 +182,18 @@ public class RemoteServer extends Server {
      */
     public <ReplyType, RequestType> Future<ReplyType> callAsync(
             final String name, final RequestType data) throws RSBException {
-        return callAsyncInternal(name, data, false);
+        Future<ReplyType> future = new Future<ReplyType>();
+        DataFuturePreparator<ReplyType> resultPreparator = new DataFuturePreparator<ReplyType>(
+                future);
+        callAsyncData(name, data, resultPreparator);
+        return future;
     }
 
     /**
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method blocks until the
      * server replied or until the timeout is reached.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param event
@@ -190,18 +203,21 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      * @throws TimeoutException
      *             timeout waiting for the reply
+     * @throws ExecutionException
+     *             in case the method failed on the server side
+     * @throws CancellationException
+     *             waiting for the result was cancelled
      */
     public Event call(final String name, final Event event)
-            throws RSBException, TimeoutException {
-        Event result = callInternal(name, event, true, this.timeout);
-        return result;
+            throws RSBException, ExecutionException, TimeoutException {
+        return call(name, event, getTimeout());
     }
 
     /**
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method blocks until the
      * server replied or until the specified timeout is reached.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param event
@@ -213,18 +229,26 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      * @throws TimeoutException
      *             timeout waiting for the reply
+     * @throws ExecutionException
+     *             in case the method failed on the server side
+     * @throws CancellationException
+     *             waiting for the result was cancelled
      */
     public Event call(final String name, final Event event, final double timeout)
-            throws RSBException, TimeoutException {
-        Event result = callInternal(name, event, true, timeout);
-        return result;
+            throws RSBException, ExecutionException, TimeoutException {
+        Future<Event> future = new Future<Event>();
+        EventFuturePreparator futurePreparator = new EventFuturePreparator(
+                future);
+        callAsyncEvent(name, event, futurePreparator);
+        return future
+                .get((long) (timeout * 1000000000.0), TimeUnit.NANOSECONDS);
     }
 
     /**
      * Calls a method of the server without request parameter using the method
      * name. The method blocks until the server replied or until the timeout is
      * reached.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @return An event with the resulting data
@@ -232,8 +256,13 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      * @throws TimeoutException
      *             timeout waiting for the reply
+     * @throws ExecutionException
+     *             in case the method failed on the server side
+     * @throws CancellationException
+     *             waiting for the result was cancelled
      */
-    public Event call(final String name) throws RSBException, TimeoutException {
+    public Event call(final String name) throws RSBException,
+            ExecutionException, TimeoutException {
         return this.call(name, new Event(Void.class, null));
     }
 
@@ -241,7 +270,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server without request parameter using the method
      * name. The method blocks until the server replied or until the specified
      * timeout is reached.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param timeout
@@ -251,9 +280,13 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      * @throws TimeoutException
      *             timeout waiting for the reply
+     * @throws ExecutionException
+     *             in case the method failed on the server side
+     * @throws CancellationException
+     *             waiting for the result was cancelled
      */
     public Event call(final String name, final double timeout)
-            throws RSBException, TimeoutException {
+            throws RSBException, ExecutionException, TimeoutException {
         return this.call(name, new Event(Void.class, null), timeout);
     }
 
@@ -261,7 +294,7 @@ public class RemoteServer extends Server {
      * Calls a method of the server using the method name and plain request
      * data. The method blocks until the server replied or until the timeout is
      * reached.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param event
@@ -271,18 +304,22 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      * @throws TimeoutException
      *             timeout waiting for the reply
+     * @throws ExecutionException
+     *             in case the method failed on the server side
+     * @throws CancellationException
+     *             waiting for the result was cancelled
      */
     public <ReplyType, RequestType> ReplyType call(final String name,
-            final RequestType data) throws RSBException, TimeoutException {
-        return this.<ReplyType, RequestType> callInternal(name, data, false,
-                timeout);
+            final RequestType data) throws RSBException, ExecutionException,
+            TimeoutException {
+        return call(name, data, getTimeout());
     }
 
     /**
      * Calls a method of the server using the method name and plain request
      * data. The method blocks until the server replied or until the specified
      * timeout is reached.
-     *
+     * 
      * @param name
      *            name of the method to call
      * @param event
@@ -294,22 +331,63 @@ public class RemoteServer extends Server {
      *             communication errors or server-side errors
      * @throws TimeoutException
      *             timeout waiting for the reply
+     * @throws ExecutionException
+     *             in case the method failed on the server side
+     * @throws CancellationException
+     *             waiting for the result was cancelled
      */
     public <ReplyType, RequestType> ReplyType call(final String name,
             final RequestType data, final double timeout) throws RSBException,
-            TimeoutException {
-        return this.<ReplyType, RequestType> callInternal(name, data, false,
-                timeout);
+            ExecutionException, TimeoutException {
+        Future<ReplyType> future = new Future<ReplyType>();
+        DataFuturePreparator<ReplyType> resultPreparator = new DataFuturePreparator<ReplyType>(
+                future);
+        callAsyncData(name, data, resultPreparator);
+        return future
+                .get((long) (timeout * 1000000000.0), TimeUnit.NANOSECONDS);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T, U> Future<T> callAsyncInternal(final String name, final U data,
-            boolean isEvent) throws RSBException {
-        AbstractRemoteMethod<T, U> method = null;
+    private class EventFuturePreparator extends FuturePreparator<Event> {
+
+        public EventFuturePreparator(final Future<Event> future) {
+            super(future);
+        }
+
+        @Override
+        public void result(Event resultEvent) {
+            Future<Event> future = getFuture();
+            if (future != null) {
+                future.complete(resultEvent);
+            }
+        }
+
+    }
+
+    private class DataFuturePreparator<DataType> extends
+            FuturePreparator<DataType> {
+
+        public DataFuturePreparator(final Future<DataType> future) {
+            super(future);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void result(Event resultEvent) {
+            Future<DataType> future = getFuture();
+            if (future != null) {
+                future.complete((DataType) resultEvent.getData());
+            }
+        }
+
+    }
+
+    private void callAsyncEvent(final String name, final Event request,
+            final FuturePreparator<?> resultPreparator) throws RSBException {
+        RemoteMethod method = null;
         // get method, either new or cached
         if (!methods.containsKey(name)) {
             try {
-                method = (AbstractRemoteMethod<T, U>) addMethod(name, isEvent);
+                method = addMethod(name);
             } catch (InitializeException exception) {
                 LOG.warning("Exception during method activation: "
                         + exception.getMessage() + " Re-throwing it.");
@@ -317,44 +395,35 @@ public class RemoteServer extends Server {
             }
         } else {
             try {
-                method = (AbstractRemoteMethod<T, U>) methods.get(name);
+                method = (RemoteMethod) methods.get(name);
             } catch (ClassCastException exception) {
                 LOG.warning("Exception during method activation: "
                         + exception.getMessage() + " Re-throwing it.");
                 throw new RSBException(exception);
             }
         }
-        return method.call(data);
+        method.call(request, resultPreparator);
     }
 
-    // internal methods are to prevent recursive calls from call(string, event)
-    // to call(string, event), which
-    // are bound to occur as the originally intended target (the template)
-    // method is not called in that situation.
-    private <U, T> U callInternal(final String name, final T data,
-            boolean isEvent, final double timeout) throws RSBException,
-            TimeoutException {
-        Future<U> future = callAsyncInternal(name, data, isEvent);
-        U result;
-        try {
-            result = future.get((long) timeout, TimeUnit.SECONDS);
-        } catch (ExecutionException exception) {
-            LOG.warning("Exception during remote call: "
-                    + exception.getMessage() + "; Re-throwing it.");
-            throw new RSBException(exception);
-        }
-        return result;
-    }
-
-    protected <U, T> AbstractRemoteMethod<?, ?> addMethod(String name,
-            boolean isEvent) throws InitializeException {
-        LOG.fine("Registering new method " + name);
-        AbstractRemoteMethod<?, ?> method;
-        if (isEvent) {
-            method = new RemoteEventMethod(this, name);
+    private <RequestType> void callAsyncData(final String name,
+            final RequestType requestData, FuturePreparator<?> resultPreparator)
+            throws RSBException {
+        Event request = new Event();
+        // null needs to be specifically handled
+        if (requestData != null) {
+            request.setType(requestData.getClass());
         } else {
-            method = new RemoteDataMethod<T, U>(this, name);
+            request.setType(Void.class);
         }
+        request.setData(requestData);
+        callAsyncEvent(name, request, resultPreparator);
+    }
+
+    protected RemoteMethod addMethod(final String name)
+            throws InitializeException {
+        LOG.fine("Registering new method " + name);
+
+        RemoteMethod method = new RemoteMethod(this, name);
         methods.put(name, method);
 
         if (this.isActive()) {

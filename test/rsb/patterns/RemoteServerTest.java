@@ -92,7 +92,7 @@ public class RemoteServerTest {
         final RemoteServer remote = factory
                 .createRemoteServer(SCOPE.toString());
         final String methodName = "callme";
-        remote.addMethod(methodName, true);
+        remote.addMethod(methodName);
         remote.activate();
         Collection<Method> methods = remote.getMethods();
         assertEquals(1, methods.size());

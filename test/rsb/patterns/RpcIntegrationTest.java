@@ -76,6 +76,16 @@ public class RpcIntegrationTest {
     }
 
     @Test
+    public void roundtripDifferentCallSignatures() throws Throwable {
+        final Event request = new Event();
+        request.setType(String.class);
+        request.setData(TEST_DATA);
+        Event reply = remote.call(METHOD_NAME, request);
+        assertEquals(reply.getData(), TEST_DATA);
+        assertEquals(TEST_DATA, remote.call(METHOD_NAME, TEST_DATA));
+    }
+    
+    @Test
     public void roundtripEventFutureSyntax() throws Throwable {
         Future<Event> reply
             = remote.callAsync(METHOD_NAME,
