@@ -49,7 +49,7 @@ import rsb.transport.TransportFactory;
  * @author swrede
  * @author jwienke
  */
-public class RemoteServer extends Server {
+public class RemoteServer extends Server<RemoteMethod> {
 
     private static final Logger LOG = Logger.getLogger(RemoteServer.class
             .getName());
@@ -262,7 +262,7 @@ public class RemoteServer extends Server {
      *             waiting for the result was cancelled
      */
     public Event call(final String name) throws RSBException,
-            ExecutionException, TimeoutException {
+    ExecutionException, TimeoutException {
         return this.call(name, new Event(Void.class, null));
     }
 
@@ -364,7 +364,7 @@ public class RemoteServer extends Server {
     }
 
     private class DataFuturePreparator<DataType> extends
-            FuturePreparator<DataType> {
+    FuturePreparator<DataType> {
 
         public DataFuturePreparator(final Future<DataType> future) {
             super(future);
@@ -385,21 +385,18 @@ public class RemoteServer extends Server {
             final FuturePreparator<?> resultPreparator) throws RSBException {
         RemoteMethod method = null;
         // get method, either new or cached
-        if (!this.methods.containsKey(name)) {
-            try {
-                method = this.addMethod(name);
-            } catch (final InitializeException exception) {
-                LOG.warning("Exception during method activation: "
-                        + exception.getMessage() + " Re-throwing it.");
-                throw new RSBException(exception);
-            }
-        } else {
-            try {
-                method = (RemoteMethod) this.methods.get(name);
-            } catch (final ClassCastException exception) {
-                LOG.warning("Exception during method activation: "
-                        + exception.getMessage() + " Re-throwing it.");
-                throw new RSBException(exception);
+        synchronized (this) {
+            if (!hasMethod(name)) {
+                try {
+                    method = this.addMethod(name);
+                } catch (final InitializeException exception) {
+                    LOG.warning("Exception during method activation: "
+                            + exception.getMessage() + " Re-throwing it.");
+                    throw new RSBException(exception);
+                }
+            } else {
+                method = getMethod(name);
+                assert (method != null);
             }
         }
         method.call(request, resultPreparator);
@@ -424,7 +421,9 @@ public class RemoteServer extends Server {
         LOG.fine("Registering new method " + name);
 
         final RemoteMethod method = new RemoteMethod(this, name);
-        this.methods.put(name, method);
+        // it should never be possible that an exception is thrown for a
+        // duplicated method because we take care of this
+        addMethod(name, method, false);
 
         if (this.isActive()) {
             method.activate();

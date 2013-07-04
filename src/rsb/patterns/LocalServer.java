@@ -41,7 +41,7 @@ import rsb.transport.TransportFactory;
  * 
  * @author jmoringe
  */
-public class LocalServer extends Server {
+public class LocalServer extends Server<LocalMethod> {
 
     private final static Logger LOG = Logger.getLogger(LocalServer.class
             .getName());
@@ -70,7 +70,21 @@ public class LocalServer extends Server {
         super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
     }
 
-    public void addMethod(final String name, final Callback callback)
+    /**
+     * Adds a new method to the server which can be called via
+     * {@link RemoteServer} instances.
+     * 
+     * @param name
+     *            name of the method
+     * @param callback
+     *            callback implementing the functionality of the method
+     * @throws InitializeException
+     *             error initializing the method
+     * @throws IllegalArgumentException
+     *             a method with the given name already exists.
+     */
+    public synchronized void addMethod(final String name,
+            final Callback callback)
             throws InitializeException {
         LOG.fine("Registering new data method " + name
                 + " with signature object: " + callback);
@@ -79,18 +93,20 @@ public class LocalServer extends Server {
     }
 
     /**
+     * Adds a method and activates it if the server is already active.
+     * 
      * @param name
+     *            name of the method
      * @param method
+     *            the method
      * @throws InitializeException
+     *             error initializing method
+     * @throws IllegalArgumentException
+     *             a method with the given name already exists.
      */
     private void addAndActivate(final String name, final LocalMethod method)
             throws InitializeException {
-        if (this.methods.containsKey(name)) {
-            LOG.warning("Method with name " + name
-                    + " already registered. Overwriting it!");
-        }
-        this.methods.put(name, method);
-
+        addMethod(name, method, false);
         if (this.isActive()) {
             method.activate();
         }

@@ -128,7 +128,7 @@ public class RemoteMethod extends Method implements Handler {
      * @param name
      *            The name of the method.
      */
-    public RemoteMethod(final Server server, final String name) {
+    public RemoteMethod(final Server<RemoteMethod> server, final String name) {
         super(server, name);
         this.listener = this.factory.createListener(this.REPLY_SCOPE);
         this.informer = this.factory.createInformer(this.REQUEST_SCOPE);
@@ -139,6 +139,9 @@ public class RemoteMethod extends Method implements Handler {
     /**
      * @param request
      *            the request from the caller
+     * @param resultPreparator
+     *            strategy for preparing the result {@link Future} instance from
+     *            the received reply event
      * @throws RSBException
      *             in case of communication errors
      */

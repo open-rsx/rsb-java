@@ -91,7 +91,7 @@ public abstract class Method implements RSBObject {
     }
 
     protected Factory factory;
-    private final Server server;
+    private final Server<?> server;
     private final String name;
     protected Informer<?> informer;
     protected Listener listener;
@@ -108,7 +108,7 @@ public abstract class Method implements RSBObject {
      * @param name
      *            The name of the method. Unique within a server.
      */
-    public Method(final Server server, final String name) {
+    public Method(final Server<?> server, final String name) {
         this.server = server;
         this.name = name;
         // TODO make sure that case doesn't matter (generally!)
@@ -125,7 +125,7 @@ public abstract class Method implements RSBObject {
      * 
      * @return The Server object.
      */
-    public Server getServer() {
+    public Server<?> getServer() {
         return this.server;
     }
 

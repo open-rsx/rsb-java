@@ -95,7 +95,7 @@ public class RemoteServerTest {
         final String methodName = "callme";
         remote.addMethod(methodName);
         remote.activate();
-        final Collection<Method> methods = remote.getMethods();
+        final Collection<RemoteMethod> methods = remote.getMethods();
         assertEquals(1, methods.size());
         assertEquals(methodName, methods.iterator().next().getName());
         remote.deactivate();

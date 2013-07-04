@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rsb.InitializeException;
+import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.Scope;
 import rsb.transport.PortConfiguration;
@@ -45,12 +46,44 @@ import rsb.transport.TransportFactory;
  * classes.
  * 
  * @author jmoringe
+ * @param <MethodType>
+ *            The type of methods used in the subclasses
  */
-public abstract class Server extends Participant {
+public abstract class Server<MethodType extends Method> extends Participant {
+
+    /**
+     * Abstract base class for implementations of the different server states.
+     */
+    private abstract class ServerState {
+
+        // reference to server instance
+        protected Server<MethodType> server;
+
+        protected ServerState(final Server<MethodType> ctx) {
+            this.server = ctx;
+        }
+
+        public ServerState activate() throws InvalidStateException,
+        InitializeException {
+            throw new InvalidStateException("Server already activated.");
+        }
+
+        public ServerState deactivate() throws InvalidStateException {
+            throw new InvalidStateException("Server not activated.");
+        }
+
+        public synchronized void run(
+                @SuppressWarnings("unused") final boolean async) {
+            throw new InvalidStateException("server not activated");
+        }
+
+        public abstract boolean isActive();
+
+    }
 
     protected class ServerStateActive extends ServerState {
 
-        protected ServerStateActive(final Server ctx) {
+        protected ServerStateActive(final Server<MethodType> ctx) {
             super(ctx);
         }
 
@@ -66,11 +99,16 @@ public abstract class Server extends Participant {
             }
             return new ServerStateInactive(this.server);
         }
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
     }
 
     protected class ServerStateInactive extends ServerState {
 
-        protected ServerStateInactive(final Server ctx) {
+        protected ServerStateInactive(final Server<MethodType> ctx) {
             super(ctx);
         }
 
@@ -81,25 +119,28 @@ public abstract class Server extends Participant {
             }
             return new ServerStateActive(this.server);
         }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
     }
 
-    protected final Map<String, Method> methods;
+    private final Map<String, MethodType> methods;
     private ServerState state;
 
     protected Server(final Scope scope,
             final TransportFactory transportFactory,
             final PortConfiguration portConfig) {
         super(scope, transportFactory, portConfig);
-        this.methods = new HashMap<String, Method>();
+        this.methods = new HashMap<String, MethodType>();
         this.state = new ServerStateInactive(this);
     }
 
     protected Server(final String scope,
             final TransportFactory transportFactory,
             final PortConfiguration portConfig) {
-        super(scope, transportFactory, portConfig);
-        this.methods = new HashMap<String, Method>();
-        this.state = new ServerStateInactive(this);
+        this(new Scope(scope), transportFactory, portConfig);
     }
 
     /**
@@ -107,13 +148,62 @@ public abstract class Server extends Participant {
      * 
      * @return A Collection containing all methods.
      */
-    public Collection<Method> getMethods() {
+    public Collection<MethodType> getMethods() {
         return this.methods.values();
+    }
+
+    /**
+     * Returns the method with the given name.
+     * 
+     * @param name
+     *            method name
+     * @return {@link Method} instance or <code>null</code> if no method exists
+     *         with this name
+     */
+    public MethodType getMethod(final String name) {
+        return this.methods.get(name);
+    }
+
+    /**
+     * Indicates whether a method with the given name is already registered.
+     * 
+     * @param name
+     *            name of the method
+     * @return <code>true</code> if a method is registered with the given name,
+     *         else <code>false</code>
+     */
+    public boolean hasMethod(final String name) {
+        return this.methods.containsKey(name);
+    }
+
+    /**
+     * Adds a method to the server.
+     * 
+     * @param name
+     *            name under which the method should be registered
+     * @param method
+     *            the method instance
+     * @param overwrite
+     *            if <code>true</code>, overwrite an existing method with that
+     *            name, else raise an exception
+     * @throws IllegalArgumentException
+     *             method with the given name already exists and shall not be
+     *             overwritten
+     */
+    protected void addMethod(final String name, final MethodType method,
+            final boolean overwrite) {
+        assert (name != null);
+        assert (method != null);
+        if (this.methods.containsKey(name) && !overwrite) {
+            throw new IllegalArgumentException("A method with name " + name
+                    + " already exists.");
+        }
+        this.methods.put(name, method);
     }
 
     @Override
     public boolean isActive() {
-        return this.state.getClass() == ServerStateActive.class;
+        return this.state.isActive();
     }
 
     @Override

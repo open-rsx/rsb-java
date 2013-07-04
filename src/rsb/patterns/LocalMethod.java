@@ -65,7 +65,7 @@ class LocalMethod extends Method implements Handler {
      * @param callback
      *            The callback implementing the user functionality of the method
      */
-    public LocalMethod(final Server server, final String name,
+    public LocalMethod(final Server<LocalMethod> server, final String name,
             final Callback callback) {
         super(server, name);
         this.callback = callback;
