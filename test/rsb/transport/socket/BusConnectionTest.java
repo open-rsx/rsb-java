@@ -45,7 +45,6 @@ import rsb.transport.EventBuilder;
 
 /**
  * @author swrede
- * 
  */
 public class BusConnectionTest {
 

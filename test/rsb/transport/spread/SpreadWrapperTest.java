@@ -36,7 +36,6 @@ import rsb.InitializeException;
 
 /**
  * @author swrede
- * 
  */
 public class SpreadWrapperTest {
 

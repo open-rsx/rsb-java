@@ -35,7 +35,6 @@ import rsb.Scope;
 
 /**
  * @author swrede
- * 
  */
 public class ScopeFilter extends AbstractFilter {
 

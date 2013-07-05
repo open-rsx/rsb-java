@@ -38,7 +38,6 @@ import rsb.util.Properties;
  * Pre-Condition: Spread is not running
  * 
  * @author swrede
- * 
  */
 public class SpreadNotRunningTest {
 

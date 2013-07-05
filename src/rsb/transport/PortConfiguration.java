@@ -32,7 +32,6 @@ package rsb.transport;
  * Pattern objects
  * 
  * @author swrede
- * 
  */
 public enum PortConfiguration {
 

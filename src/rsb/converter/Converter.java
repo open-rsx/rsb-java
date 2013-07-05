@@ -72,7 +72,6 @@ public interface Converter<WireType> {
      * Get signature for this converter.
      * 
      * @return the @See ConverterSignature of this converter instance
-     * 
      */
     public ConverterSignature getSignature();
 

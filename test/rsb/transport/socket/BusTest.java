@@ -38,7 +38,6 @@ import rsb.protocol.NotificationType.Notification;
 
 /**
  * @author swrede
- * 
  */
 public class BusTest {
 

@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 /**
  * @author swrede
- * 
  */
 public class AbstractFilterObserver implements FilterObserver {
 

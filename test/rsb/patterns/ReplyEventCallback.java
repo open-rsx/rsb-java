@@ -33,7 +33,6 @@ import rsb.Event;
 
 /**
  * @author swrede
- * 
  */
 public class ReplyEventCallback extends EventCallback {
 

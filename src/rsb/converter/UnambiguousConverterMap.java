@@ -34,7 +34,6 @@ import java.util.Map;
  * @author swrede
  * @author jmoringe
  * @param <WireType>
- * 
  */
 public class UnambiguousConverterMap<WireType> implements
         ConverterSelectionStrategy<WireType> {

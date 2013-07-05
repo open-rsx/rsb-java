@@ -261,8 +261,7 @@ public class Properties {
     }
 
     /**
-	 * 
-	 */
+     */
     protected void initialize() {
         // parse rsb.conf files in standard locations
         this.loadFiles();
@@ -279,8 +278,7 @@ public class Properties {
     }
 
     /**
-	 * 
-	 */
+     */
     protected void loadFiles() {
         // Read configuration properties in the following order:
         // 1. from /etc/rsb.conf, if the file exists

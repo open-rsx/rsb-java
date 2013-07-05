@@ -36,18 +36,11 @@ package rsb;
  * determine the actual reason for this exception.
  * 
  * @author swrede
- * 
  */
 public class InitializeException extends RSBException {
 
-    /**
-	 *
-	 */
     private static final long serialVersionUID = -5223250815059688771L;
 
-    /**
-	 *
-	 */
     public InitializeException() {
     }
 

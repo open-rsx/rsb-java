@@ -39,7 +39,6 @@ import rsb.protocol.NotificationType.Notification;
 
 /**
  * @author swrede
- * 
  */
 public class EventBuilder {
 
@@ -52,7 +51,6 @@ public class EventBuilder {
      * @param n
      *            {@link Notification} instance to deserialize
      * @return deserialized {@link Event} instance
-     * 
      */
     public static Event fromNotification(final Notification n) {
         log.fine("decoding notification");

@@ -29,7 +29,6 @@ package rsb.filter;
 
 /**
  * @author swrede
- * 
  */
 public enum FilterAction {
 

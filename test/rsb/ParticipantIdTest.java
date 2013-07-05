@@ -35,7 +35,6 @@ import org.junit.Test;
 
 /**
  * @author swrede
- * 
  */
 public class ParticipantIdTest {
 

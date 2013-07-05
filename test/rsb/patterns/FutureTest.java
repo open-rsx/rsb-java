@@ -38,7 +38,6 @@ import org.junit.Test;
 
 /**
  * @author jmoringe
- * 
  */
 public class FutureTest {
 

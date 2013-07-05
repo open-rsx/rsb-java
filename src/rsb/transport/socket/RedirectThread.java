@@ -32,7 +32,6 @@ import java.net.Socket;
 
 /**
  * @author swrede
- * 
  */
 public class RedirectThread extends Thread {
 

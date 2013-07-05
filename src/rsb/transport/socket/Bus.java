@@ -47,7 +47,6 @@ import rsb.util.Properties;
  * (outward) which allow to send event notifications to external participants.
  * 
  * @author swrede
- * 
  */
 public abstract class Bus {
 

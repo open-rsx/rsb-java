@@ -51,7 +51,6 @@ import rsb.RSBException;
  * instances.
  * 
  * @author swrede
- * 
  */
 public class BusServer extends Bus implements Runnable {
 

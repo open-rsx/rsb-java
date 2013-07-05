@@ -34,7 +34,6 @@ import java.util.logging.Logger;
  * explicit de-/allocation of resources.
  * 
  * @author swrede
- * 
  */
 public abstract class ListenerState {
 

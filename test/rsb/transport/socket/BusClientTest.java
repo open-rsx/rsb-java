@@ -31,7 +31,6 @@ import rsb.RSBException;
 
 /**
  * @author swrede
- * 
  */
 public class BusClientTest {
 

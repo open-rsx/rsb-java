@@ -38,7 +38,6 @@ import spread.SpreadMessage;
  * TODO (de-)multiplex large messages here
  * 
  * @author swrede
- * 
  */
 class SpreadMessageConverter {
 

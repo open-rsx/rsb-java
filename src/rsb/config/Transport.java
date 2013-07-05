@@ -34,7 +34,6 @@ import rsb.converter.ConverterSignature;
 
 /**
  * @author swrede
- * 
  */
 public class Transport {
 

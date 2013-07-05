@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Atomic uint32 implementation respecting size of ProtocolBuffer uint32 type.
  * 
  * @author swrede
- * 
  */
 public class SequenceNumber {
 

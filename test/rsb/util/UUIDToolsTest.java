@@ -38,7 +38,6 @@ import rsb.EventId;
 
 /**
  * @author swrede
- * 
  */
 public class UUIDToolsTest {
 

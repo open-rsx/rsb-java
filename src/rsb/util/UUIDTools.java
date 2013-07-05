@@ -36,7 +36,6 @@ import java.util.UUID;
  * UUID helper functions.
  * 
  * @author swrede
- * 
  */
 public class UUIDTools {
 
