@@ -32,8 +32,6 @@ package rsb.converter;
  */
 public class NoSuchConverterException extends RuntimeException {
 
-    /**
-     */
     public NoSuchConverterException() {
         super();
         // TODO Auto-generated constructor stub
@@ -64,8 +62,6 @@ public class NoSuchConverterException extends RuntimeException {
         // TODO Auto-generated constructor stub
     }
 
-    /**
-     */
     private static final long serialVersionUID = 4919272894409736639L;
 
 }

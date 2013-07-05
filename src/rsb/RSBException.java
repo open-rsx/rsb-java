@@ -37,8 +37,6 @@ public class RSBException extends Exception {
 
     private static final long serialVersionUID = -5223250815059688771L;
 
-    /**
-     */
     public RSBException() {
     }
 

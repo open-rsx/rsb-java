@@ -39,12 +39,8 @@ import rsb.RSBException;
  */
 public class NotFoundException extends RSBException {
 
-    /**
-     */
     private static final long serialVersionUID = -8852918216048184478L;
 
-    /**
-     */
     public NotFoundException() {
     }
 
