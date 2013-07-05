@@ -147,8 +147,6 @@ public class SpreadWrapper implements RSBObject {
             // already fail in the properties parsing
             this.setSpreadhost(this.props.getProperty("transport.spread.host"));
         } catch (final RSBException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         this.useTcpNoDelay = this.props
                 .getPropertyAsBool("transport.spread.tcpnodelay");
@@ -253,7 +251,6 @@ public class SpreadWrapper implements RSBObject {
                         + this.privGrpId);
                 return;
             } catch (final SpreadException e) {
-                e.printStackTrace();
                 ex = e;
             }
             LOG.info("reoccuring SpreadException during connect to daemon: "
@@ -319,8 +316,6 @@ public class SpreadWrapper implements RSBObject {
             try {
                 this.conn.disconnect();
             } catch (final SpreadException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
             this.status = State.DEACTIVATED;
 

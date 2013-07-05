@@ -34,7 +34,6 @@ public class NoSuchConverterException extends RuntimeException {
 
     public NoSuchConverterException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -43,7 +42,6 @@ public class NoSuchConverterException extends RuntimeException {
      */
     public NoSuchConverterException(final String message, final Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -51,7 +49,6 @@ public class NoSuchConverterException extends RuntimeException {
      */
     public NoSuchConverterException(final String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -59,7 +56,6 @@ public class NoSuchConverterException extends RuntimeException {
      */
     public NoSuchConverterException(final Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
     private static final long serialVersionUID = 4919272894409736639L;

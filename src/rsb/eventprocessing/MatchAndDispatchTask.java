@@ -63,7 +63,6 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
                 } catch (final Throwable ex) {
                     // TODO add logger, re-throw exception to user-specified
                     // exception handler
-                    ex.printStackTrace();
                 }
                 return true;
             }

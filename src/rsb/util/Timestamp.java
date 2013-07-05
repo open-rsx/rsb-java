@@ -50,7 +50,6 @@ public class Timestamp {
             return new Timestamp(l);
         } catch (final Exception e) {
             // TODO log warning or error here
-            e.printStackTrace();
             return null;
         }
     }
