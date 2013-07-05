@@ -50,7 +50,7 @@ public class BusTest {
      * @throws UnknownHostException
      */
     @Test
-    public void testHandleOutgoing() throws UnknownHostException {
+    public void handleOutgoing() throws UnknownHostException {
         final Bus bus = new BusClient(InetAddress.getLocalHost(), 55555);
         final BusConnection con = new BusConnection(InetAddress.getLocalHost(),
                 55555);
@@ -71,7 +71,7 @@ public class BusTest {
      * @throws UnknownHostException
      */
     @Test
-    public void testAddandRemoveConnection() throws UnknownHostException {
+    public void addandRemoveConnection() throws UnknownHostException {
         final Bus bus = new BusClient(InetAddress.getLocalHost(), 55555);
         assertTrue(bus.connections.isEmpty());
         final BusConnection con = new BusConnection(InetAddress.getLocalHost(),

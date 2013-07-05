@@ -58,21 +58,21 @@ public class UnorderedParallelEventReceivingStrategyTest {
     }
 
     @Test
-    public final void testEventDispatcher() {
+    public final void eventDispatcher() {
         final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
         assertNotNull(ed);
         // TODO test configuration
     }
 
     @Test
-    public final void testEventDispatcherIntIntInt() {
+    public final void eventDispatcherIntIntInt() {
         final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy(
                 1, 3, 100);
         assertNotNull(ed);
     }
 
     @Test
-    public final void testAddHandler() {
+    public final void addHandler() {
         final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
         final TestHandler h = new TestHandler();
         ed.addHandler(h, true);
@@ -80,7 +80,7 @@ public class UnorderedParallelEventReceivingStrategyTest {
     }
 
     @Test
-    public final void testRemoveSubscription() throws InterruptedException {
+    public final void removeSubscription() throws InterruptedException {
         final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
         final TestHandler h = new TestHandler();
         ed.addHandler(h, true);
@@ -88,14 +88,10 @@ public class UnorderedParallelEventReceivingStrategyTest {
         assertTrue(ed.getHandlers().size() == 0);
     }
 
-    private AbstractEventHandler getHandler() {
-        return new TestHandler();
-    }
-
     @Test
-    public final void testFire() throws InterruptedException {
+    public final void fire() throws InterruptedException {
         final UnorderedParallelEventReceivingStrategy ed = new UnorderedParallelEventReceivingStrategy();
-        final TestHandler l = (TestHandler) this.getHandler();
+        final TestHandler l = new TestHandler();
         ed.addHandler(l, true);
         final long beforeFire = System.currentTimeMillis() * 1000;
         final Event event = new Event();

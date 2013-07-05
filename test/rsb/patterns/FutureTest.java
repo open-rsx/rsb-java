@@ -43,21 +43,21 @@ import org.junit.Test;
 public class FutureTest {
 
     @Test
-    public void testSimpleGet() throws ExecutionException, TimeoutException {
+    public void simpleGet() throws ExecutionException, TimeoutException {
         final Future<Integer> future = new Future<Integer>();
         future.complete(1);
         assertTrue(future.get() == 1);
     }
 
     @Test(expected = CancellationException.class)
-    public void testCancel() throws ExecutionException, TimeoutException {
+    public void cancel() throws ExecutionException, TimeoutException {
         final Future<Integer> future = new Future<Integer>();
         future.cancel(true);
         future.get();
     }
 
     @Test(expected = TimeoutException.class)
-    public void testTimeout() throws ExecutionException, TimeoutException {
+    public void timeout() throws ExecutionException, TimeoutException {
         final Future<Integer> future = new Future<Integer>();
         future.get(10);
     }

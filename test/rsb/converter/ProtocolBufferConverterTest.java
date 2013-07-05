@@ -31,7 +31,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
-import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -46,21 +45,18 @@ import com.google.protobuf.ByteString;
  */
 public class ProtocolBufferConverterTest {
 
-    final static Logger LOG = Logger
-            .getLogger(ProtocolBufferConverterTest.class.getName());
-
-    WireContents<ByteBuffer> buffer;
-    ProtocolBufferConverter<Notification> converter = new ProtocolBufferConverter<Notification>(
+    private WireContents<ByteBuffer> buffer;
+    private final ProtocolBufferConverter<Notification> converter = new ProtocolBufferConverter<Notification>(
             Notification.getDefaultInstance());
 
-    public void testSerialize() throws ConversionException {
+    public void serialize() throws ConversionException {
         final Notification.Builder notificationBuilder = Notification
                 .newBuilder();
         // notification metadata
         final EventId.Builder eventIdBuilder = EventId.newBuilder();
         eventIdBuilder.setSequenceNumber(23);
         eventIdBuilder.setSenderId(ByteString.copyFrom(new ParticipantId()
-                .toByteArray()));
+        .toByteArray()));
         notificationBuilder.setEventId(eventIdBuilder);
         notificationBuilder.setWireSchema(ByteString
                 .copyFromUtf8("rsb.notification"));
@@ -71,7 +67,7 @@ public class ProtocolBufferConverterTest {
         assertNotNull(this.buffer);
     }
 
-    public void testDeserialize() throws ConversionException {
+    public void deserialize() throws ConversionException {
         assertNotNull(this.buffer);
         final UserData<Notification> result = this.converter.deserialize(
                 ".rsb.protocol.Notification", this.buffer.getSerialization());
@@ -80,9 +76,9 @@ public class ProtocolBufferConverterTest {
     }
 
     @Test
-    public void testRoundtrip() throws ConversionException {
-        this.testSerialize();
-        this.testDeserialize();
+    public void roundtrip() throws ConversionException {
+        this.serialize();
+        this.deserialize();
     }
 
 }

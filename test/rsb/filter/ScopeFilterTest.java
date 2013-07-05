@@ -47,7 +47,7 @@ public class ScopeFilterTest {
      * Test method for {@link rsb.filter.ScopeFilter#transform(rsb.Event)}.
      */
     @Test
-    public void testTransform() {
+    public void transform() {
         final Event e = new Event();
         e.setScope(new Scope("/images"));
         e.setId(new ParticipantId(), 234);
@@ -58,7 +58,7 @@ public class ScopeFilterTest {
     }
 
     @Test
-    public void testSkipEventId() {
+    public void skipEventId() {
         final Event e = new Event();
         // TODO actually, we need a mock object to test this correctly
         // setting the Scope to another name than the scope filters
@@ -72,7 +72,7 @@ public class ScopeFilterTest {
     }
 
     @Test
-    public void testScopeFilter() {
+    public void scopeFilter() {
         final ScopeFilter sf = new ScopeFilter(new Scope("/images"));
         assertNotNull(sf);
     }
@@ -81,13 +81,13 @@ public class ScopeFilterTest {
      * Test method for {@link rsb.filter.ScopeFilter#getScope()}.
      */
     @Test
-    public void testGetScope() {
+    public void getScope() {
         final ScopeFilter sf = new ScopeFilter(new Scope("/images"));
         assertTrue(sf.getScope().equals(new Scope("/images")));
     }
 
     @Test
-    public void testEqualsFilter() {
+    public void equalsFilter() {
         final ScopeFilter sf1 = new ScopeFilter(new Scope("/images"));
         final ScopeFilter sf2 = new ScopeFilter(new Scope("/images"));
         assertTrue(sf1.equals(sf2));

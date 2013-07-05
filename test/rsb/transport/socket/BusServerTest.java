@@ -41,7 +41,7 @@ public class BusServerTest {
      * @throws IOException
      */
     @Test
-    public void testBusServer() throws IOException {
+    public void busServer() throws IOException {
         final InetAddress addr = InetAddress.getLocalHost();
         final BusServer server = new BusServer(addr, 55555);
         server.activate();
@@ -50,7 +50,7 @@ public class BusServerTest {
     }
 
     @Test
-    public void testBusServerRun() throws IOException, InterruptedException {
+    public void busServerRun() throws IOException, InterruptedException {
         final InetAddress addr = InetAddress.getLocalHost();
         final BusServer server = new BusServer(addr, 55555);
         server.activate();

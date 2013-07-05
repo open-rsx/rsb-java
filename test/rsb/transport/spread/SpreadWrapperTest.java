@@ -47,7 +47,7 @@ public class SpreadWrapperTest {
      * @throws InitializeException
      */
     @Test
-    public void testSpreadWrapper() throws InitializeException {
+    public void spreadWrapper() throws InitializeException {
         final SpreadWrapper spread = new SpreadWrapper();
         assertNotNull(spread);
         assertEquals(SpreadWrapper.State.DEACTIVATED, spread.getStatus());

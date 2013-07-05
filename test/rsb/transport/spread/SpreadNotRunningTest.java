@@ -57,7 +57,7 @@ public class SpreadNotRunningTest {
 
     @Ignore
     @Test(expected = InitializeException.class)
-    public void testInformer() throws InitializeException {
+    public void informer() throws InitializeException {
         final Factory factory = Factory.getInstance();
         final Informer<Object> inf = factory.createInformer("/foo");
         inf.activate();
@@ -65,7 +65,7 @@ public class SpreadNotRunningTest {
 
     @Ignore
     @Test(expected = InitializeException.class)
-    public void testServer() throws InitializeException {
+    public void server() throws InitializeException {
         final Factory factory = Factory.getInstance();
         final LocalServer server = factory.createLocalServer("/bar");
         server.addMethod("foobar", new DataCallback<String, String>() {

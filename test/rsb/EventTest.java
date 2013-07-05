@@ -48,7 +48,7 @@ public class EventTest {
         final Event event1 = new Event();
         final Event event2 = new Event();
         event2.getMetaData()
-                .setCreateTime(event1.getMetaData().getCreateTime());
+        .setCreateTime(event1.getMetaData().getCreateTime());
         assertEquals(event1, event2);
 
         // // TODO add Id test
@@ -118,12 +118,12 @@ public class EventTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void hashCodeGeneration() {
 
         final Event event1 = new Event();
         final Event event2 = new Event();
         event2.getMetaData()
-                .setCreateTime(event1.getMetaData().getCreateTime());
+        .setCreateTime(event1.getMetaData().getCreateTime());
         assertEquals(event1.hashCode(), event2.hashCode());
 
         // causes

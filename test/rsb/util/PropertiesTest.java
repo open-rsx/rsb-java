@@ -15,20 +15,20 @@ public class PropertiesTest {
     }
 
     @Test
-    public void testGetInstance() {
+    public void getInstance() {
         final Properties prop = Properties.getInstance();
         assertNotNull(prop);
     }
 
     @Test
-    public void testSetProperty() {
+    public void setProperty() {
         final Properties prop = Properties.getInstance();
         prop.setProperty("Spread.Path", "8888");
         assertEquals("8888", prop.getProperty("Spread.Path"));
     }
 
     @Test
-    public void testSetPortPropertyTwice() {
+    public void setPortPropertyTwice() {
         final Properties prop = Properties.getInstance();
         prop.setProperty("transport.spread.port", "8888");
         assertTrue(prop.getPropertyAsInt("transport.spread.port") == 8888);
@@ -37,7 +37,7 @@ public class PropertiesTest {
     }
 
     @Test
-    public void testSetHostPropertyTwice() {
+    public void setHostPropertyTwice() {
         final Properties prop = Properties.getInstance();
         prop.setProperty("transport.spread.host", "11.1.1.11");
         assertTrue(prop.getProperty("transport.spread.host").equalsIgnoreCase(
@@ -48,7 +48,7 @@ public class PropertiesTest {
     }
 
     @Test
-    public void testReset() {
+    public void reset() {
         final Properties prop = Properties.getInstance();
         prop.setProperty("transport.spread.host", "11.1.1.11");
         assertTrue(prop.getProperty("transport.spread.host").equalsIgnoreCase(

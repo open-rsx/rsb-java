@@ -39,7 +39,7 @@ public class DefaultErrorHandlerTest {
             .getLogger(DefaultErrorHandlerTest.class.getName());
 
     @Test
-    public void testError() {
+    public void error() {
         final DefaultErrorHandler handler = new DefaultErrorHandler(LOG);
         assertNotNull(handler);
         final RSBException except = new RSBException(new RuntimeException(

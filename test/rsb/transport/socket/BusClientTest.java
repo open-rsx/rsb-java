@@ -44,7 +44,7 @@ public class BusClientTest {
      * @throws IOException
      */
     @Test
-    public void testBusClient() throws IOException, RSBException {
+    public void busClient() throws IOException, RSBException {
         final InetAddress addr = InetAddress.getLocalHost();
         final BusClient client = new BusClient(addr, 55555);
         // client.activate();
@@ -62,7 +62,7 @@ public class BusClientTest {
      * @throws InterruptedException
      */
     @Test
-    public void testHandleIncoming() throws IOException, RSBException,
+    public void handleIncoming() throws IOException, RSBException,
             InterruptedException {
         final InetAddress addr = InetAddress.getLocalHost();
         final BusClient client = new BusClient(addr, 55555);

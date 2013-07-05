@@ -53,7 +53,7 @@ public class InformerTest {
     transient private Informer<?> informerGeneric;
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
-            .getDefaultConverterRepository();
+    .getDefaultConverterRepository();
 
     @Before
     public void setUp() throws Throwable {
@@ -78,7 +78,7 @@ public class InformerTest {
      * Test method for {@link rsb.Informer#Informer(java.lang.String)}.
      */
     @Test
-    public void testInformerString() {
+    public void informerString() {
         assertNotNull("Informer is null", this.informerString);
         assertEquals(this.informerString.getScope(), this.defaultScope);
     }
@@ -89,7 +89,7 @@ public class InformerTest {
      * .
      */
     @Test
-    public void testInformerStringTransportFactory() {
+    public void informerStringTransportFactory() {
         final Scope scope = new Scope("/x");
         final Informer<String> p = new Informer<String>(scope,
                 TransportFactory.getInstance());
@@ -98,7 +98,7 @@ public class InformerTest {
     }
 
     @Test
-    public void testInformerStringString() {
+    public void informerStringString() {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> p = new Informer<String>(scope, type.getClass());
@@ -108,7 +108,7 @@ public class InformerTest {
     }
 
     @Test
-    public void testInformerStringStringTransportFactory() {
+    public void informerStringStringTransportFactory() {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> p = new Informer<String>(scope, type.getClass(),
@@ -122,7 +122,7 @@ public class InformerTest {
      * Test method for {@link rsb.Informer#getScope()}.
      */
     @Test
-    public void testGetScope() {
+    public void getScope() {
         assertEquals(this.informerString.getScope(), this.defaultScope);
     }
 
@@ -133,7 +133,7 @@ public class InformerTest {
      *             any error
      */
     @Test
-    public void testActivate() throws Throwable {
+    public void activate() throws Throwable {
         assertTrue(this.informerString.state instanceof InformerStateActive);
     }
 
@@ -143,7 +143,7 @@ public class InformerTest {
      * @throws InitializeException
      */
     @Test
-    public void testDeactivate() throws InitializeException {
+    public void deactivate() throws InitializeException {
         assertTrue(this.informerString.state instanceof InformerStateActive);
         this.informerString.deactivate();
         assertTrue(this.informerString.state instanceof InformerStateInactive);
@@ -164,7 +164,7 @@ public class InformerTest {
      *             any error
      */
     @Test
-    public void testSendEvent() throws Throwable {
+    public void sendEvent() throws Throwable {
         Event e = this.informerString.send(new Event(this.defaultScope,
                 String.class, "Hello World!"));
         this.testEvent(e, this.informerString);
@@ -174,7 +174,7 @@ public class InformerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSendWrongType() throws RSBException {
+    public void sendWrongType() throws RSBException {
         this.informerString.send(new Event(this.defaultScope, Object.class,
                 "not allowed"));
     }
@@ -186,32 +186,32 @@ public class InformerTest {
      *             any error
      */
     @Test
-    public void testSendT() throws Throwable {
+    public void sendT() throws Throwable {
         final Event e = this.informerString.send("Hello World!");
         this.testEvent(e, this.informerString);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSendEventNullScope() throws Throwable {
+    public void sendEventNullScope() throws Throwable {
         final Event e = new Event(this.informerString.getTypeInfo(), "foo");
         e.setScope(null);
         this.informerString.send(e);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSendEventWrongScope() throws Throwable {
+    public void sendEventWrongScope() throws Throwable {
         this.informerString.send(new Event(new Scope("/blubb"),
                 this.informerString.getTypeInfo(), "foo"));
     }
 
     @Test
-    public void testSendEventSubScope() throws Throwable {
+    public void sendEventSubScope() throws Throwable {
         this.informerString.send(new Event(this.defaultScope.concat(new Scope(
                 "/blubb")), this.informerString.getTypeInfo(), "foo"));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSendEventWrongType() throws Throwable {
+    public void sendEventWrongType() throws Throwable {
         this.informerString.setTypeInfo(String.class);
         this.informerString.send(new Event(this.defaultScope, Boolean.class,
                 "foo"));

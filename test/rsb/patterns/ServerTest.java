@@ -69,7 +69,7 @@ public class ServerTest {
      * .
      */
     @Test
-    public void testServer() {
+    public void server() {
         final Server<?> server = this.getServer();
         assertNotNull(server);
     }
@@ -87,7 +87,7 @@ public class ServerTest {
      * @throws InitializeException
      */
     @Test
-    public void testGetMethods() throws InitializeException {
+    public void getMethods() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         assertTrue(server.getMethods().size() == 0);
         server.addMethod("callme", new ReplyDataCallback());
@@ -110,7 +110,7 @@ public class ServerTest {
      * @throws InitializeException
      */
     @Test
-    public void testActivate() throws InitializeException {
+    public void activate() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         assertFalse(server.isActive());
         server.activate();
@@ -128,7 +128,7 @@ public class ServerTest {
      * @throws InitializeException
      */
     @Test
-    public void testDeactivate() throws InitializeException {
+    public void deactivate() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod("callme", method);
@@ -141,7 +141,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testStartServer() throws InitializeException {
+    public void startServer() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod("callme", method);
@@ -151,7 +151,7 @@ public class ServerTest {
     }
 
     @Test
-    public void testBlocking() throws InitializeException {
+    public void blocking() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ShutdownCallback(server);
         server.addMethod("shutdown", method);

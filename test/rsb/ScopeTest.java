@@ -137,7 +137,7 @@ public class ScopeTest {
     }
 
     @Test
-    public void testHierarchyComparison() {
+    public void hierarchyComparison() {
 
         assertTrue(new Scope("/a/").isSubScopeOf(new Scope("/")));
         assertTrue(new Scope("/a/b/c/").isSubScopeOf(new Scope("/")));

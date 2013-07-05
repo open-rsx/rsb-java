@@ -43,7 +43,7 @@ import rsb.Scope;
 public class OriginFilterTest {
 
     @Test
-    public void testTransform() {
+    public void transform() {
         final ParticipantId origin1 = new ParticipantId();
         final Event e1 = new Event(new Scope("/images"), String.class, "bla");
         e1.setId(origin1, 234);

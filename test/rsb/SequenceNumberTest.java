@@ -36,7 +36,7 @@ import rsb.transport.SequenceNumber;
 public class SequenceNumberTest {
 
     @Test
-    public void testOverflowUsage() {
+    public void overflowUsage() {
         // check max value
         assertEquals(((long) 2 * Integer.MAX_VALUE + 1),
                 Long.parseLong("4294967295"));
@@ -56,7 +56,7 @@ public class SequenceNumberTest {
     }
 
     @Test
-    public void testOverflowInit() {
+    public void overflowInit() {
         // integer overflow in constructor
         final SequenceNumber i = new SequenceNumber(Integer.MAX_VALUE + 1);
         assertEquals(Integer.MAX_VALUE + 1, Integer.MIN_VALUE);

@@ -41,12 +41,12 @@ public class ParticipantIdTest {
 
     @SuppressWarnings("unused")
     @Test
-    public void testEventId() {
+    public void eventId() {
         new ParticipantId();
     }
 
     @Test
-    public void testEventIdString() {
+    public void eventIdString() {
         final ParticipantId id = new ParticipantId();
         final String s = id.toString();
         final ParticipantId id2 = new ParticipantId(s);
@@ -54,14 +54,14 @@ public class ParticipantIdTest {
     }
 
     @Test
-    public void testToString() {
+    public void toStringGeneration() {
         final ParticipantId id = new ParticipantId();
         final String s = id.toString();
         assertTrue(s.length() > 0);
     }
 
     @Test
-    public void testToByteArray() {
+    public void toByteArray() {
         final ParticipantId id = new ParticipantId(
                 "2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
 
@@ -89,7 +89,7 @@ public class ParticipantIdTest {
     }
 
     @Test
-    public void testFromByteArray() {
+    public void fromByteArray() {
 
         final byte[] data = new byte[16];
 

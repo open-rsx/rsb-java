@@ -81,7 +81,7 @@ public class RemoteServerTest {
     }
 
     @Test
-    public void testActivate() throws InitializeException {
+    public void activate() throws InitializeException {
         final RemoteServer remote = this.factory.createRemoteServer(SCOPE
                 .toString());
         remote.activate();
@@ -89,7 +89,7 @@ public class RemoteServerTest {
     }
 
     @Test
-    public void testAddMethod() throws InitializeException {
+    public void addMethod() throws InitializeException {
         final RemoteServer remote = this.factory.createRemoteServer(SCOPE
                 .toString());
         final String methodName = "callme";

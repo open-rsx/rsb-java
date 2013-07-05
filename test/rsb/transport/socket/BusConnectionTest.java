@@ -50,7 +50,7 @@ import rsb.transport.EventBuilder;
 public class BusConnectionTest {
 
     @Test
-    public void testBusConnection() throws UnknownHostException {
+    public void busConnection() throws UnknownHostException {
         final InetAddress addr = InetAddress.getLocalHost();
         final BusConnection bus1 = new BusConnection(addr, 55555, false);
         assertNotNull(bus1);
@@ -61,7 +61,7 @@ public class BusConnectionTest {
 
     // @Test
     // TODO add Server mock for testing
-    public void testBusConnectionDeActivation() throws IOException,
+    public void busConnectionDeActivation() throws IOException,
             RSBException {
         // instantiate Socket object
         // precondition: server is running!!!
@@ -79,7 +79,7 @@ public class BusConnectionTest {
     }
 
     @Test
-    public void testClientConnection() throws RSBException {
+    public void clientConnection() throws RSBException {
         try {
             // prototyping code that works with rsb_listener example
             final InetAddress addr = InetAddress.getLocalHost();
@@ -137,7 +137,7 @@ public class BusConnectionTest {
     // }
 
     @Test
-    public void testServerConnection() {
+    public void serverConnection() {
         try {
             // prototyping code that works with rsb_listener example
             final InetAddress addr = InetAddress.getLocalHost();

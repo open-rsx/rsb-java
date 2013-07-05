@@ -42,7 +42,7 @@ import org.junit.Test;
 public class MetaDataTest {
 
     @Test
-    public void testConstruction() {
+    public void construction() {
 
         final MetaData meta = new MetaData();
         assertTrue(meta.getCreateTime() >= System.currentTimeMillis() * 1000 - 100000);
@@ -55,7 +55,7 @@ public class MetaDataTest {
     }
 
     @Test
-    public void testDefaultTimesAuto() {
+    public void defaultTimesAuto() {
 
         final MetaData meta = new MetaData();
         meta.setCreateTime(0);
@@ -75,7 +75,7 @@ public class MetaDataTest {
     }
 
     @Test
-    public void testDefaultTimesManual() {
+    public void defaultTimesManual() {
 
         final MetaData meta = new MetaData();
         final long time = 13123;
@@ -92,7 +92,7 @@ public class MetaDataTest {
     }
 
     @Test
-    public void testUserTimes() {
+    public void userTimes() {
 
         final MetaData meta = new MetaData();
         final String key = "afdadfasfd";
@@ -125,7 +125,7 @@ public class MetaDataTest {
     }
 
     @Test
-    public void testUserInfos() {
+    public void userInfos() {
 
         final MetaData meta = new MetaData();
         final String key = "afdadfasfd";
@@ -152,7 +152,7 @@ public class MetaDataTest {
     }
 
     @Test
-    public void testComparison() {
+    public void comparison() {
 
         MetaData meta1 = new MetaData();
         try {

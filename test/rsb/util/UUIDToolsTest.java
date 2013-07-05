@@ -48,7 +48,7 @@ public class UUIDToolsTest {
      * .
      */
     @Test
-    public void testGetNameBasedUUID() {
+    public void getNameBasedUUID() {
         // Testcase A (see https://code.cor-lab.org/projects/rsb/wiki/Events)
         // event id v5-uuid(D8FBFEF4-4EB0-4C89-9716-C425DED3C527, "00000000")
         // => 84F43861-433F-5253-AFBB-A613A5E04D71
@@ -89,7 +89,7 @@ public class UUIDToolsTest {
      * Test method for {@link rsb.util.UUIDTools#fromByteArray(byte[])}.
      */
     @Test
-    public void testByteArrayConversion() {
+    public void byteArrayConversion() {
         final UUID id1 = UUID.randomUUID();
         final byte[] buffer = UUIDTools.toByteArray(id1);
         assertEquals(16, buffer.length);

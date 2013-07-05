@@ -38,7 +38,7 @@ import org.junit.Test;
 public class ConverterSignatureTest {
 
     @Test
-    public void testConverterSignature() {
+    public void converterSignature() {
         final ConverterSignature sig = new ConverterSignature("utf-8-string",
                 String.class);
         assertTrue(sig.getSchema().contentEquals("utf-8-string"));
@@ -47,7 +47,7 @@ public class ConverterSignatureTest {
     }
 
     @Test
-    public void testEqualsObject() {
+    public void equalsObject() {
         final ConverterSignature sig1 = new ConverterSignature("utf-8-string",
                 String.class);
         final ConverterSignature sig2 = new ConverterSignature("utf-8-string",

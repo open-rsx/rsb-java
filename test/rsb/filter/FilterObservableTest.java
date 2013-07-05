@@ -74,7 +74,7 @@ public class FilterObservableTest {
      * .
      */
     @Test
-    public void testAddObserver() {
+    public void addObserver() {
         final FilterObservable fo = new FilterObservable();
         fo.addObserver(new TestObserver());
         assertTrue(fo.observers.size() == 1);
@@ -86,7 +86,7 @@ public class FilterObservableTest {
      * .
      */
     @Test
-    public void testRemoveObserver() {
+    public void removeObserver() {
         final FilterObservable fo = new FilterObservable();
         final TestObserver to = new TestObserver();
         fo.addObserver(to);
@@ -95,7 +95,7 @@ public class FilterObservableTest {
     }
 
     @Test
-    public void testNotifyObservers() {
+    public void notifyObservers() {
         final FilterObservable fo = new FilterObservable();
         final TestObserver to = new TestObserver();
         fo.addObserver(to);
@@ -114,7 +114,7 @@ public class FilterObservableTest {
      * Test method for {@link rsb.filter.FilterObservable#clearObservers()}.
      */
     @Test
-    public void testClearObservers() {
+    public void clearObservers() {
         final FilterObservable fo = new FilterObservable();
         final TestObserver to = new TestObserver();
         fo.addObserver(to);

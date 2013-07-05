@@ -39,7 +39,7 @@ public class EventIdTest {
     ParticipantId participantId = new ParticipantId();
 
     @Test
-    public void testEqualsObject() {
+    public void equalsObject() {
         final EventId eventId_a = new EventId(this.participantId, 0);
         EventId eventId_b = new EventId(this.participantId, 0);
         assertEquals(eventId_a, eventId_b);
@@ -49,7 +49,7 @@ public class EventIdTest {
     }
 
     @Test
-    public void testGetAsUUID() {
+    public void getAsUUID() {
         final EventId eventId = new EventId(this.participantId, 1);
         assertNotNull(eventId.getAsUUID());
     }

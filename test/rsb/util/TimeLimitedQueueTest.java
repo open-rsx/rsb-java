@@ -58,7 +58,7 @@ public class TimeLimitedQueueTest {
     }
 
     @Test
-    public void testAddEvent() {
+    public void addEvent() {
         final Event firstEvent = new Event();
         final long firstTime = firstEvent.getMetaData().getCreateTime();
 
