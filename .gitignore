@@ -6,5 +6,8 @@
 /testreports
 /coverage
 /bin
-gitversion
-gitbranch
+/gitversion
+/gitbranch
+/pmd.xml
+/pmd_report.html
+
