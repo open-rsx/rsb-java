@@ -35,6 +35,8 @@ package rsb;
  */
 public class InvalidStateException extends RuntimeException {
 
+    private static final long serialVersionUID = -2396672331593990574L;
+
     public InvalidStateException(final String message) {
         super(message);
     }
@@ -46,7 +48,5 @@ public class InvalidStateException extends RuntimeException {
     public InvalidStateException(final Throwable cause) {
         super(cause);
     }
-
-    private static final long serialVersionUID = -2396672331593990574L;
 
 }

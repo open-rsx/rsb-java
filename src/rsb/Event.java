@@ -93,6 +93,7 @@ public class Event {
      * Construct empty event. Only metadata is initialized.
      */
     public Event() {
+        // meta data is initialized in the filed declaration already0
     }
 
     /**

@@ -188,15 +188,11 @@ public class RemoteMethod extends Method implements Handler {
         // method, and EVENT is the reply to one of the
         // "other" requests, REQUEST can be null here.
         LOG.fine("Found pending reply for id: " + replyId);
-        try {
-            // an error occurred at the server side
-            if (event.getMetaData().getUserInfo("rsb:error?") != null) {
-                final String error = (String) event.getData();
-                request.error(new RSBException(error));
-                return;
-            }
-        } catch (final IllegalArgumentException exception) {
-            // can happen if there is no error user info, so the normal case
+        // an error occurred at the server side
+        if (event.getMetaData().hasUserInfo("rsb:error?")) {
+            final String error = (String) event.getData();
+            request.error(new RSBException(error));
+            return;
         }
         request.result(event);
 

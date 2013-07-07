@@ -28,7 +28,6 @@
 package rsb.filter;
 
 import rsb.Event;
-import rsb.EventId;
 import rsb.ParticipantId;
 
 /**
@@ -78,11 +77,6 @@ public class OriginFilter extends AbstractFilter {
     @Override
     public void dispachToObserver(final FilterObserver o, final FilterAction a) {
         o.notify(this, a);
-    }
-
-    @Override
-    public void skip(final EventId id) {
-        super.skip(id);
     }
 
     @Override

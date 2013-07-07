@@ -52,6 +52,18 @@ import rsb.transport.TransportFactory;
  */
 public class Listener extends Participant {
 
+    protected final static Logger LOG = Logger.getLogger(Listener.class
+            .getName());
+
+    /** class state variable */
+    private ListenerState state;
+
+    @SuppressWarnings({ "deprecation", "unused" })
+    private ErrorHandler errorHandler;
+
+    private final List<Filter> filters = new ArrayList<Filter>();
+    private final List<Handler> handlers = new ArrayList<Handler>();
+
     protected class ListenerStateActive extends ListenerState {
 
         public ListenerStateActive(final Listener ctx) {
@@ -79,18 +91,6 @@ public class Listener extends Participant {
         }
 
     }
-
-    protected final static Logger LOG = Logger.getLogger(Listener.class
-            .getName());
-
-    /** class state variable */
-    private ListenerState state;
-
-    @SuppressWarnings({ "deprecation", "unused" })
-    private ErrorHandler errorHandler;
-
-    private final ArrayList<Filter> filters = new ArrayList<Filter>();
-    private final ArrayList<Handler> handlers = new ArrayList<Handler>();
 
     Listener(final Scope scope) {
         super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
@@ -139,8 +139,7 @@ public class Listener extends Participant {
     }
 
     public Iterator<Filter> getFilterIterator() {
-        final Iterator<Filter> it = this.filters.iterator();
-        return it;
+        return this.filters.iterator();
     }
 
     public void addFilter(final Filter filter) {
@@ -153,8 +152,7 @@ public class Listener extends Participant {
     }
 
     public Iterator<Handler> getHandlerIterator() {
-        final Iterator<Handler> it = this.handlers.iterator();
-        return it;
+        return this.handlers.iterator();
     }
 
     /**

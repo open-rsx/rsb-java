@@ -52,6 +52,15 @@ public abstract class Method implements RSBObject {
     protected final static Logger LOG = Logger
             .getLogger(Method.class.getName());
 
+    protected Factory factory;
+    private final Server<?> server;
+    private final String name;
+    protected Informer<?> informer;
+    protected Listener listener;
+    private MethodState state;
+    protected final Scope REQUEST_SCOPE;
+    protected final Scope REPLY_SCOPE;
+
     protected class MethodState {
 
         public MethodState activate() throws InitializeException {
@@ -89,15 +98,6 @@ public abstract class Method implements RSBObject {
             return new MethodStateActive();
         }
     }
-
-    protected Factory factory;
-    private final Server<?> server;
-    private final String name;
-    protected Informer<?> informer;
-    protected Listener listener;
-    private MethodState state;
-    protected final Scope REQUEST_SCOPE;
-    protected final Scope REPLY_SCOPE;
 
     /**
      * Create a new Method object for the method named @a name provided by @a

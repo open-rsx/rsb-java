@@ -115,11 +115,11 @@ public class Informer<DataType extends Object> extends Participant {
                 throw new IllegalArgumentException(
                         "Event scope must not be null.");
             }
-            if (!Informer.this.getScope().equals(event.getScope())) {
-                if (!Informer.this.getScope().isSuperScopeOf(event.getScope())) {
-                    throw new IllegalArgumentException(
-                            "Event scope not a sub-scope of informer scope.");
-                }
+            if (!Informer.this.getScope().equals(event.getScope())
+                    && !Informer.this.getScope().isSuperScopeOf(
+                            event.getScope())) {
+                throw new IllegalArgumentException(
+                        "Event scope not a sub-scope of informer scope.");
             }
             if (!this.ctx.getTypeInfo().isAssignableFrom(event.getType())) {
                 throw new IllegalArgumentException(

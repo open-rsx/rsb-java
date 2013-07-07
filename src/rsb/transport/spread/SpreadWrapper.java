@@ -51,6 +51,21 @@ import spread.SpreadGroup;
  */
 public class SpreadWrapper implements RSBObject {
 
+    private State status = State.DEACTIVATED;
+
+    String privGrpId;
+    SpreadConnection conn;
+    private final Deque<SpreadGroup> groups = new ArrayDeque<SpreadGroup>();
+    Properties props = Properties.getInstance();
+    private final int port;
+    private InetAddress spreadhost = null;
+    private boolean useTcpNoDelay = true;
+
+    /** random number generator for connection names */
+    boolean shutdown = false;
+
+    private boolean connectionLost = false;
+
     // TODO think about sub-classing SpreadConnection
     // TODO leave the complex stuff for SpreadPort
 
@@ -117,21 +132,6 @@ public class SpreadWrapper implements RSBObject {
     enum State {
         ACTIVATED, DEACTIVATED
     };
-
-    private State status = State.DEACTIVATED;
-
-    String privGrpId;
-    SpreadConnection conn;
-    private final Deque<SpreadGroup> groups = new ArrayDeque<SpreadGroup>();
-    Properties props = Properties.getInstance();
-    private final int port;
-    private InetAddress spreadhost = null;
-    private boolean useTcpNoDelay = true;
-
-    /** random number generator for connection names */
-    boolean shutdown = false;
-
-    private boolean connectionLost = false;
 
     /**
      * Create a new Manager, assuming a spread daemon on localhost, port 4803.

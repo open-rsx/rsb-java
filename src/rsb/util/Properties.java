@@ -46,7 +46,7 @@ public class Properties {
             .getName());
 
     private final static String[] boolValues = { "FALSE", "TRUE", "YES", "NO",
-            "true", "false", "yes", "no", "1", "0" };
+        "true", "false", "yes", "no", "1", "0" };
 
     private static void dumpProperties() {
         for (final String key : singleton.propsMap.keySet()) {
@@ -76,10 +76,8 @@ public class Properties {
         }
 
         public boolean setValidValue(final String v) {
-            if (this.regex != "") {
-                if (!v.matches(this.regex)) {
-                    return false;
-                }
+            if (!this.regex.isEmpty() && !v.matches(this.regex)) {
+                return false;
             }
             this.value = v;
             return true;
@@ -339,8 +337,8 @@ public class Properties {
                         .startsWith("transport.spread.converter.java"))
                         || (key.startsWith("transport") && !key
                                 .startsWith("transport.spread"))
-                        || (key.startsWith("plugins") && !key
-                                .startsWith("plugins.java"))) {
+                                || (key.startsWith("plugins") && !key
+                                        .startsWith("plugins.java"))) {
                     continue;
                 }
                 final String value = line.substring(index + 1).trim();
@@ -348,8 +346,8 @@ public class Properties {
                     this.setProperty(key, value);
                 } catch (final InvalidPropertyException ex) {
                     System.err
-                            .println("An exception occurred reading configuration from file '"
-                                    + fn + "': " + ex.getMessage());
+                    .println("An exception occurred reading configuration from file '"
+                            + fn + "': " + ex.getMessage());
                 }
             }
 
@@ -374,8 +372,8 @@ public class Properties {
                             .toLowerCase(), env.get(key));
                 } catch (final InvalidPropertyException ex) {
                     System.err
-                            .println("An exception occurred reading configuration from environment: "
-                                    + ex.getMessage());
+                    .println("An exception occurred reading configuration from environment: "
+                            + ex.getMessage());
                 }
             }
         }
@@ -387,7 +385,7 @@ public class Properties {
         } else {
             throw new InvalidPropertyException(
                     "Trying to get unknown property '" + key
-                            + "' in Properties.getProperty()");
+                    + "' in Properties.getProperty()");
         }
     }
 
@@ -430,7 +428,7 @@ public class Properties {
         } else {
             throw new InvalidPropertyException(
                     "Trying to set unkown property '" + key
-                            + "' in Properties.setProperty()");
+                    + "' in Properties.setProperty()");
         }
     }
 

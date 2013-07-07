@@ -29,7 +29,11 @@ import rsb.util.Properties;
 
 public class DumpVersion {
 
-    public static void main(final String[] args) throws Exception {
+    private DumpVersion() {
+        // empty constructor to prevent initialization
+    }
+
+    public static void main(final String[] args) throws Throwable {
         System.out.println("RSB Version: "
                 + Properties.getInstance().getProperty("RSB.Version") + "-"
                 + Properties.getInstance().getProperty("RSB.LastCommit"));

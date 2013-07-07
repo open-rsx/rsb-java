@@ -38,7 +38,7 @@ public interface RSBObject {
      * @throws RSBException
      *             generic error related to RSB
      */
-    public void activate() throws RSBException;
+    void activate() throws RSBException;
 
     /**
      * Deactivate all network resources that are owned by a specific object in
@@ -47,7 +47,7 @@ public interface RSBObject {
      * @throws RSBException
      *             generic error related to RSB
      */
-    public void deactivate() throws RSBException;
+    void deactivate() throws RSBException;
 
     /**
      * Tells whether this class is currently active or not.

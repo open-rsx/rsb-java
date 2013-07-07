@@ -52,6 +52,9 @@ import rsb.transport.TransportFactory;
  */
 public abstract class Server<MethodType extends Method> extends Participant {
 
+    private final Map<String, MethodType> methods;
+    private ServerState state;
+
     /**
      * Abstract base class for implementations of the different server states.
      */
@@ -126,9 +129,6 @@ public abstract class Server<MethodType extends Method> extends Participant {
             return false;
         }
     }
-
-    private final Map<String, MethodType> methods;
-    private ServerState state;
 
     protected Server(final Scope scope,
             final TransportFactory transportFactory,

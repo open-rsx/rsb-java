@@ -38,6 +38,9 @@ package rsb;
  */
 public class QualityOfServiceSpec {
 
+    private final Ordering ordering;
+    private final Reliability reliability;
+
     /**
      * Possible ordering requirements for events.
      * 
@@ -71,9 +74,6 @@ public class QualityOfServiceSpec {
          */
         RELIABLE;
     }
-
-    private final Ordering ordering;
-    private final Reliability reliability;
 
     /**
      * Default specs with {@link Reliability#RELIABLE} and

@@ -41,8 +41,8 @@ public class ConverterSignature {
     private final Class<?> datatype;
 
     public ConverterSignature(final String schema, final Class<?> datatype) {
-        assert (datatype != null);
-        assert (schema != null);
+        assert datatype != null;
+        assert schema != null;
         this.schema = schema;
         this.datatype = datatype;
     }

@@ -29,12 +29,16 @@ package rsb;
 
 import java.util.logging.Logger;
 
-public abstract class InformerState<T> {
+public class InformerState<T> {
 
     private final static Logger LOG = Logger.getLogger(InformerState.class
             .getName());
 
     protected Informer<T> ctx;
+
+    protected InformerState() {
+        // prevent instantiation without subclassing
+    }
 
     protected InformerState(final Informer<T> ctx) {
         this.ctx = ctx;

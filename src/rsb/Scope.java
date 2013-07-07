@@ -160,6 +160,7 @@ public class Scope {
      *            last element of the returned list
      * @return list of all super scopes ordered by hierarchy, "/" being first
      */
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public List<Scope> superScopes(final boolean includeSelf) {
 
         final List<Scope> superScopes = new ArrayList<Scope>();
