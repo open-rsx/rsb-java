@@ -46,10 +46,10 @@ public interface ConverterRepository<WireType> {
      * 
      * @return ConverterSelectionStrategy object for serialization
      */
-    public abstract ConverterSelectionStrategy<WireType> getConvertersForSerialization();
+    ConverterSelectionStrategy<WireType> getConvertersForSerialization();
 
-    public abstract ConverterSelectionStrategy<WireType> getConvertersForDeserialization();
+    ConverterSelectionStrategy<WireType> getConvertersForDeserialization();
 
-    public abstract void addConverter(Converter<WireType> converter);
+    void addConverter(Converter<WireType> converter);
 
 }

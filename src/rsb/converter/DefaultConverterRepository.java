@@ -60,17 +60,17 @@ public class DefaultConverterRepository<WireType> implements
         // where to register the initial converters
         // outStrategy.addConverter("String", new StringConverter());
         // Query Map for types
-        for (final ConverterSignature s : this.converterMap.keySet()) {
+        for (final ConverterSignature signature : this.converterMap.keySet()) {
             // put datatype and converter into unambiguous converter map
-            if (s.getSchema().contentEquals("ascii-string")) {
+            if (signature.getSchema().contentEquals("ascii-string")) {
                 // adding two String representations would yield ambiguity
                 // we want to use the UTF-8 representation for strings as
                 // default
                 LOG.fine("skipping ascii-string converter for Serialization map");
             } else {
                 // all other converters are added at this point
-                outStrategy.addConverter(s.getDatatype().getName(),
-                        this.converterMap.get(s));
+                outStrategy.addConverter(signature.getDatatype().getName(),
+                        this.converterMap.get(signature));
             }
         }
         return outStrategy;
@@ -85,9 +85,10 @@ public class DefaultConverterRepository<WireType> implements
     public ConverterSelectionStrategy<WireType> getConvertersForDeserialization() {
         final UnambiguousConverterMap<WireType> inStrategy = new UnambiguousConverterMap<WireType>();
         // Query Map for wire schemas
-        for (final ConverterSignature s : this.converterMap.keySet()) {
+        for (final ConverterSignature signature : this.converterMap.keySet()) {
             // put datatype and converter into unambiguous converter map
-            inStrategy.addConverter(s.getSchema(), this.converterMap.get(s));
+            inStrategy.addConverter(signature.getSchema(),
+                    this.converterMap.get(signature));
         }
         return inStrategy;
     }

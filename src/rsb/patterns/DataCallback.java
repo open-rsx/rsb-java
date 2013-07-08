@@ -58,10 +58,10 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
         // wrap return data in event instance
         Class<?> type;
         // null needs to be specifically handled
-        if (result != null) {
-            type = result.getClass();
-        } else {
+        if (result == null) {
             type = Void.class;
+        } else {
+            type = result.getClass();
         }
         return new Event(type, result);
     }

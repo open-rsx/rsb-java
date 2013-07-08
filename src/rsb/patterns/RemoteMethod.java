@@ -78,7 +78,7 @@ public class RemoteMethod extends Method implements Handler {
          *            the future to contain the final result.
          */
         public FuturePreparator(final Future<FutureDataType> future) {
-            assert (future != null);
+            assert future != null;
             this.future = new WeakReference<Future<FutureDataType>>(future);
         }
 

@@ -38,52 +38,64 @@ import rsb.protocol.EventMetaDataType.UserTime;
 import rsb.protocol.NotificationType.Notification;
 
 /**
+ * A utility class to construct {@link Event}s from {@link Notification}s.
+ * 
  * @author swrede
  */
-public class EventBuilder {
+public final class EventBuilder {
 
-    private static Logger log = Logger.getLogger(EventBuilder.class.getName());
+    private EventBuilder() {
+        // prevent initialization of utility class
+        super();
+    }
+
+    private static final Logger LOG = Logger.getLogger(EventBuilder.class
+            .getName());
 
     /**
      * Build event from RSB Notification. Excludes user data de-serialization as
      * it is bound to the converter configuration.
      * 
-     * @param n
+     * @param notification
      *            {@link Notification} instance to deserialize
      * @return deserialized {@link Event} instance
      */
-    public static Event fromNotification(final Notification n) {
-        log.fine("decoding notification");
-        final Event e = new Event();
-        e.setScope(new Scope(n.getScope().toStringUtf8()));
-        e.setId(new ParticipantId(n.getEventId().getSenderId().toByteArray()),
-                n.getEventId().getSequenceNumber());
-        if (n.hasMethod()) {
-            e.setMethod(n.getMethod().toStringUtf8());
+    public static Event fromNotification(final Notification notification) {
+        LOG.fine("decoding notification");
+        final Event event = new Event();
+        event.setScope(new Scope(notification.getScope().toStringUtf8()));
+        event.setId(new ParticipantId(notification.getEventId().getSenderId()
+                .toByteArray()), notification.getEventId().getSequenceNumber());
+        if (notification.hasMethod()) {
+            event.setMethod(notification.getMethod().toStringUtf8());
         }
 
-        log.finest("returning event with id: " + e.getId());
+        LOG.finest("returning event with id: " + event.getId());
 
         // metadata
-        e.getMetaData().setCreateTime(n.getMetaData().getCreateTime());
-        e.getMetaData().setSendTime(n.getMetaData().getSendTime());
-        e.getMetaData().setReceiveTime(0);
-        for (final UserInfo info : n.getMetaData().getUserInfosList()) {
-            e.getMetaData().setUserInfo(info.getKey().toStringUtf8(),
+        event.getMetaData().setCreateTime(
+                notification.getMetaData().getCreateTime());
+        event.getMetaData().setSendTime(
+                notification.getMetaData().getSendTime());
+        event.getMetaData().setReceiveTime(0);
+        for (final UserInfo info : notification.getMetaData()
+                .getUserInfosList()) {
+            event.getMetaData().setUserInfo(info.getKey().toStringUtf8(),
                     info.getValue().toStringUtf8());
         }
-        for (final UserTime time : n.getMetaData().getUserTimesList()) {
-            e.getMetaData().setUserTime(time.getKey().toStringUtf8(),
+        for (final UserTime time : notification.getMetaData()
+                .getUserTimesList()) {
+            event.getMetaData().setUserTime(time.getKey().toStringUtf8(),
                     time.getTimestamp());
         }
 
         // causes
-        for (final EventId cause : n.getCausesList()) {
-            e.addCause(new rsb.EventId(new ParticipantId(cause.getSenderId()
-                    .toByteArray()), cause.getSequenceNumber()));
+        for (final EventId cause : notification.getCausesList()) {
+            event.addCause(new rsb.EventId(new ParticipantId(cause
+                    .getSenderId().toByteArray()), cause.getSequenceNumber())); // NOPMD
         }
 
-        return e;
+        return event;
     }
 
 }

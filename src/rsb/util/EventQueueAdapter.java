@@ -64,10 +64,10 @@ public class EventQueueAdapter extends AbstractEventHandler {
      *            full, otherwise block until space is available on inserts
      */
     public EventQueueAdapter(final int capacity, final boolean discardOldest) {
-        if (!discardOldest) {
-            this.queue = new LinkedBlockingDeque<Event>(capacity);
-        } else {
+        if (discardOldest) {
             this.queue = new LimitedQueue<Event>(capacity);
+        } else {
+            this.queue = new LinkedBlockingDeque<Event>(capacity);
         }
     }
 

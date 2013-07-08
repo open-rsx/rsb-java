@@ -83,13 +83,14 @@ public class LocalServer extends Server<LocalMethod> {
      * @throws IllegalArgumentException
      *             a method with the given name already exists.
      */
-    public synchronized void addMethod(final String name,
-            final Callback callback)
+    public void addMethod(final String name, final Callback callback)
             throws InitializeException {
         LOG.fine("Registering new data method " + name
                 + " with signature object: " + callback);
-        final LocalMethod method = new LocalMethod(this, name, callback);
-        this.addAndActivate(name, method);
+        synchronized (this) {
+            final LocalMethod method = new LocalMethod(this, name, callback);
+            this.addAndActivate(name, method);
+        }
     }
 
     /**
@@ -112,15 +113,17 @@ public class LocalServer extends Server<LocalMethod> {
         }
     }
 
-    public synchronized void waitForShutdown() {
-        // Blocks calling thread as long as this Server instance
-        // is in activated state
-        if (this.isActive()) {
-            try {
-                // Wait until we are done
-                this.wait();
-            } catch (final InterruptedException ex) {
-                // Server has been deactivated, return from run
+    public void waitForShutdown() {
+        synchronized (this) {
+            // Blocks calling thread as long as this Server instance
+            // is in activated state
+            if (this.isActive()) {
+                try {
+                    // Wait until we are done
+                    this.wait();
+                } catch (final InterruptedException ex) {
+                    // Server has been deactivated, return from run
+                }
             }
         }
     }

@@ -64,10 +64,10 @@ public class QueueAdapter<T> extends AbstractDataHandler<T> {
      *            full, otherwise block until space is available on inserts
      */
     public QueueAdapter(final int capacity, final boolean discardOldest) {
-        if (!discardOldest) {
-            this.queue = new LinkedBlockingDeque<T>(capacity);
-        } else {
+        if (discardOldest) {
             this.queue = new LimitedQueue<T>(capacity);
+        } else {
+            this.queue = new LinkedBlockingDeque<T>(capacity);
         }
     }
 

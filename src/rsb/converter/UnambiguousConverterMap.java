@@ -50,11 +50,13 @@ public class UnambiguousConverterMap<WireType> implements
                 + " registered in ConverterMap");
     }
 
-    public void addConverter(final String key, final Converter<WireType> c) {
+    public void addConverter(final String key,
+            final Converter<WireType> converter) {
         if (this.converters.containsKey(key)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                    "There is already a converter with key '" + key + "'.");
         }
-        this.converters.put(key, c);
+        this.converters.put(key, converter);
     }
 
 }

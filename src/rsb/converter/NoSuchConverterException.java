@@ -28,36 +28,52 @@
 package rsb.converter;
 
 /**
+ * An exception indicating that no {@link Converter} is available for the
+ * intended operation.
+ * 
  * @author swrede
  */
 public class NoSuchConverterException extends RuntimeException {
 
+    private static final long serialVersionUID = 4919272894409736639L;
+
+    /**
+     * Constructs an exception with empty message and causing exception.
+     */
     public NoSuchConverterException() {
         super();
     }
 
     /**
+     * Constructs an exception with explanatory message and causing exception.
+     * 
      * @param message
+     *            the message
      * @param cause
+     *            causing exception
      */
     public NoSuchConverterException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
     /**
+     * Constructs an exception with explanatory message.
+     * 
      * @param message
+     *            the message
      */
     public NoSuchConverterException(final String message) {
         super(message);
     }
 
     /**
+     * Constructs an exception with causing exception.
+     * 
      * @param cause
+     *            causing exception
      */
     public NoSuchConverterException(final Throwable cause) {
         super(cause);
     }
-
-    private static final long serialVersionUID = 4919272894409736639L;
 
 }

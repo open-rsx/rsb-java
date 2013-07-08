@@ -49,33 +49,35 @@ public class TimeLimitedQueue extends LimitedQueue<Event> {
         this.timeWindow = TimeUnit.MICROSECONDS.convert(timeWindow, unit);
     }
 
-    private synchronized void discardOldEvents(final long currentTime) {
-        if (this.queue.isEmpty()) {
-            return;
-        }
+    private void discardOldEvents(final long currentTime) {
+        synchronized (this) {
+            if (this.queue.isEmpty()) {
+                return;
+            }
 
-        Event oldestEvent = this.queue.peek();
-        long oldestTime = oldestEvent.getMetaData().getCreateTime();
+            Event oldestEvent = this.queue.peek();
+            long oldestTime = oldestEvent.getMetaData().getCreateTime();
 
-        while (((currentTime - oldestTime) > this.timeWindow)
-                && !this.queue.isEmpty()) {
-            // Discard the oldest element
-            this.queue.poll();
+            while (currentTime - oldestTime > this.timeWindow
+                    && !this.queue.isEmpty()) {
+                // Discard the oldest element
+                this.queue.poll();
 
-            // Get the age of the next oldest element
-            oldestEvent = this.queue.peek();
-            oldestTime = oldestEvent.getMetaData().getCreateTime();
+                // Get the age of the next oldest element
+                oldestEvent = this.queue.peek();
+                oldestTime = oldestEvent.getMetaData().getCreateTime();
+            }
         }
     }
 
     @Override
-    public boolean add(final Event e) {
+    public boolean add(final Event event) {
         // Discard events outside the time window.
         // TODO: Do we always want to use the create time?
-        final long currentTime = e.getMetaData().getCreateTime();
+        final long currentTime = event.getMetaData().getCreateTime();
         this.discardOldEvents(currentTime);
 
-        return super.add(e);
+        return super.add(event);
     }
 
     // TODO: Shouldn't the "offer" methods also be overwritten in such a queue?

@@ -29,6 +29,11 @@ package rsb.util;
 
 public class InvalidPropertyException extends RuntimeException {
 
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 5696967985100081449L;
+
     public InvalidPropertyException() {
         super();
     }
@@ -44,10 +49,5 @@ public class InvalidPropertyException extends RuntimeException {
     public InvalidPropertyException(final Throwable cause) {
         super(cause);
     }
-
-    /**
-     * Serial version UID.
-     */
-    private static final long serialVersionUID = 5696967985100081449L;
 
 }

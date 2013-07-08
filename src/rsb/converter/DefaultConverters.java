@@ -31,9 +31,14 @@ package rsb.converter;
 /**
  * @author swrede
  */
-public class DefaultConverters {
+public final class DefaultConverters {
 
-    /*
+    private DefaultConverters() {
+        // make this a utility class which cannot be instantiated
+        super();
+    }
+
+    /**
      * Convenience method to register default converters for default wire type.
      */
     public static void register() {

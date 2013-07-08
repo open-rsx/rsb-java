@@ -50,6 +50,7 @@ import java.util.Set;
 // Rationale: A single event can only hold a single type
 public class Event {
 
+    @SuppressWarnings("PMD.ShortVariable")
     private EventId id = null;
     private Class<?> type = Object.class;
     private Scope scope;
@@ -157,6 +158,7 @@ public class Event {
      * @param id
      *            new id to set
      */
+    @SuppressWarnings("PMD.ShortVariable")
     public void setId(final EventId id) {
         this.id = id;
     }
@@ -262,11 +264,6 @@ public class Event {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -332,6 +329,7 @@ public class Event {
      * @return <code>true</code> if the causes was added, <code>false</code> if
      *         it already existed
      */
+    @SuppressWarnings("PMD.ShortVariable")
     public boolean addCause(final EventId id) {
         return this.causes.add(id);
     }
@@ -345,6 +343,7 @@ public class Event {
      * @return <code>true</code> if an event with this id was removed from the
      *         causes, else <code>false</code>
      */
+    @SuppressWarnings("PMD.ShortVariable")
     public boolean removeCause(final EventId id) {
         return this.causes.remove(id);
     }
@@ -358,6 +357,7 @@ public class Event {
      * @return <code>true</code> if id is marked as a cause for this event, else
      *         <code>false</code>
      */
+    @SuppressWarnings("PMD.ShortVariable")
     public boolean isCause(final EventId id) {
         return this.causes.contains(id);
     }

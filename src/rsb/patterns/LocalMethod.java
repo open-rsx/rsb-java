@@ -84,11 +84,11 @@ class LocalMethod extends Method implements Handler {
         } catch (final Throwable exception) {
             LOG.warning("Exception during method invocation in participant: "
                     + this.REQUEST_SCOPE + " Exception message: " + exception);
-            final StringWriter sw = new StringWriter();
-            final PrintWriter pw = new PrintWriter(sw);
-            exception.printStackTrace(pw);
+            final StringWriter exceptionWriter = new StringWriter();
+            final PrintWriter exceptionPrinter = new PrintWriter(exceptionWriter);
+            exception.printStackTrace(exceptionPrinter);
             final String error = exception.toString() + " Details: "
-                    + exception.getMessage() + "\n" + sw.toString();
+                    + exception.getMessage() + "\n" + exceptionWriter.toString();
             // return error information
             reply = new Event(String.class, error);
             reply.getMetaData().setUserInfo("rsb:error?", "1");

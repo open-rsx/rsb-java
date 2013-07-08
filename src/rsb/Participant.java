@@ -40,6 +40,7 @@ import rsb.transport.TransportFactory;
  */
 public abstract class Participant implements RSBObject {
 
+    @SuppressWarnings("PMD.ShortVariable")
     private final ParticipantId id = new ParticipantId();
     private Scope scope;
     private TransportFactory transportFactory;

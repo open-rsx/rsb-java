@@ -200,13 +200,17 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     @Override
-    public synchronized void activate() throws InitializeException {
-        this.state.activate();
+    public void activate() throws InitializeException {
+        synchronized (this) {
+            this.state.activate();
+        }
     }
 
     @Override
-    public synchronized void deactivate() {
-        this.state.deactivate();
+    public void deactivate() {
+        synchronized (this) {
+            this.state.deactivate();
+        }
     }
 
     /**
@@ -221,8 +225,10 @@ public class Informer<DataType extends Object> extends Participant {
      *             if the event is not complete or does not match the type or
      *             scope settings of the informer
      */
-    public synchronized Event send(final Event event) throws RSBException {
-        return this.state.send(event);
+    public Event send(final Event event) throws RSBException {
+        synchronized (this) {
+            return this.state.send(event);
+        }
     }
 
     /**
@@ -234,8 +240,10 @@ public class Informer<DataType extends Object> extends Participant {
      * @throws RSBException
      *             error sending event
      */
-    public synchronized Event send(final DataType data) throws RSBException {
-        return this.state.send(data);
+    public Event send(final DataType data) throws RSBException {
+        synchronized (this) {
+            return this.state.send(data);
+        }
     }
 
     /**

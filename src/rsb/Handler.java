@@ -37,5 +37,12 @@ import java.util.EventListener;
  */
 public interface Handler extends EventListener {
 
-    public void internalNotify(Event e);
+    /**
+     * Internal notification with a received event.
+     * 
+     * @param event
+     *            the received event the handler should process
+     */
+    void internalNotify(Event event);
+
 }

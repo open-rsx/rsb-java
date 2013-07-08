@@ -50,7 +50,7 @@ public interface Converter<WireType> {
      * @throws ConversionException
      *             error converting the data
      */
-    public WireContents<WireType> serialize(Class<?> typeInfo, Object obj)
+    WireContents<WireType> serialize(Class<?> typeInfo, Object obj)
             throws ConversionException;
 
     /**
@@ -65,7 +65,7 @@ public interface Converter<WireType> {
      *             error deserializing from the wire
      */
     @SuppressWarnings("rawtypes")
-    public UserData deserialize(String wireSchema, WireType buffer)
+    UserData deserialize(String wireSchema, WireType buffer)
             throws ConversionException;
 
     /**
@@ -73,6 +73,6 @@ public interface Converter<WireType> {
      * 
      * @return the @See ConverterSignature of this converter instance
      */
-    public ConverterSignature getSignature();
+    ConverterSignature getSignature();
 
 }

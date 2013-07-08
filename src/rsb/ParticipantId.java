@@ -41,6 +41,7 @@ import rsb.util.UUIDTools;
  */
 public class ParticipantId {
 
+    @SuppressWarnings("PMD.ShortVariable")
     private final UUID id;
 
     /**
@@ -56,6 +57,7 @@ public class ParticipantId {
      * @param bytes
      *            byte representation of the id.
      */
+    @SuppressWarnings("PMD.UseVarargs")
     public ParticipantId(final byte[] bytes) {
         this.id = UUIDTools.fromByteArray(bytes);
     }

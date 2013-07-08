@@ -50,6 +50,7 @@ public class EventIdConverter implements Converter<ByteBuffer> {
 
         try {
 
+            @SuppressWarnings("PMD.ShortVariable")
             final rsb.EventId id = (rsb.EventId) obj;
 
             final EventId.Builder idBuilder = EventId.newBuilder();
@@ -72,6 +73,7 @@ public class EventIdConverter implements Converter<ByteBuffer> {
             final ByteBuffer buffer) throws ConversionException {
         final EventId protocolId = (EventId) this.converter.deserialize(
                 wireSchema, buffer).getData();
+        @SuppressWarnings("PMD.ShortVariable")
         final rsb.EventId id = new rsb.EventId(new ParticipantId(protocolId
                 .getSenderId().toByteArray()), protocolId.getSequenceNumber());
         return new UserData<ByteBuffer>(id, id.getClass());

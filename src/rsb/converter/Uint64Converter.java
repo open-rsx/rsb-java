@@ -80,7 +80,7 @@ public class Uint64Converter implements Converter<ByteBuffer> {
             if (value < 0L) {
                 value = 256L + value;
             }
-            result |= (value << (i * 8));
+            result |= value << (i * 8);
         }
         return new UserData<ByteBuffer>(result, Long.class);
     }

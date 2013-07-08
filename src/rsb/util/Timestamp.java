@@ -40,15 +40,14 @@ public class Timestamp {
         // do nothing
     }
 
-    public Timestamp(final long s) {
-        this.stamp = s;
+    public Timestamp(final long timeMillis) {
+        this.stamp = timeMillis;
     }
 
-    public static Timestamp fromString(final String s) {
+    public static Timestamp fromString(final String timeMillisString) {
         try {
-            final long l = Long.parseLong(s);
-            return new Timestamp(l);
-        } catch (final Exception e) {
+            return new Timestamp(Long.parseLong(timeMillisString));
+        } catch (final NumberFormatException e) {
             // TODO log warning or error here
             return null;
         }

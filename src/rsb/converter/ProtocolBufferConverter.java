@@ -63,7 +63,7 @@ public class ProtocolBufferConverter<MessageType extends Message> implements
     @Override
     public UserData<MessageType> deserialize(final String wireSchema,
             final ByteBuffer buffer) throws ConversionException {
-        assert (wireSchema.contentEquals(this.getWireSchema()));
+        assert wireSchema.contentEquals(this.getWireSchema());
 
         MessageType result;
         try {

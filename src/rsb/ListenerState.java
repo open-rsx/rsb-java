@@ -35,15 +35,15 @@ import java.util.logging.Logger;
  * 
  * @author swrede
  */
-public abstract class ListenerState {
+public class ListenerState {
 
     protected final static Logger LOG = Logger.getLogger(InformerState.class
             .getName());
 
-    protected Listener s;
+    private Listener context;
 
     protected ListenerState(final Listener ctx) {
-        this.s = ctx;
+        this.context = ctx;
     }
 
     protected void activate() throws InitializeException {
@@ -54,6 +54,10 @@ public abstract class ListenerState {
     protected void deactivate() {
         LOG.warning("invalid state exception during deactivate call");
         throw new InvalidStateException("subscriber already deactivated");
+    }
+
+    protected Listener getContext() {
+        return this.context;
     }
 
 }

@@ -73,7 +73,8 @@ public class Listener extends Participant {
         @Override
         protected void deactivate() {
             Listener.this.getRouter().deactivate();
-            this.s.state = new ListenerStateInactive(this.s);
+            this.getContext().state = new ListenerStateInactive(
+                    this.getContext());
         }
 
     }
@@ -87,7 +88,7 @@ public class Listener extends Participant {
         @Override
         protected void activate() throws InitializeException {
             Listener.this.getRouter().activate();
-            this.s.state = new ListenerStateActive(this.s);
+            this.getContext().state = new ListenerStateActive(this.getContext());
         }
 
     }
@@ -112,10 +113,6 @@ public class Listener extends Participant {
         this.initMembers();
     }
 
-    /**
-     * @param scope
-     *            scope of this listener.
-     */
     private void initMembers() {
         this.state = new ListenerStateInactive(this);
         this.errorHandler = new DefaultErrorHandler(LOG);

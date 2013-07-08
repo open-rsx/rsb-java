@@ -50,6 +50,7 @@ public class MetaData {
      * Creates a new {@link MetaData} instance with creation time now.
      */
     public MetaData() {
+        super();
     }
 
     /**

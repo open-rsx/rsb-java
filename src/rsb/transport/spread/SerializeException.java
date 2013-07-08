@@ -31,13 +31,13 @@ import rsb.RSBException;
 
 public class SerializeException extends RSBException {
 
-    public SerializeException(final String msg) {
-        super(msg);
-    }
-
     /**
      * Serial version UID.
      */
     private static final long serialVersionUID = -6286452461407036752L;
+
+    public SerializeException(final String msg) {
+        super(msg);
+    }
 
 }

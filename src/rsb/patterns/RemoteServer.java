@@ -262,7 +262,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             waiting for the result was cancelled
      */
     public Event call(final String name) throws RSBException,
-    ExecutionException, TimeoutException {
+            ExecutionException, TimeoutException {
         return this.call(name, new Event(Void.class, null));
     }
 
@@ -364,7 +364,7 @@ public class RemoteServer extends Server<RemoteMethod> {
     }
 
     private class DataFuturePreparator<DataType> extends
-    FuturePreparator<DataType> {
+            FuturePreparator<DataType> {
 
         public DataFuturePreparator(final Future<DataType> future) {
             super(future);
@@ -386,7 +386,10 @@ public class RemoteServer extends Server<RemoteMethod> {
         RemoteMethod method = null;
         // get method, either new or cached
         synchronized (this) {
-            if (!hasMethod(name)) {
+            if (hasMethod(name)) {
+                method = getMethod(name);
+                assert method != null;
+            } else {
                 try {
                     method = this.addMethod(name);
                 } catch (final InitializeException exception) {
@@ -394,9 +397,6 @@ public class RemoteServer extends Server<RemoteMethod> {
                             + exception.getMessage() + " Re-throwing it.");
                     throw new RSBException(exception);
                 }
-            } else {
-                method = getMethod(name);
-                assert (method != null);
             }
         }
         method.call(request, resultPreparator);
@@ -407,10 +407,10 @@ public class RemoteServer extends Server<RemoteMethod> {
             final FuturePreparator<?> resultPreparator) throws RSBException {
         final Event request = new Event();
         // null needs to be specifically handled
-        if (requestData != null) {
-            request.setType(requestData.getClass());
-        } else {
+        if (requestData == null) {
             request.setType(Void.class);
+        } else {
+            request.setType(requestData.getClass());
         }
         request.setData(requestData);
         this.callAsyncEvent(name, request, resultPreparator);

@@ -37,9 +37,15 @@ import java.util.UUID;
  * 
  * @author swrede
  */
-public class UUIDTools {
+public final class UUIDTools {
 
+    private static Object synchronizer = new Object();
     private static MessageDigest digester = null;
+
+    private UUIDTools() {
+        // prevent initialization of helper class
+        super();
+    }
 
     /**
      * Generates name-based URIs according to Version 5 (SHA-1).
@@ -50,33 +56,38 @@ public class UUIDTools {
      *            Actual name to be encoded in UUID
      * @return Byte buffer with V5 UUID
      */
-    public synchronized static UUID getNameBasedUUID(final UUID namespace,
-            final String name) {
-        // hash initialization
-        if (digester == null) {
-            try {
-                digester = MessageDigest.getInstance("SHA-1");
-            } catch (final NoSuchAlgorithmException nex) {
-                throw new RuntimeException(
-                        "Couldn't instantiate SHA-1 algorithm: "
-                                + nex.toString());
+    public static UUID getNameBasedUUID(final UUID namespace, final String name) {
+
+        synchronized (synchronizer) {
+
+            // hash initialization
+            if (digester == null) {
+                try {
+                    digester = MessageDigest.getInstance("SHA-1");
+                } catch (final NoSuchAlgorithmException nex) {
+                    throw new RuntimeException(
+                            "Couldn't instantiate SHA-1 algorithm: "
+                                    + nex.toString(), nex);
+                }
             }
+
+            // the actual hashing
+            digester.reset();
+            digester.update(UUIDTools.toByteArray(namespace));
+            digester.update(name.getBytes());
+
+            byte[] bytes = Arrays.copyOfRange(digester.digest(), 0, 16);
+
+            bytes = setVersionAndVariant(bytes);
+
+            // mask byte and set corresponding bits
+            // select clock_seq_hi_and_reserved (octet 8)
+
+            // return byte buffer
+            return fromByteArray(bytes);
+
         }
 
-        // the actual hashing
-        digester.reset();
-        digester.update(UUIDTools.toByteArray(namespace));
-        digester.update(name.getBytes());
-
-        byte[] bytes = Arrays.copyOfRange(digester.digest(), 0, 16);
-
-        bytes = setVersionAndVariant(bytes);
-
-        // mask byte and set corresponding bits
-        // select clock_seq_hi_and_reserved (octet 8)
-
-        // return byte buffer
-        return fromByteArray(bytes);
     }
 
     /**
@@ -87,6 +98,7 @@ public class UUIDTools {
      *            vector to update
      * @return updated byte vector
      */
+    @SuppressWarnings("PMD.UseVarargs")
     private static byte[] setVersionAndVariant(final byte[] bytes) {
         // Constants and bit manipulation from:
         // http://svn.apache.org/repos/asf/commons/sandbox/id/trunk/
@@ -100,7 +112,7 @@ public class UUIDTools {
         // information is still misleading (set to 3)
         final int VERSION_FIVE = 5;
         bytes[TIME_HI_AND_VERSION_BYTE_6] &= 0x0F;
-        bytes[TIME_HI_AND_VERSION_BYTE_6] |= (VERSION_FIVE << 4);
+        bytes[TIME_HI_AND_VERSION_BYTE_6] |= VERSION_FIVE << 4;
 
         // Set variant
         bytes[CLOCK_SEQ_HI_AND_RESERVED_BYTE_8] &= 0x3F; // 0011 1111
@@ -116,6 +128,7 @@ public class UUIDTools {
      *            byte representation of the id.
      * @return the generated {@link UUID} instance
      */
+    @SuppressWarnings("PMD.UseVarargs")
     public static UUID fromByteArray(final byte[] bytes) {
 
         assert bytes.length == 16;
@@ -139,6 +152,7 @@ public class UUIDTools {
      *            {@link UUID} instance to serialize
      * @return byte representing the id (length 16)
      */
+    @SuppressWarnings("PMD.ShortVariable")
     public static byte[] toByteArray(final UUID id) {
 
         final long msb = id.getMostSignificantBits();

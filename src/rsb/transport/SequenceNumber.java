@@ -36,12 +36,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SequenceNumber {
 
-    AtomicInteger count = new AtomicInteger();
+    private AtomicInteger count = new AtomicInteger();
 
     // uint32 max: 4.294.967.295
     public final static long MAX_VALUE = (long) 2 * Integer.MAX_VALUE + 1;
 
     public SequenceNumber() {
+        super();
     }
 
     public SequenceNumber(final long value) {
@@ -51,16 +52,18 @@ public class SequenceNumber {
         this.count = new AtomicInteger((int) value);
     }
 
-    public synchronized long incrementAndGet() {
-        // respect uint32 size
-        final long inc = this.get() + 1;
-        if (inc > SequenceNumber.MAX_VALUE) {
-            // reset to zero
-            this.count = new AtomicInteger();
-        } else {
-            this.count.incrementAndGet();
+    public long incrementAndGet() {
+        synchronized (this) {
+            // respect uint32 size
+            final long inc = this.get() + 1;
+            if (inc > SequenceNumber.MAX_VALUE) {
+                // reset to zero
+                this.count = new AtomicInteger();
+            } else {
+                this.count.incrementAndGet();
+            }
+            return this.count.get() & 0xffffffffL;
         }
-        return this.count.get() & 0xffffffffL;
     }
 
     public long get() {

@@ -41,26 +41,40 @@ public class InitializeException extends RSBException {
 
     private static final long serialVersionUID = -5223250815059688771L;
 
+    /**
+     * Constructs a new exception with empty message and cause.
+     */
     public InitializeException() {
+        super();
     }
 
     /**
+     * Constructs a new exception with an explaining message.
+     * 
      * @param message
+     *            the explanation
      */
     public InitializeException(final String message) {
         super(message);
     }
 
     /**
+     * Constructs a new exception with a {@link Throwable} as causing exception.
+     * 
      * @param cause
+     *            the causing exception
      */
     public InitializeException(final Throwable cause) {
         super(cause);
     }
 
     /**
+     * Constructs a new exception with explaining message and causing exception.
+     * 
      * @param message
+     *            the message
      * @param cause
+     *            the causing exception
      */
     public InitializeException(final String message, final Throwable cause) {
         super(message, cause);

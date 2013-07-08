@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
  * @param <T>
  *            contained element type
  */
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals",
+        "PMD.UseVarargs" })
 public class LimitedQueue<T> implements BlockingQueue<T> {
 
     protected BlockingQueue<T> queue;
@@ -24,78 +26,110 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public synchronized T remove() {
-        return this.queue.remove();
+    public T remove() {
+        synchronized (this) {
+            return this.queue.remove();
+        }
     }
 
     @Override
-    public synchronized T poll() {
-        return this.queue.poll();
+    public T poll() {
+        synchronized (this) {
+            return this.queue.poll();
+        }
     }
 
     @Override
-    public synchronized T element() {
-        return this.queue.element();
+    public T element() {
+        synchronized (this) {
+            return this.queue.element();
+        }
     }
 
     @Override
-    public synchronized T peek() {
-        return this.queue.peek();
+    public T peek() {
+        synchronized (this) {
+            return this.queue.peek();
+        }
     }
 
     @Override
-    public synchronized int size() {
-        return this.queue.size();
+    public int size() {
+        synchronized (this) {
+            return this.queue.size();
+        }
     }
 
     @Override
-    public synchronized boolean isEmpty() {
-        return this.queue.isEmpty();
+    public boolean isEmpty() {
+        synchronized (this) {
+            return this.queue.isEmpty();
+        }
     }
 
     @Override
-    public synchronized Iterator<T> iterator() {
-        return this.queue.iterator();
+    public Iterator<T> iterator() {
+        synchronized (this) {
+            return this.queue.iterator();
+        }
     }
 
     @Override
-    public synchronized Object[] toArray() {
-        return this.queue.toArray();
+    public Object[] toArray() {
+        synchronized (this) {
+            return this.queue.toArray();
+        }
     }
 
     @Override
-    public synchronized <U> U[] toArray(final U[] a) {
-        return this.queue.toArray(a);
+    public <U> U[] toArray(@SuppressWarnings("PMD.ShortVariable") final U[] a) {
+        synchronized (this) {
+            return this.queue.toArray(a);
+        }
     }
 
     @Override
-    public synchronized boolean containsAll(final Collection<?> c) {
-        return this.queue.containsAll(c);
+    public boolean containsAll(
+            @SuppressWarnings("PMD.ShortVariable") final Collection<?> c) {
+        synchronized (this) {
+            return this.queue.containsAll(c);
+        }
     }
 
     @Override
-    public synchronized boolean addAll(final Collection<? extends T> c) {
-        return this.queue.addAll(c);
+    public boolean addAll(
+            @SuppressWarnings("PMD.ShortVariable") final Collection<? extends T> c) {
+        synchronized (this) {
+            return this.queue.addAll(c);
+        }
     }
 
     @Override
-    public synchronized boolean removeAll(final Collection<?> c) {
-        return this.queue.removeAll(c);
+    public boolean removeAll(
+            @SuppressWarnings("PMD.ShortVariable") final Collection<?> c) {
+        synchronized (this) {
+            return this.queue.removeAll(c);
+        }
     }
 
     @Override
-    public synchronized boolean retainAll(final Collection<?> c) {
-        return this.queue.retainAll(c);
+    public boolean retainAll(
+            @SuppressWarnings("PMD.ShortVariable") final Collection<?> c) {
+        synchronized (this) {
+            return this.queue.retainAll(c);
+        }
     }
 
     @Override
-    public synchronized void clear() {
-        this.queue.clear();
+    public void clear() {
+        synchronized (this) {
+            this.queue.clear();
+        }
 
     }
 
     @Override
-    public boolean add(final T e) {
+    public boolean add(@SuppressWarnings("PMD.ShortVariable") final T e) {
         if (this.queue.remainingCapacity() == 0) {
             this.queue.poll();
         }
@@ -103,18 +137,20 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public boolean offer(final T e) {
+    public boolean offer(@SuppressWarnings("PMD.ShortVariable") final T e) {
         return this.queue.offer(e);
     }
 
     @Override
-    public void put(final T e) throws InterruptedException {
+    public void put(@SuppressWarnings("PMD.ShortVariable") final T e)
+            throws InterruptedException {
         this.queue.put(e);
 
     }
 
     @Override
-    public boolean offer(final T e, final long timeout, final TimeUnit unit)
+    public boolean offer(@SuppressWarnings("PMD.ShortVariable") final T e,
+            final long timeout, final TimeUnit unit)
             throws InterruptedException {
         return this.queue.offer(e, timeout, unit);
     }
@@ -136,22 +172,26 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public boolean remove(final Object o) {
+    public boolean remove(@SuppressWarnings("PMD.ShortVariable") final Object o) {
         return this.queue.remove(o);
     }
 
     @Override
-    public boolean contains(final Object o) {
+    public boolean contains(
+            @SuppressWarnings("PMD.ShortVariable") final Object o) {
         return this.queue.contains(o);
     }
 
     @Override
-    public int drainTo(final Collection<? super T> c) {
+    public int drainTo(
+            @SuppressWarnings("PMD.ShortVariable") final Collection<? super T> c) {
         return this.queue.drainTo(c);
     }
 
     @Override
-    public int drainTo(final Collection<? super T> c, final int maxElements) {
+    public int drainTo(
+            @SuppressWarnings("PMD.ShortVariable") final Collection<? super T> c,
+            final int maxElements) {
         return this.queue.drainTo(c, maxElements);
     }
 

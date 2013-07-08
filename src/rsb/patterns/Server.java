@@ -68,7 +68,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
 
         public ServerState activate() throws InvalidStateException,
-        InitializeException {
+                InitializeException {
             throw new InvalidStateException("Server already activated.");
         }
 
@@ -149,8 +149,10 @@ public abstract class Server<MethodType extends Method> extends Participant {
      * 
      * @return A Collection containing all methods.
      */
-    public synchronized Collection<MethodType> getMethods() {
-        return new ArrayList<MethodType>(this.methods.values());
+    public Collection<MethodType> getMethods() {
+        synchronized (this) {
+            return new ArrayList<MethodType>(this.methods.values());
+        }
     }
 
     /**
@@ -161,8 +163,10 @@ public abstract class Server<MethodType extends Method> extends Participant {
      * @return {@link Method} instance or <code>null</code> if no method exists
      *         with this name
      */
-    public synchronized MethodType getMethod(final String name) {
-        return this.methods.get(name);
+    public MethodType getMethod(final String name) {
+        synchronized (this) {
+            return this.methods.get(name);
+        }
     }
 
     /**
@@ -173,8 +177,10 @@ public abstract class Server<MethodType extends Method> extends Participant {
      * @return <code>true</code> if a method is registered with the given name,
      *         else <code>false</code>
      */
-    public synchronized boolean hasMethod(final String name) {
-        return this.methods.containsKey(name);
+    public boolean hasMethod(final String name) {
+        synchronized (this) {
+            return this.methods.containsKey(name);
+        }
     }
 
     /**
@@ -191,31 +197,38 @@ public abstract class Server<MethodType extends Method> extends Participant {
      *             method with the given name already exists and shall not be
      *             overwritten
      */
-    protected synchronized void addMethod(final String name,
-            final MethodType method,
+    protected void addMethod(final String name, final MethodType method,
             final boolean overwrite) {
-        assert (name != null);
-        assert (method != null);
-        if (this.methods.containsKey(name) && !overwrite) {
-            throw new IllegalArgumentException("A method with name " + name
-                    + " already exists.");
+        assert name != null;
+        assert method != null;
+        synchronized (this) {
+            if (this.methods.containsKey(name) && !overwrite) {
+                throw new IllegalArgumentException("A method with name " + name
+                        + " already exists.");
+            }
+            this.methods.put(name, method);
         }
-        this.methods.put(name, method);
     }
 
     @Override
-    public synchronized boolean isActive() {
-        return this.state.isActive();
+    public boolean isActive() {
+        synchronized (this) {
+            return this.state.isActive();
+        }
     }
 
     @Override
-    public synchronized void activate() throws InitializeException {
-        this.state = this.state.activate();
+    public void activate() throws InitializeException {
+        synchronized (this) {
+            this.state = this.state.activate();
+        }
     }
 
     @Override
-    public synchronized void deactivate() {
-        this.state = this.state.deactivate();
+    public void deactivate() {
+        synchronized (this) {
+            this.state = this.state.deactivate();
+        }
     }
 
 };

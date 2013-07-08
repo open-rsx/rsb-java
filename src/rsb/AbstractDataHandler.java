@@ -43,7 +43,7 @@ public abstract class AbstractDataHandler<V> implements Handler {
     private static final Logger LOG = Logger
             .getLogger(AbstractDataHandler.class.getName());
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
     @Override
     public void internalNotify(final Event event) {
         try {

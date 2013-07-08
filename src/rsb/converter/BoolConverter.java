@@ -71,7 +71,7 @@ public class BoolConverter implements Converter<ByteBuffer> {
                     + "'.");
         }
 
-        final boolean result = (bytes.get(0) == 1);
+        final boolean result = bytes.get(0) == 1;
         return new UserData<ByteBuffer>(result, Boolean.class);
     }
 

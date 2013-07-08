@@ -27,12 +27,13 @@ package rsb.apps;
 
 import rsb.util.Properties;
 
-public class DumpVersion {
+public final class DumpVersion {
 
     private DumpVersion() {
         // empty constructor to prevent initialization
     }
 
+    @SuppressWarnings({ "PMD.UseVarargs", "PMD.SystemPrintln" })
     public static void main(final String[] args) throws Throwable {
         System.out.println("RSB Version: "
                 + Properties.getInstance().getProperty("RSB.Version") + "-"

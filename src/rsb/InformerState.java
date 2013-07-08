@@ -54,13 +54,13 @@ public class InformerState<T> {
         throw new InvalidStateException("informer not activated");
     }
 
-    protected Event send(@SuppressWarnings("unused") final Event e)
+    protected Event send(@SuppressWarnings("unused") final Event event)
             throws RSBException {
         LOG.warning("invalid state exception during call to send");
         throw new InvalidStateException("informer not activated");
     }
 
-    protected Event send(@SuppressWarnings("unused") final T d)
+    protected Event send(@SuppressWarnings("unused") final T data)
             throws RSBException {
         LOG.warning("invalid state exception during call to send");
         throw new InvalidStateException("informer not activated");

@@ -37,26 +37,40 @@ public class RSBException extends Exception {
 
     private static final long serialVersionUID = -5223250815059688771L;
 
+    /**
+     * Constructs an exception with empty message and cause.
+     */
     public RSBException() {
+        super();
     }
 
     /**
+     * Constructs an exception with an explanatory message.
+     * 
      * @param message
+     *            the message
      */
     public RSBException(final String message) {
         super(message);
     }
 
     /**
+     * Constructs an exception with causing {@link Throwable}.
+     * 
      * @param cause
+     *            causing exception
      */
     public RSBException(final Throwable cause) {
         super(cause);
     }
 
     /**
+     * Constructs an exception with explanatory message and causing exception.
+     * 
      * @param message
+     *            the message
      * @param cause
+     *            causing exception
      */
     public RSBException(final String message, final Throwable cause) {
         super(message, cause);
