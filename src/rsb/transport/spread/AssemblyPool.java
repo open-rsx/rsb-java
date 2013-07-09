@@ -48,6 +48,8 @@ import com.google.protobuf.ByteString;
  */
 public class AssemblyPool {
 
+    private final Map<EventId, Assembly> assemblies = new HashMap<EventId, Assembly>();
+
     /**
      * Assembles a fragmented notification.
      * 
@@ -56,11 +58,11 @@ public class AssemblyPool {
     private class Assembly {
 
         private final Map<Integer, FragmentedNotificationType.FragmentedNotification> notifications = new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
-        private int requiredParts = 0;
+        private final int requiredParts;
 
         public Assembly(
-                final FragmentedNotificationType.FragmentedNotification initialNotification) {
-            assert (initialNotification.getNumDataParts() > 1);
+                @SuppressWarnings("PMD.LongVariable") final FragmentedNotificationType.FragmentedNotification initialNotification) {
+            assert initialNotification.getNumDataParts() > 1;
             this.notifications.put(initialNotification.getDataPart(),
                     initialNotification);
             this.requiredParts = initialNotification.getNumDataParts();
@@ -96,8 +98,6 @@ public class AssemblyPool {
         }
 
     }
-
-    private final Map<EventId, Assembly> assemblies = new HashMap<EventId, Assembly>();
 
     /**
      * Collects the raw data from the wire as well as a notification causing
@@ -142,6 +142,7 @@ public class AssemblyPool {
                     notification.getNotification());
         }
 
+        @SuppressWarnings("PMD.ShortVariable")
         final EventId id = new EventId(new ParticipantId(notification
                 .getNotification().getEventId().getSenderId().toByteArray()),
                 notification.getNotification().getEventId().getSequenceNumber());
@@ -153,12 +154,12 @@ public class AssemblyPool {
         final Assembly assembly = this.assemblies.get(id);
         assert assembly != null;
         final ByteBuffer joinedData = assembly.add(notification);
-        if (joinedData != null) {
+        if (joinedData == null) {
+            return null;
+        } else {
             this.assemblies.remove(id);
             return new DataAndNotification(joinedData, assembly
                     .getInitialFragment().getNotification());
-        } else {
-            return null;
         }
     }
 

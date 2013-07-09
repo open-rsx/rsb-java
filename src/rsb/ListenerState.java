@@ -40,7 +40,7 @@ public class ListenerState {
     protected final static Logger LOG = Logger.getLogger(InformerState.class
             .getName());
 
-    private Listener context;
+    private final Listener context;
 
     protected ListenerState(final Listener ctx) {
         this.context = ctx;

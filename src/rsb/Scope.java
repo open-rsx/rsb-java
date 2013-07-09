@@ -41,6 +41,7 @@ public class Scope {
 
     private List<String> components = new ArrayList<String>();
 
+    @SuppressWarnings("PMD.LongVariable")
     private static final String COMPONENT_SEPARATOR = "/";
     private static final Pattern COMPONENT_REGEX = Pattern
             .compile("^[a-zA-Z0-9]+$");

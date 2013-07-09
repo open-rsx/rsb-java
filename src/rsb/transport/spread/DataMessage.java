@@ -41,32 +41,36 @@ public class DataMessage {
     // TODO add GroupName length checks
 
     /* from spread.SpreadConnection */
+    @SuppressWarnings("PMD.LongVariable")
     private static final int SPREAD_OVERHEAD_OFFSET = 20000;
     /**
      * Maximum length in bytes of messages that can be sent via spread.
      */
+    @SuppressWarnings("PMD.LongVariable")
     public static final int MAX_MESSAGE_LENGTH = 140000 - SPREAD_OVERHEAD_OFFSET;
 
     /* decorated spread message */
     SpreadMessage msg = new SpreadMessage();
 
     public DataMessage() {
+        super();
     }
 
     static DataMessage convertSpreadMessage(final SpreadMessage msg)
             throws SerializeException {
-        if (!msg.isMembership()) {
-            final DataMessage dm = new DataMessage();
-            dm.msg = msg;
-            return dm;
-        } else {
+        if (msg.isMembership()) {
             throw new SerializeException(
                     "MembershipMessage received but DataMessage expected!");
+        } else {
+            final DataMessage dataMessage = new DataMessage();
+            dataMessage.msg = msg;
+            return dataMessage;
         }
     }
 
-    private void checkSize(final ByteBuffer b) throws SerializeException {
-        if ((b.limit() == 0) || (b.limit() > DataMessage.MAX_MESSAGE_LENGTH)) {
+    private void checkSize(final ByteBuffer buffer) throws SerializeException {
+        if (buffer.limit() == 0
+                || buffer.limit() > DataMessage.MAX_MESSAGE_LENGTH) {
             throw new SerializeException(
                     "Invalid Length of SpreadMessage (either null or larger than "
                             + DataMessage.MAX_MESSAGE_LENGTH + " bytes)");
@@ -81,6 +85,7 @@ public class DataMessage {
         return groups;
     }
 
+    @SuppressWarnings("PMD.UseVarargs")
     public void setGroups(final String[] grp) {
         for (final String element : grp) {
             this.msg.addGroup(element);
@@ -100,13 +105,14 @@ public class DataMessage {
         return false;
     }
 
-    public void setData(final ByteBuffer b) throws SerializeException {
-        this.checkSize(b);
-        this.msg.setData(b.array());
+    public void setData(final ByteBuffer buffer) throws SerializeException {
+        this.checkSize(buffer);
+        this.msg.setData(buffer.array());
     }
 
-    public void setData(final byte[] b) throws SerializeException {
-        this.msg.setData(b);
+    @SuppressWarnings("PMD.UseVarargs")
+    public void setData(final byte[] buffer) throws SerializeException {
+        this.msg.setData(buffer);
     }
 
     public ByteBuffer getData() {

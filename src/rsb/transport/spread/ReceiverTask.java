@@ -54,7 +54,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 class ReceiverTask extends Thread {
 
-    private final Logger log = Logger.getLogger(ReceiverTask.class.getName());
+    private static final Logger LOG = Logger.getLogger(ReceiverTask.class
+            .getName());
 
     /**
      * SpreadConnection
@@ -72,49 +73,55 @@ class ReceiverTask extends Thread {
     /**
      * @param spreadWrapper
      *            the spread wrapper to receive from
-     * @param r
+     * @param handler
      *            handler for received events
      * @param converters
      *            converter set to use for deserialization
      */
-    ReceiverTask(final SpreadWrapper spreadWrapper, final EventHandler r,
+    ReceiverTask(final SpreadWrapper spreadWrapper, final EventHandler handler,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
         this.spread = spreadWrapper;
-        this.eventHandler = r;
+        this.eventHandler = handler;
         this.converters = converters;
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void run() {
-        this.log.finer("Listener thread started");
-        while (this.spread.conn.isConnected()
+        LOG.finer("Listener thread started");
+        while (this.spread.isConnected()
                 && !Thread.currentThread().isInterrupted()) {
             try {
-                final SpreadMessage sm = this.spread.conn.receive();
-                this.log.fine("Message received from spread, message type: "
-                        + sm.isRegular() + ", data = "
-                        + new String(sm.getData()));
+                final SpreadMessage receivedMessage = this.spread.receive();
+                LOG.fine("Message received from spread, message type: "
+                        + receivedMessage.isRegular());
+
                 // TODO check whether membership messages shall be handled
                 // similar to data messages and be converted into events
                 // TODO evaluate return value
-                final DataMessage dm = this.smc.process(sm);
-                if (dm != null) {
-                    this.log.fine("Notification reveived by ReceiverTask");
-                    final Event e = this.convertNotification(dm);
-                    if (e != null) {
-                        // dispatch event
-                        this.eventHandler.handle(e);
-                    }
+                final DataMessage receivedData = this.smc
+                        .process(receivedMessage);
+                if (receivedData == null) {
+                    continue;
                 }
+
+                LOG.fine("Notification reveived by ReceiverTask");
+                final Event receivedFullEvent = this
+                        .convertNotification(receivedData);
+                if (receivedFullEvent != null) {
+                    // dispatch event
+                    this.eventHandler.handle(receivedFullEvent);
+                }
+
             } catch (final InterruptedIOException e1) {
-                this.log.info("Listener thread was interrupted during IO.");
+                LOG.info("Listener thread was interrupted during IO.");
                 break;
             } catch (final SpreadException e1) {
-                if (!this.spread.conn.isConnected()) {
-                    this.log.fine("Spread connection is closed.");
+                if (!this.spread.isConnected()) {
+                    LOG.fine("Spread connection is closed.");
                 }
                 if (!this.spread.shutdown) {
-                    this.log.warning("Caught a SpreadException while trying to receive a message: "
+                    LOG.warning("Caught a SpreadException while trying to receive a message: "
                             + e1.getMessage());
                 }
                 // get out here, stop this thread as no further messages can be
@@ -125,7 +132,7 @@ class ReceiverTask extends Thread {
                 this.interrupt();
             }
         }
-        this.log.fine("Listener thread stopped");
+        LOG.fine("Listener thread stopped");
     }
 
     // TODO think about whether this could actually be a regular converter call
@@ -135,46 +142,49 @@ class ReceiverTask extends Thread {
      * parsing the notification data structures as defined in RSB.Protocol using
      * the ProtoBuf data holder classes.
      * 
-     * @param dm
+     * @param receivedData
      *            data gathered from the wire
      * @return deserialized event or null if the event was fragmented and the
      *         given data does not complete an event
      */
-    private Event convertNotification(final DataMessage dm) {
+    private Event convertNotification(final DataMessage receivedData) {
 
         try {
 
-            final FragmentedNotification f = FragmentedNotification
-                    .parseFrom(dm.getData().array());
+            final FragmentedNotification fragment = FragmentedNotification
+                    .parseFrom(receivedData.getData().array());
             final AssemblyPool.DataAndNotification joinedData = this.pool
-                    .insert(f);
+                    .insert(fragment);
 
-            if (joinedData != null) {
-                final Notification n = joinedData.getNotification();
-                final Event e = EventBuilder.fromNotification(n);
-
-                // user data conversion
-                // why not do this lazy after / in the filtering?
-                // TODO deal with missing converters, errors
-                final Converter<ByteBuffer> c = this.converters.getConverter(n
-                        .getWireSchema().toStringUtf8());
-                final UserData<?> userData = c.deserialize(n.getWireSchema()
-                        .toStringUtf8(), joinedData.getData());
-                e.setData(userData.getData());
-                e.setType(userData.getTypeInfo());
-
-                return e;
-
-            } else {
+            if (joinedData == null) {
                 return null;
             }
 
+            final Notification initialNotification = joinedData
+                    .getNotification();
+            final Event resultEvent = EventBuilder
+                    .fromNotification(initialNotification);
+
+            // user data conversion
+            // why not do this lazy after / in the filtering?
+            // TODO deal with missing converters, errors
+            final Converter<ByteBuffer> converter = this.converters
+                    .getConverter(initialNotification.getWireSchema()
+                            .toStringUtf8());
+            final UserData<?> userData = converter.deserialize(
+                    initialNotification.getWireSchema().toStringUtf8(),
+                    joinedData.getData());
+            resultEvent.setData(userData.getData());
+            resultEvent.setType(userData.getTypeInfo());
+
+            return resultEvent;
+
             // TODO better error handling with callback object
         } catch (final InvalidProtocolBufferException e1) {
-            this.log.log(Level.SEVERE, "Error decoding protocol buffer", e1);
+            LOG.log(Level.SEVERE, "Error decoding protocol buffer", e1);
             return null;
         } catch (final ConversionException e1) {
-            this.log.log(Level.SEVERE, "Error deserializing user data", e1);
+            LOG.log(Level.SEVERE, "Error deserializing user data", e1);
             return null;
         }
 

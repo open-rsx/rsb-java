@@ -36,6 +36,6 @@ import rsb.Event;
  */
 public interface EventHandler {
 
-    public void handle(Event e);
+    void handle(Event event);
 
 }

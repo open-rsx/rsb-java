@@ -76,7 +76,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
             throw new InvalidStateException("Server not activated.");
         }
 
-        public synchronized void run(
+        public void run(
                 @SuppressWarnings("unused") final boolean async) {
             throw new InvalidStateException("server not activated");
         }
@@ -99,7 +99,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
             this.server.getRouter().deactivate();
             // send signal to thread in waitForShutdown
             synchronized (this.server) {
-                this.server.notify();
+                this.server.notifyAll();
             }
             return new ServerStateInactive(this.server);
         }

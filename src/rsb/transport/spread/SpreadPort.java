@@ -70,42 +70,13 @@ import com.google.protobuf.ByteString;
  */
 public class SpreadPort extends AbstractPort {
 
+    private final static Logger LOG = Logger.getLogger(SpreadPort.class
+            .getName());
+
     private ReceiverTask receiver;
     private final EventHandler eventHandler;
     private static final int MIN_DATA_SIZE = 5;
     private static final int MAX_MSG_SIZE = 100000;
-
-    private final static Logger log = Logger.getLogger(SpreadPort.class
-            .getName());
-
-    private interface QoSHandler {
-
-        void apply(DataMessage message) throws SerializeException;
-    }
-
-    private class UnreliableHandler implements QoSHandler {
-
-        @Override
-        public void apply(final DataMessage message) throws SerializeException {
-            message.getSpreadMessage().setUnreliable();
-        }
-    }
-
-    private class ReliableHandler implements QoSHandler {
-
-        @Override
-        public void apply(final DataMessage message) throws SerializeException {
-            message.getSpreadMessage().setReliable();
-        }
-    }
-
-    private class FifoHandler implements QoSHandler {
-
-        @Override
-        public void apply(final DataMessage message) throws SerializeException {
-            message.getSpreadMessage().setFifo();
-        }
-    }
 
     /**
      * The message service type used for sending messages via spread.
@@ -125,14 +96,47 @@ public class SpreadPort extends AbstractPort {
      * way to optimize this on the Port
      */
 
-    private SpreadWrapper spread = null;
+    private final SpreadWrapper spread;
     // TODO instantiate matching strategy, initially in the constructor, later
     // per configuration
     private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
     private final ConverterSelectionStrategy<ByteBuffer> outStrategy;
 
+    private interface QoSHandler {
+
+        void apply(DataMessage message) throws SerializeException;
+    }
+
+    private class UnreliableHandler implements QoSHandler {
+
+        @Override
+        public void apply(final DataMessage message) throws SerializeException {
+            message.getSpreadMessage().setUnreliable();
+        }
+
+    }
+
+    private class ReliableHandler implements QoSHandler {
+
+        @Override
+        public void apply(final DataMessage message) throws SerializeException {
+            message.getSpreadMessage().setReliable();
+        }
+
+    }
+
+    private class FifoHandler implements QoSHandler {
+
+        @Override
+        public void apply(final DataMessage message) throws SerializeException {
+            message.getSpreadMessage().setFifo();
+        }
+
+    }
+
     /**
-     * @param sw
+     * @param spread
+     *            encapsulation of spread communication
      * @param eventHandler
      *            if <code>null</code>, no receiving of events will be done
      * @param inStrategy
@@ -140,10 +144,11 @@ public class SpreadPort extends AbstractPort {
      * @param outStrategy
      *            converters to use for sending data
      */
-    public SpreadPort(final SpreadWrapper sw, final EventHandler eventHandler,
+    public SpreadPort(final SpreadWrapper spread,
+            final EventHandler eventHandler,
             final ConverterSelectionStrategy<ByteBuffer> inStrategy,
             final ConverterSelectionStrategy<ByteBuffer> outStrategy) {
-        this.spread = sw;
+        this.spread = spread;
         this.eventHandler = eventHandler;
         this.inStrategy = inStrategy;
         this.outStrategy = outStrategy;
@@ -155,12 +160,14 @@ public class SpreadPort extends AbstractPort {
             ordering = Ordering.valueOf(Properties.getInstance().getProperty(
                     "qualityofservice.ordering"));
         } catch (final InvalidPropertyException e) {
+            // valid case if property does not exist
         }
         Reliability reliability = new QualityOfServiceSpec().getReliability();
         try {
             reliability = Reliability.valueOf(Properties.getInstance()
                     .getProperty("qualityofservice.reliability"));
         } catch (final InvalidPropertyException e) {
+            // valid case if property does not exist
         }
         this.setQualityOfServiceSpec(new QualityOfServiceSpec(ordering,
                 reliability));
@@ -188,7 +195,7 @@ public class SpreadPort extends AbstractPort {
      */
     @Override
     public void notify(final ScopeFilter e, final FilterAction a) {
-        log.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
+        LOG.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
                 + " called");
         switch (a) {
         case ADD:
@@ -200,7 +207,7 @@ public class SpreadPort extends AbstractPort {
             this.leaveSpreadGroup(e.getScope());
             break;
         case UPDATE:
-            log.info("Update of ScopeFilter requested on SpreadSport");
+            LOG.info("Update of ScopeFilter requested on SpreadSport");
             break;
         default:
             break;
@@ -242,9 +249,9 @@ public class SpreadPort extends AbstractPort {
 
     }
 
-    private EventId.Builder createEventIdBuilder(final rsb.EventId id) {
-        final rsb.protocol.EventIdType.EventId.Builder eventIdBuilder = rsb.protocol.EventIdType.EventId
-                .newBuilder();
+    private EventId.Builder createEventIdBuilder(
+            @SuppressWarnings("PMD.ShortVariable") final rsb.EventId id) {
+        final EventId.Builder eventIdBuilder = EventId.newBuilder();
         eventIdBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
                 .toByteArray()));
         eventIdBuilder.setSequenceNumber((int) id.getSequenceNumber());
@@ -312,7 +319,7 @@ public class SpreadPort extends AbstractPort {
         try {
             convertedDataBuffer = this.convertEvent(event);
         } catch (final NoSuchConverterException ex) {
-            log.warning(ex.getMessage());
+            LOG.warning(ex.getMessage());
             return;
         }
         final int dataSize = convertedDataBuffer.getSerialization().limit();
@@ -422,7 +429,7 @@ public class SpreadPort extends AbstractPort {
             }
 
             final boolean sent = this.spread.send(dm);
-            assert (sent);
+            assert sent;
 
         }
 
@@ -450,7 +457,7 @@ public class SpreadPort extends AbstractPort {
                                 + "'.", e);
             }
         } else {
-            log.severe("Couldn't set up network filter, spread inactive.");
+            LOG.severe("Couldn't set up network filter, spread inactive.");
         }
     }
 
@@ -458,14 +465,14 @@ public class SpreadPort extends AbstractPort {
         if (this.spread.isActive()) {
             this.spread.leave(this.spreadGroupName(scope));
         } else {
-            log.severe("Couldn't remove group filter, spread inactive.");
+            LOG.severe("Couldn't remove group filter, spread inactive.");
         }
     }
 
     @Override
     public void deactivate() throws RSBException {
         if (this.spread.isActive()) {
-            log.fine("deactivating SpreadPort");
+            LOG.fine("deactivating SpreadPort");
             this.spread.deactivate();
         }
         try {

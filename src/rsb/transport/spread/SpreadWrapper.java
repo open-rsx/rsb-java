@@ -27,11 +27,13 @@
  */
 package rsb.transport.spread;
 
+import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.InitializeException;
@@ -41,6 +43,7 @@ import rsb.util.Properties;
 import spread.SpreadConnection;
 import spread.SpreadException;
 import spread.SpreadGroup;
+import spread.SpreadMessage;
 
 /**
  * This class encapsulates and manages a connection to the spread daemon.
@@ -53,10 +56,10 @@ public class SpreadWrapper implements RSBObject {
 
     private State status = State.DEACTIVATED;
 
-    String privGrpId;
-    SpreadConnection conn;
+    private String privGrpId;
+    private SpreadConnection conn;
     private final Deque<SpreadGroup> groups = new ArrayDeque<SpreadGroup>();
-    Properties props = Properties.getInstance();
+    private Properties props = Properties.getInstance();
     private final int port;
     private InetAddress spreadhost = null;
     private boolean useTcpNoDelay = true;
@@ -170,17 +173,6 @@ public class SpreadWrapper implements RSBObject {
                 .getPropertyAsBool("transport.spread.tcpnodelay");
     }
 
-    // TODO think about prefixes and factory methods
-    public SpreadWrapper(final String spreadhost, final int port,
-            final boolean sendOnly) throws InitializeException,
-            UnknownHostException {
-        this.spreadhost = spreadhost != null ? InetAddress
-                .getByName(spreadhost) : null;
-        this.port = port;
-        this.useTcpNoDelay = this.props
-                .getPropertyAsBool("transport.spread.tcpnodelay");
-    }
-
     public void join(final String group) throws SpreadException {
         this.checkConnection();
         final SpreadGroup grp = new SpreadGroup();
@@ -226,9 +218,9 @@ public class SpreadWrapper implements RSBObject {
      * @param mship
      *            True - receive membership messages; false - don't
      */
-    void makeConnection(final String prefix, final boolean mship,
-            final boolean sendOnly) throws InitializeException {
-        SpreadException ex = null;
+    void makeConnection(final String prefix, final boolean mship)
+            throws InitializeException {
+        SpreadException exception = null;
         String hostmsg = "";
         for (int i = 0; i < this.props
                 .getPropertyAsInt("transport.spread.retry"); i++) {
@@ -251,14 +243,14 @@ public class SpreadWrapper implements RSBObject {
                         + this.privGrpId);
                 return;
             } catch (final SpreadException e) {
-                ex = e;
+                exception = e;
             }
             LOG.info("reoccuring SpreadException during connect to daemon: "
-                    + ex.getMessage());
+                    + exception.getMessage());
         }
         // if we get here, all connection attempts failed
         throw new InitializeException("Could not create spread connection "
-                + "host=" + hostmsg + ", port=" + this.port, ex);
+                + "host=" + hostmsg + ", port=" + this.port, exception);
     }
 
     public boolean send(final DataMessage msg) {
@@ -332,8 +324,9 @@ public class SpreadWrapper implements RSBObject {
                         grp.leave();
                     } catch (final SpreadException e) {
                         // this should not happen
-                        assert (false);
-                        e.printStackTrace();
+                        assert false;
+                        LOG.log(Level.WARNING, "Error leaving spread group "
+                                + type, e);
                     }
                     it.remove();
                     LOG.info("SpreadGroup '" + grp + "' has been left.");
@@ -348,9 +341,11 @@ public class SpreadWrapper implements RSBObject {
     }
 
     @Override
-    public synchronized void activate() throws InitializeException {
-        this.makeConnection("sp-", true, false);
-        this.status = State.ACTIVATED;
+    public void activate() throws InitializeException {
+        synchronized (this) {
+            this.makeConnection("sp-", true);
+            this.status = State.ACTIVATED;
+        }
     }
 
     @Override
@@ -368,6 +363,15 @@ public class SpreadWrapper implements RSBObject {
             LOG.severe("Finalize called while status is activated.");
         }
         super.finalize();
+    }
+
+    public boolean isConnected() {
+        return this.conn.isConnected();
+    }
+
+    public SpreadMessage receive() throws InterruptedIOException,
+            SpreadException {
+        return this.conn.receive();
     }
 
 }

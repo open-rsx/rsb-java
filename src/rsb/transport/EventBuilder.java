@@ -44,13 +44,13 @@ import rsb.protocol.NotificationType.Notification;
  */
 public final class EventBuilder {
 
+    private static final Logger LOG = Logger.getLogger(EventBuilder.class
+            .getName());
+
     private EventBuilder() {
         // prevent initialization of utility class
         super();
     }
-
-    private static final Logger LOG = Logger.getLogger(EventBuilder.class
-            .getName());
 
     /**
      * Build event from RSB Notification. Excludes user data de-serialization as
@@ -91,8 +91,8 @@ public final class EventBuilder {
 
         // causes
         for (final EventId cause : notification.getCausesList()) {
-            event.addCause(new rsb.EventId(new ParticipantId(cause
-                    .getSenderId().toByteArray()), cause.getSequenceNumber())); // NOPMD
+            event.addCause(new rsb.EventId(new ParticipantId(cause // NOPMD
+                    .getSenderId().toByteArray()), cause.getSequenceNumber()));
         }
 
         return event;
