@@ -28,8 +28,6 @@
 package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,9 +44,6 @@ import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
-import rsb.filter.AbstractFilterObserver;
-import rsb.filter.FilterAction;
-import rsb.filter.ScopeFilter;
 import rsb.protocol.EventIdType.EventId;
 import rsb.protocol.EventMetaDataType.EventMetaData;
 import rsb.protocol.EventMetaDataType.UserInfo;
@@ -56,28 +51,23 @@ import rsb.protocol.EventMetaDataType.UserTime;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
-import rsb.transport.EventHandler;
-import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 import rsb.util.InvalidPropertyException;
 import rsb.util.Properties;
-import spread.SpreadException;
 
 import com.google.protobuf.ByteString;
 
 /**
- * A port which connects to a spread daemon network.
- * 
+ * An {@link OutConnector} for the spread daemon network.
+ *
+ * @author jwienke
  * @author swrede
  */
-public class SpreadPort extends AbstractFilterObserver implements
-        InPushConnector, OutConnector {
+public class SpreadOutConnector implements OutConnector {
 
-    private final static Logger LOG = Logger.getLogger(SpreadPort.class
+    private final static Logger LOG = Logger.getLogger(SpreadOutConnector.class
             .getName());
 
-    private ReceiverTask receiver;
-    private EventHandler eventHandler;
     private static final int MIN_DATA_SIZE = 5;
     private static final int MAX_MSG_SIZE = 100000;
 
@@ -86,23 +76,9 @@ public class SpreadPort extends AbstractFilterObserver implements
      */
     private QoSHandler spreadServiceHandler;
 
-    /**
-     * Protocol for optimization based on registered filters: TypeFilter: Some
-     * types may be received via special spread groups, e.g. SystemEvents. Port
-     * could join groups for registered types only and send events of this type
-     * to the same groups IdentityFilter: This depends on whether the component
-     * is filtering for it's own identity, to receive private messages (could
-     * use spread's private groups here, but that would prevent us from
-     * intercepting this communication), or filtering for another components
-     * identity, e.g. a publisher. ScopeFilter: Restricts visibility according
-     * to the group encoding rules based on the Scope concept. XPathFilter: no
-     * way to optimize this on the Port
-     */
-
     private final SpreadWrapper spread;
     // TODO instantiate matching strategy, initially in the constructor, later
     // per configuration
-    private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
     private final ConverterSelectionStrategy<ByteBuffer> outStrategy;
 
     private interface QoSHandler {
@@ -140,16 +116,12 @@ public class SpreadPort extends AbstractFilterObserver implements
     /**
      * @param spread
      *            encapsulation of spread communication
-     * @param inStrategy
-     *            converters to use for receiving data
      * @param outStrategy
      *            converters to use for sending data
      */
-    public SpreadPort(final SpreadWrapper spread,
-            final ConverterSelectionStrategy<ByteBuffer> inStrategy,
+    public SpreadOutConnector(final SpreadWrapper spread,
             final ConverterSelectionStrategy<ByteBuffer> outStrategy) {
         this.spread = spread;
-        this.inStrategy = inStrategy;
         this.outStrategy = outStrategy;
 
         // TODO initial hack to get QoS from properties, replace this with a
@@ -174,72 +146,10 @@ public class SpreadPort extends AbstractFilterObserver implements
 
     @Override
     public void activate() throws InitializeException {
-        this.receiver = new ReceiverTask(this.spread, this.eventHandler,
-                this.inStrategy);
         // activate spread connection
         if (!this.spread.isActive()) {
             this.spread.activate();
         }
-        this.receiver.setPriority(Thread.NORM_PRIORITY + 2);
-        this.receiver.setName("ReceiverTask [grp="
-                + this.spread.getPrivateGroup() + "]");
-        this.receiver.start();
-    }
-
-    @Override
-    public void notify(final ScopeFilter e, final FilterAction a) {
-        LOG.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
-                + " called");
-        switch (a) {
-        case ADD:
-            // TODO add reference handling from xcf4j
-            this.joinSpreadGroup(e.getScope());
-            break;
-        case REMOVE:
-            // TODO add reference handling from xcf4j
-            this.leaveSpreadGroup(e.getScope());
-            break;
-        case UPDATE:
-            LOG.info("Update of ScopeFilter requested on SpreadSport");
-            break;
-        default:
-            break;
-        }
-    }
-
-    /**
-     * Creates the md5 hashed spread group names.
-     * 
-     * @param scope
-     *            scope to create group name
-     * @return truncated md5 hash to fit into spread group
-     */
-    private String spreadGroupName(final Scope scope) {
-
-        try {
-
-            final MessageDigest digest = MessageDigest.getInstance("md5");
-            digest.reset();
-            digest.update(scope.toString().getBytes());
-            final byte[] sum = digest.digest();
-            assert sum.length == 16;
-
-            final StringBuilder hexString = new StringBuilder();
-            for (final byte element : sum) {
-                String s = Integer.toHexString(0xFF & element);
-                if (s.length() == 1) {
-                    s = '0' + s;
-                }
-                hexString.append(s);
-            }
-
-            return hexString.toString().substring(0, 31);
-
-        } catch (final NoSuchAlgorithmException e) {
-            assert false : "There must be an md5 algorith available";
-            throw new RuntimeException("Unable to find md5 algorithm", e);
-        }
-
     }
 
     private EventId.Builder createEventIdBuilder(
@@ -409,7 +319,7 @@ public class SpreadPort extends AbstractFilterObserver implements
             // send to all super scopes
             final List<Scope> scopes = event.getScope().superScopes(true);
             for (final Scope scope : scopes) {
-                dm.addGroup(this.spreadGroupName(scope));
+                dm.addGroup(SpreadUtilities.spreadGroupName(scope));
             }
 
             // apply QoS
@@ -438,40 +348,11 @@ public class SpreadPort extends AbstractFilterObserver implements
         return convertedDataBuffer;
     }
 
-    private void joinSpreadGroup(final Scope scope) {
-        if (this.spread.isActive()) {
-            // join group
-            try {
-                this.spread.join(this.spreadGroupName(scope));
-            } catch (final SpreadException e) {
-                throw new RuntimeException(
-                        "Unable to join spread group for scope '" + scope
-                                + "' with hash '" + this.spreadGroupName(scope)
-                                + "'.", e);
-            }
-        } else {
-            LOG.severe("Couldn't set up network filter, spread inactive.");
-        }
-    }
-
-    private void leaveSpreadGroup(final Scope scope) {
-        if (this.spread.isActive()) {
-            this.spread.leave(this.spreadGroupName(scope));
-        } else {
-            LOG.severe("Couldn't remove group filter, spread inactive.");
-        }
-    }
-
     @Override
     public void deactivate() throws RSBException {
         if (this.spread.isActive()) {
             LOG.fine("deactivating SpreadPort");
             this.spread.deactivate();
-        }
-        try {
-            this.receiver.join();
-        } catch (final InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -506,20 +387,4 @@ public class SpreadPort extends AbstractFilterObserver implements
         return this.spread.isActive();
     }
 
-    @Override
-    public void addHandler(final EventHandler handler) {
-        // TODO make handler multiple handlers
-        assert handler != null;
-        this.eventHandler = handler;
-    }
-
-    @Override
-    public boolean removeHandler(final EventHandler handler) {
-        if (handler != this.eventHandler) {
-            return false;
-        }
-        // TODO remove it from the receive task!
-        this.eventHandler = null;
-        return true;
-    }
 }

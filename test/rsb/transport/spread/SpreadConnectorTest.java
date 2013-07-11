@@ -55,17 +55,16 @@ import rsb.transport.EventHandler;
 /**
  * @author jwienke
  */
-public class SpreadPortTest {
+public class SpreadConnectorTest {
 
     private SpreadWrapper outWrapper;
-    private SpreadPort outPort;
+    private SpreadOutConnector outPort;
 
     @Before
     public void setUp() throws Throwable {
 
         this.outWrapper = new SpreadWrapper();
-        this.outPort = new SpreadPort(this.outWrapper,
-                this.getConverterStrategy("utf-8-string"),
+        this.outPort = new SpreadOutConnector(this.outWrapper,
                 this.getConverterStrategy(String.class.getName()));
         this.outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
                 Ordering.ORDERED, Reliability.RELIABLE));
@@ -94,15 +93,14 @@ public class SpreadPortTest {
 
         // install event handlers for all receive scopes
         final Map<Scope, List<Event>> receivedEventsByScope = new HashMap<Scope, List<Event>>();
-        final List<SpreadPort> inPorts = new ArrayList<SpreadPort>();
+        final List<SpreadInPushConnector> inPorts = new ArrayList<SpreadInPushConnector>();
         for (final Scope scope : receiveScopes) {
 
             final List<Event> receivedEvents = new ArrayList<Event>();
             receivedEventsByScope.put(scope, receivedEvents);
             final SpreadWrapper inWrapper = new SpreadWrapper();
-            final SpreadPort inPort = new SpreadPort(inWrapper,
-                    this.getConverterStrategy("utf-8-string"),
-                    this.getConverterStrategy(String.class.getName()));
+            final SpreadInPushConnector inPort = new SpreadInPushConnector(
+                    inWrapper, this.getConverterStrategy("utf-8-string"));
             inPort.addHandler(new EventHandler() {
 
                 @Override
@@ -153,7 +151,7 @@ public class SpreadPortTest {
         }
 
         // deactivate ports
-        for (final SpreadPort inPort : inPorts) {
+        for (final SpreadInPushConnector inPort : inPorts) {
             inPort.deactivate();
         }
 
@@ -182,9 +180,8 @@ public class SpreadPortTest {
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
         final SpreadWrapper inWrapper = new SpreadWrapper();
-        final SpreadPort inPort = new SpreadPort(inWrapper,
-                this.getConverterStrategy("utf-8-string"),
-                this.getConverterStrategy(String.class.getName()));
+        final SpreadInPushConnector inPort = new SpreadInPushConnector(
+                inWrapper, this.getConverterStrategy("utf-8-string"));
         inPort.addHandler(new EventHandler() {
 
             @Override

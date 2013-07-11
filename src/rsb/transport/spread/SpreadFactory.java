@@ -37,37 +37,27 @@ import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
 
 /**
- * 
+ * @author jwienke
  * @author swrede
  */
 public class SpreadFactory extends TransportFactory {
 
     @Override
-    public InPushConnector createInConnector(final EventHandler handler) {
-        final InPushConnector connector = createConnector();
+    public InPushConnector createInPushConnector(final EventHandler handler) {
+        final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
+                .getDefaultConverterRepository()
+                .getConvertersForDeserialization();
+        final InPushConnector connector = new SpreadInPushConnector(
+                new SpreadWrapper(), inStrategy);
         connector.addHandler(handler);
         return connector;
     }
 
-    private SpreadPort createConnector() {
-        final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
-                .getDefaultConverterRepository()
-                .getConvertersForDeserialization();
-        // inStrategy.addConverter("utf-8-string", new StringConverter());
-        // inStrategy.addConverter("ascii-string", new
-        // StringConverter("US-ASCII", "ascii-string"));
-
+    @Override
+    public OutConnector createOutConnector() {
         final ConverterSelectionStrategy<ByteBuffer> outStrategy = DefaultConverterRepository
                 .getDefaultConverterRepository()
                 .getConvertersForSerialization();
-        // outStrategy.addConverter("String", new StringConverter());
-
-        return new SpreadPort(new SpreadWrapper(), inStrategy, outStrategy);
+        return new SpreadOutConnector(new SpreadWrapper(), outStrategy);
     }
-
-    @Override
-    public OutConnector createOutConnector() {
-        return createConnector();
-    }
-
 }

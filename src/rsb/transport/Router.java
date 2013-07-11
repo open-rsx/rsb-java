@@ -85,7 +85,7 @@ public class Router extends FilterObservable implements EventHandler {
     }
 
     private void setupInPorts(final TransportFactory factory) {
-        this.inPort = factory.createInConnector(this);
+        this.inPort = factory.createInPushConnector(this);
         this.addObserver(this.inPort);
     }
 

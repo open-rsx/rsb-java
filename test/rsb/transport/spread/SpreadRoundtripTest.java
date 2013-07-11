@@ -54,16 +54,16 @@ import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
 
 /**
- * Test for {@link SpreadPort}.
- * 
+ * Test for {@link SpreadOutConnector}.
+ *
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
-public class SpreadPortRoundtripTest {
+public class SpreadRoundtripTest {
 
     private final int size;
 
-    public SpreadPortRoundtripTest(final int size) {
+    public SpreadRoundtripTest(final int size) {
         this.size = size;
     }
 
@@ -82,15 +82,15 @@ public class SpreadPortRoundtripTest {
         inStrategy.addConverter("utf-8-string", new StringConverter());
         final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
-        final SpreadPort outPort = new SpreadPort(outWrapper, inStrategy,
+        final SpreadOutConnector outPort = new SpreadOutConnector(outWrapper,
                 outStrategy);
         outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
                 Ordering.ORDERED, Reliability.RELIABLE));
 
         final List<Event> receivedEvents = new ArrayList<Event>();
         final SpreadWrapper inWrapper = new SpreadWrapper();
-        final SpreadPort inPort = new SpreadPort(inWrapper, inStrategy,
-                outStrategy);
+        final SpreadInPushConnector inPort = new SpreadInPushConnector(
+                inWrapper, inStrategy);
         inPort.addHandler(new EventHandler() {
 
             @Override
