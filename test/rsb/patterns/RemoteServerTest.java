@@ -80,6 +80,8 @@ public class RemoteServerTest {
         assertEquals(SCOPE, remote.getScope());
     }
 
+    // merely shouldn't throw anything
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void activate() throws InitializeException {
         final RemoteServer remote = this.factory.createRemoteServer(SCOPE

@@ -27,9 +27,7 @@
  */
 package rsb.patterns;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.logging.Logger;
 
@@ -44,6 +42,7 @@ import rsb.Scope;
  */
 public class ServerTest {
 
+    private static final String CALL_METHOD_NAME = "callme";
     final static private Logger LOG = Logger.getLogger(ServerTest.class
             .getName());
 
@@ -89,19 +88,18 @@ public class ServerTest {
     @Test
     public void getMethods() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
-        assertTrue(server.getMethods().size() == 0);
-        server.addMethod("callme", new ReplyDataCallback());
-        assertTrue(server.getMethods().size() == 1);
-        assertTrue(server.getMethods().iterator().next().getName()
-                .equals("callme"));
+        assertEquals(0, server.getMethods().size());
+        server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
+        assertEquals(1, server.getMethods().size());
+        assertEquals(CALL_METHOD_NAME, server.getMethods().iterator().next().getName());
     }
 
     @Test
     public void addMethod() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
-        server.addMethod("callme", new ReplyDataCallback());
+        server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         server.addMethod("callmeEvent", new ReplyEventCallback());
-        assertTrue(server.getMethods().size() == 2);
+        assertEquals(2, server.getMethods().size());
     }
 
     /**
@@ -117,7 +115,7 @@ public class ServerTest {
         assertTrue(server.isActive());
         server.deactivate();
         assertFalse(server.isActive());
-        server.addMethod("callme", new ReplyDataCallback());
+        server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         server.activate();
         server.deactivate();
     }
@@ -131,7 +129,7 @@ public class ServerTest {
     public void deactivate() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
-        server.addMethod("callme", method);
+        server.addMethod(CALL_METHOD_NAME, method);
         server.activate();
         assertTrue(server.isActive());
         assertTrue(server.getMethods().iterator().next().isActive());
@@ -144,7 +142,7 @@ public class ServerTest {
     public void startServer() throws InitializeException {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
-        server.addMethod("callme", method);
+        server.addMethod(CALL_METHOD_NAME, method);
         server.activate();
         server.addMethod("callmetoo", method);
         server.deactivate();
@@ -156,7 +154,7 @@ public class ServerTest {
         final DataCallback<String, String> method = new ShutdownCallback(server);
         server.addMethod("shutdown", method);
         server.activate();
-        final Thread t = new Thread(new Runnable() {
+        final Thread deactivatingThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -171,7 +169,7 @@ public class ServerTest {
             }
         });
         LOG.info("Server running, shutting down in 500ms.");
-        t.run();
+        deactivatingThread.start();
         server.waitForShutdown();
     }
 

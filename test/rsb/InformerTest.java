@@ -27,9 +27,7 @@
  */
 package rsb;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
 
@@ -49,28 +47,28 @@ import rsb.transport.TransportFactory;
 public class InformerTest {
 
     transient private final Scope defaultScope = new Scope("/informer/example");
-    transient private Informer<String> informerString;
-    transient private Informer<?> informerGeneric;
+    transient private Informer<String> stringInformer;
+    transient private Informer<?> genericInformer;
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
-    .getDefaultConverterRepository();
+            .getDefaultConverterRepository();
 
     @Before
     public void setUp() throws Throwable {
-        this.informerString = new Informer<String>(this.defaultScope,
+        this.stringInformer = new Informer<String>(this.defaultScope,
                 String.class);
-        this.informerString.activate();
-        this.informerGeneric = new Informer<Object>(this.defaultScope);
-        this.informerGeneric.activate();
+        this.stringInformer.activate();
+        this.genericInformer = new Informer<Object>(this.defaultScope);
+        this.genericInformer.activate();
     }
 
     @After
     public void tearDown() {
-        if (this.informerString.isActive()) {
-            this.informerString.deactivate();
+        if (this.stringInformer.isActive()) {
+            this.stringInformer.deactivate();
         }
-        if (this.informerGeneric.isActive()) {
-            this.informerGeneric.deactivate();
+        if (this.genericInformer.isActive()) {
+            this.genericInformer.deactivate();
         }
     }
 
@@ -79,8 +77,8 @@ public class InformerTest {
      */
     @Test
     public void informerString() {
-        assertNotNull("Informer is null", this.informerString);
-        assertEquals(this.informerString.getScope(), this.defaultScope);
+        assertNotNull("Informer is null", this.stringInformer);
+        assertEquals(this.stringInformer.getScope(), this.defaultScope);
     }
 
     /**
@@ -91,31 +89,32 @@ public class InformerTest {
     @Test
     public void informerStringTransportFactory() {
         final Scope scope = new Scope("/x");
-        final Informer<String> p = new Informer<String>(scope,
+        final Informer<String> informer = new Informer<String>(scope,
                 TransportFactory.getInstance());
-        assertNotNull("Informer is null", p);
-        assertEquals("Wrong scope", p.getScope(), scope);
+        assertNotNull("Informer is null", informer);
+        assertEquals("Wrong scope", informer.getScope(), scope);
     }
 
     @Test
     public void informerStringString() {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
-        final Informer<String> p = new Informer<String>(scope, type.getClass());
-        assertNotNull("Informer object is null", p);
-        assertEquals(p.getScope(), scope);
-        assertEquals(p.getTypeInfo(), type.getClass());
+        final Informer<String> informer = new Informer<String>(scope,
+                type.getClass());
+        assertNotNull("Informer object is null", informer);
+        assertEquals(informer.getScope(), scope);
+        assertEquals(informer.getTypeInfo(), type.getClass());
     }
 
     @Test
     public void informerStringStringTransportFactory() {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
-        final Informer<String> p = new Informer<String>(scope, type.getClass(),
-                TransportFactory.getInstance());
-        assertNotNull(p);
-        assertEquals(p.getScope(), scope);
-        assertEquals(p.getTypeInfo(), type.getClass());
+        final Informer<String> informer = new Informer<String>(scope,
+                type.getClass(), TransportFactory.getInstance());
+        assertNotNull(informer);
+        assertEquals(informer.getScope(), scope);
+        assertEquals(informer.getTypeInfo(), type.getClass());
     }
 
     /**
@@ -123,7 +122,7 @@ public class InformerTest {
      */
     @Test
     public void getScope() {
-        assertEquals(this.informerString.getScope(), this.defaultScope);
+        assertEquals(this.stringInformer.getScope(), this.defaultScope);
     }
 
     /**
@@ -134,7 +133,7 @@ public class InformerTest {
      */
     @Test
     public void activate() throws Throwable {
-        assertTrue(this.informerString.state instanceof InformerStateActive);
+        assertTrue(this.stringInformer.state instanceof InformerStateActive);
     }
 
     /**
@@ -144,17 +143,19 @@ public class InformerTest {
      */
     @Test
     public void deactivate() throws InitializeException {
-        assertTrue(this.informerString.state instanceof InformerStateActive);
-        this.informerString.deactivate();
-        assertTrue(this.informerString.state instanceof InformerStateInactive);
+        assertTrue(this.stringInformer.state instanceof InformerStateActive);
+        this.stringInformer.deactivate();
+        assertTrue(this.stringInformer.state instanceof InformerStateInactive);
     }
 
-    private void testEvent(final Event e, final Participant participant) {
-        assertEquals(String.class, e.getType());
-        assertEquals("Hello World!", e.getData());
-        assertNotNull(e.getId());
-        assertEquals(new Scope("/informer/example"), e.getScope());
-        assertEquals(participant.getId(), e.getId().getParticipantId());
+    // this is not a junit test case, we know that
+    @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation")
+    private void testEvent(final Event event, final Participant participant) {
+        assertEquals(String.class, event.getType());
+        assertEquals("Hello World!", event.getData());
+        assertNotNull(event.getId());
+        assertEquals(new Scope("/informer/example"), event.getScope());
+        assertEquals(participant.getId(), event.getId().getParticipantId());
     }
 
     /**
@@ -163,19 +164,21 @@ public class InformerTest {
      * @throws Throwable
      *             any error
      */
+    // junit assertions are handled by method call
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendEvent() throws Throwable {
-        Event e = this.informerString.send(new Event(this.defaultScope,
+        Event sentEvent = this.stringInformer.send(new Event(this.defaultScope,
                 String.class, "Hello World!"));
-        this.testEvent(e, this.informerString);
-        e = this.informerGeneric.send(new Event(this.defaultScope,
+        this.testEvent(sentEvent, this.stringInformer);
+        sentEvent = this.genericInformer.send(new Event(this.defaultScope,
                 String.class, "Hello World!"));
-        this.testEvent(e, this.informerGeneric);
+        this.testEvent(sentEvent, this.genericInformer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendWrongType() throws RSBException {
-        this.informerString.send(new Event(this.defaultScope, Object.class,
+        this.stringInformer.send(new Event(this.defaultScope, Object.class,
                 "not allowed"));
     }
 
@@ -185,35 +188,40 @@ public class InformerTest {
      * @throws Throwable
      *             any error
      */
+    // junit assertions are handled by method call
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendT() throws Throwable {
-        final Event e = this.informerString.send("Hello World!");
-        this.testEvent(e, this.informerString);
+        final Event sentEvent = this.stringInformer.send("Hello World!");
+        this.testEvent(sentEvent, this.stringInformer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventNullScope() throws Throwable {
-        final Event e = new Event(this.informerString.getTypeInfo(), "foo");
-        e.setScope(null);
-        this.informerString.send(e);
+        final Event sentEvent = new Event(this.stringInformer.getTypeInfo(),
+                "foo");
+        sentEvent.setScope(null);
+        this.stringInformer.send(sentEvent);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventWrongScope() throws Throwable {
-        this.informerString.send(new Event(new Scope("/blubb"),
-                this.informerString.getTypeInfo(), "foo"));
+        this.stringInformer.send(new Event(new Scope("/blubb"),
+                this.stringInformer.getTypeInfo(), "foo"));
     }
 
+    // we just want to know that the call does not raise an exception
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendEventSubScope() throws Throwable {
-        this.informerString.send(new Event(this.defaultScope.concat(new Scope(
-                "/blubb")), this.informerString.getTypeInfo(), "foo"));
+        this.stringInformer.send(new Event(this.defaultScope.concat(new Scope(
+                "/blubb")), this.stringInformer.getTypeInfo(), "foo"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventWrongType() throws Throwable {
-        this.informerString.setTypeInfo(String.class);
-        this.informerString.send(new Event(this.defaultScope, Boolean.class,
+        this.stringInformer.setTypeInfo(String.class);
+        this.stringInformer.send(new Event(this.defaultScope, Boolean.class,
                 "foo"));
     }
 }

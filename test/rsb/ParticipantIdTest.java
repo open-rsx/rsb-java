@@ -38,7 +38,8 @@ import org.junit.Test;
  */
 public class ParticipantIdTest {
 
-    @SuppressWarnings("unused")
+    // this will merely test that nothing is thrown in constructor
+    @SuppressWarnings({ "unused", "PMD.JUnitTestsShouldIncludeAssert" })
     @Test
     public void eventId() {
         new ParticipantId();
@@ -46,22 +47,22 @@ public class ParticipantIdTest {
 
     @Test
     public void eventIdString() {
-        final ParticipantId id = new ParticipantId();
-        final String s = id.toString();
-        final ParticipantId id2 = new ParticipantId(s);
-        assertTrue(id.equals(id2));
+        final ParticipantId participantId = new ParticipantId();
+        final String stringRep = participantId.toString();
+        final ParticipantId idFromString = new ParticipantId(stringRep);
+        assertEquals(participantId, idFromString);
     }
 
     @Test
     public void toStringGeneration() {
-        final ParticipantId id = new ParticipantId();
-        final String s = id.toString();
-        assertTrue(s.length() > 0);
+        final ParticipantId participantId = new ParticipantId();
+        final String stringRep = participantId.toString();
+        assertTrue(stringRep.length() > 0);
     }
 
     @Test
     public void toByteArray() {
-        final ParticipantId id = new ParticipantId(
+        final ParticipantId participantId = new ParticipantId(
                 "2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
 
         final byte[] data = new byte[16];
@@ -83,7 +84,7 @@ public class ParticipantIdTest {
         data[14] = (byte) 150;
         data[15] = (byte) 29;
 
-        assertArrayEquals(data, id.toByteArray());
+        assertArrayEquals(data, participantId.toByteArray());
 
     }
 

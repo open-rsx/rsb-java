@@ -37,7 +37,7 @@ class ReplyDataCallback extends DataCallback<String, String> {
 
     @Override
     public String invoke(final String request) throws Throwable {
-        if (this.flag.get() == false) {
+        if (!this.flag.get()) {
             this.flag.set(true);
         }
         this.counter.incrementAndGet();

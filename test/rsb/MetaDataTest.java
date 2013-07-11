@@ -30,7 +30,6 @@ package rsb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -41,6 +40,7 @@ import org.junit.Test;
  */
 public class MetaDataTest {
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void construction() {
 
@@ -54,6 +54,7 @@ public class MetaDataTest {
 
     }
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void defaultTimesAuto() {
 
@@ -74,6 +75,7 @@ public class MetaDataTest {
 
     }
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void defaultTimesManual() {
 
@@ -91,6 +93,7 @@ public class MetaDataTest {
 
     }
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void userTimes() {
 
@@ -109,21 +112,25 @@ public class MetaDataTest {
         assertEquals(1, meta.userTimeKeys().size());
         assertTrue(meta.userTimeKeys().contains(key));
 
-        try {
-            meta.getUserTime("unknown");
-            fail();
-        } catch (final IllegalArgumentException e) {
-            // expected exception
-        }
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void unknownUserTimeException() {
+        final MetaData meta = new MetaData();
+        meta.getUserTime("unknown");
+    }
+
+    @Test
+    public void autoTimeStampUserTime() {
+        final MetaData meta = new MetaData();
         final String autoKey = "auto";
         meta.setUserTime(autoKey, 0);
 
         assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis() * 1000 - 100000);
         assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis() * 1000);
-
     }
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void userInfos() {
 
@@ -142,24 +149,21 @@ public class MetaDataTest {
         assertEquals(1, meta.userInfoKeys().size());
         assertTrue(meta.userInfoKeys().contains(key));
 
-        try {
-            meta.getUserInfo("unknown");
-            fail();
-        } catch (final IllegalArgumentException e) {
-            // expected exception
-        }
-
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void userInfosUnknownException() {
+        final MetaData meta = new MetaData();
+        meta.getUserInfo("unknown");
+    }
+
+    // we want to test equals and call orderings here explicitly
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     @Test
-    public void comparison() {
+    public void comparison() throws InterruptedException {
 
         MetaData meta1 = new MetaData();
-        try {
-            Thread.sleep(100);
-        } catch (final InterruptedException e) {
-            // expected exception
-        }
+        Thread.sleep(100);
         MetaData meta2 = new MetaData();
         assertFalse(meta1.equals(meta2)); // distinct times + no UUIDs
         meta2.setCreateTime(meta1.getCreateTime());

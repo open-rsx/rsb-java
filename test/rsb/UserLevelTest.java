@@ -60,10 +60,10 @@ public class UserLevelTest {
         listener.addHandler(new AbstractEventHandler() {
 
             @Override
-            public void handleEvent(final Event e) {
+            public void handleEvent(final Event event) {
                 synchronized (receivedMessages) {
-                    receivedMessages.add((String) e.getData());
-                    receivedMessages.notify();
+                    receivedMessages.add((String) event.getData());
+                    receivedMessages.notifyAll();
                 }
             }
         }, true);

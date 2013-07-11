@@ -43,14 +43,25 @@ import org.junit.Test;
 public class ScopeTest {
 
     @Test
-    public void parsing() {
+    public void parsingRoot() {
 
         final Scope root = new Scope("/");
         assertEquals(0, root.getComponents().size());
 
+    }
+
+    @Test
+    public void parsingSingleComponent() {
+
         final Scope onePart = new Scope("/test/");
         assertEquals(1, onePart.getComponents().size());
         assertEquals("test", onePart.getComponents().get(0));
+
+    }
+
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
+    @Test
+    public void parsingManuParts() {
 
         final Scope manyParts = new Scope("/this/is/a/dumb3/test/");
         assertEquals(5, manyParts.getComponents().size());
@@ -59,6 +70,11 @@ public class ScopeTest {
         assertEquals("a", manyParts.getComponents().get(2));
         assertEquals("dumb3", manyParts.getComponents().get(3));
         assertEquals("test", manyParts.getComponents().get(4));
+
+    }
+
+    @Test
+    public void parsingWithoutSlash() {
 
         // also ensure that the shortcut syntax works
         final Scope shortcut = new Scope("/this/is");
@@ -136,6 +152,7 @@ public class ScopeTest {
 
     }
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void hierarchyComparison() {
 
@@ -155,10 +172,13 @@ public class ScopeTest {
 
     }
 
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void superScope() {
 
-        assertEquals(0, new Scope("/").superScopes(false).size());
+        assertEquals(0, new Scope("/").superScopes(false).size()); // NOPMD:
+                                                                   // false
+                                                                   // positive
 
         List<Scope> supers = new Scope("/this/is/a/test/").superScopes(false);
         assertEquals(4, supers.size());

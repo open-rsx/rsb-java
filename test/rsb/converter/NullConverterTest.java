@@ -43,31 +43,35 @@ public class NullConverterTest {
 
     @Test
     public void serialize() throws Throwable {
-        final NullConverter c = new NullConverter();
-        final WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
+        final NullConverter converter = new NullConverter();
+        final WireContents<ByteBuffer> buf = converter.serialize(Void.class,
+                null);
         assertNotNull(buf);
     }
 
     @Test
     public void roundtrip() throws Throwable {
-        final NullConverter c = new NullConverter();
-        final WireContents<ByteBuffer> buf = c.serialize(Void.class, null);
+        final NullConverter converter = new NullConverter();
+        final WireContents<ByteBuffer> buf = converter.serialize(Void.class,
+                null);
         assertNotNull(buf);
-        final Object o = c.deserialize(buf.getWireSchema(),
+        final Object output = converter.deserialize(buf.getWireSchema(),
                 buf.getSerialization()).getData();
-        assertNull(o);
+        assertNull(output);
     }
 
+    @SuppressWarnings("PMD.LooseCoupling")
     @Test(expected = ConversionException.class)
     public void serializationNotNull() throws Throwable {
-        final NullConverter c = new NullConverter();
-        c.serialize(LinkedList.class, new LinkedList<Integer>());
+        final NullConverter converter = new NullConverter();
+        converter.serialize(LinkedList.class, new LinkedList<Integer>());
     }
 
+    @SuppressWarnings("PMD.LooseCoupling")
     @Test(expected = ConversionException.class)
     public void serializationWrongType() throws Throwable {
-        final NullConverter c = new NullConverter();
-        c.serialize(LinkedList.class, null);
+        final NullConverter converter = new NullConverter();
+        converter.serialize(LinkedList.class, null);
     }
 
 }

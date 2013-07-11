@@ -43,40 +43,43 @@ public class BoolConverterTest {
 
     @Test
     public void serialize() throws Throwable {
-        final BoolConverter c = new BoolConverter();
-        final Boolean b = true;
-        final WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b);
+        final BoolConverter converter = new BoolConverter();
+        final Boolean bool = true;
+        final WireContents<ByteBuffer> buf = converter.serialize(Boolean.class,
+                bool);
         assertNotNull(buf);
     }
 
     @Test
     public void roundtrip() throws Throwable {
-        final BoolConverter c = new BoolConverter();
+        final BoolConverter converter = new BoolConverter();
         {
-            final Boolean b1 = false;
-            final WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b1);
+            final Boolean boolInput = false;
+            final WireContents<ByteBuffer> buf = converter.serialize(
+                    Boolean.class, boolInput);
             assertNotNull(buf);
-            final Object o = c.deserialize(buf.getWireSchema(),
+            final Object output = converter.deserialize(buf.getWireSchema(),
                     buf.getSerialization()).getData();
-            final Boolean b2 = (Boolean) o;
-            assertEquals(b1, b2);
+            final Boolean boolOutput = (Boolean) output;
+            assertEquals(boolInput, boolOutput);
         }
 
         {
-            final Boolean b1 = true;
-            final WireContents<ByteBuffer> buf = c.serialize(Boolean.class, b1);
+            final Boolean boolInput = true;
+            final WireContents<ByteBuffer> buf = converter.serialize(
+                    Boolean.class, boolInput);
             assertNotNull(buf);
-            final Object o = c.deserialize(buf.getWireSchema(),
+            final Object output = converter.deserialize(buf.getWireSchema(),
                     buf.getSerialization()).getData();
-            final Boolean b2 = (Boolean) o;
-            assertEquals(b1, b2);
+            final Boolean boolOutput = (Boolean) output;
+            assertEquals(boolInput, boolOutput);
         }
     }
 
     @Test(expected = ConversionException.class)
     public void serializationNotABoolError() throws Throwable {
-        final BoolConverter c = new BoolConverter();
-        c.serialize(Boolean.class, new LinkedList<Integer>());
+        final BoolConverter converter = new BoolConverter();
+        converter.serialize(Boolean.class, new LinkedList<Integer>());
     }
 
 }

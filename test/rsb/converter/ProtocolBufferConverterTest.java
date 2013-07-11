@@ -56,7 +56,7 @@ public class ProtocolBufferConverterTest {
         final EventId.Builder eventIdBuilder = EventId.newBuilder();
         eventIdBuilder.setSequenceNumber(23);
         eventIdBuilder.setSenderId(ByteString.copyFrom(new ParticipantId()
-        .toByteArray()));
+                .toByteArray()));
         notificationBuilder.setEventId(eventIdBuilder);
         notificationBuilder.setWireSchema(ByteString
                 .copyFromUtf8("rsb.notification"));
@@ -71,8 +71,8 @@ public class ProtocolBufferConverterTest {
         assertNotNull(this.buffer);
         final UserData<Notification> result = this.converter.deserialize(
                 ".rsb.protocol.Notification", this.buffer.getSerialization());
-        final Notification n = (Notification) result.getData();
-        assertEquals(23, n.getEventId().getSequenceNumber());
+        final Notification notification = (Notification) result.getData();
+        assertEquals(23, notification.getEventId().getSequenceNumber());
     }
 
     @Test

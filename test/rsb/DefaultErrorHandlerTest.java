@@ -42,8 +42,8 @@ public class DefaultErrorHandlerTest {
     public void error() {
         final DefaultErrorHandler handler = new DefaultErrorHandler(LOG);
         assertNotNull(handler);
-        final RSBException except = new RSBException(new RuntimeException(
-                "test"));
+        final RSBException except = new RSBException(
+                new IllegalArgumentException("Foo test"));
         handler.warning(except);
         handler.error(except);
     }

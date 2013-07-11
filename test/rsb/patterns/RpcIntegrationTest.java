@@ -46,18 +46,10 @@ public class RpcIntegrationTest {
     @After
     public void tearDown() throws Throwable {
         if (this.server != null) {
-            try {
-                this.server.deactivate();
-            } catch (final Throwable t) {
-                // we cannot do anything here in such a case
-            }
+            this.server.deactivate();
         }
         if (this.remote != null) {
-            try {
-                this.remote.deactivate();
-            } catch (final Throwable t) {
-                // we cannot do anything here in such a case
-            }
+            this.remote.deactivate();
         }
     }
 

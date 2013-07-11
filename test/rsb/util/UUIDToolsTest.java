@@ -53,35 +53,35 @@ public class UUIDToolsTest {
         // => 84F43861-433F-5253-AFBB-A613A5E04D71
         String idString = "D8FBFEF4-4EB0-4C89-9716-C425DED3C527";
         long seqNr = 0;
-        UUID id = this.buildUUID(idString, seqNr);
-        assertTrue(id.toString().equals(
+        UUID uuid = this.buildUUID(idString, seqNr);
+        assertTrue(uuid.toString().equals(
                 "84F43861-433F-5253-AFBB-A613A5E04D71".toLowerCase()));
 
         // Testcase B (see https://code.cor-lab.org/projects/rsb/wiki/Events)
         idString = "BF948D47-618F-4B04-AAC5-0AB5A1A79267";
         seqNr = 378;
-        id = this.buildUUID(idString, seqNr);
+        uuid = this.buildUUID(idString, seqNr);
         // v5-uuid(BF948D47-618F-4B04-AAC5-0AB5A1A79267, "0000017a")
         // => BD27BE7D-87DE-5336-BECA-44FC60DE46A0
-        assertTrue(id.toString().equals(
-                "BD27BE7D-87DE-5336-BECA-44FC60DE46A0".toLowerCase()));
+        assertEquals("BD27BE7D-87DE-5336-BECA-44FC60DE46A0".toLowerCase(),
+                uuid.toString());
     }
 
     private UUID buildUUID(final String idString, final long seqNr) {
-        final UUID id = UUID.fromString(idString);
+        final UUID uuid = UUID.fromString(idString);
         // java UUId's are formatted lower case...
-        assertTrue(id.toString().equalsIgnoreCase(idString));
+        assertTrue(uuid.toString().equalsIgnoreCase(idString));
 
         final String seqNumber = EventId.formatSequenceNumber(seqNr);
         // hack for testcases A and B, should go to EventId test
         if (seqNr == 0) {
-            assertTrue(seqNumber.equals("00000000"));
+            assertEquals("00000000", seqNumber);
         }
         if (seqNr == 378) {
-            assertTrue(seqNumber.equals("0000017a"));
+            assertEquals("0000017a", seqNumber);
         }
 
-        return UUIDTools.getNameBasedUUID(id, seqNumber);
+        return UUIDTools.getNameBasedUUID(uuid, seqNumber);
     }
 
     /**

@@ -27,9 +27,7 @@
  */
 package rsb;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
@@ -42,13 +40,18 @@ import org.junit.Test;
  */
 public class EventTest {
 
+    // for this test I want to test the different orders of calling equals
+    // manually, so the warning about using assertEquals is explicitly not
+    // wanted here
+    @SuppressWarnings({ "PMD.JUnitTestContainsTooManyAsserts",
+            "PMD.UseAssertEqualsInsteadOfAssertTrue" })
     @Test
     public void comparison() {
 
         final Event event1 = new Event();
         final Event event2 = new Event();
         event2.getMetaData()
-        .setCreateTime(event1.getMetaData().getCreateTime());
+                .setCreateTime(event1.getMetaData().getCreateTime());
         assertEquals(event1, event2);
 
         // // TODO add Id test
@@ -123,12 +126,12 @@ public class EventTest {
         final Event event1 = new Event();
         final Event event2 = new Event();
         event2.getMetaData()
-        .setCreateTime(event1.getMetaData().getCreateTime());
+                .setCreateTime(event1.getMetaData().getCreateTime());
         assertEquals(event1.hashCode(), event2.hashCode());
 
         // causes
         event1.addCause(new EventId(new ParticipantId(), 234234));
-        assertFalse(event1.hashCode() == event2.hashCode());
+        assertNotSame(event1.hashCode(), event2.hashCode());
 
     }
 

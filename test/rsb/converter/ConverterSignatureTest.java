@@ -37,20 +37,22 @@ import org.junit.Test;
  */
 public class ConverterSignatureTest {
 
+    private static final String ENCODING = "utf-8-string";
+
     @Test
     public void converterSignature() {
-        final ConverterSignature sig = new ConverterSignature("utf-8-string",
+        final ConverterSignature sig = new ConverterSignature(ENCODING,
                 String.class);
-        assertTrue(sig.getSchema().contentEquals("utf-8-string"));
+        assertTrue(sig.getSchema().contentEquals(ENCODING));
         assertTrue(sig.getDatatype().getName()
                 .contentEquals("java.lang.String"));
     }
 
     @Test
     public void equalsObject() {
-        final ConverterSignature sig1 = new ConverterSignature("utf-8-string",
+        final ConverterSignature sig1 = new ConverterSignature(ENCODING,
                 String.class);
-        final ConverterSignature sig2 = new ConverterSignature("utf-8-string",
+        final ConverterSignature sig2 = new ConverterSignature(ENCODING,
                 String.class);
         assertEquals(sig1, sig2);
     }

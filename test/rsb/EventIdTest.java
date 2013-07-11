@@ -36,16 +36,16 @@ import org.junit.Test;
 
 public class EventIdTest {
 
-    ParticipantId participantId = new ParticipantId();
+    private final ParticipantId participantId = new ParticipantId();
 
     @Test
     public void equalsObject() {
-        final EventId eventId_a = new EventId(this.participantId, 0);
-        EventId eventId_b = new EventId(this.participantId, 0);
-        assertEquals(eventId_a, eventId_b);
-        assertTrue(eventId_a.getAsUUID().equals(eventId_b.getAsUUID()));
-        eventId_b = new EventId(this.participantId, 1);
-        assertFalse(eventId_a.getAsUUID().equals(eventId_b.getAsUUID()));
+        final EventId eventIdA = new EventId(this.participantId, 0);
+        EventId eventIdB = new EventId(this.participantId, 0);
+        assertEquals(eventIdA, eventIdB);
+        assertTrue(eventIdA.getAsUUID().equals(eventIdB.getAsUUID()));
+        eventIdB = new EventId(this.participantId, 1);
+        assertFalse(eventIdA.getAsUUID().equals(eventIdB.getAsUUID()));
     }
 
     @Test

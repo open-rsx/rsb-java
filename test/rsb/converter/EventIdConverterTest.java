@@ -46,13 +46,13 @@ public class EventIdConverterTest {
     public void roundtrip() throws Throwable {
         final EventIdConverter converter = new EventIdConverter();
 
-        final EventId id = new EventId(new ParticipantId(), 251);
-        final WireContents<ByteBuffer> buf = converter.serialize(id.getClass(),
-                id);
+        final EventId eventId = new EventId(new ParticipantId(), 251);
+        final WireContents<ByteBuffer> buf = converter.serialize(
+                eventId.getClass(), eventId);
         assertNotNull(buf);
-        final Object o = converter.deserialize(buf.getWireSchema(),
+        final Object output = converter.deserialize(buf.getWireSchema(),
                 buf.getSerialization()).getData();
-        assertEquals(id, o);
+        assertEquals(eventId, output);
     }
 
 }

@@ -45,36 +45,38 @@ public class StringConverterTest {
 
     @Test
     public void serialize() throws Throwable {
-        final StringConverter c = new StringConverter();
-        final String s = "testcase";
-        final WireContents<ByteBuffer> buf = c.serialize(String.class, s);
+        final StringConverter converter = new StringConverter();
+        final String input = "testcase";
+        final WireContents<ByteBuffer> buf = converter.serialize(String.class,
+                input);
         assertNotNull(buf);
     }
 
     @Test
     public void roundtrip() throws Throwable {
-        final StringConverter c = new StringConverter();
-        final String s1 = "testcase";
-        final WireContents<ByteBuffer> buf = c.serialize(String.class, s1);
+        final StringConverter converter = new StringConverter();
+        final String input = "testcase";
+        final WireContents<ByteBuffer> buf = converter.serialize(String.class,
+                input);
         assertNotNull(buf);
-        final Object o = c.deserialize(buf.getWireSchema(),
+        final Object output = converter.deserialize(buf.getWireSchema(),
                 buf.getSerialization()).getData();
-        final String s2 = (String) o;
-        assertEquals(s1, s2);
+        final String outputString = (String) output;
+        assertEquals(input, outputString);
     }
 
     @Test(expected = ConversionException.class)
     public void serializationNotAStringError() throws Throwable {
-        final StringConverter c = new StringConverter();
-        c.serialize(String.class, new LinkedList<Integer>());
+        final StringConverter converter = new StringConverter();
+        converter.serialize(String.class, new LinkedList<Integer>());
     }
 
     @Test(expected = ConversionException.class)
     public void serializationEncodingError() throws Throwable {
         final String withNonAscii = "đħħ←ŋæ¶æŧđ";
-        final StringConverter c = new StringConverter("US-ASCII",
+        final StringConverter converter = new StringConverter("US-ASCII",
                 "ascii-string");
-        c.serialize(String.class, withNonAscii);
+        converter.serialize(String.class, withNonAscii);
     }
 
     @Test(expected = ConversionException.class)
@@ -82,9 +84,9 @@ public class StringConverterTest {
         final String withNonAscii = "đħħ←ŋæ¶æŧđ";
         final CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
         final ByteBuffer buffer = encoder.encode(CharBuffer.wrap(withNonAscii));
-        final StringConverter c = new StringConverter("US-ASCII",
+        final StringConverter converter = new StringConverter("US-ASCII",
                 "ascii-string");
-        c.deserialize("ascii-string", buffer);
+        converter.deserialize("ascii-string", buffer);
     }
 
 }
