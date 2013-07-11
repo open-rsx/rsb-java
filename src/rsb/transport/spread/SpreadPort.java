@@ -56,9 +56,9 @@ import rsb.protocol.EventMetaDataType.UserTime;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
-import rsb.transport.InConnector;
-import rsb.transport.OutConnector;
 import rsb.transport.EventHandler;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 import rsb.util.InvalidPropertyException;
 import rsb.util.Properties;
 import spread.SpreadException;
@@ -70,14 +70,14 @@ import com.google.protobuf.ByteString;
  * 
  * @author swrede
  */
-public class SpreadPort extends AbstractFilterObserver implements InConnector,
-        OutConnector {
+public class SpreadPort extends AbstractFilterObserver implements
+        InPushConnector, OutConnector {
 
     private final static Logger LOG = Logger.getLogger(SpreadPort.class
             .getName());
 
     private ReceiverTask receiver;
-    private final EventHandler eventHandler;
+    private EventHandler eventHandler;
     private static final int MIN_DATA_SIZE = 5;
     private static final int MAX_MSG_SIZE = 100000;
 
@@ -140,19 +140,15 @@ public class SpreadPort extends AbstractFilterObserver implements InConnector,
     /**
      * @param spread
      *            encapsulation of spread communication
-     * @param eventHandler
-     *            if <code>null</code>, no receiving of events will be done
      * @param inStrategy
      *            converters to use for receiving data
      * @param outStrategy
      *            converters to use for sending data
      */
     public SpreadPort(final SpreadWrapper spread,
-            final EventHandler eventHandler,
             final ConverterSelectionStrategy<ByteBuffer> inStrategy,
             final ConverterSelectionStrategy<ByteBuffer> outStrategy) {
         this.spread = spread;
-        this.eventHandler = eventHandler;
         this.inStrategy = inStrategy;
         this.outStrategy = outStrategy;
 
@@ -508,5 +504,22 @@ public class SpreadPort extends AbstractFilterObserver implements InConnector,
     @Override
     public boolean isActive() {
         return this.spread.isActive();
+    }
+
+    @Override
+    public void addHandler(final EventHandler handler) {
+        // TODO make handler multiple handlers
+        assert handler != null;
+        this.eventHandler = handler;
+    }
+
+    @Override
+    public boolean removeHandler(final EventHandler handler) {
+        if (handler != this.eventHandler) {
+            return false;
+        }
+        // TODO remove it from the receive task!
+        this.eventHandler = null;
+        return true;
     }
 }

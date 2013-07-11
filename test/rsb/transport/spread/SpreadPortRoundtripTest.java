@@ -82,14 +82,16 @@ public class SpreadPortRoundtripTest {
         inStrategy.addConverter("utf-8-string", new StringConverter());
         final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
-        final SpreadPort outPort = new SpreadPort(outWrapper, null, inStrategy,
+        final SpreadPort outPort = new SpreadPort(outWrapper, inStrategy,
                 outStrategy);
         outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
                 Ordering.ORDERED, Reliability.RELIABLE));
 
         final List<Event> receivedEvents = new ArrayList<Event>();
         final SpreadWrapper inWrapper = new SpreadWrapper();
-        final SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+        final SpreadPort inPort = new SpreadPort(inWrapper, inStrategy,
+                outStrategy);
+        inPort.addHandler(new EventHandler() {
 
             @Override
             public void handle(final Event e) {
@@ -99,7 +101,7 @@ public class SpreadPortRoundtripTest {
                 }
             }
 
-        }, inStrategy, outStrategy);
+        });
 
         inPort.activate();
         outPort.activate();

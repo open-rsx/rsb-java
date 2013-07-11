@@ -42,6 +42,6 @@ public abstract class TransportFactory {
 
     public abstract OutConnector createOutConnector();
 
-    public abstract InConnector createInConnector(EventHandler eventHandler);
+    public abstract InPushConnector createInConnector(EventHandler eventHandler);
 
 }

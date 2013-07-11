@@ -80,16 +80,10 @@ public class Router extends FilterObservable implements EventHandler {
         // subscribe(os,po);
     }
 
-    /**
-     * @param f
-     */
     private void setupOutPorts(final TransportFactory factory) {
         this.outPort = factory.createOutConnector();
     }
 
-    /**
-     * @param f
-     */
     private void setupInPorts(final TransportFactory factory) {
         this.inPort = factory.createInConnector(this);
         this.addObserver(this.inPort);

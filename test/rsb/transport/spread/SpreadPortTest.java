@@ -64,7 +64,7 @@ public class SpreadPortTest {
     public void setUp() throws Throwable {
 
         this.outWrapper = new SpreadWrapper();
-        this.outPort = new SpreadPort(this.outWrapper, null,
+        this.outPort = new SpreadPort(this.outWrapper,
                 this.getConverterStrategy("utf-8-string"),
                 this.getConverterStrategy(String.class.getName()));
         this.outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
@@ -101,19 +101,19 @@ public class SpreadPortTest {
             receivedEventsByScope.put(scope, receivedEvents);
             final SpreadWrapper inWrapper = new SpreadWrapper();
             final SpreadPort inPort = new SpreadPort(inWrapper,
-                    new EventHandler() {
-
-                        @Override
-                        public void handle(final Event e) {
-                            synchronized (receivedEventsByScope) {
-                                receivedEvents.add(e);
-                                receivedEventsByScope.notify();
-                            }
-                        }
-
-                    }, this.getConverterStrategy("utf-8-string"),
+                    this.getConverterStrategy("utf-8-string"),
                     this.getConverterStrategy(String.class.getName()));
+            inPort.addHandler(new EventHandler() {
 
+                @Override
+                public void handle(final Event e) {
+                    synchronized (receivedEventsByScope) {
+                        receivedEvents.add(e);
+                        receivedEventsByScope.notify();
+                    }
+                }
+
+            });
             inPort.activate();
 
             inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
@@ -182,7 +182,10 @@ public class SpreadPortTest {
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
         final SpreadWrapper inWrapper = new SpreadWrapper();
-        final SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+        final SpreadPort inPort = new SpreadPort(inWrapper,
+                this.getConverterStrategy("utf-8-string"),
+                this.getConverterStrategy(String.class.getName()));
+        inPort.addHandler(new EventHandler() {
 
             @Override
             public void handle(final Event e) {
@@ -192,8 +195,7 @@ public class SpreadPortTest {
                 }
             }
 
-        }, this.getConverterStrategy("utf-8-string"),
-                this.getConverterStrategy(String.class.getName()));
+        });
         inPort.activate();
         inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
