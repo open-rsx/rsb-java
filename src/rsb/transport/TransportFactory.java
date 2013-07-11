@@ -31,6 +31,7 @@ import rsb.transport.spread.SpreadFactory;
 
 /**
  * 
+ * @author jwienke
  * @author swrede
  */
 public abstract class TransportFactory {
@@ -39,15 +40,8 @@ public abstract class TransportFactory {
         return new SpreadFactory();
     };
 
-    public final Port createPort() {
-        return this.createPort(null);
-    }
+    public abstract OutConnector createOutConnector();
 
-    /**
-     * @param handler
-     *            may be <code>null</code> if no handler is required
-     * @return A port with the given handler
-     */
-    public abstract Port createPort(EventHandler handler);
+    public abstract InConnector createInConnector(EventHandler eventHandler);
 
 }

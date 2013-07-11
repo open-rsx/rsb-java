@@ -45,8 +45,8 @@ public class Router extends FilterObservable implements EventHandler {
 
     private final static Logger LOG = Logger.getLogger(Router.class.getName());
 
-    protected Port inPort;
-    protected Port outPort;
+    protected InConnector inPort;
+    protected OutConnector outPort;
     protected EventReceivingStrategy ep;
     protected PortConfiguration config;
 
@@ -84,14 +84,14 @@ public class Router extends FilterObservable implements EventHandler {
      * @param f
      */
     private void setupOutPorts(final TransportFactory factory) {
-        this.outPort = factory.createPort();
+        this.outPort = factory.createOutConnector();
     }
 
     /**
      * @param f
      */
     private void setupInPorts(final TransportFactory factory) {
-        this.inPort = factory.createPort(this);
+        this.inPort = factory.createInConnector(this);
         this.addObserver(this.inPort);
     }
 

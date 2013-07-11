@@ -46,6 +46,7 @@ import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
+import rsb.filter.AbstractFilterObserver;
 import rsb.filter.FilterAction;
 import rsb.filter.ScopeFilter;
 import rsb.protocol.EventIdType.EventId;
@@ -55,7 +56,8 @@ import rsb.protocol.EventMetaDataType.UserTime;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
-import rsb.transport.AbstractPort;
+import rsb.transport.InConnector;
+import rsb.transport.OutConnector;
 import rsb.transport.EventHandler;
 import rsb.util.InvalidPropertyException;
 import rsb.util.Properties;
@@ -68,7 +70,8 @@ import com.google.protobuf.ByteString;
  * 
  * @author swrede
  */
-public class SpreadPort extends AbstractPort {
+public class SpreadPort extends AbstractFilterObserver implements InConnector,
+        OutConnector {
 
     private final static Logger LOG = Logger.getLogger(SpreadPort.class
             .getName());
@@ -187,12 +190,6 @@ public class SpreadPort extends AbstractPort {
         this.receiver.start();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.filter.AbstractFilterObserver#notify(rsb.filter.ScopeFilter,
-     * rsb.filter.FilterAction)
-     */
     @Override
     public void notify(final ScopeFilter e, final FilterAction a) {
         LOG.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()

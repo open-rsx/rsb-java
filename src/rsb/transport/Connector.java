@@ -27,20 +27,20 @@
  */
 package rsb.transport;
 
-import rsb.Event;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBObject;
-import rsb.converter.ConversionException;
-import rsb.filter.FilterObserver;
 
 /**
+ * A generic interface for classes providing connection to a specific transport
+ * mechanism.
+ * 
+ * @author jwienke
  * @author swrede
  */
-public interface Port extends RSBObject, FilterObserver {
+public interface Connector extends RSBObject {
 
-    public void push(Event e) throws ConversionException;
-
-    public String getType();
+    // TODO still required? What was the original meaning
+    String getType();
 
     /**
      * Sets the quality of service requirements on sending and receiving event
@@ -49,6 +49,6 @@ public interface Port extends RSBObject, FilterObserver {
      * @param spec
      *            new spec to apply
      */
-    public void setQualityOfServiceSpec(QualityOfServiceSpec spec);
+    void setQualityOfServiceSpec(QualityOfServiceSpec spec);
 
 }

@@ -32,7 +32,9 @@ import java.nio.ByteBuffer;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.DefaultConverterRepository;
 import rsb.transport.EventHandler;
-import rsb.transport.Port;
+import rsb.transport.Connector;
+import rsb.transport.InConnector;
+import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
 
 /**
@@ -42,7 +44,11 @@ import rsb.transport.TransportFactory;
 public class SpreadFactory extends TransportFactory {
 
     @Override
-    public Port createPort(final EventHandler handler) {
+    public InConnector createInConnector(final EventHandler handler) {
+        return createConnector(handler);
+    }
+
+    private SpreadPort createConnector(final EventHandler handler) {
         final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
                 .getDefaultConverterRepository()
                 .getConvertersForDeserialization();
@@ -58,6 +64,11 @@ public class SpreadFactory extends TransportFactory {
         final SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler,
                 inStrategy, outStrategy);
         return sp;
+    }
+
+    @Override
+    public OutConnector createOutConnector() {
+        return createConnector(null);
     }
 
 }
