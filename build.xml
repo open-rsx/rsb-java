@@ -347,6 +347,7 @@
         	<sourceLanguage name="java" version="${rsb.java.compatibility}"/>
             <formatter type="xml" toFile="pmd.xml" />
             <formatter type="html" toFile="pmd_report.html" toConsole="true" />
+            <formatter type="text" toConsole="true" />
             <fileset dir="./src">
                 <include name="**/*.java" />
                 <exclude name="**/protocol/*.java"/>
