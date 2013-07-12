@@ -44,13 +44,9 @@ import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
-import rsb.protocol.EventIdType.EventId;
-import rsb.protocol.EventMetaDataType.EventMetaData;
-import rsb.protocol.EventMetaDataType.UserInfo;
-import rsb.protocol.EventMetaDataType.UserTime;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
-import rsb.protocol.NotificationType.Notification.Builder;
+import rsb.protocol.ProtocolConversion;
 import rsb.transport.OutConnector;
 import rsb.util.InvalidPropertyException;
 import rsb.util.Properties;
@@ -69,6 +65,10 @@ public class SpreadOutConnector implements OutConnector {
             .getName());
 
     private static final int MIN_DATA_SIZE = 5;
+
+    /**
+     * The maximum size of a spread message in bytes.
+     */
     private static final int MAX_MSG_SIZE = 100000;
 
     /**
@@ -77,15 +77,41 @@ public class SpreadOutConnector implements OutConnector {
     private QoSHandler spreadServiceHandler;
 
     private final SpreadWrapper spread;
-    // TODO instantiate matching strategy, initially in the constructor, later
-    // per configuration
-    private final ConverterSelectionStrategy<ByteBuffer> outStrategy;
 
+    /**
+     * The converter selection strategy used to serialize messages.
+     */
+    private final ConverterSelectionStrategy<ByteBuffer> converters;
+
+    /**
+     * Implementing classes apply a specific spread message qos flag to a
+     * message that will be sent later. They are used to apply the RSB qos
+     * requirements.
+     *
+     * @author jwienke
+     */
     private interface QoSHandler {
 
+        /**
+         * Applies the quality of service requirements by adapting the message
+         * flags.
+         *
+         * @param message
+         *            the message to modify
+         * @throws SerializeException
+         *             an exception unfortunately thrown by
+         *             {@link DataMessage#getSpreadMessage()}. We should not
+         *             need this ultimately
+         */
         void apply(DataMessage message) throws SerializeException;
+
     }
 
+    /**
+     * Allows unreliable communication.
+     *
+     * @author jwienke
+     */
     private class UnreliableHandler implements QoSHandler {
 
         @Override
@@ -95,6 +121,11 @@ public class SpreadOutConnector implements OutConnector {
 
     }
 
+    /**
+     * Requires reliable communication.
+     *
+     * @author jwienke
+     */
     private class ReliableHandler implements QoSHandler {
 
         @Override
@@ -104,6 +135,11 @@ public class SpreadOutConnector implements OutConnector {
 
     }
 
+    /**
+     * Enforces FIFO ordering of sent messages.
+     *
+     * @author jwienke
+     */
     private class FifoHandler implements QoSHandler {
 
         @Override
@@ -114,15 +150,20 @@ public class SpreadOutConnector implements OutConnector {
     }
 
     /**
+     * Constructs a new {@link SpreadOutConnector}.
+     *
      * @param spread
-     *            encapsulation of spread communication
+     *            encapsulation of spread communication. Must not be activated.
      * @param outStrategy
      *            converters to use for sending data
      */
     public SpreadOutConnector(final SpreadWrapper spread,
             final ConverterSelectionStrategy<ByteBuffer> outStrategy) {
+
+        assert !spread.isActive();
+
         this.spread = spread;
-        this.outStrategy = outStrategy;
+        this.converters = outStrategy;
 
         // TODO initial hack to get QoS from properties, replace this with a
         // real participant config
@@ -142,67 +183,24 @@ public class SpreadOutConnector implements OutConnector {
         }
         this.setQualityOfServiceSpec(new QualityOfServiceSpec(ordering,
                 reliability));
+
     }
 
     @Override
     public void activate() throws InitializeException {
         // activate spread connection
-        if (!this.spread.isActive()) {
-            this.spread.activate();
+        if (this.spread.isActive()) {
+            throw new IllegalStateException("Connector is already active.");
         }
+        this.spread.activate();
     }
 
-    private EventId.Builder createEventIdBuilder(
-            @SuppressWarnings("PMD.ShortVariable") final rsb.EventId id) {
-        final EventId.Builder eventIdBuilder = EventId.newBuilder();
-        eventIdBuilder.setSenderId(ByteString.copyFrom(id.getParticipantId()
-                .toByteArray()));
-        eventIdBuilder.setSequenceNumber((int) id.getSequenceNumber());
-        return eventIdBuilder;
-    }
-
-    private void fillMandatoryNotificationFields(
-            final Notification.Builder notificationBuilder, final Event event) {
-        notificationBuilder
-                .setEventId(this.createEventIdBuilder(event.getId()));
-    }
-
-    private void fillNotificationHeader(final Builder notificationBuilder,
-            final Event event, final String wireSchema) {
-
-        // notification metadata
-        notificationBuilder.setWireSchema(ByteString.copyFromUtf8(wireSchema));
-        notificationBuilder.setScope(ByteString.copyFromUtf8(event.getScope()
-                .toString()));
-        if (event.getMethod() != null) {
-            notificationBuilder.setMethod(ByteString.copyFromUtf8(event
-                    .getMethod()));
-        }
-
-        final EventMetaData.Builder metaDataBuilder = EventMetaData
-                .newBuilder();
-        metaDataBuilder.setCreateTime(event.getMetaData().getCreateTime());
-        metaDataBuilder.setSendTime(event.getMetaData().getSendTime());
-        for (final String key : event.getMetaData().userInfoKeys()) {
-            final UserInfo.Builder infoBuilder = UserInfo.newBuilder();
-            infoBuilder.setKey(ByteString.copyFromUtf8(key));
-            infoBuilder.setValue(ByteString.copyFromUtf8(event.getMetaData()
-                    .getUserInfo(key)));
-            metaDataBuilder.addUserInfos(infoBuilder.build());
-        }
-        for (final String key : event.getMetaData().userTimeKeys()) {
-            final UserTime.Builder timeBuilder = UserTime.newBuilder();
-            timeBuilder.setKey(ByteString.copyFromUtf8(key));
-            timeBuilder.setTimestamp(event.getMetaData().getUserTime(key));
-            metaDataBuilder.addUserTimes(timeBuilder.build());
-        }
-        notificationBuilder.setMetaData(metaDataBuilder.build());
-        for (final rsb.EventId cause : event.getCauses()) {
-            notificationBuilder.addCauses(this.createEventIdBuilder(cause));
-        }
-
-    }
-
+    /**
+     * Represents a single fragment from a potentially larger message to be sent
+     * via the spread connection.
+     *
+     * @author jwienke
+     */
     private class Fragment {
 
         public FragmentedNotification.Builder fragmentBuilder = null;
@@ -213,88 +211,19 @@ public class SpreadOutConnector implements OutConnector {
             this.fragmentBuilder = fragmentBuilder;
             this.notificationBuilder = notificationBuilder;
         }
+
     }
 
     @Override
     public void push(final Event event) throws ConversionException {
 
-        WireContents<ByteBuffer> convertedDataBuffer;
-        try {
-            convertedDataBuffer = this.convertEvent(event);
-        } catch (final NoSuchConverterException ex) {
-            LOG.warning(ex.getMessage());
-            return;
-        }
-        final int dataSize = convertedDataBuffer.getSerialization().limit();
+        final WireContents<ByteBuffer> convertedDataBuffer = this
+                .convertEvent(event);
 
         event.getMetaData().setSendTime(0);
 
-        // find out how many messages are required to send the data
-        // int requiredParts = 1;
-        // if (dataSize > 0) {
-        // requiredParts = (int) Math.ceil((float) dataSize
-        // / (float) MAX_MSG_SIZE);
-        // }
-
-        // create a list of fragmented messages
-        final List<Fragment> fragments = new ArrayList<Fragment>();
-        int cursor = 0;
-        int currentFragment = 0;
-        // "currentFragment == 0" is required for the case when dataSize == 0
-        while (cursor < dataSize || currentFragment == 0) {
-
-            final FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
-                    .newBuilder();
-            final Notification.Builder notificationBuilder = Notification
-                    .newBuilder();
-
-            this.fillMandatoryNotificationFields(notificationBuilder, event);
-
-            // for the first notification we also need to set the whole head
-            // with meta data etc.
-            if (currentFragment == 0) {
-                this.fillNotificationHeader(notificationBuilder, event,
-                        convertedDataBuffer.getWireSchema());
-            }
-
-            // determine how much space can still be used for data
-            // TODO this is really suboptimal with the java API...
-            final FragmentedNotification.Builder fragmentBuilderClone = fragmentBuilder
-                    .clone();
-            fragmentBuilderClone.setNotification(notificationBuilder.clone());
-            final int currentNotificationSize = fragmentBuilderClone
-                    .buildPartial().getSerializedSize();
-            if (currentNotificationSize > MAX_MSG_SIZE - MIN_DATA_SIZE) {
-                throw new RuntimeException(
-                        "There is not enough space for data in this message.");
-            }
-            final int maxDataPartSize = MAX_MSG_SIZE - currentNotificationSize;
-
-            int fragmentDataSize = maxDataPartSize;
-            if (cursor + fragmentDataSize > dataSize) {
-                fragmentDataSize = dataSize - cursor;
-            }
-            final ByteString dataPart = ByteString.copyFrom(convertedDataBuffer
-                    .getSerialization().array(), cursor, fragmentDataSize);
-
-            notificationBuilder.setData(dataPart);
-            fragmentBuilder.setDataPart(currentFragment);
-            // optimistic guess
-            fragmentBuilder.setNumDataParts(1);
-
-            fragments.add(new Fragment(fragmentBuilder, notificationBuilder));
-
-            cursor += fragmentDataSize;
-            currentFragment++;
-
-        }
-
-        // check how many fragments we really need to send
-        if (fragments.size() > 1) {
-            for (final Fragment fragment : fragments) {
-                fragment.fragmentBuilder.setNumDataParts(fragments.size());
-            }
-        }
+        final List<Fragment> fragments = prepareFragments(event,
+                convertedDataBuffer);
 
         // send all fragments
         for (final Fragment fragment : fragments) {
@@ -308,52 +237,144 @@ public class SpreadOutConnector implements OutConnector {
 
             // send message on spread
             // TODO remove data message
-            final DataMessage dm = new DataMessage();
+            final DataMessage message = new DataMessage();
             try {
-                dm.setData(serializedFragment.toByteArray());
+                message.setData(serializedFragment.toByteArray());
             } catch (final SerializeException ex) {
-                throw new RuntimeException(
+                throw new ConversionException(
                         "Unable to set binary data for a spread message.", ex);
             }
 
             // send to all super scopes
             final List<Scope> scopes = event.getScope().superScopes(true);
             for (final Scope scope : scopes) {
-                dm.addGroup(SpreadUtilities.spreadGroupName(scope));
+                message.addGroup(SpreadUtilities.spreadGroupName(scope));
             }
 
             // apply QoS
             try {
-                this.spreadServiceHandler.apply(dm);
+                this.spreadServiceHandler.apply(message);
             } catch (final SerializeException ex) {
-                throw new RuntimeException(
+                throw new ConversionException(
                         "Unable to apply quality of service settings for a spread message.",
                         ex);
             }
 
-            final boolean sent = this.spread.send(dm);
+            final boolean sent = this.spread.send(message);
             assert sent;
+            if (!sent) {
+                throw new RuntimeException(
+                        "Don't know why, but a message could not be sent using spread.");
+            }
 
         }
+
+    }
+
+    /**
+     * Prepares the fragments which will be sent on the wire.
+     *
+     * @param event
+     *            the event we are currently sending
+     * @param convertedData
+     *            the converted data to send on the wire
+     * @return the created fragments
+     * @throws ConversionException
+     *             thrown in case there is so much meta data that no more user
+     *             content fits into the fragments
+     */
+    private List<Fragment> prepareFragments(final Event event,
+            final WireContents<ByteBuffer> convertedData)
+            throws ConversionException {
+
+        final int dataSize = convertedData.getSerialization().limit();
+
+        final List<Fragment> fragments = new ArrayList<Fragment>();
+        int cursor = 0;
+        int currentFragment = 0;
+        // "currentFragment == 0" is required for the case when dataSize == 0
+        while (cursor < dataSize || currentFragment == 0) {
+
+            final FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
+                    .newBuilder();
+            final Notification.Builder notificationBuilder = Notification
+                    .newBuilder();
+
+            notificationBuilder.setEventId(ProtocolConversion
+                    .createEventIdBuilder(event.getId()));
+
+            // for the first notification we also need to set the whole head
+            // with meta data etc.
+            if (currentFragment == 0) {
+                ProtocolConversion.fillNotificationHeader(notificationBuilder,
+                        event, convertedData.getWireSchema());
+            }
+
+            // determine how much space can still be used for data
+            // TODO this is really suboptimal with the java API...
+            final FragmentedNotification.Builder fragmentBuilderClone = fragmentBuilder
+                    .clone();
+            fragmentBuilderClone.setNotification(notificationBuilder.clone());
+            final int thisNotificationSize = fragmentBuilderClone
+                    .buildPartial().getSerializedSize();
+            if (thisNotificationSize > MAX_MSG_SIZE - MIN_DATA_SIZE) {
+                throw new ConversionException(
+                        "There is not enough space for data in this message. "
+                                + "Please reduce the meta data size.");
+            }
+            final int maxDataPartSize = MAX_MSG_SIZE - thisNotificationSize;
+
+            int fragmentDataSize = maxDataPartSize;
+            if (cursor + fragmentDataSize > dataSize) {
+                fragmentDataSize = dataSize - cursor;
+            }
+            final ByteString dataPart = ByteString.copyFrom(convertedData
+                    .getSerialization().array(), cursor, fragmentDataSize);
+
+            notificationBuilder.setData(dataPart);
+            fragmentBuilder.setDataPart(currentFragment);
+            // optimistic guess
+            fragmentBuilder.setNumDataParts(1);
+
+            fragments.add(new Fragment(fragmentBuilder, notificationBuilder)); // NOPMD
+
+            cursor += fragmentDataSize;
+            currentFragment++;
+
+        }
+
+        // update each fragment with the number of total fragments to expect
+        // after we now know this number
+        if (fragments.size() > 1) {
+            for (final Fragment fragment : fragments) {
+                fragment.fragmentBuilder.setNumDataParts(fragments.size());
+            }
+        }
+
+        return fragments;
 
     }
 
     private WireContents<ByteBuffer> convertEvent(final Event event)
             throws ConversionException {
-        Converter<ByteBuffer> converter = null;
-        // convert data
-        converter = this.outStrategy.getConverter(event.getType().getName());
-        final WireContents<ByteBuffer> convertedDataBuffer = converter
-                .serialize(event.getType(), event.getData());
-        return convertedDataBuffer;
+        try {
+            final Converter<ByteBuffer> converter = this.converters
+                    .getConverter(event.getType().getName());
+            final WireContents<ByteBuffer> convertedDataBuffer = converter
+                    .serialize(event.getType(), event.getData());
+            return convertedDataBuffer;
+        } catch (final NoSuchConverterException e) {
+            throw new ConversionException(e);
+        }
     }
 
     @Override
     public void deactivate() throws RSBException {
-        if (this.spread.isActive()) {
-            LOG.fine("deactivating SpreadPort");
-            this.spread.deactivate();
+        if (!this.spread.isActive()) {
+            throw new IllegalStateException("Connector is not active.");
         }
+        LOG.fine("deactivating SpreadPort");
+        this.spread.deactivate();
     }
 
     @Override

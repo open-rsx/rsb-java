@@ -35,12 +35,14 @@ import java.nio.ByteBuffer;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rsb.Informer.InformerStateActive;
 import rsb.Informer.InformerStateInactive;
 import rsb.converter.ConverterRepository;
 import rsb.converter.DefaultConverterRepository;
+import rsb.converter.DefaultConverters;
 import rsb.transport.TransportFactory;
 
 /**
@@ -54,6 +56,11 @@ public class InformerTest {
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
             .getDefaultConverterRepository();
+
+    @BeforeClass
+    public static void registerConverters() {
+        DefaultConverters.register();
+    }
 
     @Before
     public void setUp() throws Throwable {
@@ -140,7 +147,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#deactivate()}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */

@@ -46,6 +46,7 @@ import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
+import rsb.converter.ConversionException;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.EventHandler;
@@ -82,6 +83,13 @@ public class SpreadConnectorTest {
     @After
     public void tearDown() throws Throwable {
         this.outPort.deactivate();
+    }
+
+    @Test(expected = ConversionException.class)
+    public void noConverterPassedToClient() throws Throwable {
+        final Event event = new Event(OUT_BASE_SCOPE, Throwable.class, new Throwable());
+        event.setId(new ParticipantId(), 42);
+        this.outPort.push(event);
     }
 
     @Test(timeout = 10000)

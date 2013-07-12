@@ -34,24 +34,30 @@ public interface RSBObject {
 
     /**
      * Activates all network resources that belong to a specific object.
-     * 
+     *
      * @throws RSBException
      *             generic error related to RSB
+     * @throws IllegalStateException
+     *             Might be thrown by implementations to indicate that the
+     *             respective instance is already active
      */
     void activate() throws RSBException;
 
     /**
      * Deactivate all network resources that are owned by a specific object in
      * order to reactivate it.
-     * 
+     *
      * @throws RSBException
      *             generic error related to RSB
+     * @throws IllegalStateException
+     *             Might be thrown by implementations to indicate that the
+     *             respective instance is not active
      */
     void deactivate() throws RSBException;
 
     /**
      * Tells whether this class is currently active or not.
-     * 
+     *
      * @return <code>true</code> if active
      */
     boolean isActive();

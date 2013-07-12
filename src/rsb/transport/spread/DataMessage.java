@@ -124,6 +124,9 @@ public class DataMessage {
     }
 
     public SpreadMessage getSpreadMessage() throws SerializeException {
+        // TODO bad exception type for the expressed meaning
+        // TODO there should also be a way to get a message that is not fully
+        // constructed yet
         if (this.msg.getGroups().length == 0) {
             throw new SerializeException(
                     "Receiver information is missing in DataMessage");
