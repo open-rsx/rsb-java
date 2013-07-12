@@ -38,7 +38,7 @@ import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.patterns.RemoteMethod.FuturePreparator;
-import rsb.transport.TransportFactory;
+import rsb.transport.TransportRegistry;
 
 /**
  * Objects of this class represent remote servers in a way that allows calling
@@ -73,7 +73,8 @@ public class RemoteServer extends Server<RemoteMethod> {
      *            replies to arrive before failing.
      */
     public RemoteServer(final Scope scope, final double timeout) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.timeout = timeout;
     }
 
@@ -89,7 +90,8 @@ public class RemoteServer extends Server<RemoteMethod> {
      *            replies to arrive before failing.
      */
     public RemoteServer(final String scope, final double timeout) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.timeout = timeout;
     }
 
@@ -102,7 +104,8 @@ public class RemoteServer extends Server<RemoteMethod> {
      *            created server are provided.
      */
     public RemoteServer(final Scope scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.timeout = DEFAULT_TIMEOUT;
     }
 
@@ -115,7 +118,8 @@ public class RemoteServer extends Server<RemoteMethod> {
      *            created server are provided.
      */
     public RemoteServer(final String scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.timeout = DEFAULT_TIMEOUT;
     }
 

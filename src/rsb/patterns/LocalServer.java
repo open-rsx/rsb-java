@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.transport.TransportFactory;
+import rsb.transport.TransportRegistry;
 
 /**
  * Objects of this class associate a collection of method objects which are
@@ -55,7 +55,8 @@ public class LocalServer extends Server<LocalMethod> {
      *            created server should be provided.
      */
     public LocalServer(final Scope scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
     }
 
     /**
@@ -67,13 +68,14 @@ public class LocalServer extends Server<LocalMethod> {
      *            created server should be provided.
      */
     public LocalServer(final String scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
     }
 
     /**
      * Adds a new method to the server which can be called via
      * {@link RemoteServer} instances.
-     * 
+     *
      * @param name
      *            name of the method
      * @param callback

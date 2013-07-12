@@ -31,10 +31,11 @@ package rsb;
 import rsb.converter.DefaultConverters;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
+import rsb.transport.DefaultTransports;
 
 /**
  * A factory for RSB client-level objects. This class is a Singleton.
- * 
+ *
  * @author jwienke
  */
 public final class Factory {
@@ -49,11 +50,12 @@ public final class Factory {
      */
     private Factory() {
         DefaultConverters.register();
+        DefaultTransports.register();
     }
 
     /**
      * Returns the one and only instance of this class.
-     * 
+     *
      * @return singleton factory instance
      */
     public static Factory getInstance() {
@@ -62,7 +64,7 @@ public final class Factory {
 
     /**
      * Creates a new informer instance.
-     * 
+     *
      * @param <T>
      *            type of the data sent by this informer
      * @param scope
@@ -77,7 +79,7 @@ public final class Factory {
 
     /**
      * Creates a new informer instance.
-     * 
+     *
      * @param <T>
      *            type of the data sent by this informer
      * @param scope
@@ -93,7 +95,7 @@ public final class Factory {
 
     /**
      * Creates a new informer instance.
-     * 
+     *
      * @param <T>
      *            type of the data sent by this informer
      * @param scope
@@ -106,7 +108,7 @@ public final class Factory {
 
     /**
      * Creates a new informer instance.
-     * 
+     *
      * @param <T>
      *            type of the data sent by this informer
      * @param scope
@@ -119,7 +121,7 @@ public final class Factory {
 
     /**
      * Creates a new listener instance.
-     * 
+     *
      * @param scope
      *            scope of the listener
      * @return new listener
@@ -130,7 +132,7 @@ public final class Factory {
 
     /**
      * Creates a new listener instance.
-     * 
+     *
      * @param scope
      *            scope of the listener
      * @return new listener
@@ -142,7 +144,7 @@ public final class Factory {
     /**
      * Creates a new LocalServer object which exposes methods under the scope @a
      * scope.
-     * 
+     *
      * @param scope
      *            The scope under which methods of the LocalServer object should
      *            be exposed.
@@ -155,7 +157,7 @@ public final class Factory {
     /**
      * Creates a new LocalServer object which exposes methods under the scope @a
      * scope.
-     * 
+     *
      * @param scope
      *            The scope under which methods of the LocalServer object should
      *            be exposed.
@@ -168,7 +170,7 @@ public final class Factory {
     /**
      * Creates a new RemoteServer object which is suitable for calling methods
      * provided by a remote server under the scope @a scope.
-     * 
+     *
      * @param scope
      *            The scope under which a remote server provides its methods.
      * @return The new RemoteServer object.
@@ -180,7 +182,7 @@ public final class Factory {
     /**
      * Creates a new RemoteServer object which is suitable for calling methods
      * provided by a remote server under the scope @a scope.
-     * 
+     *
      * @param scope
      *            The scope under which a remote server provides its methods.
      * @return The new RemoteServer object.
@@ -192,7 +194,7 @@ public final class Factory {
     /**
      * Creates a new RemoteServer object which is suitable for calling methods
      * provided by a remote server under the scope @a scope.
-     * 
+     *
      * @param scope
      *            The scope under which a remote server provides its methods.
      * @param timeout
@@ -208,7 +210,7 @@ public final class Factory {
     /**
      * Creates a new RemoteServer object which is suitable for calling methods
      * provided by a remote server under the scope @a scope.
-     * 
+     *
      * @param scope
      *            The scope under which a remote server provides its methods.
      * @param timeout

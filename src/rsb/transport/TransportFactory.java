@@ -27,20 +27,17 @@
  */
 package rsb.transport;
 
-import rsb.transport.spread.SpreadFactory;
-
 /**
+ * Interface for factories providing implementations of {@link Connector}
+ * instances for a certain transport.
+ *
  * @author jwienke
  * @author swrede
  */
-public abstract class TransportFactory {
+public interface TransportFactory {
 
-    public static TransportFactory getInstance() {
-        return new SpreadFactory();
-    };
+    OutConnector createOutConnector();
 
-    public abstract OutConnector createOutConnector();
-
-    public abstract InPushConnector createInPushConnector();
+    InPushConnector createInPushConnector();
 
 }

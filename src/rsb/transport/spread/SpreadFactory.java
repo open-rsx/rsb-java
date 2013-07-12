@@ -39,7 +39,7 @@ import rsb.transport.TransportFactory;
  * @author jwienke
  * @author swrede
  */
-public class SpreadFactory extends TransportFactory {
+public class SpreadFactory implements TransportFactory {
 
     @Override
     public InPushConnector createInPushConnector() {

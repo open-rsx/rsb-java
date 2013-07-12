@@ -35,7 +35,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import rsb.converter.DefaultConverters;
-import rsb.transport.TransportFactory;
+import rsb.transport.DefaultTransports;
+import rsb.transport.TransportRegistry;
 
 /**
  * User-level test for RSBJava.
@@ -47,15 +48,15 @@ public class UserLevelTest {
     @Test(timeout = 15000)
     public void roundtrip() throws Throwable {
 
-        // register converters
         DefaultConverters.register();
+        DefaultTransports.register();
 
         final Scope scope = new Scope("/example/informer");
 
         // set up a receiver for events
         final Set<String> receivedMessages = new HashSet<String>();
-        final Listener listener = new Listener(scope,
-                TransportFactory.getInstance());
+        final Listener listener = new Listener(scope, TransportRegistry
+                .getDefaultInstance().getFactory("spread"));
         listener.activate();
         listener.addHandler(new AbstractEventHandler() {
 

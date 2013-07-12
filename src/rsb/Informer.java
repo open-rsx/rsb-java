@@ -31,10 +31,11 @@ import java.util.logging.Logger;
 
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.DefaultConverterRepository;
-import rsb.eventprocessing.OutRouteConfigurator;
 import rsb.eventprocessing.DefaultOutRouteConfigurator;
+import rsb.eventprocessing.OutRouteConfigurator;
 import rsb.transport.SequenceNumber;
 import rsb.transport.TransportFactory;
+import rsb.transport.TransportRegistry;
 
 /**
  * This class offers a method to publish events to a channel, reaching all
@@ -169,22 +170,26 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     Informer(final String scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.initMembers(Object.class);
     }
 
     Informer(final Scope scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.initMembers(Object.class);
     }
 
     Informer(final String scope, final Class<?> type) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.initMembers(type);
     }
 
     Informer(final Scope scope, final Class<?> type) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.initMembers(type);
     }
 

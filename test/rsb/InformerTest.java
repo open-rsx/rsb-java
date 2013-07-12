@@ -43,7 +43,8 @@ import rsb.Informer.InformerStateInactive;
 import rsb.converter.ConverterRepository;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.DefaultConverters;
-import rsb.transport.TransportFactory;
+import rsb.transport.DefaultTransports;
+import rsb.transport.TransportRegistry;
 
 /**
  * @author swrede
@@ -60,6 +61,7 @@ public class InformerTest {
     @BeforeClass
     public static void registerConverters() {
         DefaultConverters.register();
+        DefaultTransports.register();
     }
 
     @Before
@@ -99,7 +101,7 @@ public class InformerTest {
     public void informerStringTransportFactory() {
         final Scope scope = new Scope("/x");
         final Informer<String> informer = new Informer<String>(scope,
-                TransportFactory.getInstance());
+                TransportRegistry.getDefaultInstance().getFactory("spread"));
         assertNotNull("Informer is null", informer);
         assertEquals("Wrong scope", informer.getScope(), scope);
     }
@@ -120,7 +122,8 @@ public class InformerTest {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), TransportFactory.getInstance());
+                type.getClass(), TransportRegistry.getDefaultInstance()
+                        .getFactory("spread"));
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());

@@ -36,6 +36,7 @@ import rsb.eventprocessing.DefaultPushInRouteConfigurator;
 import rsb.eventprocessing.PushInRouteConfigurator;
 import rsb.filter.Filter;
 import rsb.transport.TransportFactory;
+import rsb.transport.TransportRegistry;
 
 /**
  * This class implements the receiving part of the Inform-Listen (n:m)
@@ -95,12 +96,14 @@ public class Listener extends Participant {
     }
 
     Listener(final Scope scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.initMembers();
     }
 
     Listener(final String scope) {
-        super(scope, TransportFactory.getInstance());
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
         this.initMembers();
     }
 
