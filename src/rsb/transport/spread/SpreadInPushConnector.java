@@ -1,8 +1,11 @@
 package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import rsb.Event;
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
@@ -19,12 +22,12 @@ import spread.SpreadException;
  * @author jwienke
  */
 public class SpreadInPushConnector extends AbstractFilterObserver implements
-        InPushConnector {
+        InPushConnector, EventHandler {
 
     private final static Logger LOG = Logger
             .getLogger(SpreadInPushConnector.class.getName());
 
-    private EventHandler eventHandler;
+    private final Set<EventHandler> eventHandlers = new HashSet<EventHandler>();
     private ReceiverTask receiver;
     private final SpreadWrapper spread;
     private Scope scope;
@@ -43,10 +46,8 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     @Override
     public void activate() throws InitializeException {
         assert this.scope != null;
-        assert this.eventHandler != null;
 
-        this.receiver = new ReceiverTask(this.spread, this.eventHandler,
-                this.inStrategy);
+        this.receiver = new ReceiverTask(this.spread, this, this.inStrategy);
         // activate spread connection
         if (!this.spread.isActive()) {
             this.spread.activate();
@@ -56,7 +57,15 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
                 + this.spread.getPrivateGroup() + "]");
         this.receiver.start();
 
-        joinSpreadGroup(this.scope);
+        try {
+            joinSpreadGroup(this.scope);
+        } catch (final SpreadException e) {
+            throw new InitializeException(
+                    "Unable to join spread group for scope '" + this.scope
+                            + "' with hash '"
+                            + SpreadUtilities.spreadGroupName(this.scope)
+                            + "'.", e);
+        }
 
     }
 
@@ -79,36 +88,27 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
         this.scope = scope;
     }
 
-    private void joinSpreadGroup(final Scope scope) {
+    private void joinSpreadGroup(final Scope scope) throws SpreadException {
         assert this.spread.isActive();
-        // join group
-        try {
-            this.spread.join(SpreadUtilities.spreadGroupName(scope));
-        } catch (final SpreadException e) {
-            throw new RuntimeException(
-                    "Unable to join spread group for scope '" + scope
-                            + "' with hash '"
-                            + SpreadUtilities.spreadGroupName(scope) + "'.", e);
-        }
+        this.spread.join(SpreadUtilities.spreadGroupName(scope));
+
     }
 
     @Override
     public void addHandler(final EventHandler handler) {
         assert !isActive();
-        // TODO make handler multiple handlers
         assert handler != null;
-        this.eventHandler = handler;
+        synchronized (this.eventHandlers) {
+            this.eventHandlers.add(handler);
+        }
     }
 
     @Override
     public boolean removeHandler(final EventHandler handler) {
         assert !isActive();
-        if (handler != this.eventHandler) {
-            return false;
+        synchronized (this.eventHandlers) {
+            return this.eventHandlers.remove(handler);
         }
-        // TODO remove it from the receive task!
-        this.eventHandler = null;
-        return true;
     }
 
     @Override
@@ -118,12 +118,21 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     @Override
     public void setQualityOfServiceSpec(final QualityOfServiceSpec spec) {
-        // TODO what can we do here
+        // we don't have to do anything for qos. all operations are safe
     }
 
     @Override
     public boolean isActive() {
         return this.spread.isActive();
+    }
+
+    @Override
+    public void handle(final Event event) {
+        synchronized (this.eventHandlers) {
+            for (final EventHandler handler : this.eventHandlers) {
+                handler.handle(event);
+            }
+        }
     }
 
 }
