@@ -48,8 +48,6 @@ import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
-import rsb.filter.FilterAction;
-import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
 
 /**
@@ -59,6 +57,7 @@ public class SpreadConnectorTest {
 
     private SpreadWrapper outWrapper;
     private SpreadOutConnector outPort;
+    private static final Scope OUT_BASE_SCOPE = new Scope("/this");
 
     @Before
     public void setUp() throws Throwable {
@@ -68,6 +67,7 @@ public class SpreadConnectorTest {
                 this.getConverterStrategy(String.class.getName()));
         this.outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
                 Ordering.ORDERED, Reliability.RELIABLE));
+        this.outPort.setScope(OUT_BASE_SCOPE);
         this.outPort.activate();
 
     }
@@ -87,7 +87,8 @@ public class SpreadConnectorTest {
     @Test(timeout = 10000)
     public void hierarchicalSending() throws Throwable {
 
-        final Scope sendScope = new Scope("/this/is/a/hierarchy");
+        final Scope sendScope = OUT_BASE_SCOPE.concat(new Scope(
+                "/is/a/hierarchy"));
 
         final List<Scope> receiveScopes = sendScope.superScopes(true);
 
@@ -112,9 +113,8 @@ public class SpreadConnectorTest {
                 }
 
             });
+            inPort.setScope(scope);
             inPort.activate();
-
-            inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
             inPorts.add(inPort);
 
@@ -161,8 +161,9 @@ public class SpreadConnectorTest {
     public void longGroupNames() throws Throwable {
 
         final Event event = new Event(String.class, "a test string");
-        event.setScope(new Scope(
-                "/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
+        event.setScope(OUT_BASE_SCOPE
+                .concat(new Scope(
+                        "/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly")));
         event.setId(new ParticipantId(), 452334);
 
         this.outPort.push(event);
@@ -173,7 +174,8 @@ public class SpreadConnectorTest {
     public void sendMetaData() throws Throwable {
 
         // create an event to send
-        final Scope scope = new Scope("/a/test/scope/again");
+        final Scope scope = OUT_BASE_SCOPE
+                .concat(new Scope("/test/scope/again"));
         final Event event = new Event(scope, String.class, "a test string");
         event.setId(new ParticipantId(), 634);
 
@@ -193,8 +195,8 @@ public class SpreadConnectorTest {
             }
 
         });
+        inPort.setScope(scope);
         inPort.activate();
-        inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
         Thread.sleep(500);
 

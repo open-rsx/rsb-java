@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import rsb.filter.Filter;
-import rsb.filter.ScopeFilter;
 import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
@@ -122,8 +121,6 @@ public class Listener extends Participant {
     @Override
     public void activate() throws InitializeException {
         this.state.activate();
-        // TODO probably breaks re-activation
-        this.getRouter().addFilter(new ScopeFilter(this.getScope()));
     }
 
     @Override

@@ -9,8 +9,6 @@ import rsb.RSBException;
 import rsb.Scope;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.filter.AbstractFilterObserver;
-import rsb.filter.FilterAction;
-import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 import spread.SpreadException;
@@ -29,6 +27,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     private EventHandler eventHandler;
     private ReceiverTask receiver;
     private final SpreadWrapper spread;
+    private Scope scope;
 
     private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
 
@@ -40,6 +39,8 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     @Override
     public void activate() throws InitializeException {
+        assert this.scope != null;
+
         this.receiver = new ReceiverTask(this.spread, this.eventHandler,
                 this.inStrategy);
         // activate spread connection
@@ -50,6 +51,9 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
         this.receiver.setName("ReceiverTask [grp="
                 + this.spread.getPrivateGroup() + "]");
         this.receiver.start();
+
+        joinSpreadGroup(this.scope);
+
     }
 
     @Override
@@ -66,48 +70,21 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     }
 
     @Override
-    public void notify(final ScopeFilter e, final FilterAction a) {
-        LOG.fine("SpreadPort::notify(ScopeFilter e, FilterAction=" + a.name()
-                + " called");
-        switch (a) {
-        case ADD:
-            // TODO add reference handling from xcf4j
-            this.joinSpreadGroup(e.getScope());
-            break;
-        case REMOVE:
-            // TODO add reference handling from xcf4j
-            this.leaveSpreadGroup(e.getScope());
-            break;
-        case UPDATE:
-            LOG.info("Update of ScopeFilter requested on SpreadSport");
-            break;
-        default:
-            break;
-        }
+    public void setScope(final Scope scope) {
+        assert !this.spread.isActive();
+        this.scope = scope;
     }
 
     private void joinSpreadGroup(final Scope scope) {
-        if (this.spread.isActive()) {
-            // join group
-            try {
-                this.spread.join(SpreadUtilities.spreadGroupName(scope));
-            } catch (final SpreadException e) {
-                throw new RuntimeException(
-                        "Unable to join spread group for scope '" + scope
-                                + "' with hash '"
-                                + SpreadUtilities.spreadGroupName(scope) + "'.",
-                        e);
-            }
-        } else {
-            LOG.severe("Couldn't set up network filter, spread inactive.");
-        }
-    }
-
-    private void leaveSpreadGroup(final Scope scope) {
-        if (this.spread.isActive()) {
-            this.spread.leave(SpreadUtilities.spreadGroupName(scope));
-        } else {
-            LOG.severe("Couldn't remove group filter, spread inactive.");
+        assert this.spread.isActive();
+        // join group
+        try {
+            this.spread.join(SpreadUtilities.spreadGroupName(scope));
+        } catch (final SpreadException e) {
+            throw new RuntimeException(
+                    "Unable to join spread group for scope '" + scope
+                            + "' with hash '"
+                            + SpreadUtilities.spreadGroupName(scope) + "'.", e);
         }
     }
 

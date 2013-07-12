@@ -34,6 +34,7 @@ import rsb.Event;
 import rsb.Handler;
 import rsb.InitializeException;
 import rsb.RSBException;
+import rsb.Scope;
 import rsb.converter.ConversionException;
 import rsb.eventprocessing.EventReceivingStrategy;
 import rsb.eventprocessing.SingleThreadEventReceivingStrategy;
@@ -49,12 +50,15 @@ public class Router extends FilterObservable implements EventHandler {
     protected OutConnector outPort;
     protected EventReceivingStrategy ep;
     protected PortConfiguration config;
+    private final Scope scope;
 
     // protected EventProcessor epo;
     // protected EventQueue eq = new EventQueue();
 
-    public Router(final TransportFactory f, final PortConfiguration pc) {
+    public Router(final TransportFactory f, final PortConfiguration pc,
+            final Scope scope) {
         this.config = pc;
+        this.scope = scope;
         // router setup
         switch (this.config) {
         case NONE:
@@ -71,13 +75,6 @@ public class Router extends FilterObservable implements EventHandler {
             this.setupOutPorts(f);
             break;
         }
-        // epi = new EventProcessor("EP In ["+this.toString()+"]",pi);
-        // epi.addObserver(pi);
-        // epo = new EventProcessor("EP Out ["+this.toString()+"]",eq);
-        // epo.addObserver(po);
-        // Subscription os = new Subscription();
-        // default out port
-        // subscribe(os,po);
     }
 
     private void setupOutPorts(final TransportFactory factory) {
@@ -95,12 +92,15 @@ public class Router extends FilterObservable implements EventHandler {
         try {
             switch (this.config) {
             case IN:
+                this.inPort.setScope(this.scope);
                 this.inPort.activate();
                 break;
             case OUT:
+                this.outPort.setScope(this.scope);
                 this.outPort.activate();
                 break;
             case INOUT:
+                this.outPort.setScope(this.scope);
                 this.outPort.activate();
                 break;
             case NONE:
@@ -137,7 +137,7 @@ public class Router extends FilterObservable implements EventHandler {
 
     /**
      * Publish an {@link Event} over the event bus.
-     * 
+     *
      * @param e
      *            The {@link Event} to be published
      * @throws ConversionException
@@ -187,7 +187,7 @@ public class Router extends FilterObservable implements EventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see rsb.transport.EventHandler#deliver(rsb.Event)
      */
     @Override

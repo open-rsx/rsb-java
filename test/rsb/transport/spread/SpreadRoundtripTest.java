@@ -49,8 +49,6 @@ import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
-import rsb.filter.FilterAction;
-import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
 
 /**
@@ -76,6 +74,8 @@ public class SpreadRoundtripTest {
 
     @Test(timeout = 4000)
     public void roundtrip() throws Throwable {
+
+        final Scope scope = new Scope("/a/test/scope");
 
         final SpreadWrapper outWrapper = new SpreadWrapper();
         final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
@@ -103,11 +103,10 @@ public class SpreadRoundtripTest {
 
         });
 
+        inPort.setScope(scope);
         inPort.activate();
+        outPort.setScope(scope);
         outPort.activate();
-
-        final Scope scope = new Scope("/a/test/scope");
-        inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < this.size; ++i) {

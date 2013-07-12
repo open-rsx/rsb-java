@@ -29,11 +29,12 @@ package rsb.transport;
 
 import rsb.QualityOfServiceSpec;
 import rsb.RSBObject;
+import rsb.Scope;
 
 /**
  * A generic interface for classes providing connection to a specific transport
  * mechanism.
- * 
+ *
  * @author jwienke
  * @author swrede
  */
@@ -45,10 +46,19 @@ public interface Connector extends RSBObject {
     /**
      * Sets the quality of service requirements on sending and receiving event
      * notifications.
-     * 
+     *
      * @param spec
      *            new spec to apply
      */
     void setQualityOfServiceSpec(QualityOfServiceSpec spec);
+
+    /**
+     * Sets the scope this connector is working on. Will be called before the
+     * {@link #activate()} method of the connector is called.
+     *
+     * @param scope
+     *            the scope
+     */
+    void setScope(Scope scope);
 
 }

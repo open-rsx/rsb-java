@@ -387,4 +387,9 @@ public class SpreadOutConnector implements OutConnector {
         return this.spread.isActive();
     }
 
+    @Override
+    public void setScope(final Scope scope) {
+        // we don't care about the scope for sending. No need to declare it
+    }
+
 }
