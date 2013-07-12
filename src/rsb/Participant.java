@@ -27,8 +27,6 @@
  */
 package rsb;
 
-import rsb.transport.PortConfiguration;
-import rsb.transport.Router;
 import rsb.transport.TransportFactory;
 
 /**
@@ -44,7 +42,6 @@ public abstract class Participant implements RSBObject {
     private final ParticipantId id = new ParticipantId();
     private Scope scope;
     private TransportFactory transportFactory;
-    private Router router;
 
     /**
      * Creates a new participant on the specified scope.
@@ -53,13 +50,10 @@ public abstract class Participant implements RSBObject {
      *            scope of the participant
      * @param transportFactory
      *            the factory used for transports for this {@link Participant}
-     * @param portConfig
-     *            type of ports to create for this participant
      */
     protected Participant(final Scope scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
-        this.initMembers(scope, transportFactory, portConfig);
+            final TransportFactory transportFactory) {
+        this.initMembers(scope, transportFactory);
     }
 
     /**
@@ -69,23 +63,14 @@ public abstract class Participant implements RSBObject {
      *            scope of the participant
      * @param transportFactory
      *            the factory used for transports for this {@link Participant}
-     * @param portConfig
-     *            type of ports to create for this participant
      */
     protected Participant(final String scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
-        this.initMembers(new Scope(scope), transportFactory, portConfig);
+            final TransportFactory transportFactory) {
+        this.initMembers(new Scope(scope), transportFactory);
     }
 
-    /**
-     * @param scope
-     * @param transportFactory
-     * @param portConfig
-     */
     private void initMembers(final Scope scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
+            final TransportFactory transportFactory) {
         if (scope == null) {
             throw new IllegalArgumentException(
                     "Scope of a participant must not be null.");
@@ -96,7 +81,6 @@ public abstract class Participant implements RSBObject {
         }
         this.scope = scope;
         this.transportFactory = transportFactory;
-        this.router = new Router(this.transportFactory, portConfig, this.scope);
     }
 
     /**
@@ -124,15 +108,6 @@ public abstract class Participant implements RSBObject {
      */
     protected TransportFactory getTransportFactory() {
         return this.transportFactory;
-    }
-
-    /**
-     * Returns the router used for this participant.
-     *
-     * @return router used for this participant, not <code>null</code>
-     */
-    protected Router getRouter() {
-        return this.router;
     }
 
 }

@@ -35,17 +35,17 @@ import java.util.Map;
 import rsb.InitializeException;
 import rsb.InvalidStateException;
 import rsb.Participant;
+import rsb.RSBException;
 import rsb.Scope;
-import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
 /**
  * Objects of this class represent local or remote serves. A server is basically
  * a collection of named methods that are bound to a specific scope.
- * 
+ *
  * This class is primarily intended as a superclass for local and remote server
  * classes.
- * 
+ *
  * @author jmoringe
  * @param <MethodType>
  *            The type of methods used in the subclasses
@@ -68,16 +68,16 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
 
         public ServerState activate() throws InvalidStateException,
-                InitializeException {
+                InitializeException, RSBException {
             throw new InvalidStateException("Server already activated.");
         }
 
-        public ServerState deactivate() throws InvalidStateException {
+        public ServerState deactivate() throws InvalidStateException,
+                RSBException {
             throw new InvalidStateException("Server not activated.");
         }
 
-        public void run(
-                @SuppressWarnings("unused") final boolean async) {
+        public void run(@SuppressWarnings("unused") final boolean async) {
             throw new InvalidStateException("server not activated");
         }
 
@@ -92,11 +92,10 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
 
         @Override
-        public ServerState deactivate() {
+        public ServerState deactivate() throws RSBException {
             for (final Method method : Server.this.methods.values()) {
                 method.deactivate();
             }
-            this.server.getRouter().deactivate();
             // send signal to thread in waitForShutdown
             synchronized (this.server) {
                 this.server.notifyAll();
@@ -117,7 +116,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
 
         @Override
-        public ServerState activate() throws InitializeException {
+        public ServerState activate() throws RSBException {
             for (final Method method : Server.this.methods.values()) {
                 method.activate();
             }
@@ -130,23 +129,19 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
     }
 
-    protected Server(final Scope scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
-        super(scope, transportFactory, portConfig);
+    protected Server(final Scope scope, final TransportFactory transportFactory) {
+        super(scope, transportFactory);
         this.methods = new HashMap<String, MethodType>();
         this.state = new ServerStateInactive(this);
     }
 
-    protected Server(final String scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
-        this(new Scope(scope), transportFactory, portConfig);
+    protected Server(final String scope, final TransportFactory transportFactory) {
+        this(new Scope(scope), transportFactory);
     }
 
     /**
      * Return all methods of the server.
-     * 
+     *
      * @return A Collection containing all methods.
      */
     public Collection<MethodType> getMethods() {
@@ -157,7 +152,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
 
     /**
      * Returns the method with the given name.
-     * 
+     *
      * @param name
      *            method name
      * @return {@link Method} instance or <code>null</code> if no method exists
@@ -171,7 +166,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
 
     /**
      * Indicates whether a method with the given name is already registered.
-     * 
+     *
      * @param name
      *            name of the method
      * @return <code>true</code> if a method is registered with the given name,
@@ -185,7 +180,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
 
     /**
      * Adds a method to the server.
-     * 
+     *
      * @param name
      *            name under which the method should be registered
      * @param method
@@ -218,14 +213,14 @@ public abstract class Server<MethodType extends Method> extends Participant {
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         synchronized (this) {
             this.state = this.state.activate();
         }
     }
 
     @Override
-    public void deactivate() {
+    public void deactivate() throws RSBException {
         synchronized (this) {
             this.state = this.state.deactivate();
         }

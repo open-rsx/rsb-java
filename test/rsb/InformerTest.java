@@ -27,7 +27,9 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
 
@@ -63,7 +65,7 @@ public class InformerTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Throwable {
         if (this.stringInformer.isActive()) {
             this.stringInformer.deactivate();
         }
@@ -127,7 +129,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#activate()}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */
@@ -139,10 +141,11 @@ public class InformerTest {
     /**
      * Test method for {@link rsb.Informer#deactivate()}.
      * 
-     * @throws InitializeException
+     * @throws Throwable
+     *             any error
      */
     @Test
-    public void deactivate() throws InitializeException {
+    public void deactivate() throws Throwable {
         assertTrue(this.stringInformer.state instanceof InformerStateActive);
         this.stringInformer.deactivate();
         assertTrue(this.stringInformer.state instanceof InformerStateInactive);
@@ -160,7 +163,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#send(rsb.Event)}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */
@@ -184,7 +187,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#send(rsb.Event)}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */

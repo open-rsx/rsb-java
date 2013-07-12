@@ -27,14 +27,17 @@
  */
 package rsb.patterns;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Logger;
 
 import org.junit.Test;
 
 import rsb.Factory;
-import rsb.InitializeException;
+import rsb.RSBException;
 import rsb.Scope;
 
 /**
@@ -62,11 +65,6 @@ public class ServerTest {
 
     }
 
-    /**
-     * Test method for
-     * {@link rsb.patterns.Server#Server(rsb.Scope, rsb.transport.TransportFactory, rsb.transport.PortConfiguration)}
-     * .
-     */
     @Test
     public void server() {
         final Server<?> server = this.getServer();
@@ -83,19 +81,21 @@ public class ServerTest {
     /**
      * Test method for {@link rsb.patterns.Server#getMethods()}.
      * 
-     * @throws InitializeException
+     * @throws Throwable
+     *             any exception
      */
     @Test
-    public void getMethods() throws InitializeException {
+    public void getMethods() throws Throwable {
         final LocalServer server = (LocalServer) this.getServer();
         assertEquals(0, server.getMethods().size());
         server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         assertEquals(1, server.getMethods().size());
-        assertEquals(CALL_METHOD_NAME, server.getMethods().iterator().next().getName());
+        assertEquals(CALL_METHOD_NAME, server.getMethods().iterator().next()
+                .getName());
     }
 
     @Test
-    public void addMethod() throws InitializeException {
+    public void addMethod() throws Throwable {
         final LocalServer server = (LocalServer) this.getServer();
         server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         server.addMethod("callmeEvent", new ReplyEventCallback());
@@ -104,11 +104,12 @@ public class ServerTest {
 
     /**
      * Test method for {@link rsb.patterns.Server#activate()}.
-     * 
-     * @throws InitializeException
+     *
+     * @throws Throwable
+     *             any error
      */
     @Test
-    public void activate() throws InitializeException {
+    public void activate() throws Throwable {
         final LocalServer server = (LocalServer) this.getServer();
         assertFalse(server.isActive());
         server.activate();
@@ -122,11 +123,12 @@ public class ServerTest {
 
     /**
      * Test method for {@link rsb.patterns.Server#deactivate()}.
-     * 
-     * @throws InitializeException
+     *
+     * @throws Throwable
+     *             any error
      */
     @Test
-    public void deactivate() throws InitializeException {
+    public void deactivate() throws Throwable {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod(CALL_METHOD_NAME, method);
@@ -139,7 +141,7 @@ public class ServerTest {
     }
 
     @Test
-    public void startServer() throws InitializeException {
+    public void startServer() throws Throwable {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod(CALL_METHOD_NAME, method);
@@ -149,7 +151,7 @@ public class ServerTest {
     }
 
     @Test
-    public void blocking() throws InitializeException {
+    public void blocking() throws Throwable {
         final LocalServer server = (LocalServer) this.getServer();
         final DataCallback<String, String> method = new ShutdownCallback(server);
         server.addMethod("shutdown", method);
@@ -164,7 +166,13 @@ public class ServerTest {
                     // must not happen
                 }
                 LOG.info("Shutting down server from callback.");
-                server.deactivate();
+                try {
+                    server.deactivate();
+                } catch (final RSBException e) {
+                    // we can't do much about this except signaling this to the
+                    // outside world with a runtime exception
+                    throw new RuntimeException(e);
+                }
 
             }
         });

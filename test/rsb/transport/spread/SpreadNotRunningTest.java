@@ -34,9 +34,9 @@ import rsb.util.Properties;
 
 /**
  * Test for situations where no connection to a Spread daemon is available.
- * 
+ *
  * Pre-Condition: Spread is not running
- * 
+ *
  * @author swrede
  */
 public class SpreadNotRunningTest {
@@ -64,7 +64,7 @@ public class SpreadNotRunningTest {
 
     @Ignore
     @Test(expected = InitializeException.class)
-    public void server() throws InitializeException {
+    public void server() throws Throwable {
         final Factory factory = Factory.getInstance();
         final LocalServer server = factory.createLocalServer("/bar");
         server.addMethod("foobar", new DataCallback<String, String>() {

@@ -31,7 +31,6 @@ import java.nio.ByteBuffer;
 
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.DefaultConverterRepository;
-import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
@@ -43,13 +42,12 @@ import rsb.transport.TransportFactory;
 public class SpreadFactory extends TransportFactory {
 
     @Override
-    public InPushConnector createInPushConnector(final EventHandler handler) {
+    public InPushConnector createInPushConnector() {
         final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
                 .getDefaultConverterRepository()
                 .getConvertersForDeserialization();
         final InPushConnector connector = new SpreadInPushConnector(
                 new SpreadWrapper(), inStrategy);
-        connector.addHandler(handler);
         return connector;
     }
 

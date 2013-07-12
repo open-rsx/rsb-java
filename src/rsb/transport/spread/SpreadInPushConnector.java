@@ -33,6 +33,9 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     public SpreadInPushConnector(final SpreadWrapper spread,
             final ConverterSelectionStrategy<ByteBuffer> inStrategy) {
+        assert !spread.isActive() : "As the spread object is used for handling "
+                + "our own activation state, it must not be active "
+                + "when passed in.";
         this.spread = spread;
         this.inStrategy = inStrategy;
     }
@@ -40,6 +43,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     @Override
     public void activate() throws InitializeException {
         assert this.scope != null;
+        assert this.eventHandler != null;
 
         this.receiver = new ReceiverTask(this.spread, this.eventHandler,
                 this.inStrategy);
@@ -90,6 +94,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     @Override
     public void addHandler(final EventHandler handler) {
+        assert !isActive();
         // TODO make handler multiple handlers
         assert handler != null;
         this.eventHandler = handler;
@@ -97,6 +102,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     @Override
     public boolean removeHandler(final EventHandler handler) {
+        assert !isActive();
         if (handler != this.eventHandler) {
             return false;
         }

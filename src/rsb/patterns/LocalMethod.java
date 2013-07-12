@@ -38,10 +38,10 @@ import rsb.filter.MethodFilter;
 
 /**
  * Objects of this class implement and make available methods of a local server.
- * 
+ *
  * The actual behavior of methods is implemented by invoking arbitrary
  * user-supplied functions.
- * 
+ *
  * @author jmoringe
  * @author swrede
  * @author jwienke
@@ -56,7 +56,7 @@ class LocalMethod extends Method implements Handler {
     /**
      * Create a new {@link LocalMethod} object that is exposed under the name @a
      * name by @a server.
-     * 
+     *
      * @param server
      *            The local server object to which the method will be
      *            associated.
@@ -64,9 +64,11 @@ class LocalMethod extends Method implements Handler {
      *            The name of the method.
      * @param callback
      *            The callback implementing the user functionality of the method
+     * @throws InterruptedException
+     *             error while installing method
      */
     public LocalMethod(final Server<LocalMethod> server, final String name,
-            final Callback callback) {
+            final Callback callback) throws InterruptedException {
         super(server, name);
         this.callback = callback;
         this.listener = this.factory.createListener(this.REQUEST_SCOPE);

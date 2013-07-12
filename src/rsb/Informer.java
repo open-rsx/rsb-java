@@ -31,7 +31,8 @@ import java.util.logging.Logger;
 
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.DefaultConverterRepository;
-import rsb.transport.PortConfiguration;
+import rsb.eventprocessing.OutRouteConfigurator;
+import rsb.eventprocessing.DefaultOutRouteConfigurator;
 import rsb.transport.SequenceNumber;
 import rsb.transport.TransportFactory;
 
@@ -39,7 +40,7 @@ import rsb.transport.TransportFactory;
  * This class offers a method to publish events to a channel, reaching all
  * participating Listeners. This n:m-communication is one of the basic
  * communication patterns offered by RSB.
- * 
+ *
  * @author swrede
  * @author rgaertne
  * @author jschaefe
@@ -64,6 +65,8 @@ public class Informer<DataType extends Object> extends Participant {
     /** default data type for this publisher */
     protected Class<?> type;
 
+    private OutRouteConfigurator router;
+
     protected class InformerStateInactive extends InformerState<DataType> {
 
         protected InformerStateInactive(final Informer<DataType> ctx) {
@@ -83,10 +86,14 @@ public class Informer<DataType extends Object> extends Participant {
             Informer.this.converter = DefaultConverterRepository
                     .getDefaultConverterRepository()
                     .getConvertersForSerialization();
-            Informer.this.getRouter().activate();
             this.ctx.state = new InformerStateActive(this.ctx);
             LOG.fine("Informer activated: [Scope:" + Informer.this.getScope()
                     + ",Type:" + Informer.this.type.getName() + "]");
+            try {
+                Informer.this.router.activate();
+            } catch (final RSBException e) {
+                throw new InitializeException(e);
+            }
         }
 
     }
@@ -101,8 +108,8 @@ public class Informer<DataType extends Object> extends Participant {
         }
 
         @Override
-        protected void deactivate() {
-            Informer.this.getRouter().deactivate();
+        protected void deactivate() throws RSBException {
+            Informer.this.router.deactivate();
             this.ctx.state = new InformerStateInactive(this.ctx);
             LOG.fine("Informer deactivated: [Scope:" + Informer.this.getScope()
                     + ",Type:" + Informer.this.type.getName() + "]");
@@ -132,7 +139,7 @@ public class Informer<DataType extends Object> extends Participant {
                     Informer.this.sequenceNumber.incrementAndGet());
 
             // send to transport(s)
-            Informer.this.getRouter().publishSync(event);
+            Informer.this.router.publishSync(event);
 
             // return event for local use
             return event;
@@ -153,49 +160,52 @@ public class Informer<DataType extends Object> extends Participant {
                     "Informer type must not be null.");
         }
         this.type = type;
+        // TODO this should be passed in from the outside?
+        this.router = new DefaultOutRouteConfigurator(getScope());
+        this.router.addConnector(getTransportFactory().createOutConnector());
         this.state = new InformerStateInactive(this);
         LOG.fine("New informer instance created: [Scope:" + this.getScope()
                 + ",State:Inactive,Type:" + type.getName() + "]");
     }
 
     Informer(final String scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+        super(scope, TransportFactory.getInstance());
         this.initMembers(Object.class);
     }
 
     Informer(final Scope scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+        super(scope, TransportFactory.getInstance());
         this.initMembers(Object.class);
     }
 
     Informer(final String scope, final Class<?> type) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+        super(scope, TransportFactory.getInstance());
         this.initMembers(type);
     }
 
     Informer(final Scope scope, final Class<?> type) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.OUT);
+        super(scope, TransportFactory.getInstance());
         this.initMembers(type);
     }
 
     Informer(final String scope, final TransportFactory tfac) {
-        super(scope, tfac, PortConfiguration.OUT);
+        super(scope, tfac);
         this.initMembers(Object.class);
     }
 
     Informer(final Scope scope, final TransportFactory tfac) {
-        super(scope, tfac, PortConfiguration.OUT);
+        super(scope, tfac);
         this.initMembers(Object.class);
     }
 
     Informer(final String scope, final Class<?> type,
             final TransportFactory tfac) {
-        super(scope, tfac, PortConfiguration.OUT);
+        super(scope, tfac);
         this.initMembers(type);
     }
 
     Informer(final Scope scope, final Class<?> type, final TransportFactory tfac) {
-        super(scope, tfac, PortConfiguration.OUT);
+        super(scope, tfac);
         this.initMembers(type);
     }
 
@@ -207,7 +217,7 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     @Override
-    public void deactivate() {
+    public void deactivate() throws RSBException {
         synchronized (this) {
             this.state.deactivate();
         }
@@ -215,7 +225,7 @@ public class Informer<DataType extends Object> extends Participant {
 
     /**
      * Send an {@link Event} to all subscribed participants.
-     * 
+     *
      * @param event
      *            the event to send
      * @return modified event with set timing information
@@ -233,7 +243,7 @@ public class Informer<DataType extends Object> extends Participant {
 
     /**
      * Send data (of type <T>) to all subscribed participants.
-     * 
+     *
      * @param data
      *            data to send with default setting from the informer
      * @return generated event
@@ -248,7 +258,7 @@ public class Informer<DataType extends Object> extends Participant {
 
     /**
      * Returns the class describing the type of data sent by this informer.
-     * 
+     *
      * @return class
      */
     public Class<?> getTypeInfo() {
@@ -257,7 +267,7 @@ public class Informer<DataType extends Object> extends Participant {
 
     /**
      * Set the class object describing the type of data sent by this informer.
-     * 
+     *
      * @param typeInfo
      *            a {@link Class} instance describing the sent data
      */

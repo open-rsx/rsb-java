@@ -32,12 +32,11 @@ import java.util.logging.Logger;
 
 import rsb.AbstractDataHandler;
 import rsb.Factory;
-import rsb.InitializeException;
 import rsb.Listener;
 
 /**
  * A basic example that demonstrated how to receive event payloads.
- * 
+ *
  * @author swrede
  */
 public class DataListenerExample extends AbstractDataHandler<String> {
@@ -66,8 +65,7 @@ public class DataListenerExample extends AbstractDataHandler<String> {
         }
     }
 
-    public static void main(final String[] args) throws InterruptedException,
-            InitializeException {
+    public static void main(final String[] args) throws Throwable {
 
         // get a factory instance to create new RSB domain objects
         final Factory factory = Factory.getInstance();

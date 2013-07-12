@@ -32,8 +32,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import rsb.eventprocessing.DefaultPushInRouteConfigurator;
+import rsb.eventprocessing.PushInRouteConfigurator;
 import rsb.filter.Filter;
-import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
 /**
@@ -44,7 +45,7 @@ import rsb.transport.TransportFactory;
  * particular filtering of incoming events. Each time a event is received from
  * an Informer, an Event object is dispatched to all Handlers associated to the
  * Listener.
- * 
+ *
  * @author swrede
  * @author jschaefe
  * @author jwienke
@@ -62,6 +63,7 @@ public class Listener extends Participant {
 
     private final List<Filter> filters = new ArrayList<Filter>();
     private final List<Handler> handlers = new ArrayList<Handler>();
+    private PushInRouteConfigurator router;
 
     protected class ListenerStateActive extends ListenerState {
 
@@ -70,7 +72,7 @@ public class Listener extends Participant {
         }
 
         @Override
-        protected void deactivate() {
+        protected void deactivate() throws RSBException {
             Listener.this.getRouter().deactivate();
             this.getContext().state = new ListenerStateInactive(
                     this.getContext());
@@ -85,7 +87,7 @@ public class Listener extends Participant {
         }
 
         @Override
-        protected void activate() throws InitializeException {
+        protected void activate() throws RSBException {
             Listener.this.getRouter().activate();
             this.getContext().state = new ListenerStateActive(this.getContext());
         }
@@ -93,38 +95,49 @@ public class Listener extends Participant {
     }
 
     Listener(final Scope scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+        super(scope, TransportFactory.getInstance());
         this.initMembers();
     }
 
     Listener(final String scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.IN);
+        super(scope, TransportFactory.getInstance());
         this.initMembers();
     }
 
     Listener(final String scope, final TransportFactory tfac) {
-        super(scope, tfac, PortConfiguration.IN);
+        super(scope, tfac);
         this.initMembers();
     }
 
     Listener(final Scope scope, final TransportFactory tfac) {
-        super(scope, tfac, PortConfiguration.IN);
+        super(scope, tfac);
         this.initMembers();
     }
 
     private void initMembers() {
         this.state = new ListenerStateInactive(this);
         this.errorHandler = new DefaultErrorHandler(LOG);
+        this.router = new DefaultPushInRouteConfigurator(getScope());
+        this.router.addConnector(getTransportFactory().createInPushConnector());
         LOG.fine("New Listener instance: [scope=" + this.getScope() + "]");
     }
 
+    /**
+     * Returns the router used for this participant.
+     *
+     * @return router used for this participant, not <code>null</code>
+     */
+    private PushInRouteConfigurator getRouter() {
+        return this.router;
+    }
+
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         this.state.activate();
     }
 
     @Override
-    public void deactivate() {
+    public void deactivate() throws RSBException {
         this.state.deactivate();
     }
 
@@ -138,7 +151,7 @@ public class Listener extends Participant {
 
     public void addFilter(final Filter filter) {
         this.filters.add(filter);
-        this.getRouter().addFilter(filter);
+        this.getRouter().filterAdded(filter);
     }
 
     public List<Handler> getHandlers() {
@@ -152,22 +165,25 @@ public class Listener extends Participant {
     /**
      * Register an event handler on this Listener to be notified about incoming
      * events. All received events will be send to the registered listeners.
-     * 
+     *
      * @param handler
      *            the handler instance to be registered
      * @param wait
      *            if set to @c true, this method will return only after the
      *            handler has completely been installed and will receive the
      *            next available message. Otherwise it may return earlier.
+     * @throws InterruptedException
+     *             if waiting for installation is wanted but interrupted
      */
-    public void addHandler(final Handler handler, final boolean wait) {
+    public void addHandler(final Handler handler, final boolean wait)
+            throws InterruptedException {
         this.handlers.add(handler);
-        this.getRouter().addHandler(handler, wait);
+        this.getRouter().handlerAdded(handler, wait);
     }
 
     /**
      * Remove an event listener from this Listener.
-     * 
+     *
      * @param handler
      *            the listener instance to be removed.
      * @param wait
@@ -181,7 +197,7 @@ public class Listener extends Participant {
     public void removeHandler(final Handler handler, final boolean wait)
             throws InterruptedException {
         this.handlers.remove(handler);
-        this.getRouter().removeHandler(handler, wait);
+        this.getRouter().handlerRemoved(handler, wait);
     }
 
     /**

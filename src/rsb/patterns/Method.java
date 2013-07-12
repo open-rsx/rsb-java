@@ -34,16 +34,17 @@ import rsb.Informer;
 import rsb.InitializeException;
 import rsb.InvalidStateException;
 import rsb.Listener;
+import rsb.RSBException;
 import rsb.RSBObject;
 import rsb.Scope;
 
 /**
  * Objects of this class are methods which are associated to a local or remote
  * server. Within a server, each method has a unique name.
- * 
+ *
  * This class is primarily intended as a superclass for local and remote method
  * classes.
- * 
+ *
  * @author jmoringe
  * @author swrede
  */
@@ -63,11 +64,11 @@ public abstract class Method implements RSBObject {
 
     protected class MethodState {
 
-        public MethodState activate() throws InitializeException {
+        public MethodState activate() throws InitializeException, RSBException {
             throw new InvalidStateException("Method already activated.");
         }
 
-        public MethodState deactivate() {
+        public MethodState deactivate() throws RSBException {
             throw new InvalidStateException("Method not activated.");
         }
     }
@@ -75,7 +76,7 @@ public abstract class Method implements RSBObject {
     protected class MethodStateActive extends MethodState {
 
         @Override
-        public MethodState deactivate() {
+        public MethodState deactivate() throws RSBException {
             // Deactivate informer and listener if necessary.
             if (Method.this.listener != null) {
                 Method.this.listener.deactivate();
@@ -92,7 +93,7 @@ public abstract class Method implements RSBObject {
     protected class MethodStateInactive extends MethodState {
 
         @Override
-        public MethodState activate() throws InitializeException {
+        public MethodState activate() throws RSBException {
             Method.this.listener.activate();
             Method.this.informer.activate();
             return new MethodStateActive();
@@ -102,7 +103,7 @@ public abstract class Method implements RSBObject {
     /**
      * Create a new Method object for the method named @a name provided by @a
      * server.
-     * 
+     *
      * @param server
      *            The remote or local server to which the method is associated.
      * @param name
@@ -122,7 +123,7 @@ public abstract class Method implements RSBObject {
 
     /**
      * Return the Server object to which this method is associated.
-     * 
+     *
      * @return The Server object.
      */
     public Server<?> getServer() {
@@ -131,7 +132,7 @@ public abstract class Method implements RSBObject {
 
     /**
      * Return the name of this method.
-     * 
+     *
      * @return The name of this method.
      */
     public String getName() {
@@ -140,9 +141,9 @@ public abstract class Method implements RSBObject {
 
     /**
      * Return the Informer object associated to this method.
-     * 
+     *
      * The Informer object may be created lazily.
-     * 
+     *
      * @return The Informer object.
      */
     public Informer<?> getInformer() {
@@ -151,9 +152,9 @@ public abstract class Method implements RSBObject {
 
     /**
      * Return the Listener object associated to this method.
-     * 
+     *
      * The Listener object may be created lazily.
-     * 
+     *
      * @return The Listener object.
      */
     public Listener getListener() {
@@ -166,12 +167,12 @@ public abstract class Method implements RSBObject {
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         this.state = this.state.activate();
     }
 
     @Override
-    public void deactivate() {
+    public void deactivate() throws RSBException {
         this.state = this.state.deactivate();
     }
 

@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 /**
  * Interface for State-pattern in the Listener class. Currently, just used for
  * explicit de-/allocation of resources.
- * 
+ *
  * @author swrede
  */
 public class ListenerState {
@@ -46,12 +46,12 @@ public class ListenerState {
         this.context = ctx;
     }
 
-    protected void activate() throws InitializeException {
+    protected void activate() throws RSBException {
         LOG.warning("invalid state exception during activate call");
         throw new InvalidStateException("subscriber already activated");
     }
 
-    protected void deactivate() {
+    protected void deactivate() throws RSBException {
         LOG.warning("invalid state exception during deactivate call");
         throw new InvalidStateException("subscriber already deactivated");
     }

@@ -53,8 +53,8 @@ public interface Connector extends RSBObject {
     void setQualityOfServiceSpec(QualityOfServiceSpec spec);
 
     /**
-     * Sets the scope this connector is working on. Will be called before the
-     * {@link #activate()} method of the connector is called.
+     * Sets the scope this connector is working on. Needs to be called before
+     * the {@link #activate()} method of the connector is called.
      *
      * @param scope
      *            the scope

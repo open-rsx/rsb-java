@@ -39,7 +39,7 @@ import rsb.transport.TransportFactory;
 
 /**
  * User-level test for RSBJava.
- * 
+ *
  * @author jwienke
  */
 public class UserLevelTest {

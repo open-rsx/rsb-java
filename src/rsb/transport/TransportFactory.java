@@ -30,7 +30,6 @@ package rsb.transport;
 import rsb.transport.spread.SpreadFactory;
 
 /**
- * 
  * @author jwienke
  * @author swrede
  */
@@ -42,6 +41,6 @@ public abstract class TransportFactory {
 
     public abstract OutConnector createOutConnector();
 
-    public abstract InPushConnector createInPushConnector(EventHandler eventHandler);
+    public abstract InPushConnector createInPushConnector();
 
 }

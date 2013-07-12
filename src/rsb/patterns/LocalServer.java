@@ -30,15 +30,15 @@ package rsb.patterns;
 import java.util.logging.Logger;
 
 import rsb.InitializeException;
+import rsb.RSBException;
 import rsb.Scope;
-import rsb.transport.PortConfiguration;
 import rsb.transport.TransportFactory;
 
 /**
  * Objects of this class associate a collection of method objects which are
  * implemented by callback functions with a scope under which these methods are
  * exposed for remote clients.
- * 
+ *
  * @author jmoringe
  */
 public class LocalServer extends Server<LocalMethod> {
@@ -49,25 +49,25 @@ public class LocalServer extends Server<LocalMethod> {
     /**
      * Create a new LocalServer object that exposes its methods under the scope @a
      * scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the newly
      *            created server should be provided.
      */
     public LocalServer(final Scope scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+        super(scope, TransportFactory.getInstance());
     }
 
     /**
      * Create a new LocalServer object that exposes its methods under the scope @a
      * scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the newly
      *            created server should be provided.
      */
     public LocalServer(final String scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+        super(scope, TransportFactory.getInstance());
     }
 
     /**
@@ -78,35 +78,39 @@ public class LocalServer extends Server<LocalMethod> {
      *            name of the method
      * @param callback
      *            callback implementing the functionality of the method
-     * @throws InitializeException
+     * @throws RSBException
      *             error initializing the method
      * @throws IllegalArgumentException
      *             a method with the given name already exists.
      */
     public void addMethod(final String name, final Callback callback)
-            throws InitializeException {
+            throws RSBException {
         LOG.fine("Registering new data method " + name
                 + " with signature object: " + callback);
         synchronized (this) {
-            final LocalMethod method = new LocalMethod(this, name, callback);
-            this.addAndActivate(name, method);
+            try {
+                final LocalMethod method = new LocalMethod(this, name, callback);
+                this.addAndActivate(name, method);
+            } catch (final InterruptedException e) {
+                throw new InitializeException(e);
+            }
         }
     }
 
     /**
      * Adds a method and activates it if the server is already active.
-     * 
+     *
      * @param name
      *            name of the method
      * @param method
      *            the method
-     * @throws InitializeException
+     * @throws RSBException
      *             error initializing method
      * @throws IllegalArgumentException
      *             a method with the given name already exists.
      */
     private void addAndActivate(final String name, final LocalMethod method)
-            throws InitializeException {
+            throws RSBException {
         addMethod(name, method, false);
         if (this.isActive()) {
             method.activate();
