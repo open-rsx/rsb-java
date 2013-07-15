@@ -27,11 +27,33 @@
  */
 package rsb;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import rsb.config.TransportConfig;
+
 /**
  * A class describing the configuration of Participant instances.
- * 
+ *
  * @author swrede
  */
 public class ParticipantConfig {
+
+    private final ArrayList<TransportConfig> transports = new ArrayList<TransportConfig>();
+
+    // TODO add all configuration options which belong to transports to
+    // dedicated TransportConfigs
+    public ParticipantConfig() {
+        this.transports.add(new TransportConfig("spread"));
+    }
+
+    // TODO add handleOption
+    // iterate over all transport.<NAME>.*
+    // find or create transportConfig for <NAME>
+    // push option to transportConfig
+
+    public final List<TransportConfig> getTransports() {
+        return this.transports;
+    }
 
 }
