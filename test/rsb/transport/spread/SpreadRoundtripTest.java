@@ -77,18 +77,17 @@ public class SpreadRoundtripTest {
 
         final Scope scope = new Scope("/a/test/scope");
 
-        final SpreadWrapper outWrapper = new SpreadWrapper();
+        final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
         final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
         inStrategy.addConverter("utf-8-string", new StringConverter());
         final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
         final SpreadOutConnector outPort = new SpreadOutConnector(outWrapper,
-                outStrategy);
-        outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-                Ordering.ORDERED, Reliability.RELIABLE));
+                outStrategy, new QualityOfServiceSpec(Ordering.ORDERED,
+                        Reliability.RELIABLE));
 
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final SpreadWrapper inWrapper = new SpreadWrapper();
+        final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
         final SpreadInPushConnector inPort = new SpreadInPushConnector(
                 inWrapper, inStrategy);
         inPort.addHandler(new EventHandler() {

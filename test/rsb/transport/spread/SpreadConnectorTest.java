@@ -63,11 +63,11 @@ public class SpreadConnectorTest {
     @Before
     public void setUp() throws Throwable {
 
-        this.outWrapper = new SpreadWrapper();
-        this.outPort = new SpreadOutConnector(this.outWrapper,
-                this.getConverterStrategy(String.class.getName()));
-        this.outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-                Ordering.ORDERED, Reliability.RELIABLE));
+        this.outWrapper = Utilities.createSpreadWrapper();
+        this.outPort = new SpreadOutConnector(
+                this.outWrapper,
+                this.getConverterStrategy(String.class.getName()),
+                new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
         this.outPort.setScope(OUT_BASE_SCOPE);
         this.outPort.activate();
 
@@ -87,7 +87,8 @@ public class SpreadConnectorTest {
 
     @Test(expected = ConversionException.class)
     public void noConverterPassedToClient() throws Throwable {
-        final Event event = new Event(OUT_BASE_SCOPE, Throwable.class, new Throwable());
+        final Event event = new Event(OUT_BASE_SCOPE, Throwable.class,
+                new Throwable());
         event.setId(new ParticipantId(), 42);
         this.outPort.push(event);
     }
@@ -107,7 +108,7 @@ public class SpreadConnectorTest {
 
             final List<Event> receivedEvents = new ArrayList<Event>();
             receivedEventsByScope.put(scope, receivedEvents);
-            final SpreadWrapper inWrapper = new SpreadWrapper();
+            final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
             final SpreadInPushConnector inPort = new SpreadInPushConnector(
                     inWrapper, this.getConverterStrategy("utf-8-string"));
             inPort.addHandler(new EventHandler() {
@@ -189,7 +190,7 @@ public class SpreadConnectorTest {
 
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final SpreadWrapper inWrapper = new SpreadWrapper();
+        final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
         final SpreadInPushConnector inPort = new SpreadInPushConnector(
                 inWrapper, this.getConverterStrategy("utf-8-string"));
         inPort.addHandler(new EventHandler() {

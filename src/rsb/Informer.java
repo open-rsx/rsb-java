@@ -36,6 +36,7 @@ import rsb.eventprocessing.OutRouteConfigurator;
 import rsb.transport.SequenceNumber;
 import rsb.transport.TransportFactory;
 import rsb.transport.TransportRegistry;
+import rsb.util.Properties;
 
 /**
  * This class offers a method to publish events to a channel, reaching all
@@ -155,7 +156,8 @@ public class Informer<DataType extends Object> extends Participant {
 
     }
 
-    private void initMembers(final Class<?> type) {
+    private void initMembers(final Class<?> type, final Properties properties)
+            throws InitializeException {
         if (type == null) {
             throw new IllegalArgumentException(
                     "Informer type must not be null.");
@@ -163,55 +165,65 @@ public class Informer<DataType extends Object> extends Participant {
         this.type = type;
         // TODO this should be passed in from the outside?
         this.router = new DefaultOutRouteConfigurator(getScope());
-        this.router.addConnector(getTransportFactory().createOutConnector());
+        this.router.addConnector(getTransportFactory().createOutConnector(
+                properties));
         this.state = new InformerStateInactive(this);
         LOG.fine("New informer instance created: [Scope:" + this.getScope()
                 + ",State:Inactive,Type:" + type.getName() + "]");
     }
 
-    Informer(final String scope) {
+    Informer(final String scope, final Properties properties)
+            throws InitializeException {
         super(scope, TransportRegistry.getDefaultInstance()
                 .getFactory("spread"));
-        this.initMembers(Object.class);
+        this.initMembers(Object.class, properties);
     }
 
-    Informer(final Scope scope) {
+    Informer(final Scope scope, final Properties properties)
+            throws InitializeException {
         super(scope, TransportRegistry.getDefaultInstance()
                 .getFactory("spread"));
-        this.initMembers(Object.class);
-    }
-
-    Informer(final String scope, final Class<?> type) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(type);
-    }
-
-    Informer(final Scope scope, final Class<?> type) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(type);
-    }
-
-    Informer(final String scope, final TransportFactory tfac) {
-        super(scope, tfac);
-        this.initMembers(Object.class);
-    }
-
-    Informer(final Scope scope, final TransportFactory tfac) {
-        super(scope, tfac);
-        this.initMembers(Object.class);
+        this.initMembers(Object.class, properties);
     }
 
     Informer(final String scope, final Class<?> type,
-            final TransportFactory tfac) {
-        super(scope, tfac);
-        this.initMembers(type);
+            final Properties properties) throws InitializeException {
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
+        this.initMembers(type, properties);
     }
 
-    Informer(final Scope scope, final Class<?> type, final TransportFactory tfac) {
+    Informer(final Scope scope, final Class<?> type, final Properties properties)
+            throws InitializeException {
+        super(scope, TransportRegistry.getDefaultInstance()
+                .getFactory("spread"));
+        this.initMembers(type, properties);
+    }
+
+    Informer(final String scope, final TransportFactory tfac,
+            final Properties properties) throws InitializeException {
         super(scope, tfac);
-        this.initMembers(type);
+        this.initMembers(Object.class, properties);
+    }
+
+    Informer(final Scope scope, final TransportFactory tfac,
+            final Properties properties) throws InitializeException {
+        super(scope, tfac);
+        this.initMembers(Object.class, properties);
+    }
+
+    Informer(final String scope, final Class<?> type,
+            final TransportFactory tfac, final Properties properties)
+            throws InitializeException {
+        super(scope, tfac);
+        this.initMembers(type, properties);
+    }
+
+    Informer(final Scope scope, final Class<?> type,
+            final TransportFactory tfac, final Properties properties)
+            throws InitializeException {
+        super(scope, tfac);
+        this.initMembers(type, properties);
     }
 
     @Override

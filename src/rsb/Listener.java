@@ -37,6 +37,7 @@ import rsb.eventprocessing.PushInRouteConfigurator;
 import rsb.filter.Filter;
 import rsb.transport.TransportFactory;
 import rsb.transport.TransportRegistry;
+import rsb.util.Properties;
 
 /**
  * This class implements the receiving part of the Inform-Listen (n:m)
@@ -95,33 +96,39 @@ public class Listener extends Participant {
 
     }
 
-    Listener(final Scope scope) {
+    Listener(final Scope scope, final Properties properties)
+            throws InitializeException {
         super(scope, TransportRegistry.getDefaultInstance()
                 .getFactory("spread"));
-        this.initMembers();
+        this.initMembers(properties);
     }
 
-    Listener(final String scope) {
+    Listener(final String scope, final Properties properties)
+            throws InitializeException {
         super(scope, TransportRegistry.getDefaultInstance()
                 .getFactory("spread"));
-        this.initMembers();
+        this.initMembers(properties);
     }
 
-    Listener(final String scope, final TransportFactory tfac) {
+    Listener(final String scope, final TransportFactory tfac,
+            final Properties properties) throws InitializeException {
         super(scope, tfac);
-        this.initMembers();
+        this.initMembers(properties);
     }
 
-    Listener(final Scope scope, final TransportFactory tfac) {
+    Listener(final Scope scope, final TransportFactory tfac,
+            final Properties properties) throws InitializeException {
         super(scope, tfac);
-        this.initMembers();
+        this.initMembers(properties);
     }
 
-    private void initMembers() {
+    private void initMembers(final Properties properties)
+            throws InitializeException {
         this.state = new ListenerStateInactive(this);
         this.errorHandler = new DefaultErrorHandler(LOG);
         this.router = new DefaultPushInRouteConfigurator(getScope());
-        this.router.addConnector(getTransportFactory().createInPushConnector());
+        this.router.addConnector(getTransportFactory().createInPushConnector(
+                properties));
         LOG.fine("New Listener instance: [scope=" + this.getScope() + "]");
     }
 

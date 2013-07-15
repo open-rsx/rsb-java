@@ -35,8 +35,6 @@ import java.util.logging.Logger;
 import rsb.Event;
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
-import rsb.QualityOfServiceSpec.Ordering;
-import rsb.QualityOfServiceSpec.Reliability;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.converter.ConversionException;
@@ -48,8 +46,6 @@ import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.OutConnector;
-import rsb.util.InvalidPropertyException;
-import rsb.util.Properties;
 
 import com.google.protobuf.ByteString;
 
@@ -156,33 +152,18 @@ public class SpreadOutConnector implements OutConnector {
      *            encapsulation of spread communication. Must not be activated.
      * @param outStrategy
      *            converters to use for sending data
+     * @param qos
+     *            quality of serice requirements to address
      */
     public SpreadOutConnector(final SpreadWrapper spread,
-            final ConverterSelectionStrategy<ByteBuffer> outStrategy) {
+            final ConverterSelectionStrategy<ByteBuffer> outStrategy,
+            final QualityOfServiceSpec qos) {
 
         assert !spread.isActive();
 
         this.spread = spread;
         this.converters = outStrategy;
-
-        // TODO initial hack to get QoS from properties, replace this with a
-        // real participant config
-        Ordering ordering = new QualityOfServiceSpec().getOrdering();
-        try {
-            ordering = Ordering.valueOf(Properties.getInstance().getProperty(
-                    "qualityofservice.ordering"));
-        } catch (final InvalidPropertyException e) {
-            // valid case if property does not exist
-        }
-        Reliability reliability = new QualityOfServiceSpec().getReliability();
-        try {
-            reliability = Reliability.valueOf(Properties.getInstance()
-                    .getProperty("qualityofservice.reliability"));
-        } catch (final InvalidPropertyException e) {
-            // valid case if property does not exist
-        }
-        this.setQualityOfServiceSpec(new QualityOfServiceSpec(ordering,
-                reliability));
+        this.setQualityOfServiceSpec(qos);
 
     }
 

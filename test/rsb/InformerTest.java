@@ -45,6 +45,7 @@ import rsb.converter.DefaultConverterRepository;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
 import rsb.transport.TransportRegistry;
+import rsb.util.Properties;
 
 /**
  * @author swrede
@@ -67,9 +68,10 @@ public class InformerTest {
     @Before
     public void setUp() throws Throwable {
         this.stringInformer = new Informer<String>(this.defaultScope,
-                String.class);
+                String.class, new Properties().load());
         this.stringInformer.activate();
-        this.genericInformer = new Informer<Object>(this.defaultScope);
+        this.genericInformer = new Informer<Object>(this.defaultScope,
+                new Properties().load());
         this.genericInformer.activate();
     }
 
@@ -83,47 +85,40 @@ public class InformerTest {
         }
     }
 
-    /**
-     * Test method for {@link rsb.Informer#Informer(java.lang.String)}.
-     */
     @Test
     public void informerString() {
         assertNotNull("Informer is null", this.stringInformer);
         assertEquals(this.stringInformer.getScope(), this.defaultScope);
     }
 
-    /**
-     * Test method for
-     * {@link rsb.Informer#Informer(java.lang.String, rsb.transport.TransportFactory)}
-     * .
-     */
     @Test
-    public void informerStringTransportFactory() {
+    public void informerStringTransportFactory() throws Throwable {
         final Scope scope = new Scope("/x");
         final Informer<String> informer = new Informer<String>(scope,
-                TransportRegistry.getDefaultInstance().getFactory("spread"));
+                TransportRegistry.getDefaultInstance().getFactory("spread"),
+                new Properties().load());
         assertNotNull("Informer is null", informer);
         assertEquals("Wrong scope", informer.getScope(), scope);
     }
 
     @Test
-    public void informerStringString() {
+    public void informerStringString() throws Throwable {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass());
+                type.getClass(), new Properties().load());
         assertNotNull("Informer object is null", informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());
     }
 
     @Test
-    public void informerStringStringTransportFactory() {
+    public void informerStringStringTransportFactory() throws Throwable {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
                 type.getClass(), TransportRegistry.getDefaultInstance()
-                        .getFactory("spread"));
+                        .getFactory("spread"), new Properties().load());
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());

@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.Handler;
+import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.filter.MethodFilter;
 
@@ -66,9 +67,13 @@ class LocalMethod extends Method implements Handler {
      *            The callback implementing the user functionality of the method
      * @throws InterruptedException
      *             error while installing method
+     * @throws InitializeException
+     *             error initializing the method or one of the underlying
+     *             participants
      */
     public LocalMethod(final Server<LocalMethod> server, final String name,
-            final Callback callback) throws InterruptedException {
+            final Callback callback) throws InterruptedException,
+            InitializeException {
         super(server, name);
         this.callback = callback;
         this.listener = this.factory.createListener(this.REQUEST_SCOPE);
@@ -87,10 +92,12 @@ class LocalMethod extends Method implements Handler {
             LOG.warning("Exception during method invocation in participant: "
                     + this.REQUEST_SCOPE + " Exception message: " + exception);
             final StringWriter exceptionWriter = new StringWriter();
-            final PrintWriter exceptionPrinter = new PrintWriter(exceptionWriter);
+            final PrintWriter exceptionPrinter = new PrintWriter(
+                    exceptionWriter);
             exception.printStackTrace(exceptionPrinter);
             final String error = exception.toString() + " Details: "
-                    + exception.getMessage() + "\n" + exceptionWriter.toString();
+                    + exception.getMessage() + "\n"
+                    + exceptionWriter.toString();
             // return error information
             reply = new Event(String.class, error);
             reply.getMetaData().setUserInfo("rsb:error?", "1");

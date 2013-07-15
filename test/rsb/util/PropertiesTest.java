@@ -1,61 +1,62 @@
 package rsb.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Test;
 
 public class PropertiesTest {
 
-    @After
-    public void resetProperties() {
-        Properties.getInstance().reset();
+    private static final String KEY = "Spread.Path";
+    private static final String VALUE = "blaaaa";
+
+    @Test
+    public void setGetProperty() {
+        final Properties prop = new Properties();
+        prop.setProperty(KEY, VALUE);
+        assertEquals(VALUE, prop.getProperty(KEY).asString());
     }
 
     @Test
-    public void getInstance() {
-        final Properties prop = Properties.getInstance();
-        assertNotNull(prop);
-    }
-
-    @Test
-    public void setProperty() {
-        final Properties prop = Properties.getInstance();
-        prop.setProperty("Spread.Path", "8888");
-        assertEquals("8888", prop.getProperty("Spread.Path"));
+    public void getDefault() {
+        final Properties prop = new Properties();
+        final String def = "blaablaa";
+        assertEquals(def, prop.getProperty(KEY, def).asString());
     }
 
     @Test
     public void setPortPropertyTwice() {
-        final Properties prop = Properties.getInstance();
-        prop.setProperty("transport.spread.port", "8888");
-        assertTrue(prop.getPropertyAsInt("transport.spread.port") == 8888);
-        prop.setProperty("transport.spread.port", "8888");
-        assertTrue(prop.getPropertyAsInt("transport.spread.port") == 8888);
-    }
-
-    @Test
-    public void setHostPropertyTwice() {
-        final Properties prop = Properties.getInstance();
-        prop.setProperty("transport.spread.host", "11.1.1.11");
-        assertTrue(prop.getProperty("transport.spread.host").equalsIgnoreCase(
-                "11.1.1.11"));
-        prop.setProperty("transport.spread.host", "11.1.1.11");
-        assertTrue(prop.getProperty("transport.spread.host").equalsIgnoreCase(
-                "11.1.1.11"));
+        final Properties prop = new Properties();
+        prop.setProperty(KEY, VALUE);
+        assertEquals(VALUE, prop.getProperty(KEY).asString());
+        final String value2 = VALUE + "test";
+        prop.setProperty(KEY, value2);
+        assertEquals(value2, prop.getProperty(KEY).asString());
     }
 
     @Test
     public void reset() {
-        final Properties prop = Properties.getInstance();
-        prop.setProperty("transport.spread.host", "11.1.1.11");
-        assertTrue(prop.getProperty("transport.spread.host").equalsIgnoreCase(
-                "11.1.1.11"));
+        final Properties prop = new Properties();
+        prop.setProperty(KEY, VALUE);
         prop.reset();
-        assertTrue(prop.getProperty("transport.spread.host").equalsIgnoreCase(
-                "localhost"));
+        assertTrue(prop.getAvailableKeys().isEmpty());
+        assertFalse(prop.hasProperty(KEY));
+    }
+
+    @Test
+    public void defaultValueNumber() {
+        final Properties prop = new Properties();
+        final int defaultValue = 42;
+        assertEquals(defaultValue, prop.getProperty(KEY, defaultValue)
+                .asInteger());
+    }
+
+    @Test
+    public void defaultValueBoolean() {
+        final Properties prop = new Properties();
+        assertTrue(prop.getProperty(KEY, true).asBoolean());
+        assertFalse(prop.getProperty(KEY, false).asBoolean());
     }
 
 }

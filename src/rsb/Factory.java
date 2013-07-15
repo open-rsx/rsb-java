@@ -32,6 +32,7 @@ import rsb.converter.DefaultConverters;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 import rsb.transport.DefaultTransports;
+import rsb.util.Properties;
 
 /**
  * A factory for RSB client-level objects. This class is a Singleton.
@@ -44,6 +45,8 @@ public final class Factory {
      * The singleton instance.
      */
     private static Factory instance = new Factory();
+
+    private final Properties properties = new Properties().load();
 
     /**
      * Private constructor to ensure Singleton.
@@ -72,9 +75,12 @@ public final class Factory {
      * @param type
      *            type identifier of the informer
      * @return new informer instance
+     * @throws InitializeException
+     *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final Scope scope, final Class<?> type) {
-        return new Informer<T>(scope, type);
+    public <T> Informer<T> createInformer(final Scope scope, final Class<?> type)
+            throws InitializeException {
+        return new Informer<T>(scope, type, this.properties);
     }
 
     /**
@@ -87,10 +93,12 @@ public final class Factory {
      * @param type
      *            type identifier of the informer
      * @return new informer instance
+     * @throws InitializeException
+     *             error initializing the informer
      */
     public <T> Informer<T> createInformer(final String scope,
-            final Class<?> type) {
-        return new Informer<T>(new Scope(scope), type);
+            final Class<?> type) throws InitializeException {
+        return new Informer<T>(new Scope(scope), type, this.properties);
     }
 
     /**
@@ -101,9 +109,12 @@ public final class Factory {
      * @param scope
      *            scope of the informer
      * @return new informer instance
+     * @throws InitializeException
+     *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final Scope scope) {
-        return new Informer<T>(scope);
+    public <T> Informer<T> createInformer(final Scope scope)
+            throws InitializeException {
+        return new Informer<T>(scope, this.properties);
     }
 
     /**
@@ -114,9 +125,12 @@ public final class Factory {
      * @param scope
      *            scope of the informer
      * @return new informer instance
+     * @throws InitializeException
+     *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final String scope) {
-        return new Informer<T>(new Scope(scope));
+    public <T> Informer<T> createInformer(final String scope)
+            throws InitializeException {
+        return new Informer<T>(new Scope(scope), this.properties);
     }
 
     /**
@@ -125,9 +139,12 @@ public final class Factory {
      * @param scope
      *            scope of the listener
      * @return new listener
+     * @throws InitializeException
+     *             error initializing the listener
      */
-    public Listener createListener(final Scope scope) {
-        return new Listener(scope);
+    public Listener createListener(final Scope scope)
+            throws InitializeException {
+        return new Listener(scope, this.properties);
     }
 
     /**
@@ -136,9 +153,12 @@ public final class Factory {
      * @param scope
      *            scope of the listener
      * @return new listener
+     * @throws InitializeException
+     *             error initializing the listener
      */
-    public Listener createListener(final String scope) {
-        return new Listener(scope);
+    public Listener createListener(final String scope)
+            throws InitializeException {
+        return new Listener(scope, this.properties);
     }
 
     /**
@@ -221,6 +241,15 @@ public final class Factory {
     public RemoteServer createRemoteServer(final String scope,
             final double timeout) {
         return new RemoteServer(scope, timeout);
+    }
+
+    /**
+     * Returns the default configuration properties.
+     *
+     * @return property instances
+     */
+    public Properties getProperties() {
+        return this.properties;
     }
 
 }

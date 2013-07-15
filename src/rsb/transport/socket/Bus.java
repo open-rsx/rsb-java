@@ -35,23 +35,21 @@ import java.util.logging.Logger;
 
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
-import rsb.util.Properties;
 
 /**
  * Instances of this class provide access to a socket-based bus. It is
  * transparent for clients (connectors) of this class whether is accessed by
  * running the bus server or by connecting to the bus server as a client.
- * 
+ *
  * This class offers methods for sending and receiving events to this bus as
  * well as registration of internal Connectors (inward) and Connections
  * (outward) which allow to send event notifications to external participants.
- * 
+ *
  * @author swrede
  */
 public abstract class Bus {
 
     private final static Logger log = Logger.getLogger(Bus.class.getName());
-    private final static rsb.util.Properties prop = Properties.getInstance();
     InetAddress address;
     int port;
 
@@ -63,7 +61,7 @@ public abstract class Bus {
 
     /**
      * Distribute event notification to connected participants.
-     * 
+     *
      * @param notification
      *            the notification to distribute
      */
@@ -90,20 +88,18 @@ public abstract class Bus {
 
     // TODO implement InPushConnector support for internal notification
 
-    public static Bus createBusClient() throws IOException, RSBException {
-        final InetAddress addr = InetAddress.getByName(prop
-                .getProperty("transport.socket.host"));
-        final BusClient client = new BusClient(addr,
-                prop.getPropertyAsInt("transport.socket.port"));
+    public static Bus createBusClient(final String host, final int port)
+            throws IOException, RSBException {
+        final InetAddress addr = InetAddress.getByName(host);
+        final BusClient client = new BusClient(addr, port);
         client.activate();
         return client;
     }
 
-    public static Bus createBusServer() throws IOException {
-        final InetAddress addr = InetAddress.getByName(prop
-                .getProperty("transport.socket.host"));
-        final BusServer server = new BusServer(addr,
-                prop.getPropertyAsInt("transport.socket.port"));
+    public static Bus createBusServer(final String host, final int port)
+            throws IOException {
+        final InetAddress addr = InetAddress.getByName(host);
+        final BusServer server = new BusServer(addr, port);
         server.activate();
         return server;
     }

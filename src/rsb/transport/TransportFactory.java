@@ -27,6 +27,9 @@
  */
 package rsb.transport;
 
+import rsb.InitializeException;
+import rsb.util.Properties;
+
 /**
  * Interface for factories providing implementations of {@link Connector}
  * instances for a certain transport.
@@ -36,8 +39,10 @@ package rsb.transport;
  */
 public interface TransportFactory {
 
-    OutConnector createOutConnector();
+    OutConnector createOutConnector(Properties properties)
+            throws InitializeException;
 
-    InPushConnector createInPushConnector();
+    InPushConnector createInPushConnector(Properties properties)
+            throws InitializeException;
 
 }

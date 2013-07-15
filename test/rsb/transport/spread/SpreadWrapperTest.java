@@ -32,22 +32,14 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import rsb.InitializeException;
-
 /**
  * @author swrede
  */
 public class SpreadWrapperTest {
 
-    /**
-     * Test method for
-     * {@link rsb.transport.spread.SpreadWrapper#SpreadWrapper()}.
-     * 
-     * @throws InitializeException
-     */
     @Test
-    public void spreadWrapper() throws InitializeException {
-        final SpreadWrapper spread = new SpreadWrapper();
+    public void spreadWrapper() throws Throwable {
+        final SpreadWrapper spread = Utilities.createSpreadWrapper();
         assertNotNull(spread);
         assertEquals(SpreadWrapper.State.DEACTIVATED, spread.getStatus());
         spread.activate();

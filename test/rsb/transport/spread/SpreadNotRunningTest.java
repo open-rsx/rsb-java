@@ -20,7 +20,6 @@
  */
 package rsb.transport.spread;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,7 +29,6 @@ import rsb.Informer;
 import rsb.InitializeException;
 import rsb.patterns.DataCallback;
 import rsb.patterns.LocalServer;
-import rsb.util.Properties;
 
 /**
  * Test for situations where no connection to a Spread daemon is available.
@@ -43,15 +41,11 @@ public class SpreadNotRunningTest {
 
     @BeforeClass
     public static void prepare() {
-        final Properties prop = Properties.getInstance();
-        // prop.setProperty("transport.socket.enabled", "false");
-        prop.setProperty("transport.spread.enabled", "true");
-        prop.setProperty("transport.spread.retry", "1");
-    }
-
-    @AfterClass
-    public static void restore() {
-        Properties.getInstance().reset();
+        // TODO restore this!
+        // final Properties prop = Properties.getInstance();
+        // // prop.setProperty("transport.socket.enabled", "false");
+        // prop.setProperty("transport.spread.enabled", "true");
+        // prop.setProperty("transport.spread.retry", "1");
     }
 
     @Ignore

@@ -37,6 +37,7 @@ import org.junit.Test;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
 import rsb.transport.TransportRegistry;
+import rsb.util.Properties;
 
 /**
  * User-level test for RSBJava.
@@ -56,7 +57,8 @@ public class UserLevelTest {
         // set up a receiver for events
         final Set<String> receivedMessages = new HashSet<String>();
         final Listener listener = new Listener(scope, TransportRegistry
-                .getDefaultInstance().getFactory("spread"));
+                .getDefaultInstance().getFactory("spread"),
+                new Properties().load());
         listener.activate();
         listener.addHandler(new AbstractEventHandler() {
 
@@ -71,7 +73,8 @@ public class UserLevelTest {
 
         // send events
         final Set<String> sentMessages = new HashSet<String>();
-        final Informer<String> informer = new Informer<String>(scope);
+        final Informer<String> informer = new Informer<String>(scope,
+                new Properties().load());
         informer.activate();
         for (int i = 0; i < 100; ++i) {
             final String message = "<message val=\"Hello World!\" nr=\"" + i
