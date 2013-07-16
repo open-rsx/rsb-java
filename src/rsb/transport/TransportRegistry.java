@@ -3,6 +3,7 @@ package rsb.transport;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * A registry of all know transports.
@@ -96,6 +97,15 @@ public class TransportRegistry {
 
         }
 
+    }
+
+    /**
+     * Returns the names of all known transports.
+     *
+     * @return set of names
+     */
+    public Set<String> transportNames() {
+        return this.factories.keySet();
     }
 
 }
