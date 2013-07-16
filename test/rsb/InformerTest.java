@@ -45,6 +45,7 @@ import rsb.converter.DefaultConverterRepository;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
 import rsb.transport.TransportRegistry;
+import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
 /**
@@ -58,6 +59,7 @@ public class InformerTest {
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
             .getDefaultConverterRepository();
+    private final Properties properties = new Properties();
 
     @BeforeClass
     public static void registerConverters() {
@@ -67,11 +69,15 @@ public class InformerTest {
 
     @Before
     public void setUp() throws Throwable {
+        final ConfigLoader loader = new ConfigLoader();
+        this.properties.reset();
+        loader.load(this.properties);
+
         this.stringInformer = new Informer<String>(this.defaultScope,
-                String.class, new Properties().load());
+                String.class, this.properties);
         this.stringInformer.activate();
         this.genericInformer = new Informer<Object>(this.defaultScope,
-                new Properties().load());
+                this.properties);
         this.genericInformer.activate();
     }
 
@@ -96,7 +102,7 @@ public class InformerTest {
         final Scope scope = new Scope("/x");
         final Informer<String> informer = new Informer<String>(scope,
                 TransportRegistry.getDefaultInstance().getFactory("spread"),
-                new Properties().load());
+                this.properties);
         assertNotNull("Informer is null", informer);
         assertEquals("Wrong scope", informer.getScope(), scope);
     }
@@ -106,7 +112,7 @@ public class InformerTest {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), new Properties().load());
+                type.getClass(), this.properties);
         assertNotNull("Informer object is null", informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());
@@ -118,7 +124,7 @@ public class InformerTest {
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
                 type.getClass(), TransportRegistry.getDefaultInstance()
-                        .getFactory("spread"), new Properties().load());
+                        .getFactory("spread"), this.properties);
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());

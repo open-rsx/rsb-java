@@ -27,18 +27,10 @@
  */
 package rsb.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class which reads configuration options from different sources and presents
@@ -53,12 +45,7 @@ import java.util.logging.Logger;
  * @author swrede
  * @author jwienke
  */
-// expected here with the different type accessors
-@SuppressWarnings("PMD.TooManyMethods")
 public class Properties {
-
-    private final static Logger LOG = Logger.getLogger(Properties.class
-            .getName());
 
     private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
 
@@ -169,146 +156,6 @@ public class Properties {
      */
     public void reset() {
         this.propertiesByName.clear();
-    }
-
-    /**
-     * Loads properties from the default sources. These are several config files
-     * and environment variables.
-     *
-     * The instance is not cleared from existing properties before. If you need
-     * this, use {@link #reset()}.
-     *
-     * @return this instance, now loaded
-     */
-    public Properties load() {
-
-        // parse rsb.conf files in standard locations
-        this.loadFiles();
-
-        // parse environment
-        this.loadEnv();
-
-        return this;
-
-    }
-
-    private void loadFiles() {
-        // Read configuration properties in the following order:
-        // 1. from /etc/rsb.conf, if the file exists
-        // 2. from ${HOME}/.config/rsb.conf, if the file exists
-        // 3. from $(pwd)/rsb.conf, if the file exists
-        loadFileIfAvailable(new File("/etc/rsb.conf"));
-
-        final String homeDir = System.getProperty("user.home");
-        loadFileIfAvailable(new File(homeDir + "/.config/rsb.conf"));
-
-        final String workDir = System.getProperty("user.dir");
-        loadFileIfAvailable(new File(workDir + "/rsb.conf"));
-
-    }
-
-    /**
-     * Loads a config file if the file exists. Reading errors are ignored.
-     *
-     * The instance is not cleared before loading the file.
-     *
-     * @param file
-     *            the file to read, might not exist
-     * @return this instance with loaded properties
-     */
-    public Properties loadFileIfAvailable(final File file) {
-        try {
-            if (file.exists()) {
-                this.loadFile(file);
-            }
-        } catch (final IOException ex) {
-            LOG.log(Level.SEVERE, "Caught IOException trying to read " + "'"
-                    + file.getPath() + "'", ex);
-        }
-        return this;
-    }
-
-    /**
-     * Reads options from a config file. Assumes that the file exists.
-     *
-     * The instance is not cleared before loading from the file.
-     *
-     * @param file
-     *            the file to read
-     * @return this instance
-     * @throws IllegalArgumentException
-     *             if the file does not exist
-     * @throws IOException
-     *             error reading the file
-     */
-    // we don't care about speed here
-    @SuppressWarnings("PMD.SimplifyStartsWith")
-    public Properties loadFile(final File file) throws IOException {
-
-        if (!file.exists()) {
-            throw new IllegalArgumentException("The file '" + file
-                    + "' does not exist.");
-        }
-
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(file)));
-        try {
-
-            String section = "";
-            while (reader.ready()) {
-                String line = reader.readLine();
-                int index = line.indexOf('#');
-                if (index != -1) {
-                    line = line.substring(0, index);
-                }
-                line = line.trim();
-                if ("".equals(line)) {
-                    continue;
-                }
-                if (line.startsWith("[") && line.endsWith("]")) {
-                    section = line.substring(1, line.length() - 1);
-                    continue;
-                }
-                index = line.indexOf('=');
-                if (index == -1) {
-                    LOG.warning("Illegal line in configuration file: `" + line
-                            + "'");
-                    continue;
-                }
-                final String key = section + "."
-                        + line.substring(0, index).trim();
-                final String value = line.substring(index + 1).trim();
-                this.setProperty(key, value);
-            }
-
-        } finally {
-            reader.close();
-        }
-
-        return this;
-
-    }
-
-    /**
-     * Loads properties from the environment variable.
-     *
-     * The instance is not cleared before loading.
-     *
-     * @return this instance
-     */
-    public Properties loadEnv() {
-        this.parseMap(System.getenv());
-        return this;
-    }
-
-    private void parseMap(final Map<String, String> env) {
-        for (final Entry<String, String> entry : env.entrySet()) {
-            final String key = entry.getKey();
-            if (key.startsWith("RSB_")) {
-                this.setProperty(key.substring(4).replace("_", ".")
-                        .toLowerCase(), entry.getValue());
-            }
-        }
     }
 
     /**

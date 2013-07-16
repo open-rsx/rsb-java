@@ -1,5 +1,6 @@
 package rsb.transport.spread;
 
+import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
 /**
@@ -15,7 +16,8 @@ public final class Utilities {
     }
 
     public static SpreadWrapper createSpreadWrapper() throws Throwable {
-        return new SpreadWrapper("localhost", new Properties().load()
+        final ConfigLoader loader = new ConfigLoader();
+        return new SpreadWrapper("localhost", loader.load(new Properties())
                 .getProperty("transport.spread.port", "4803").asInteger(), true);
     }
 

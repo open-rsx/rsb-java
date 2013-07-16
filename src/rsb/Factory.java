@@ -32,6 +32,7 @@ import rsb.converter.DefaultConverters;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 import rsb.transport.DefaultTransports;
+import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
 /**
@@ -46,7 +47,7 @@ public final class Factory {
      */
     private static Factory instance = new Factory();
 
-    private final Properties properties = new Properties().load();
+    private final Properties properties = new Properties();
 
     /**
      * Private constructor to ensure Singleton.
@@ -54,6 +55,7 @@ public final class Factory {
     private Factory() {
         DefaultConverters.register();
         DefaultTransports.register();
+        new ConfigLoader().load(this.properties);
     }
 
     /**

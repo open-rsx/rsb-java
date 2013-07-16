@@ -37,6 +37,7 @@ import org.junit.Test;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
 import rsb.transport.TransportRegistry;
+import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
 /**
@@ -52,13 +53,16 @@ public class UserLevelTest {
         DefaultConverters.register();
         DefaultTransports.register();
 
+        final ConfigLoader loader = new ConfigLoader();
+        final Properties properties = new Properties();
+        loader.load(properties);
+
         final Scope scope = new Scope("/example/informer");
 
         // set up a receiver for events
         final Set<String> receivedMessages = new HashSet<String>();
         final Listener listener = new Listener(scope, TransportRegistry
-                .getDefaultInstance().getFactory("spread"),
-                new Properties().load());
+                .getDefaultInstance().getFactory("spread"), properties);
         listener.activate();
         listener.addHandler(new AbstractEventHandler() {
 
@@ -74,7 +78,7 @@ public class UserLevelTest {
         // send events
         final Set<String> sentMessages = new HashSet<String>();
         final Informer<String> informer = new Informer<String>(scope,
-                new Properties().load());
+                properties);
         informer.activate();
         for (int i = 0; i < 100; ++i) {
             final String message = "<message val=\"Hello World!\" nr=\"" + i
@@ -96,5 +100,4 @@ public class UserLevelTest {
         listener.deactivate();
 
     }
-
 }
