@@ -30,6 +30,7 @@ package rsb.util;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -230,6 +231,31 @@ public class Properties {
      */
     public boolean hasProperty(final String key) {
         return this.propertiesByName.containsKey(key);
+    }
+
+    /**
+     * Returns a new properties instance with all properties with keys starting
+     * with the specified prefix. Property key separation with dots is expected.
+     * This means that in case the desired prefix is "a.test" only exactly this
+     * key and keys starting with string form "a.test." are returned.
+     *
+     * @param desiredPrefix
+     *            key prefix to include in the new set.
+     * @return Properties instance with all properties matching the desired
+     *         prefix. This also includes the property with a key directly
+     *         reflecting the specified prefix
+     */
+    public Properties filter(final String desiredPrefix) {
+        final Properties filtered = new Properties();
+        for (final Entry<String, Property> entry : this.propertiesByName
+                .entrySet()) {
+            if (entry.getKey().equals(desiredPrefix)
+                    || entry.getKey().startsWith(desiredPrefix + ".")) {
+                filtered.setProperty(entry.getKey(), entry.getValue()
+                        .asString());
+            }
+        }
+        return filtered;
     }
 
 }

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.junit.Test;
 
 public class PropertiesTest {
@@ -57,6 +60,32 @@ public class PropertiesTest {
         final Properties prop = new Properties();
         assertTrue(prop.getProperty(KEY, true).asBoolean());
         assertFalse(prop.getProperty(KEY, false).asBoolean());
+    }
+
+    @Test
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    public void filter() {
+
+        final Properties props = new Properties();
+
+        // add some options which we want to retrieve later
+        final String desiredPrefix = "a.test";
+        final String[] desired = new String[] { desiredPrefix + ".foo",
+                desiredPrefix + ".bar.bla", desiredPrefix };
+        for (final String key : desired) {
+            props.setProperty(key, "blaaa");
+        }
+
+        // add some stuff we do not want
+        for (final String key : new String[] { "a", "other.root", "bar.bla",
+                "a.testing" }) {
+            props.setProperty(key, "blaaa");
+        }
+
+        final Properties filtered = props.filter(desiredPrefix);
+        assertEquals(new HashSet<String>(Arrays.asList(desired)),
+                filtered.getAvailableKeys());
+
     }
 
 }
