@@ -46,6 +46,7 @@ import java.util.Set;
  * @author swrede
  * @author jwienke
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public class Properties {
 
     private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
@@ -292,6 +293,7 @@ public class Properties {
      * @param properties
      *            properties to merge into this instance
      */
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void merge(final Properties properties) {
         for (final Entry<String, Property> entry : properties.propertiesByName
                 .entrySet()) {
@@ -305,10 +307,9 @@ public class Properties {
 
         final StringBuilder builder = new StringBuilder();
         builder.append(getClass().getName());
-        builder.append("[");
-        builder.append("properties=");
+        builder.append("[properties=");
         builder.append(this.propertiesByName.toString());
-        builder.append("]");
+        builder.append(']');
 
         return builder.toString();
 
