@@ -88,4 +88,27 @@ public class PropertiesTest {
 
     }
 
+    @Test
+    public void merge() {
+
+        final Properties target = new Properties();
+        target.setProperty(KEY, VALUE);
+
+        final String notExistingKey = "Ido.not.exist";
+        final String notExistingValue = "gjhfghsFA";
+        final String duplicatedValue = "567567fghfdgser";
+        final Properties toMerge = new Properties();
+        toMerge.setProperty(KEY, duplicatedValue);
+        toMerge.setProperty(notExistingKey, notExistingValue);
+
+        target.merge(toMerge);
+
+        assertTrue(target.hasProperty(KEY));
+        assertTrue(target.hasProperty(notExistingKey));
+        assertEquals(duplicatedValue, target.getProperty(KEY).asString());
+        assertEquals(notExistingValue, target.getProperty(notExistingKey)
+                .asString());
+
+    }
+
 }

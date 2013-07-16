@@ -280,4 +280,19 @@ public class Properties {
         this.propertiesByName.remove(key);
     }
 
+    /**
+     * Merges the passed properties into this instance by adding and/or
+     * overwriting all properties found in that instance.
+     *
+     * @param properties
+     *            properties to merge into this instance
+     */
+    public void merge(final Properties properties) {
+        for (final Entry<String, Property> entry : properties.propertiesByName
+                .entrySet()) {
+            this.propertiesByName.put(entry.getKey(),
+                    new Property(entry.getValue().value));
+        }
+    }
+
 }
