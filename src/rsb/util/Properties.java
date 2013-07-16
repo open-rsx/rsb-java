@@ -258,4 +258,26 @@ public class Properties {
         return filtered;
     }
 
+    /**
+     * Removes all properties with the given keys.
+     *
+     * @param keys
+     *            set of keys to remove
+     */
+    public void remove(final Set<String> keys) {
+        for (final String key : keys) {
+            this.propertiesByName.remove(key);
+        }
+    }
+
+    /**
+     * Removes the property with the given key.
+     *
+     * @param key
+     *            key to remove
+     */
+    public void remove(final String key) {
+        this.propertiesByName.remove(key);
+    }
+
 }
