@@ -32,12 +32,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import rsb.config.ParticipantConfig;
+import rsb.config.TransportConfig;
 import rsb.eventprocessing.DefaultPushInRouteConfigurator;
 import rsb.eventprocessing.PushInRouteConfigurator;
 import rsb.filter.Filter;
-import rsb.transport.TransportFactory;
 import rsb.transport.TransportRegistry;
-import rsb.util.Properties;
 
 /**
  * This class implements the receiving part of the Inform-Listen (n:m)
@@ -65,7 +65,7 @@ public class Listener extends Participant {
 
     private final List<Filter> filters = new ArrayList<Filter>();
     private final List<Handler> handlers = new ArrayList<Handler>();
-    private PushInRouteConfigurator router;
+    private final PushInRouteConfigurator router;
 
     protected class ListenerStateActive extends ListenerState {
 
@@ -96,40 +96,27 @@ public class Listener extends Participant {
 
     }
 
-    Listener(final Scope scope, final Properties properties)
+    Listener(final Scope scope, final ParticipantConfig config)
             throws InitializeException {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(properties);
-    }
+        super(scope, config);
 
-    Listener(final String scope, final Properties properties)
-            throws InitializeException {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(properties);
-    }
-
-    Listener(final String scope, final TransportFactory tfac,
-            final Properties properties) throws InitializeException {
-        super(scope, tfac);
-        this.initMembers(properties);
-    }
-
-    Listener(final Scope scope, final TransportFactory tfac,
-            final Properties properties) throws InitializeException {
-        super(scope, tfac);
-        this.initMembers(properties);
-    }
-
-    private void initMembers(final Properties properties)
-            throws InitializeException {
         this.state = new ListenerStateInactive(this);
         this.errorHandler = new DefaultErrorHandler(LOG);
         this.router = new DefaultPushInRouteConfigurator(getScope());
-        this.router.addConnector(getTransportFactory().createInPushConnector(
-                properties));
+        // TODO move this to a configurator class
+        for (final TransportConfig transportConfig : getConfig()
+                .getEnabledTransports()) {
+            this.router.addConnector(TransportRegistry.getDefaultInstance()
+                    .getFactory(transportConfig.getName())
+                    .createInPushConnector(transportConfig.getOptions()));
+        }
         LOG.fine("New Listener instance: [scope=" + this.getScope() + "]");
+
+    }
+
+    Listener(final String scope, final ParticipantConfig config)
+            throws InitializeException {
+        this(new Scope(scope), config);
     }
 
     /**

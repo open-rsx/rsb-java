@@ -40,13 +40,11 @@ import org.junit.Test;
 
 import rsb.Informer.InformerStateActive;
 import rsb.Informer.InformerStateInactive;
+import rsb.config.ParticipantConfig;
 import rsb.converter.ConverterRepository;
 import rsb.converter.DefaultConverterRepository;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
-import rsb.transport.TransportRegistry;
-import rsb.util.ConfigLoader;
-import rsb.util.Properties;
 
 /**
  * @author swrede
@@ -59,7 +57,7 @@ public class InformerTest {
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
             .getDefaultConverterRepository();
-    private final Properties properties = new Properties();
+    private ParticipantConfig config;
 
     @BeforeClass
     public static void registerConverters() {
@@ -69,16 +67,16 @@ public class InformerTest {
 
     @Before
     public void setUp() throws Throwable {
-        final ConfigLoader loader = new ConfigLoader();
-        this.properties.reset();
-        loader.load(this.properties);
+
+        this.config = Utilities.createParticipantConfig();
 
         this.stringInformer = new Informer<String>(this.defaultScope,
-                String.class, this.properties);
+                String.class, this.config);
         this.stringInformer.activate();
         this.genericInformer = new Informer<Object>(this.defaultScope,
-                this.properties);
+                this.config);
         this.genericInformer.activate();
+
     }
 
     @After
@@ -98,33 +96,31 @@ public class InformerTest {
     }
 
     @Test
-    public void informerStringTransportFactory() throws Throwable {
+    public void informerStringConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final Informer<String> informer = new Informer<String>(scope,
-                TransportRegistry.getDefaultInstance().getFactory("spread"),
-                this.properties);
+                this.config);
         assertNotNull("Informer is null", informer);
         assertEquals("Wrong scope", informer.getScope(), scope);
     }
 
     @Test
-    public void informerStringString() throws Throwable {
+    public void informerScopeTypeConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), this.properties);
+                type.getClass(), this.config);
         assertNotNull("Informer object is null", informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());
     }
 
     @Test
-    public void informerStringStringTransportFactory() throws Throwable {
+    public void informerScopeConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), TransportRegistry.getDefaultInstance()
-                        .getFactory("spread"), this.properties);
+                type.getClass(), this.config);
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());
@@ -140,7 +136,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#activate()}.
-     *
+     * 
      * @throws Throwable
      *             any error
      */
@@ -151,7 +147,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#deactivate()}.
-     *
+     * 
      * @throws Throwable
      *             any error
      */
@@ -174,7 +170,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#send(rsb.Event)}.
-     *
+     * 
      * @throws Throwable
      *             any error
      */
@@ -198,7 +194,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#send(rsb.Event)}.
-     *
+     * 
      * @throws Throwable
      *             any error
      */

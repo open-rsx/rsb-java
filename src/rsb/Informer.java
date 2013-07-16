@@ -29,14 +29,14 @@ package rsb;
 
 import java.util.logging.Logger;
 
+import rsb.config.ParticipantConfig;
+import rsb.config.TransportConfig;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.DefaultConverterRepository;
 import rsb.eventprocessing.DefaultOutRouteConfigurator;
 import rsb.eventprocessing.OutRouteConfigurator;
 import rsb.transport.SequenceNumber;
-import rsb.transport.TransportFactory;
 import rsb.transport.TransportRegistry;
-import rsb.util.Properties;
 
 /**
  * This class offers a method to publish events to a channel, reaching all
@@ -156,74 +156,45 @@ public class Informer<DataType extends Object> extends Participant {
 
     }
 
-    private void initMembers(final Class<?> type, final Properties properties)
+    Informer(final String scope, final ParticipantConfig config)
             throws InitializeException {
+        this(new Scope(scope), config);
+    }
+
+    Informer(final Scope scope, final ParticipantConfig config)
+            throws InitializeException {
+        this(scope, Object.class, config);
+    }
+
+    Informer(final String scope, final Class<?> type,
+            final ParticipantConfig config) throws InitializeException {
+        this(new Scope(scope), type, config);
+    }
+
+    Informer(final Scope scope, final Class<?> type,
+            final ParticipantConfig config) throws InitializeException {
+        super(scope, config);
+
         if (type == null) {
             throw new IllegalArgumentException(
                     "Informer type must not be null.");
         }
+
         this.type = type;
+
         // TODO this should be passed in from the outside?
         this.router = new DefaultOutRouteConfigurator(getScope());
-        this.router.addConnector(getTransportFactory().createOutConnector(
-                properties));
+        // TODO move this to a configurator class
+        for (final TransportConfig transportConfig : getConfig()
+                .getEnabledTransports()) {
+            this.router.addConnector(TransportRegistry.getDefaultInstance()
+                    .getFactory(transportConfig.getName())
+                    .createOutConnector(transportConfig.getOptions()));
+        }
         this.state = new InformerStateInactive(this);
         LOG.fine("New informer instance created: [Scope:" + this.getScope()
                 + ",State:Inactive,Type:" + type.getName() + "]");
-    }
 
-    Informer(final String scope, final Properties properties)
-            throws InitializeException {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(Object.class, properties);
-    }
-
-    Informer(final Scope scope, final Properties properties)
-            throws InitializeException {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(Object.class, properties);
-    }
-
-    Informer(final String scope, final Class<?> type,
-            final Properties properties) throws InitializeException {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(type, properties);
-    }
-
-    Informer(final Scope scope, final Class<?> type, final Properties properties)
-            throws InitializeException {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
-        this.initMembers(type, properties);
-    }
-
-    Informer(final String scope, final TransportFactory tfac,
-            final Properties properties) throws InitializeException {
-        super(scope, tfac);
-        this.initMembers(Object.class, properties);
-    }
-
-    Informer(final Scope scope, final TransportFactory tfac,
-            final Properties properties) throws InitializeException {
-        super(scope, tfac);
-        this.initMembers(Object.class, properties);
-    }
-
-    Informer(final String scope, final Class<?> type,
-            final TransportFactory tfac, final Properties properties)
-            throws InitializeException {
-        super(scope, tfac);
-        this.initMembers(type, properties);
-    }
-
-    Informer(final Scope scope, final Class<?> type,
-            final TransportFactory tfac, final Properties properties)
-            throws InitializeException {
-        super(scope, tfac);
-        this.initMembers(type, properties);
     }
 
     @Override

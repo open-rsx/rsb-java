@@ -37,7 +37,7 @@ import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.transport.TransportFactory;
+import rsb.config.ParticipantConfig;
 
 /**
  * Objects of this class represent local or remote serves. A server is basically
@@ -129,14 +129,14 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
     }
 
-    protected Server(final Scope scope, final TransportFactory transportFactory) {
-        super(scope, transportFactory);
+    protected Server(final Scope scope, final ParticipantConfig config) {
+        super(scope, config);
         this.methods = new HashMap<String, MethodType>();
         this.state = new ServerStateInactive(this);
     }
 
-    protected Server(final String scope, final TransportFactory transportFactory) {
-        this(new Scope(scope), transportFactory);
+    protected Server(final String scope, final ParticipantConfig config) {
+        this(new Scope(scope), config);
     }
 
     /**

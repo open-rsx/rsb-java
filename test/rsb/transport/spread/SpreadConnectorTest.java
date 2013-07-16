@@ -43,6 +43,7 @@ import org.junit.Test;
 import rsb.Event;
 import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
+import rsb.Utilities;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;

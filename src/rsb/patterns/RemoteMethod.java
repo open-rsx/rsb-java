@@ -37,6 +37,7 @@ import rsb.EventId;
 import rsb.Handler;
 import rsb.InitializeException;
 import rsb.RSBException;
+import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
 /**
@@ -128,17 +129,19 @@ public class RemoteMethod extends Method implements Handler {
      *            The remote server providing the method.
      * @param name
      *            The name of the method.
+     * @param config
      * @throws InterruptedException
      *             error while installing method
      * @throws InitializeException
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public RemoteMethod(final Server<RemoteMethod> server, final String name)
-            throws InterruptedException, InitializeException {
+    public RemoteMethod(final Server<RemoteMethod> server, final String name,
+            final ParticipantConfig config) throws InterruptedException,
+            InitializeException {
         super(server, name);
-        this.listener = this.factory.createListener(this.REPLY_SCOPE);
-        this.informer = this.factory.createInformer(this.REQUEST_SCOPE);
+        this.listener = this.factory.createListener(this.REPLY_SCOPE, config);
+        this.informer = this.factory.createInformer(this.REQUEST_SCOPE, config);
         this.listener.addFilter(new MethodFilter("REPLY"));
         this.listener.addHandler(this, true);
     }

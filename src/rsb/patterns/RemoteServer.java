@@ -37,8 +37,8 @@ import rsb.Event;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.config.ParticipantConfig;
 import rsb.patterns.RemoteMethod.FuturePreparator;
-import rsb.transport.TransportRegistry;
 
 /**
  * Objects of this class represent remote servers in a way that allows calling
@@ -71,10 +71,12 @@ public class RemoteServer extends Server<RemoteMethod> {
      * @param timeout
      *            The amount of seconds methods calls should wait for their
      *            replies to arrive before failing.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final Scope scope, final double timeout) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
+    public RemoteServer(final Scope scope, final double timeout,
+            final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = timeout;
     }
 
@@ -88,10 +90,12 @@ public class RemoteServer extends Server<RemoteMethod> {
      * @param timeout
      *            The amount of seconds methods calls should wait for their
      *            replies to arrive before failing.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final String scope, final double timeout) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
+    public RemoteServer(final String scope, final double timeout,
+            final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = timeout;
     }
 
@@ -102,10 +106,11 @@ public class RemoteServer extends Server<RemoteMethod> {
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final Scope scope) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
+    public RemoteServer(final Scope scope, final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = DEFAULT_TIMEOUT;
     }
 
@@ -116,10 +121,11 @@ public class RemoteServer extends Server<RemoteMethod> {
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final String scope) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
+    public RemoteServer(final String scope, final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = DEFAULT_TIMEOUT;
     }
 
@@ -425,7 +431,7 @@ public class RemoteServer extends Server<RemoteMethod> {
             InterruptedException {
         LOG.fine("Registering new method " + name);
 
-        final RemoteMethod method = new RemoteMethod(this, name);
+        final RemoteMethod method = new RemoteMethod(this, name, getConfig());
         // it should never be possible that an exception is thrown for a
         // duplicated method because we take care of this
         addMethod(name, method, false);

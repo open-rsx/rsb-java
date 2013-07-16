@@ -27,7 +27,7 @@
  */
 package rsb;
 
-import rsb.transport.TransportFactory;
+import rsb.config.ParticipantConfig;
 
 /**
  * Base class for all bus participants with an associated scope. Mainly holds
@@ -40,47 +40,40 @@ public abstract class Participant implements RSBObject {
 
     @SuppressWarnings("PMD.ShortVariable")
     private final ParticipantId id = new ParticipantId();
-    private Scope scope;
-    private TransportFactory transportFactory;
+    private final Scope scope;
+    private final ParticipantConfig config;
 
     /**
      * Creates a new participant on the specified scope.
      *
      * @param scope
      *            scope of the participant
-     * @param transportFactory
-     *            the factory used for transports for this {@link Participant}
+     * @param config
+     *            configuration of the participant
      */
-    protected Participant(final Scope scope,
-            final TransportFactory transportFactory) {
-        this.initMembers(scope, transportFactory);
-    }
-
-    /**
-     * Creates a new participant on the specified scope.
-     *
-     * @param scope
-     *            scope of the participant
-     * @param transportFactory
-     *            the factory used for transports for this {@link Participant}
-     */
-    protected Participant(final String scope,
-            final TransportFactory transportFactory) {
-        this.initMembers(new Scope(scope), transportFactory);
-    }
-
-    private void initMembers(final Scope scope,
-            final TransportFactory transportFactory) {
+    protected Participant(final Scope scope, final ParticipantConfig config) {
         if (scope == null) {
             throw new IllegalArgumentException(
                     "Scope of a participant must not be null.");
         }
-        if (transportFactory == null) {
+        if (config == null) {
             throw new IllegalArgumentException(
-                    "TransportFactory of a participant must not be null.");
+                    "ParticipantConfig of a participant must not be null.");
         }
         this.scope = scope;
-        this.transportFactory = transportFactory;
+        this.config = config;
+    }
+
+    /**
+     * Creates a new participant on the specified scope.
+     *
+     * @param scope
+     *            scope of the participant
+     * @param config
+     *            configuration of the participant
+     */
+    protected Participant(final String scope, final ParticipantConfig config) {
+        this(new Scope(scope), config);
     }
 
     /**
@@ -102,12 +95,12 @@ public abstract class Participant implements RSBObject {
     }
 
     /**
-     * Returns the {@link TransportFactory} used for this participant.
+     * Returns the {@link ParticipantConfig} used for this participant.
      *
      * @return instance not <code>null</code>
      */
-    protected TransportFactory getTransportFactory() {
-        return this.transportFactory;
+    public ParticipantConfig getConfig() {
+        return this.config;
     }
 
 }

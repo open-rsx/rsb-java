@@ -35,6 +35,7 @@ import rsb.Event;
 import rsb.Handler;
 import rsb.InitializeException;
 import rsb.RSBException;
+import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
 /**
@@ -65,6 +66,9 @@ class LocalMethod extends Method implements Handler {
      *            The name of the method.
      * @param callback
      *            The callback implementing the user functionality of the method
+     * @param config
+     *            participant configuration to use for internal informers and
+     *            listeners
      * @throws InterruptedException
      *             error while installing method
      * @throws InitializeException
@@ -72,14 +76,14 @@ class LocalMethod extends Method implements Handler {
      *             participants
      */
     public LocalMethod(final Server<LocalMethod> server, final String name,
-            final Callback callback) throws InterruptedException,
-            InitializeException {
+            final Callback callback, final ParticipantConfig config)
+            throws InterruptedException, InitializeException {
         super(server, name);
         this.callback = callback;
-        this.listener = this.factory.createListener(this.REQUEST_SCOPE);
+        this.listener = this.factory.createListener(this.REQUEST_SCOPE, config);
         this.listener.addFilter(new MethodFilter("REQUEST"));
         this.listener.addHandler(this, true);
-        this.informer = this.factory.createInformer(this.REPLY_SCOPE);
+        this.informer = this.factory.createInformer(this.REPLY_SCOPE, config);
     }
 
     @Override

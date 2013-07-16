@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.transport.TransportRegistry;
+import rsb.config.ParticipantConfig;
 
 /**
  * Objects of this class associate a collection of method objects which are
@@ -53,10 +53,11 @@ public class LocalServer extends Server<LocalMethod> {
      * @param scope
      *            The common super-scope under which the methods of the newly
      *            created server should be provided.
+     * @param config
+     *            participant config for this server
      */
-    public LocalServer(final Scope scope) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
+    public LocalServer(final Scope scope, final ParticipantConfig config) {
+        super(scope, config);
     }
 
     /**
@@ -66,10 +67,11 @@ public class LocalServer extends Server<LocalMethod> {
      * @param scope
      *            The common super-scope under which the methods of the newly
      *            created server should be provided.
+     * @param config
+     *            participant config for this server
      */
-    public LocalServer(final String scope) {
-        super(scope, TransportRegistry.getDefaultInstance()
-                .getFactory("spread"));
+    public LocalServer(final String scope, final ParticipantConfig config) {
+        super(scope, config);
     }
 
     /**
@@ -91,7 +93,8 @@ public class LocalServer extends Server<LocalMethod> {
                 + " with signature object: " + callback);
         synchronized (this) {
             try {
-                final LocalMethod method = new LocalMethod(this, name, callback);
+                final LocalMethod method = new LocalMethod(this, name,
+                        callback, getConfig());
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
                 throw new InitializeException(e);
