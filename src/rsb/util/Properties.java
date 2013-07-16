@@ -130,6 +130,11 @@ public class Properties {
             return Double.parseDouble(this.value);
         }
 
+        @Override
+        public String toString() {
+            return getClass().getName() + "[" + this.value + "]";
+        }
+
     }
 
     /**
@@ -293,6 +298,20 @@ public class Properties {
             this.propertiesByName.put(entry.getKey(),
                     new Property(entry.getValue().value));
         }
+    }
+
+    @Override
+    public String toString() {
+
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getClass().getName());
+        builder.append("[");
+        builder.append("properties=");
+        builder.append(this.propertiesByName.toString());
+        builder.append("]");
+
+        return builder.toString();
+
     }
 
 }
