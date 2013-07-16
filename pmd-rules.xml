@@ -68,4 +68,10 @@
         </properties>
     </rule>
     
+    <!-- Allow more static imports for unit tests -->
+    <rule ref="rulesets/java/imports.xml/TooManyStaticImports">
+        <properties>
+             <property name="maximumStaticImports" value="15"/>
+        </properties>
+    </rule>
 </ruleset>
