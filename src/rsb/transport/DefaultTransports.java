@@ -30,6 +30,8 @@ public final class DefaultTransports {
             TransportRegistry.getDefaultInstance().registerTransport("spread",
                     new SpreadFactory());
 
+            registered = true;
+
         }
 
     }
