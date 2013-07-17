@@ -274,7 +274,7 @@
 
         <sleep seconds="10" />
 
-        <junit printsummary="yes" haltonfailure="false">
+        <junit printsummary="yes" timeout="30000">
             <formatter type="xml" />
             <formatter type="plain" usefile="false" />
             <classpath refid="test.classpath" />
