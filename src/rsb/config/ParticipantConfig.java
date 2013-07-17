@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import rsb.eventprocessing.EventReceivingStrategyFactory;
+import rsb.eventprocessing.SingleThreadFactory;
 import rsb.util.Properties;
 
 /**
@@ -48,6 +50,8 @@ import rsb.util.Properties;
 public class ParticipantConfig {
 
     private final Map<String, TransportConfig> transportsByName = new HashMap<String, TransportConfig>();
+
+    private EventReceivingStrategyFactory receivingStrategy = new SingleThreadFactory();
 
     /**
      * Returns the internal map of available transport configurations by their
@@ -106,6 +110,26 @@ public class ParticipantConfig {
         return enabledTransports;
     }
 
+    /**
+     * Returns a factory for creating receiving strategy instances.
+     *
+     * @return factory
+     */
+    public EventReceivingStrategyFactory getReceivingStrategy() {
+        return this.receivingStrategy;
+    }
+
+    /**
+     * Setter method for the event receiving strategy factory to use.
+     *
+     * @param receivingStrategy
+     *            factory to use for creating receiving strategy instances.
+     */
+    public void setReceivingStrategy(
+            final EventReceivingStrategyFactory receivingStrategy) {
+        this.receivingStrategy = receivingStrategy;
+    }
+
     @Override
     public String toString() {
 
@@ -114,6 +138,8 @@ public class ParticipantConfig {
         builder.append("[transports=");
         builder.append(Arrays
                 .toString(this.transportsByName.values().toArray()));
+        builder.append(", receivingStrategy=");
+        builder.append(this.receivingStrategy);
         builder.append(']');
 
         return builder.toString();

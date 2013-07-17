@@ -103,7 +103,8 @@ public class Listener extends Participant {
         this.state = new ListenerStateInactive(this);
         this.errorHandler = new DefaultErrorHandler(LOG);
         this.router = new DefaultPushInRouteConfigurator(getScope());
-        // TODO move this to a configurator class
+        this.router.setEventReceivingStrategy(getConfig()
+                .getReceivingStrategy().create());
         for (final TransportConfig transportConfig : getConfig()
                 .getEnabledTransports()) {
             this.router.addConnector(TransportRegistry.getDefaultInstance()

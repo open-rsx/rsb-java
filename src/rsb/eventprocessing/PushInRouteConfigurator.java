@@ -49,7 +49,17 @@ public interface PushInRouteConfigurator extends
      * @throws InterruptedException
      *             interrupted while waiting for the handler to be fully removed
      */
-    boolean handlerRemoved(final Handler handler, final boolean wait)
+    boolean handlerRemoved(Handler handler, boolean wait)
             throws InterruptedException;
+
+    /**
+     * Defines the {@link EventReceivingStrategy} to use by the configurator.
+     * Must be called directly after construction before any other method was
+     * called.
+     *
+     * @param strategy
+     *            the new strategy
+     */
+    void setEventReceivingStrategy(EventReceivingStrategy strategy);
 
 }

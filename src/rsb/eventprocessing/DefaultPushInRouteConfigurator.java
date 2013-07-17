@@ -27,8 +27,6 @@
  */
 package rsb.eventprocessing;
 
-import java.util.logging.Logger;
-
 import rsb.Handler;
 import rsb.RSBException;
 import rsb.Scope;
@@ -43,11 +41,7 @@ import rsb.transport.InPushConnector;
  */
 public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
 
-    private final static Logger LOG = Logger
-            .getLogger(DefaultPushInRouteConfigurator.class.getName());
-
-    // TODO this must be configurable!
-    private final EventReceivingStrategy receivingStrategy = new SingleThreadEventReceivingStrategy();;
+    private EventReceivingStrategy receivingStrategy = new SingleThreadEventReceivingStrategy();
     private final RouteConfiguratorUtility<InPushConnector> utility;
 
     public DefaultPushInRouteConfigurator(final Scope scope) {
@@ -110,6 +104,15 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
     @Override
     public boolean isActive() {
         return this.utility.isActive();
+    }
+
+    @Override
+    public void setEventReceivingStrategy(final EventReceivingStrategy strategy) {
+        synchronized (this.utility) {
+            assert !this.utility.isActive();
+            assert strategy != null;
+            this.receivingStrategy = strategy;
+        }
     }
 
 }

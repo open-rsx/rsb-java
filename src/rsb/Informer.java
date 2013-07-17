@@ -184,7 +184,6 @@ public class Informer<DataType extends Object> extends Participant {
 
         // TODO this should be passed in from the outside?
         this.router = new DefaultOutRouteConfigurator(getScope());
-        // TODO move this to a configurator class
         for (final TransportConfig transportConfig : getConfig()
                 .getEnabledTransports()) {
             this.router.addConnector(TransportRegistry.getDefaultInstance()
