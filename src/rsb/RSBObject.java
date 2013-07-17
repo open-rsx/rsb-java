@@ -28,6 +28,13 @@
 package rsb;
 
 /**
+ * Interface for objects which require an explicit activation and deactivation.
+ * Users of such objects should ensure that {@link #deactivate()} is called when
+ * the object is not needed anymore. Otherwise, destruction behavior is
+ * undefined.
+ *
+ * If not stated otherwise, activation and deactivation are not thread-safe.
+ * 
  * @author swrede
  */
 public interface RSBObject {
