@@ -39,9 +39,27 @@ import rsb.util.Properties;
  */
 public interface TransportFactory {
 
+    /**
+     * Creates an out connector for sending events.
+     *
+     * @param properties
+     *            specific options for the connector to be created
+     * @return new connector instance
+     * @throws InitializeException
+     *             error creating a new connector
+     */
     OutConnector createOutConnector(Properties properties)
             throws InitializeException;
 
+    /**
+     * Creates an in connector for receiving events in an asynchronous fashion.
+     *
+     * @param properties
+     *            specific options for the connector to be created
+     * @return new connector instance
+     * @throws InitializeException
+     *             error creating a new connector
+     */
     InPushConnector createInPushConnector(Properties properties)
             throws InitializeException;
 
