@@ -46,7 +46,7 @@ import rsb.filter.Filter;
 /**
  * An {@link EventReceivingStrategy} that dispatches {@link Event}s using a
  * thread pool but without any ordering guarantees.
- * 
+ *
  * @author swrede
  */
 public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
@@ -110,6 +110,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void handle(final Event event) {
         int count = 0;
         event.getMetaData().setDeliverTime(0);

@@ -39,7 +39,7 @@ import rsb.filter.Filter;
 
 /**
  * An {@link EventReceivingStrategy} that uses a single thread for all handlers.
- * 
+ *
  * @author jwienke
  */
 public class SingleThreadEventReceivingStrategy implements
@@ -48,29 +48,32 @@ public class SingleThreadEventReceivingStrategy implements
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());
     private final BlockingQueue<Event> events = new SynchronousQueue<Event>();
+    private final DispatchThread thread;
 
     /**
      * A thread that matches events and dispatches them to all handlers that are
      * registered in his internal set of handlers.
-     * 
+     *
      * @author jwienke
      */
     private class DispatchThread extends Thread {
 
         private final BlockingQueue<Event> events;
 
+        private final Set<Handler> handlers = Collections
+                .synchronizedSet(new HashSet<Handler>());
+
         public DispatchThread(final BlockingQueue<Event> events) {
             this.events = events;
         }
 
-        private final Set<Handler> handlers = Collections
-                .synchronizedSet(new HashSet<Handler>());
-
-        public void addHandler(final Handler handler, final boolean wait) {
+        public void addHandler(final Handler handler,
+                @SuppressWarnings("unused") final boolean wait) {
             this.handlers.add(handler);
         }
 
-        public void removeHandler(final Handler handler, final boolean wait)
+        public void removeHandler(final Handler handler,
+                @SuppressWarnings("unused") final boolean wait)
                 throws InterruptedException {
             this.handlers.remove(handler);
         }
@@ -82,13 +85,13 @@ public class SingleThreadEventReceivingStrategy implements
 
                 outer: while (!interrupted()) {
 
-                    final Event e = this.events.take();
+                    final Event eventToDispatch = this.events.take();
 
                     // match
                     // TODO blocks filter potentially a long time
                     synchronized (SingleThreadEventReceivingStrategy.this.filters) {
-                        for (final Filter f : SingleThreadEventReceivingStrategy.this.filters) {
-                            if (f.transform(e) == null) {
+                        for (final Filter filter : SingleThreadEventReceivingStrategy.this.filters) {
+                            if (filter.transform(eventToDispatch) == null) {
                                 continue outer;
                             }
                         }
@@ -97,8 +100,8 @@ public class SingleThreadEventReceivingStrategy implements
                     // dispatch
                     // TODO suboptimal locking. blocks handlers a very long time
                     synchronized (this.handlers) {
-                        for (final Handler h : this.handlers) {
-                            h.internalNotify(e);
+                        for (final Handler handler : this.handlers) {
+                            handler.internalNotify(eventToDispatch);
                         }
                     }
 
@@ -112,21 +115,19 @@ public class SingleThreadEventReceivingStrategy implements
 
     }
 
-    private final DispatchThread thread;
-
     public SingleThreadEventReceivingStrategy() {
         this.thread = new DispatchThread(this.events);
         this.thread.start();
     }
 
     @Override
-    public void handle(final Event e) {
+    public void handle(final Event event) {
         try {
-            this.events.put(e);
-        } catch (final InterruptedException e1) {
+            this.events.put(event);
+        } catch (final InterruptedException e) {
             // This must not happen
             assert false;
-            throw new RuntimeException(e1);
+            throw new RuntimeException(e);
         }
     }
 
