@@ -155,14 +155,9 @@ public class SpreadWrapper implements RSBObject {
     public void join(final String group) throws SpreadException {
         this.checkConnection();
         final SpreadGroup grp = new SpreadGroup();
-        try {
-            grp.join(this.conn, group);
-            this.groups.add(grp);
-            LOG.fine("Joined SpreadGroup with name: " + group);
-        } catch (final SpreadException e) {
-            // log.info("Could not join group!");
-            throw e;
-        }
+        grp.join(this.conn, group);
+        this.groups.add(grp);
+        LOG.fine("Joined SpreadGroup with name: " + group);
     }
 
     protected boolean isConnectionLost() {
@@ -193,6 +188,8 @@ public class SpreadWrapper implements RSBObject {
      *
      * @param mship
      *            True - receive membership messages; false - don't
+     * @throws InitializeException
+     *             error connecting
      */
     void makeConnection(final boolean mship) throws InitializeException {
 
@@ -231,23 +228,24 @@ public class SpreadWrapper implements RSBObject {
         }
 
         // TODO check whether we should rethrow the exceptions
-        if (this.conn != null) {
-            this.checkConnection();
-            try {
-                this.conn.multicast(msg.getSpreadMessage());
-                return true;
-            } catch (final SpreadException e) {
-                LOG.warning("SpreadException occurred during multicast send of message, reason: "
-                        + e.getMessage());
-                return false;
-            } catch (final SerializeException e) {
-                LOG.warning("SerializeException occurred during multicast send of message, reason: "
-                        + e.getMessage());
-                return false;
-            }
-        } else {
+        if (this.conn == null) {
             return false;
         }
+
+        this.checkConnection();
+        try {
+            this.conn.multicast(msg.getSpreadMessage());
+            return true;
+        } catch (final SpreadException e) {
+            LOG.warning("SpreadException occurred during multicast send of message, reason: "
+                    + e.getMessage());
+            return false;
+        } catch (final SerializeException e) {
+            LOG.warning("SerializeException occurred during multicast send of message, reason: "
+                    + e.getMessage());
+            return false;
+        }
+
     }
 
     @Override
@@ -256,9 +254,9 @@ public class SpreadWrapper implements RSBObject {
         synchronized (this.conn) {
             this.shutdown = true;
             // try to leave all groups joined before
-            final Iterator<SpreadGroup> it = this.groups.iterator();
-            while (it.hasNext()) {
-                final SpreadGroup grp = it.next();
+            final Iterator<SpreadGroup> groupIt = this.groups.iterator();
+            while (groupIt.hasNext()) {
+                final SpreadGroup grp = groupIt.next();
                 try {
                     grp.leave();
                     LOG.fine("SpreadGroup '" + grp + "' has been left.");
@@ -267,12 +265,13 @@ public class SpreadWrapper implements RSBObject {
                     LOG.info("Caught a SpreadException while leaving group '"
                             + grp + "': " + e.getMessage());
                 }
-                it.remove();
+                groupIt.remove();
             }
             // close connection
             try {
                 this.conn.disconnect();
             } catch (final SpreadException e) {
+                LOG.log(Level.INFO, "Error disconnecting", e);
             }
             this.status = State.DEACTIVATED;
 
@@ -281,9 +280,9 @@ public class SpreadWrapper implements RSBObject {
 
     public void leave(final String type) {
         if (this.status == State.ACTIVATED) {
-            final Iterator<SpreadGroup> it = this.groups.iterator();
-            while (it.hasNext()) {
-                final SpreadGroup grp = it.next();
+            final Iterator<SpreadGroup> groupIt = this.groups.iterator();
+            while (groupIt.hasNext()) {
+                final SpreadGroup grp = groupIt.next();
                 if (grp.toString().equals(type)) {
                     try {
                         grp.leave();
@@ -293,11 +292,11 @@ public class SpreadWrapper implements RSBObject {
                         LOG.log(Level.WARNING, "Error leaving spread group "
                                 + type, e);
                     }
-                    it.remove();
+                    groupIt.remove();
                     LOG.info("SpreadGroup '" + grp + "' has been left.");
                     break;
                 }
-                if (!it.hasNext()) {
+                if (!groupIt.hasNext()) {
                     LOG.warning("Couldn't leave requested group with id: "
                             + type);
                 }

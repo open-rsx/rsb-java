@@ -48,21 +48,21 @@ class SpreadMessageConverter {
      * Returns a {@link DataMessage} if presented by sm, else returns
      * <code>null</code>.
      * 
-     * @param sm
+     * @param message
      *            message to analyze
      * @return DataMessage or <code>null</code> if not contained in sm
      */
-    public DataMessage process(final SpreadMessage sm) {
+    public DataMessage process(final SpreadMessage message) {
         DataMessage data = null;
-        if (sm.isMembership()) {
+        if (message.isMembership()) {
             // TODO think about meaningful handling of membership messages
             // and print further info
             LOG.fine("Received membership message for group: "
-                    + sm.getMembershipInfo().getGroup());
+                    + message.getMembershipInfo().getGroup());
 
         } else {
             try {
-                data = DataMessage.convertSpreadMessage(sm);
+                data = DataMessage.convertSpreadMessage(message);
             } catch (final SerializeException e) {
                 LOG.warning("Error de-serializing SpreadMessage: "
                         + e.getMessage());

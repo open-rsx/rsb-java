@@ -43,10 +43,10 @@ import org.junit.Test;
 import rsb.Event;
 import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
-import rsb.Utilities;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
+import rsb.Utilities;
 import rsb.converter.ConversionException;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
@@ -55,18 +55,18 @@ import rsb.transport.EventHandler;
 /**
  * @author jwienke
  */
+@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 public class SpreadConnectorTest {
 
-    private SpreadWrapper outWrapper;
     private SpreadOutConnector outPort;
     private static final Scope OUT_BASE_SCOPE = new Scope("/this");
 
     @Before
     public void setUp() throws Throwable {
 
-        this.outWrapper = Utilities.createSpreadWrapper();
+        final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
         this.outPort = new SpreadOutConnector(
-                this.outWrapper,
+                outWrapper,
                 this.getConverterStrategy(String.class.getName()),
                 new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
         this.outPort.setScope(OUT_BASE_SCOPE);
@@ -87,6 +87,7 @@ public class SpreadConnectorTest {
     }
 
     @Test(expected = ConversionException.class)
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public void noConverterPassedToClient() throws Throwable {
         final Event event = new Event(OUT_BASE_SCOPE, Throwable.class,
                 new Throwable());
@@ -94,6 +95,7 @@ public class SpreadConnectorTest {
         this.outPort.push(event);
     }
 
+    // PMD false positive
     @Test(timeout = 10000)
     public void hierarchicalSending() throws Throwable {
 
@@ -115,10 +117,10 @@ public class SpreadConnectorTest {
             inPort.addHandler(new EventHandler() {
 
                 @Override
-                public void handle(final Event e) {
+                public void handle(final Event event) {
                     synchronized (receivedEventsByScope) {
-                        receivedEvents.add(e);
-                        receivedEventsByScope.notify();
+                        receivedEvents.add(event);
+                        receivedEventsByScope.notifyAll();
                     }
                 }
 
@@ -168,6 +170,7 @@ public class SpreadConnectorTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void longGroupNames() throws Throwable {
 
         final Event event = new Event(String.class, "a test string");
@@ -197,10 +200,10 @@ public class SpreadConnectorTest {
         inPort.addHandler(new EventHandler() {
 
             @Override
-            public void handle(final Event e) {
+            public void handle(final Event event) {
                 synchronized (receivedEvents) {
-                    receivedEvents.add(e);
-                    receivedEvents.notify();
+                    receivedEvents.add(event);
+                    receivedEvents.notifyAll();
                 }
             }
 

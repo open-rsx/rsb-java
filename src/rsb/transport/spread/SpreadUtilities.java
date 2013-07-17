@@ -10,7 +10,7 @@ import rsb.Scope;
  *
  * @author jwienke
  */
-public class SpreadUtilities {
+public final class SpreadUtilities {
 
     private static final Object MD5_DIGEST_MUTEX = new Object();
 
@@ -27,6 +27,7 @@ public class SpreadUtilities {
      *            scope to create group name
      * @return truncated md5 hash to fit into a spread group
      */
+    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
     public static String spreadGroupName(final Scope scope) {
 
         byte[] sum;
@@ -47,11 +48,11 @@ public class SpreadUtilities {
 
         final StringBuilder hexString = new StringBuilder();
         for (final byte element : sum) {
-            String s = Integer.toHexString(0xFF & element);
-            if (s.length() == 1) {
-                s = '0' + s;
+            String hexRep = Integer.toHexString(0xFF & element);
+            if (hexRep.length() == 1) {
+                hexRep = '0' + hexRep;
             }
-            hexString.append(s);
+            hexString.append(hexRep);
         }
 
         return hexString.toString().substring(0, 31);

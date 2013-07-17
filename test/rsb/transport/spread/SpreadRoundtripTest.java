@@ -44,10 +44,10 @@ import rsb.Event;
 import rsb.EventId;
 import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
-import rsb.Utilities;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
+import rsb.Utilities;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.EventHandler;
@@ -94,10 +94,10 @@ public class SpreadRoundtripTest {
         inPort.addHandler(new EventHandler() {
 
             @Override
-            public void handle(final Event e) {
+            public void handle(final Event event) {
                 synchronized (receivedEvents) {
-                    receivedEvents.add(e);
-                    receivedEvents.notify();
+                    receivedEvents.add(event);
+                    receivedEvents.notifyAll();
                 }
             }
 
