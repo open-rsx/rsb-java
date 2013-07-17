@@ -32,13 +32,6 @@ import org.junit.Test;
  */
 public class BusServerTest {
 
-    /**
-     * Test method for
-     * {@link rsb.transport.socket.BusServer#BusServer(java.net.InetAddress, int)}
-     * .
-     * 
-     * @throws IOException
-     */
     @Test
     public void busServer() throws IOException {
         final InetAddress addr = InetAddress.getLocalHost();

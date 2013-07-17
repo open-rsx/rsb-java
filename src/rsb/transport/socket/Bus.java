@@ -38,7 +38,7 @@ import rsb.protocol.NotificationType.Notification;
 
 /**
  * Instances of this class provide access to a socket-based bus. It is
- * transparent for clients (connectors) of this class whether is accessed by
+ * transparent for clients (connectors) of this class whether it is accessed by
  * running the bus server or by connecting to the bus server as a client.
  *
  * This class offers methods for sending and receiving events to this bus as
@@ -49,11 +49,27 @@ import rsb.protocol.NotificationType.Notification;
  */
 public abstract class Bus {
 
-    private final static Logger log = Logger.getLogger(Bus.class.getName());
-    InetAddress address;
-    int port;
+    private final static Logger LOG = Logger.getLogger(Bus.class.getName());
+    private InetAddress address;
+    private int port;
 
-    ConcurrentLinkedQueue<BusConnection> connections = new ConcurrentLinkedQueue<BusConnection>();
+    private final ConcurrentLinkedQueue<BusConnection> connections = new ConcurrentLinkedQueue<BusConnection>();
+
+    public InetAddress getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(final InetAddress address) {
+        this.address = address;
+    }
+
+    public int getPort() {
+        return this.port;
+    }
+
+    public void setPort(final int port) {
+        this.port = port;
+    }
 
     public void handleIncoming() {
         // TODO handle incoming notifications and dispatch these to connectors
@@ -70,7 +86,12 @@ public abstract class Bus {
         // 1. Broadcast notification to connections
         for (final BusConnection con : this.connections) {
             // TODO add exception handling
-            con.sendNotification(notification);
+            try {
+                con.sendNotification(notification);
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         // TODO 2. Broadcast notification to internal connectors
     }
@@ -80,10 +101,14 @@ public abstract class Bus {
     }
 
     public void removeConnection(final BusConnection con) {
-        if (this.connections.remove(con) == false) {
-            log.warning("Couldn't remove BusConnection " + con
+        if (!this.connections.remove(con)) {
+            LOG.warning("Couldn't remove BusConnection " + con
                     + " from connection queue.");
         }
+    }
+
+    public int numberOfConnections() {
+        return this.connections.size();
     }
 
     // TODO implement InPushConnector support for internal notification

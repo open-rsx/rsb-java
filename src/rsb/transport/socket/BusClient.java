@@ -38,20 +38,22 @@ import rsb.RSBException;
  */
 public class BusClient extends Bus {
 
-    BusConnection connection;
-    Thread worker;
+    private BusClientConnection connection;
+    private Thread worker;
 
     public BusClient(final InetAddress host, final int port) {
-        this.address = host;
-        this.port = port;
+        this.setAddress(host);
+        this.setPort(port);
     }
 
     public void activate() throws IOException, RSBException {
-        this.connection = new BusConnection(this.address, this.port);
+        this.connection = new BusClientConnection(this.getAddress(),
+                this.getPort());
         this.connection.activate();
         this.connection.handshake();
-        this.worker = new Thread(this.connection);
-        this.worker.start();
+        // TODO reenable this with an external thread
+        // this.worker = new Thread(this.connection);
+        // this.worker.start();
         super.addConnection(this.connection);
     }
 

@@ -44,35 +44,35 @@ import rsb.RSBException;
  * clients. Remote clients connect to a server socket in order to send and
  * receive events through the resulting socket connection (maintained in
  * BusConnection objects).
- * 
+ *
  * Local clients (connectors) use the usual Bus interface to receive events
  * published by remote clients and submit events which will be distributed to
  * remote clients by the BusServer through the list of active BusConnection
  * instances.
- * 
+ *
  * @author swrede
  */
 public class BusServer extends Bus implements Runnable {
 
-    private static final Logger log = Logger.getLogger(BusServer.class
+    private static final Logger LOG = Logger.getLogger(BusServer.class
             .getName());
     private ServerSocket serverSocket;
-    protected ExecutorService pool;
+    private ExecutorService pool;
     private boolean isShutdown = false;
 
     public BusServer(final InetAddress host, final int port) {
-        this.address = host;
-        this.port = port;
+        this.setAddress(host);
+        this.setPort(port);
     }
 
     public void activate() throws IOException {
         this.pool = Executors.newCachedThreadPool();
-        this.serverSocket = new ServerSocket(this.port);
+        this.serverSocket = new ServerSocket(this.getPort());
     }
 
     public void deactivate() {
         this.isShutdown = true;
-        log.info("BusServer terminating");
+        LOG.info("BusServer terminating");
         this.pool.shutdown();
         try {
             // wait for termination of active workers
@@ -96,10 +96,10 @@ public class BusServer extends Bus implements Runnable {
             // socket handling
             try {
                 // accept socket
-                log.info("waiting for new client connection");
+                LOG.info("waiting for new client connection");
                 socket = this.serverSocket.accept();
             } catch (final IOException ex) {
-                log.info("BusServer interrupted on socket.accept!");
+                LOG.info("BusServer interrupted on socket.accept!");
                 if (!this.isShutdown) {
                     this.deactivate();
                 }
@@ -108,17 +108,16 @@ public class BusServer extends Bus implements Runnable {
             // setup new RSB BusConnection for the client
             if (socket != null && !this.isShutdown) {
                 // start BusConnection worker to serve this client
-                final BusConnection worker = new BusConnection(socket, true);
+                final BusServerConnection worker = new BusServerConnection(
+                        socket);
                 try {
                     worker.activate();
                     worker.handshake();
                     // add BusConnection instance to list of active connections
                     this.addConnection(worker);
                     // worker fully constructed, schedule for execution
-                    this.pool.execute(worker);
-                } catch (final IOException e) {
-                    // should not happen
-                    e.printStackTrace();
+                    // TODO reenable this with an external thread
+                    // this.pool.execute(worker);
                 } catch (final RSBException e) {
                     // should not happen
                     e.printStackTrace();
