@@ -27,19 +27,24 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rsb.Informer.InformerStateActive;
 import rsb.Informer.InformerStateInactive;
+import rsb.config.ParticipantConfig;
 import rsb.converter.ConverterRepository;
 import rsb.converter.DefaultConverterRepository;
-import rsb.transport.TransportFactory;
+import rsb.converter.DefaultConverters;
+import rsb.transport.DefaultTransports;
 
 /**
  * @author swrede
@@ -52,18 +57,30 @@ public class InformerTest {
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
             .getDefaultConverterRepository();
+    private ParticipantConfig config;
+
+    @BeforeClass
+    public static void registerConverters() {
+        DefaultConverters.register();
+        DefaultTransports.register();
+    }
 
     @Before
     public void setUp() throws Throwable {
+
+        this.config = Utilities.createParticipantConfig();
+
         this.stringInformer = new Informer<String>(this.defaultScope,
-                String.class);
+                String.class, this.config);
         this.stringInformer.activate();
-        this.genericInformer = new Informer<Object>(this.defaultScope);
+        this.genericInformer = new Informer<Object>(this.defaultScope,
+                this.config);
         this.genericInformer.activate();
+
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Throwable {
         if (this.stringInformer.isActive()) {
             this.stringInformer.deactivate();
         }
@@ -72,46 +89,38 @@ public class InformerTest {
         }
     }
 
-    /**
-     * Test method for {@link rsb.Informer#Informer(java.lang.String)}.
-     */
     @Test
     public void informerString() {
         assertNotNull("Informer is null", this.stringInformer);
         assertEquals(this.stringInformer.getScope(), this.defaultScope);
     }
 
-    /**
-     * Test method for
-     * {@link rsb.Informer#Informer(java.lang.String, rsb.transport.TransportFactory)}
-     * .
-     */
     @Test
-    public void informerStringTransportFactory() {
+    public void informerStringConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final Informer<String> informer = new Informer<String>(scope,
-                TransportFactory.getInstance());
+                this.config);
         assertNotNull("Informer is null", informer);
         assertEquals("Wrong scope", informer.getScope(), scope);
     }
 
     @Test
-    public void informerStringString() {
+    public void informerScopeTypeConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass());
+                type.getClass(), this.config);
         assertNotNull("Informer object is null", informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());
     }
 
     @Test
-    public void informerStringStringTransportFactory() {
+    public void informerScopeConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final String type = "XMLString";
         final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), TransportFactory.getInstance());
+                type.getClass(), this.config);
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), type.getClass());
@@ -139,10 +148,11 @@ public class InformerTest {
     /**
      * Test method for {@link rsb.Informer#deactivate()}.
      * 
-     * @throws InitializeException
+     * @throws Throwable
+     *             any error
      */
     @Test
-    public void deactivate() throws InitializeException {
+    public void deactivate() throws Throwable {
         assertTrue(this.stringInformer.state instanceof InformerStateActive);
         this.stringInformer.deactivate();
         assertTrue(this.stringInformer.state instanceof InformerStateInactive);

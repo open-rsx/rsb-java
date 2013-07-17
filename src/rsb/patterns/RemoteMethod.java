@@ -35,12 +35,14 @@ import java.util.logging.Logger;
 import rsb.Event;
 import rsb.EventId;
 import rsb.Handler;
+import rsb.InitializeException;
 import rsb.RSBException;
+import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
 /**
  * Objects of this class represent methods provided by a remote server.
- * 
+ *
  * @author jmoringe
  * @author swrede
  * @author jwienke
@@ -58,7 +60,7 @@ public class RemoteMethod extends Method implements Handler {
      * Instances of this class are used to prepare a {@link Future} instance
      * containing the desired result of the client from the reply {@link Event}
      * instance.
-     * 
+     *
      * @author jwienke
      * @param <FutureDataType>
      *            the data type of the contents inside the result future
@@ -73,7 +75,7 @@ public class RemoteMethod extends Method implements Handler {
          * will be used to track this future. This allows the client to ignore
          * the result future in a way that we sometimes can notice this and
          * avoid additional work.
-         * 
+         *
          * @param future
          *            the future to contain the final result.
          */
@@ -84,7 +86,7 @@ public class RemoteMethod extends Method implements Handler {
 
         /**
          * Returns the future where the result should be prepared for.
-         * 
+         *
          * @return {@link Future} instance or <code>null</code> if the client
          *         does not hold a reference on this future anymore. In such a
          *         case nothing needs to be done.
@@ -97,7 +99,7 @@ public class RemoteMethod extends Method implements Handler {
          * This method needs to be implemented with the conversion logic from
          * the {@link Event} instance with the result to the final
          * {@link Future} interface.
-         * 
+         *
          * @param resultEvent
          *            result event from the server call
          */
@@ -107,7 +109,7 @@ public class RemoteMethod extends Method implements Handler {
          * Method called in case of an error. The default implementation
          * directly passes the given {@link Throwable} to the the
          * {@link Future#error(Throwable)} method.
-         * 
+         *
          * @param error
          *            exception explaining the error
          */
@@ -122,16 +124,24 @@ public class RemoteMethod extends Method implements Handler {
     /**
      * Create a new RemoteMethod object that represent the remote method named @a
      * name provided by @a server.
-     * 
+     *
      * @param server
      *            The remote server providing the method.
      * @param name
      *            The name of the method.
+     * @param config
+     * @throws InterruptedException
+     *             error while installing method
+     * @throws InitializeException
+     *             error initializing the method or one of the underlying
+     *             participants
      */
-    public RemoteMethod(final Server<RemoteMethod> server, final String name) {
+    public RemoteMethod(final Server<RemoteMethod> server, final String name,
+            final ParticipantConfig config) throws InterruptedException,
+            InitializeException {
         super(server, name);
-        this.listener = this.factory.createListener(this.REPLY_SCOPE);
-        this.informer = this.factory.createInformer(this.REQUEST_SCOPE);
+        this.listener = this.factory.createListener(this.REPLY_SCOPE, config);
+        this.informer = this.factory.createInformer(this.REQUEST_SCOPE, config);
         this.listener.addFilter(new MethodFilter("REPLY"));
         this.listener.addHandler(this, true);
     }

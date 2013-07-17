@@ -27,14 +27,38 @@
  */
 package rsb.transport;
 
+import rsb.QualityOfServiceSpec;
+import rsb.RSBObject;
+import rsb.Scope;
+
 /**
- * Minimal domain object to pass port configuration to Router objects from
- * Pattern objects
- * 
+ * A generic interface for classes providing connection to a specific transport
+ * mechanism.
+ *
+ * @author jwienke
  * @author swrede
  */
-public enum PortConfiguration {
+public interface Connector extends RSBObject {
 
-    IN, INOUT, OUT, NONE;
+    // TODO still required? What was the original meaning
+    String getType();
+
+    /**
+     * Sets the quality of service requirements on sending and receiving event
+     * notifications.
+     *
+     * @param spec
+     *            new spec to apply
+     */
+    void setQualityOfServiceSpec(QualityOfServiceSpec spec);
+
+    /**
+     * Sets the scope this connector is working on. Needs to be called before
+     * the {@link #activate()} method of the connector is called.
+     *
+     * @param scope
+     *            the scope
+     */
+    void setScope(Scope scope);
 
 }

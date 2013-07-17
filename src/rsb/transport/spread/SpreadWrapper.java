@@ -39,7 +39,6 @@ import java.util.logging.Logger;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.RSBObject;
-import rsb.util.Properties;
 import spread.SpreadConnection;
 import spread.SpreadException;
 import spread.SpreadGroup;
@@ -49,7 +48,7 @@ import spread.SpreadMessage;
  * This class encapsulates and manages a connection to the spread daemon.
  * Thereby, it maintains the membership information for this connection and
  * evaluates and enqueues all sorts of spread messages.
- * 
+ *
  * @author swrede
  */
 public class SpreadWrapper implements RSBObject {
@@ -59,7 +58,6 @@ public class SpreadWrapper implements RSBObject {
     private String privGrpId;
     private SpreadConnection conn;
     private final Deque<SpreadGroup> groups = new ArrayDeque<SpreadGroup>();
-    private Properties props = Properties.getInstance();
     private final int port;
     private InetAddress spreadhost = null;
     private boolean useTcpNoDelay = true;
@@ -99,14 +97,12 @@ public class SpreadWrapper implements RSBObject {
     /**
      * @param spreadHostname
      *            the spreadhost to set
-     * @throws RSBException
+     * @throws UnknownHostException
+     *             the host cannot be resolved
      */
-    private void setSpreadhost(final String spreadHostname) throws RSBException {
-        try {
-            this.spreadhost = InetAddress.getByName(spreadHostname);
-        } catch (final UnknownHostException e) {
-            throw new RSBException(e.getMessage(), e);
-        }
+    private void setSpreadhost(final String spreadHostname)
+            throws UnknownHostException {
+        this.spreadhost = InetAddress.getByName(spreadHostname);
     }
 
     /**
@@ -136,41 +132,24 @@ public class SpreadWrapper implements RSBObject {
         ACTIVATED, DEACTIVATED
     };
 
-    /**
-     * Create a new Manager, assuming a spread daemon on localhost, port 4803.
-     */
-    public SpreadWrapper() {
-        this.port = this.props.getPropertyAsInt("transport.spread.port");
-        try {
-            // TODO refactor this to use a doman object SpreadHost (also for
-            // connection checks and so on...
-            // TODO handle this in a way that in this constructor no exceptions
-            // may occur
-            // TODO e.g., if we can't resolve the inetaddress, this coudl
-            // already fail in the properties parsing
-            this.setSpreadhost(this.props.getProperty("transport.spread.host"));
-        } catch (final RSBException e) {
-        }
-        this.useTcpNoDelay = this.props
-                .getPropertyAsBool("transport.spread.tcpnodelay");
-    }
+    public SpreadWrapper(final String spreadHost, final int spreadPort,
+            final boolean tcpNoDelay) throws UnknownHostException {
 
-    /**
-     * Create a new Manager using the specified connection data for the Spread
-     * network.
-     * 
-     * @param spreadhost
-     *            hostname of the machine the spread daemon is running on
-     * @param port
-     *            for the spread daemon
-     */
-    public SpreadWrapper(final String spreadhost, final int port)
-            throws InitializeException, UnknownHostException {
-        this.spreadhost = spreadhost != null ? InetAddress
-                .getByName(spreadhost) : null;
-        this.port = port;
-        this.useTcpNoDelay = this.props
-                .getPropertyAsBool("transport.spread.tcpnodelay");
+        if (spreadHost == null || spreadHost.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Spread host must not be null or empty string. "
+                            + "Instead a valid host name or ip address is required.");
+        }
+        if (spreadPort <= 0) {
+            throw new IllegalArgumentException(
+                    "Spread port must be a number > 0.");
+        }
+
+        this.port = spreadPort;
+        // TODO handle this in a way that in this constructor no exceptions
+        // may occur
+        this.setSpreadhost(spreadHost);
+        this.useTcpNoDelay = tcpNoDelay;
     }
 
     public void join(final String group) throws SpreadException {
@@ -209,48 +188,34 @@ public class SpreadWrapper implements RSBObject {
     }
 
     /**
-     * Create a new SpreadConnection. Generates a new name randomly, using the
-     * specified prefix. To allow for name collisions, try a couple of times
-     * before giving up.
-     * 
-     * @param prefix
-     *            prefix to use in name, should be short
+     * Create a new SpreadConnection. Generates a new name randomly.To allow for
+     * name collisions, try a couple of times before giving up.
+     *
      * @param mship
      *            True - receive membership messages; false - don't
      */
-    void makeConnection(final String prefix, final boolean mship)
-            throws InitializeException {
-        SpreadException exception = null;
-        String hostmsg = "";
-        for (int i = 0; i < this.props
-                .getPropertyAsInt("transport.spread.retry"); i++) {
-            try {
-                // if spreadhost is null, a connection to localhost is tried
-                this.conn = new SpreadConnection();
-                if (this.spreadhost == null) {
-                    hostmsg = "localhost";
-                } else {
-                    hostmsg = this.spreadhost.getHostName();
-                }
-                this.conn.connect(this.spreadhost, this.port, null, false,
-                        mship);
-                this.conn.setTcpNoDelay(this.useTcpNoDelay);
-                LOG.fine("Connected to " + this.spreadhost + ":" + this.port
-                        + ". Name = " + this.conn.getPrivateGroup().toString());
-                this.privGrpId = this.conn.getPrivateGroup().toString();
-                // instantiate our own listener thread
-                LOG.fine("Spread connection's private group id is: "
-                        + this.privGrpId);
-                return;
-            } catch (final SpreadException e) {
-                exception = e;
-            }
+    void makeConnection(final boolean mship) throws InitializeException {
+
+        try {
+            // if spreadhost is null, a connection to localhost is tried
+            this.conn = new SpreadConnection();
+            this.conn.connect(this.spreadhost, this.port, null, false, mship);
+            this.conn.setTcpNoDelay(this.useTcpNoDelay);
+            LOG.fine("Connected to " + this.spreadhost + ":" + this.port
+                    + ". Name = " + this.conn.getPrivateGroup().toString());
+            this.privGrpId = this.conn.getPrivateGroup().toString();
+            // instantiate our own listener thread
+            LOG.fine("Spread connection's private group id is: "
+                    + this.privGrpId);
+        } catch (final SpreadException e) {
             LOG.info("reoccuring SpreadException during connect to daemon: "
-                    + exception.getMessage());
+                    + e.getMessage());
+            // if we get here, all connection attempts failed
+            throw new InitializeException("Could not create spread connection "
+                    + "host=" + this.spreadhost.getHostName() + ", port="
+                    + this.port, e);
         }
-        // if we get here, all connection attempts failed
-        throw new InitializeException("Could not create spread connection "
-                + "host=" + hostmsg + ", port=" + this.port, exception);
+
     }
 
     public boolean send(final DataMessage msg) {
@@ -343,7 +308,7 @@ public class SpreadWrapper implements RSBObject {
     @Override
     public void activate() throws InitializeException {
         synchronized (this) {
-            this.makeConnection("sp-", true);
+            this.makeConnection(true);
             this.status = State.ACTIVATED;
         }
     }

@@ -9,6 +9,7 @@ import org.junit.Test;
 import rsb.Event;
 import rsb.Factory;
 import rsb.Scope;
+import rsb.Utilities;
 
 /**
  * @author jwienke
@@ -26,7 +27,8 @@ public class RpcIntegrationTest {
     public void setUp() throws Throwable {
 
         final Scope scope = new Scope("/example/server");
-        this.server = Factory.getInstance().createLocalServer(scope);
+        this.server = Factory.getInstance().createLocalServer(scope,
+                Utilities.createParticipantConfig());
         this.server.addMethod(METHOD_NAME, new ReplyDataCallback());
         this.server.addMethod(VOID_VOID_METHOD_NAME,
                 new DataCallback<Void, Void>() {
@@ -38,7 +40,8 @@ public class RpcIntegrationTest {
 
                 });
         this.server.activate();
-        this.remote = Factory.getInstance().createRemoteServer(scope);
+        this.remote = Factory.getInstance().createRemoteServer(scope,
+                Utilities.createParticipantConfig());
         this.remote.activate();
 
     }

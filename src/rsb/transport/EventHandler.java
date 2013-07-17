@@ -36,6 +36,12 @@ import rsb.Event;
  */
 public interface EventHandler {
 
+    /**
+     * The callback method.
+     * 
+     * @param event
+     *            the event to handle
+     */
     void handle(Event event);
 
 }

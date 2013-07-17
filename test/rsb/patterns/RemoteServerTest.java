@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Factory;
-import rsb.InitializeException;
 import rsb.Scope;
 
 /**
@@ -83,7 +82,7 @@ public class RemoteServerTest {
     // merely shouldn't throw anything
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
-    public void activate() throws InitializeException {
+    public void activate() throws Throwable {
         final RemoteServer remote = this.factory.createRemoteServer(SCOPE
                 .toString());
         remote.activate();
@@ -91,7 +90,7 @@ public class RemoteServerTest {
     }
 
     @Test
-    public void addMethod() throws InitializeException {
+    public void addMethod() throws Throwable {
         final RemoteServer remote = this.factory.createRemoteServer(SCOPE
                 .toString());
         final String methodName = "callme";

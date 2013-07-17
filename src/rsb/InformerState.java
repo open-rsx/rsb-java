@@ -49,7 +49,7 @@ public class InformerState<T> {
         throw new InvalidStateException("informer not activated");
     }
 
-    protected void deactivate() {
+    protected void deactivate() throws RSBException {
         LOG.warning("invalid state exception during deactivate call");
         throw new InvalidStateException("informer not activated");
     }

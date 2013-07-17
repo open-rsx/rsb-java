@@ -27,37 +27,76 @@
  */
 package rsb.transport.spread;
 
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import rsb.InitializeException;
+import rsb.QualityOfServiceSpec;
+import rsb.QualityOfServiceSpec.Ordering;
+import rsb.QualityOfServiceSpec.Reliability;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.DefaultConverterRepository;
-import rsb.transport.EventHandler;
-import rsb.transport.Port;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
+import rsb.util.Properties;
 
 /**
- * 
+ * @author jwienke
  * @author swrede
  */
-public class SpreadFactory extends TransportFactory {
+public class SpreadFactory implements TransportFactory {
+
+    private SpreadWrapper createSpreadWrapper(final Properties properties)
+            throws InitializeException {
+        try {
+            return new SpreadWrapper(properties.getProperty(
+                    "transport.spread.host", "localhost").asString(),
+                    properties.getProperty("transport.spread.port", "4803")
+                            .asInteger(), properties.getProperty(
+                            "transport.spread.tcpnodelay", "true").asBoolean());
+        } catch (final NumberFormatException e) {
+            throw new InitializeException(
+                    "Unable to parse spread port from properties.", e);
+        } catch (final UnknownHostException e) {
+            throw new InitializeException("Unable to resolve host name "
+                    + properties.getProperty("transport.spread.host",
+                            "localhost"), e);
+        }
+    }
 
     @Override
-    public Port createPort(final EventHandler handler) {
+    public InPushConnector createInPushConnector(final Properties properties)
+            throws InitializeException {
         final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
                 .getDefaultConverterRepository()
                 .getConvertersForDeserialization();
-        // inStrategy.addConverter("utf-8-string", new StringConverter());
-        // inStrategy.addConverter("ascii-string", new
-        // StringConverter("US-ASCII", "ascii-string"));
+        return new SpreadInPushConnector(createSpreadWrapper(properties),
+                inStrategy);
+
+    }
+
+    @Override
+    public OutConnector createOutConnector(final Properties properties)
+            throws InitializeException {
 
         final ConverterSelectionStrategy<ByteBuffer> outStrategy = DefaultConverterRepository
                 .getDefaultConverterRepository()
                 .getConvertersForSerialization();
-        // outStrategy.addConverter("String", new StringConverter());
 
-        final SpreadPort sp = new SpreadPort(new SpreadWrapper(), handler,
-                inStrategy, outStrategy);
-        return sp;
+        Ordering ordering = new QualityOfServiceSpec().getOrdering();
+        if (properties.hasProperty("qualityofservice.ordering")) {
+            ordering = Ordering.valueOf(properties.getProperty(
+                    "qualityofservice.ordering").asString());
+        }
+        Reliability reliability = new QualityOfServiceSpec().getReliability();
+        if (properties.hasProperty("qualityofservice.reliability")) {
+            reliability = Reliability.valueOf(properties.getProperty(
+                    "qualityofservice.reliability").asString());
+        }
+
+        return new SpreadOutConnector(createSpreadWrapper(properties),
+                outStrategy, new QualityOfServiceSpec(ordering, reliability));
+
     }
-
 }

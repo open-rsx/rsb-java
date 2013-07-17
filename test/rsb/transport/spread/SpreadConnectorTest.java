@@ -43,32 +43,33 @@ import org.junit.Test;
 import rsb.Event;
 import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
+import rsb.Utilities;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
+import rsb.converter.ConversionException;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
-import rsb.filter.FilterAction;
-import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
 
 /**
  * @author jwienke
  */
-public class SpreadPortTest {
+public class SpreadConnectorTest {
 
     private SpreadWrapper outWrapper;
-    private SpreadPort outPort;
+    private SpreadOutConnector outPort;
+    private static final Scope OUT_BASE_SCOPE = new Scope("/this");
 
     @Before
     public void setUp() throws Throwable {
 
-        this.outWrapper = new SpreadWrapper();
-        this.outPort = new SpreadPort(this.outWrapper, null,
-                this.getConverterStrategy("utf-8-string"),
-                this.getConverterStrategy(String.class.getName()));
-        this.outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-                Ordering.ORDERED, Reliability.RELIABLE));
+        this.outWrapper = Utilities.createSpreadWrapper();
+        this.outPort = new SpreadOutConnector(
+                this.outWrapper,
+                this.getConverterStrategy(String.class.getName()),
+                new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
+        this.outPort.setScope(OUT_BASE_SCOPE);
         this.outPort.activate();
 
     }
@@ -85,38 +86,45 @@ public class SpreadPortTest {
         this.outPort.deactivate();
     }
 
+    @Test(expected = ConversionException.class)
+    public void noConverterPassedToClient() throws Throwable {
+        final Event event = new Event(OUT_BASE_SCOPE, Throwable.class,
+                new Throwable());
+        event.setId(new ParticipantId(), 42);
+        this.outPort.push(event);
+    }
+
     @Test(timeout = 10000)
     public void hierarchicalSending() throws Throwable {
 
-        final Scope sendScope = new Scope("/this/is/a/hierarchy");
+        final Scope sendScope = OUT_BASE_SCOPE.concat(new Scope(
+                "/is/a/hierarchy"));
 
         final List<Scope> receiveScopes = sendScope.superScopes(true);
 
         // install event handlers for all receive scopes
         final Map<Scope, List<Event>> receivedEventsByScope = new HashMap<Scope, List<Event>>();
-        final List<SpreadPort> inPorts = new ArrayList<SpreadPort>();
+        final List<SpreadInPushConnector> inPorts = new ArrayList<SpreadInPushConnector>();
         for (final Scope scope : receiveScopes) {
 
             final List<Event> receivedEvents = new ArrayList<Event>();
             receivedEventsByScope.put(scope, receivedEvents);
-            final SpreadWrapper inWrapper = new SpreadWrapper();
-            final SpreadPort inPort = new SpreadPort(inWrapper,
-                    new EventHandler() {
+            final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
+            final SpreadInPushConnector inPort = new SpreadInPushConnector(
+                    inWrapper, this.getConverterStrategy("utf-8-string"));
+            inPort.addHandler(new EventHandler() {
 
-                        @Override
-                        public void handle(final Event e) {
-                            synchronized (receivedEventsByScope) {
-                                receivedEvents.add(e);
-                                receivedEventsByScope.notify();
-                            }
-                        }
+                @Override
+                public void handle(final Event e) {
+                    synchronized (receivedEventsByScope) {
+                        receivedEvents.add(e);
+                        receivedEventsByScope.notify();
+                    }
+                }
 
-                    }, this.getConverterStrategy("utf-8-string"),
-                    this.getConverterStrategy(String.class.getName()));
-
+            });
+            inPort.setScope(scope);
             inPort.activate();
-
-            inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
             inPorts.add(inPort);
 
@@ -153,7 +161,7 @@ public class SpreadPortTest {
         }
 
         // deactivate ports
-        for (final SpreadPort inPort : inPorts) {
+        for (final SpreadInPushConnector inPort : inPorts) {
             inPort.deactivate();
         }
 
@@ -163,8 +171,9 @@ public class SpreadPortTest {
     public void longGroupNames() throws Throwable {
 
         final Event event = new Event(String.class, "a test string");
-        event.setScope(new Scope(
-                "/this/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly"));
+        event.setScope(OUT_BASE_SCOPE
+                .concat(new Scope(
+                        "/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly")));
         event.setId(new ParticipantId(), 452334);
 
         this.outPort.push(event);
@@ -175,14 +184,17 @@ public class SpreadPortTest {
     public void sendMetaData() throws Throwable {
 
         // create an event to send
-        final Scope scope = new Scope("/a/test/scope/again");
+        final Scope scope = OUT_BASE_SCOPE
+                .concat(new Scope("/test/scope/again"));
         final Event event = new Event(scope, String.class, "a test string");
         event.setId(new ParticipantId(), 634);
 
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final SpreadWrapper inWrapper = new SpreadWrapper();
-        final SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+        final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
+        final SpreadInPushConnector inPort = new SpreadInPushConnector(
+                inWrapper, this.getConverterStrategy("utf-8-string"));
+        inPort.addHandler(new EventHandler() {
 
             @Override
             public void handle(final Event e) {
@@ -192,10 +204,9 @@ public class SpreadPortTest {
                 }
             }
 
-        }, this.getConverterStrategy("utf-8-string"),
-                this.getConverterStrategy(String.class.getName()));
+        });
+        inPort.setScope(scope);
         inPort.activate();
-        inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
         Thread.sleep(500);
 

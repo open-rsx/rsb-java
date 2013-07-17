@@ -44,26 +44,25 @@ import rsb.Event;
 import rsb.EventId;
 import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
+import rsb.Utilities;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Scope;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
-import rsb.filter.FilterAction;
-import rsb.filter.ScopeFilter;
 import rsb.transport.EventHandler;
 
 /**
- * Test for {@link SpreadPort}.
- * 
+ * Test for {@link SpreadOutConnector}.
+ *
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
-public class SpreadPortRoundtripTest {
+public class SpreadRoundtripTest {
 
     private final int size;
 
-    public SpreadPortRoundtripTest(final int size) {
+    public SpreadRoundtripTest(final int size) {
         this.size = size;
     }
 
@@ -77,19 +76,22 @@ public class SpreadPortRoundtripTest {
     @Test(timeout = 4000)
     public void roundtrip() throws Throwable {
 
-        final SpreadWrapper outWrapper = new SpreadWrapper();
+        final Scope scope = new Scope("/a/test/scope");
+
+        final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
         final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
         inStrategy.addConverter("utf-8-string", new StringConverter());
         final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
-        final SpreadPort outPort = new SpreadPort(outWrapper, null, inStrategy,
-                outStrategy);
-        outPort.setQualityOfServiceSpec(new QualityOfServiceSpec(
-                Ordering.ORDERED, Reliability.RELIABLE));
+        final SpreadOutConnector outPort = new SpreadOutConnector(outWrapper,
+                outStrategy, new QualityOfServiceSpec(Ordering.ORDERED,
+                        Reliability.RELIABLE));
 
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final SpreadWrapper inWrapper = new SpreadWrapper();
-        final SpreadPort inPort = new SpreadPort(inWrapper, new EventHandler() {
+        final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
+        final SpreadInPushConnector inPort = new SpreadInPushConnector(
+                inWrapper, inStrategy);
+        inPort.addHandler(new EventHandler() {
 
             @Override
             public void handle(final Event e) {
@@ -99,13 +101,12 @@ public class SpreadPortRoundtripTest {
                 }
             }
 
-        }, inStrategy, outStrategy);
+        });
 
+        inPort.setScope(scope);
         inPort.activate();
+        outPort.setScope(scope);
         outPort.activate();
-
-        final Scope scope = new Scope("/a/test/scope");
-        inPort.notify(new ScopeFilter(scope), FilterAction.ADD);
 
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < this.size; ++i) {

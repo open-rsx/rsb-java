@@ -351,7 +351,7 @@
             <fileset dir=".">
                 <include name="src/**/*.java" />
                 <include name="test/**/*.java" />
-                <exclude name="**/protocol/*.java"/>
+                <exclude name="generated-protocol/**/*.java"/>
             </fileset>
         </pmd>
     </target>

@@ -54,11 +54,24 @@
         </properties>
     </rule>
     
-    <!-- Do not warn about rpeated strings in annotations, e.g. in SuppressWarnings("unused") -->
+    <!-- Do not warn about repeated strings in annotations, e.g. in SuppressWarnings("unused") -->
     <rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
         <properties>
              <property name="skipAnnotations" value="true"/>
         </properties>
     </rule>
     
+    <!-- Allow empty catch block with an explanatory comment -->
+    <rule ref="rulesets/java/empty.xml/EmptyCatchBlock">
+        <properties>
+             <property name="allowCommentedBlocks" value="true"/>
+        </properties>
+    </rule>
+    
+    <!-- Allow more static imports for unit tests -->
+    <rule ref="rulesets/java/imports.xml/TooManyStaticImports">
+        <properties>
+             <property name="maximumStaticImports" value="15"/>
+        </properties>
+    </rule>
 </ruleset>

@@ -29,7 +29,6 @@
 // mark-start::body
 import rsb.Event;
 import rsb.Factory;
-import rsb.InitializeException;
 import rsb.patterns.EventCallback;
 import rsb.patterns.LocalServer;
 
@@ -44,7 +43,7 @@ public class ServerExample {
 
     }
 
-    public static void main(final String[] args) throws InitializeException {
+    public static void main(final String[] args) throws Throwable {
         // Get local server object which allows to expose remotely
         // callable methods.
         final LocalServer server = Factory.getInstance().createLocalServer(

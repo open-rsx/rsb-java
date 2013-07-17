@@ -27,27 +27,40 @@
  */
 package rsb.transport;
 
-import rsb.transport.spread.SpreadFactory;
+import rsb.InitializeException;
+import rsb.util.Properties;
 
 /**
- * 
+ * Interface for factories providing implementations of {@link Connector}
+ * instances for a certain transport.
+ *
+ * @author jwienke
  * @author swrede
  */
-public abstract class TransportFactory {
-
-    public static TransportFactory getInstance() {
-        return new SpreadFactory();
-    };
-
-    public final Port createPort() {
-        return this.createPort(null);
-    }
+public interface TransportFactory {
 
     /**
-     * @param handler
-     *            may be <code>null</code> if no handler is required
-     * @return A port with the given handler
+     * Creates an out connector for sending events.
+     *
+     * @param properties
+     *            specific options for the connector to be created
+     * @return new connector instance
+     * @throws InitializeException
+     *             error creating a new connector
      */
-    public abstract Port createPort(EventHandler handler);
+    OutConnector createOutConnector(Properties properties)
+            throws InitializeException;
+
+    /**
+     * Creates an in connector for receiving events in an asynchronous fashion.
+     *
+     * @param properties
+     *            specific options for the connector to be created
+     * @return new connector instance
+     * @throws InitializeException
+     *             error creating a new connector
+     */
+    InPushConnector createInPushConnector(Properties properties)
+            throws InitializeException;
 
 }

@@ -27,14 +27,12 @@
  */
 package rsb;
 
-import rsb.transport.PortConfiguration;
-import rsb.transport.Router;
-import rsb.transport.TransportFactory;
+import rsb.config.ParticipantConfig;
 
 /**
  * Base class for all bus participants with an associated scope. Mainly holds
  * references to the router and configuration-level objects.
- * 
+ *
  * @author jwienke
  * @author swrede
  */
@@ -42,66 +40,45 @@ public abstract class Participant implements RSBObject {
 
     @SuppressWarnings("PMD.ShortVariable")
     private final ParticipantId id = new ParticipantId();
-    private Scope scope;
-    private TransportFactory transportFactory;
-    private Router router;
+    private final Scope scope;
+    private final ParticipantConfig config;
 
     /**
      * Creates a new participant on the specified scope.
-     * 
+     *
      * @param scope
      *            scope of the participant
-     * @param transportFactory
-     *            the factory used for transports for this {@link Participant}
-     * @param portConfig
-     *            type of ports to create for this participant
+     * @param config
+     *            configuration of the participant
      */
-    protected Participant(final Scope scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
-        this.initMembers(scope, transportFactory, portConfig);
-    }
-
-    /**
-     * Creates a new participant on the specified scope.
-     * 
-     * @param scope
-     *            scope of the participant
-     * @param transportFactory
-     *            the factory used for transports for this {@link Participant}
-     * @param portConfig
-     *            type of ports to create for this participant
-     */
-    protected Participant(final String scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
-        this.initMembers(new Scope(scope), transportFactory, portConfig);
-    }
-
-    /**
-     * @param scope
-     * @param transportFactory
-     * @param portConfig
-     */
-    private void initMembers(final Scope scope,
-            final TransportFactory transportFactory,
-            final PortConfiguration portConfig) {
+    protected Participant(final Scope scope, final ParticipantConfig config) {
         if (scope == null) {
             throw new IllegalArgumentException(
                     "Scope of a participant must not be null.");
         }
-        if (transportFactory == null) {
+        if (config == null) {
             throw new IllegalArgumentException(
-                    "TransportFactory of a participant must not be null.");
+                    "ParticipantConfig of a participant must not be null.");
         }
         this.scope = scope;
-        this.transportFactory = transportFactory;
-        this.router = new Router(this.transportFactory, portConfig);
+        this.config = config;
+    }
+
+    /**
+     * Creates a new participant on the specified scope.
+     *
+     * @param scope
+     *            scope of the participant
+     * @param config
+     *            configuration of the participant
+     */
+    protected Participant(final String scope, final ParticipantConfig config) {
+        this(new Scope(scope), config);
     }
 
     /**
      * Returns the unique ID of this participant.
-     * 
+     *
      * @return the unique id of the participant
      */
     public ParticipantId getId() {
@@ -110,7 +87,7 @@ public abstract class Participant implements RSBObject {
 
     /**
      * Returns the scope of this participant.
-     * 
+     *
      * @return scope of the participant, not <code>null</code>
      */
     public Scope getScope() {
@@ -118,21 +95,12 @@ public abstract class Participant implements RSBObject {
     }
 
     /**
-     * Returns the {@link TransportFactory} used for this participant.
-     * 
+     * Returns the {@link ParticipantConfig} used for this participant.
+     *
      * @return instance not <code>null</code>
      */
-    protected TransportFactory getTransportFactory() {
-        return this.transportFactory;
-    }
-
-    /**
-     * Returns the router used for this participant.
-     * 
-     * @return router used for this participant, not <code>null</code>
-     */
-    protected Router getRouter() {
-        return this.router;
+    public ParticipantConfig getConfig() {
+        return this.config;
     }
 
 }

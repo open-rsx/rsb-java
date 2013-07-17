@@ -37,14 +37,13 @@ import rsb.Event;
 import rsb.InitializeException;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.config.ParticipantConfig;
 import rsb.patterns.RemoteMethod.FuturePreparator;
-import rsb.transport.PortConfiguration;
-import rsb.transport.TransportFactory;
 
 /**
  * Objects of this class represent remote servers in a way that allows calling
  * methods on them as if they were local.
- * 
+ *
  * @author jmoringe
  * @author swrede
  * @author jwienke
@@ -65,64 +64,74 @@ public class RemoteServer extends Server<RemoteMethod> {
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
      * @param timeout
      *            The amount of seconds methods calls should wait for their
      *            replies to arrive before failing.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final Scope scope, final double timeout) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+    public RemoteServer(final Scope scope, final double timeout,
+            final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = timeout;
     }
 
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
      * @param timeout
      *            The amount of seconds methods calls should wait for their
      *            replies to arrive before failing.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final String scope, final double timeout) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+    public RemoteServer(final String scope, final double timeout,
+            final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = timeout;
     }
 
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final Scope scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+    public RemoteServer(final Scope scope, final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = DEFAULT_TIMEOUT;
     }
 
     /**
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
-     * 
+     *
      * @param scope
      *            The common super-scope under which the methods of the remote
      *            created server are provided.
+     * @param config
+     *            participant config to use
      */
-    public RemoteServer(final String scope) {
-        super(scope, TransportFactory.getInstance(), PortConfiguration.NONE);
+    public RemoteServer(final String scope, final ParticipantConfig config) {
+        super(scope, config);
         this.timeout = DEFAULT_TIMEOUT;
     }
 
     /**
      * Returns the timeout used when waiting for replies from a server.
-     * 
+     *
      * @return timeout in seconds
      */
     public double getTimeout() {
@@ -133,7 +142,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method returns immediately
      * with a {@link Future} instance.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -154,7 +163,7 @@ public class RemoteServer extends Server<RemoteMethod> {
     /**
      * Calls a method of the server without request parameter using the method
      * name. The method returns immediately with a {@link Future} instance.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @return A {@link Future} instance to retrieve the result {@link Event}
@@ -171,7 +180,7 @@ public class RemoteServer extends Server<RemoteMethod> {
     /**
      * Calls a method of the server using the method name and plain request
      * data. The method returns immediately with a {@link Future} instance.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param data
@@ -193,7 +202,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method blocks until the
      * server replied or until the timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -217,7 +226,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method blocks until the
      * server replied or until the specified timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param event
@@ -248,7 +257,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server without request parameter using the method
      * name. The method blocks until the server replied or until the timeout is
      * reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @return An event with the resulting data
@@ -270,7 +279,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server without request parameter using the method
      * name. The method blocks until the server replied or until the specified
      * timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param timeout
@@ -294,7 +303,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server using the method name and plain request
      * data. The method blocks until the server replied or until the timeout is
      * reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param data
@@ -319,7 +328,7 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Calls a method of the server using the method name and plain request
      * data. The method blocks until the server replied or until the specified
      * timeout is reached.
-     * 
+     *
      * @param name
      *            name of the method to call
      * @param data
@@ -396,6 +405,8 @@ public class RemoteServer extends Server<RemoteMethod> {
                     LOG.warning("Exception during method activation: "
                             + exception.getMessage() + " Re-throwing it.");
                     throw new RSBException(exception);
+                } catch (final InterruptedException e) {
+                    throw new RSBException(e);
                 }
             }
         }
@@ -416,11 +427,11 @@ public class RemoteServer extends Server<RemoteMethod> {
         this.callAsyncEvent(name, request, resultPreparator);
     }
 
-    protected RemoteMethod addMethod(final String name)
-            throws InitializeException {
+    protected RemoteMethod addMethod(final String name) throws RSBException,
+            InterruptedException {
         LOG.fine("Registering new method " + name);
 
-        final RemoteMethod method = new RemoteMethod(this, name);
+        final RemoteMethod method = new RemoteMethod(this, name, getConfig());
         // it should never be possible that an exception is thrown for a
         // duplicated method because we take care of this
         addMethod(name, method, false);
