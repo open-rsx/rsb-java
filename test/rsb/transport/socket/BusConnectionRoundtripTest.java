@@ -82,12 +82,11 @@ public class BusConnectionRoundtripTest {
 
         this.serverSocket = new ServerSocket(Utilities.getSocketPort());
 
-        this.client = new BusClientConnection(Utilities.getSocketHost(),
-                Utilities.getSocketPort());
+        this.client = new BusClientConnection(Utilities.getSocketOptions());
         assertFalse(this.client.isActive());
         this.client.activate();
 
-        this.server = new BusServerConnection(this.serverSocket.accept());
+        this.server = new BusServerConnection(this.serverSocket.accept(), true);
         assertFalse(this.server.isActive());
         this.server.activate();
         this.server.handshake();

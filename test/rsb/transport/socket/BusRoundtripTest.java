@@ -58,20 +58,17 @@ public class BusRoundtripTest {
     public void setUp() throws Throwable {
 
         this.serverResult = new ResultWaiter();
-        this.server = new BusServer(Utilities.getSocketHost(),
-                Utilities.getSocketPort());
+        this.server = new BusServer(Utilities.getSocketOptions());
         this.server.activate();
         this.server.addNotificationReceiver(this.serverResult);
 
         this.clientResult = new ResultWaiter();
-        this.client = new BusClient(Utilities.getSocketHost(),
-                Utilities.getSocketPort());
+        this.client = new BusClient(Utilities.getSocketOptions());
         this.client.activate();
         this.client.addNotificationReceiver(this.clientResult);
 
         this.secondClientResult = new ResultWaiter();
-        this.secondClient = new BusClient(Utilities.getSocketHost(),
-                Utilities.getSocketPort());
+        this.secondClient = new BusClient(Utilities.getSocketOptions());
         this.secondClient.activate();
         this.secondClient.addNotificationReceiver(this.secondClientResult);
 

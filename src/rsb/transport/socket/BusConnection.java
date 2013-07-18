@@ -42,4 +42,11 @@ public interface BusConnection extends RSBObject {
      */
     void handshake() throws RSBException;
 
+    /**
+     * Returns the current configuration of the connection.
+     *
+     * @return configuration of the connection
+     */
+    SocketOptions getOptions();
+
 }

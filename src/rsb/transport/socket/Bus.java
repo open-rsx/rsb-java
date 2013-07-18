@@ -29,7 +29,6 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.nio.channels.AsynchronousCloseException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,8 +64,7 @@ import rsb.protocol.NotificationType.Notification;
 public abstract class Bus implements RSBObject {
 
     private final static Logger LOG = Logger.getLogger(Bus.class.getName());
-    private final InetAddress address;
-    private final int port;
+    private final SocketOptions options;
     private final Map<BusConnection, ReceiveThread> connections = Collections
             .synchronizedMap(new HashMap<BusConnection, ReceiveThread>());
     private final Set<NotificationReceiver> receivers = Collections
@@ -152,29 +150,18 @@ public abstract class Bus implements RSBObject {
 
     }
 
-    protected Bus(final InetAddress address, final int port) {
-        assert address != null;
-        assert port > 0;
-        this.address = address;
-        this.port = port;
+    protected Bus(final SocketOptions options) {
+        assert options != null;
+        this.options = options;
     }
 
     /**
-     * Returns the IP address this Bus operates on.
+     * Returns the current socket configuration of the bus.
      *
-     * @return IP address
+     * @return socket options used
      */
-    public InetAddress getAddress() {
-        return this.address;
-    }
-
-    /**
-     * Returns the port this bus operations on.
-     *
-     * @return bus port
-     */
-    public int getPort() {
-        return this.port;
+    public SocketOptions getSocketOptions() {
+        return this.options;
     }
 
     @Override

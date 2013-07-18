@@ -38,6 +38,10 @@ public final class Utilities {
         return InetAddress.getLocalHost();
     }
 
+    public static SocketOptions getSocketOptions() throws UnknownHostException {
+        return new SocketOptions(getSocketHost(), getSocketPort(), true);
+    }
+
     public static Notification createNotification() throws ConversionException {
 
         // create a dummy event to send around

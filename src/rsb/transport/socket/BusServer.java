@@ -29,7 +29,6 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -93,7 +92,7 @@ public class BusServer extends Bus {
                             socket);
 
                     final BusServerConnection connection = new BusServerConnection(
-                            socket);
+                            socket, getSocketOptions().isTcpNoDelay());
                     connection.activate();
                     connection.handshake();
                     LOG.log(Level.FINER,
@@ -122,8 +121,8 @@ public class BusServer extends Bus {
 
     }
 
-    public BusServer(final InetAddress host, final int port) {
-        super(host, port);
+    public BusServer(final SocketOptions options) {
+        super(options);
     }
 
     @Override
@@ -138,7 +137,8 @@ public class BusServer extends Bus {
             }
 
             try {
-                this.serverSocket = new ServerSocket(this.getPort());
+                this.serverSocket = new ServerSocket(this.getSocketOptions()
+                        .getPort());
                 this.acceptor = new AcceptorThread();
                 this.acceptor.start();
             } catch (final IOException e) {

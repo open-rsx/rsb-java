@@ -28,7 +28,6 @@
 
 package rsb.transport.socket;
 
-import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,8 +50,8 @@ public class BusClient extends Bus {
 
     private BusClientConnection connection;
 
-    public BusClient(final InetAddress host, final int port) {
-        super(host, port);
+    public BusClient(final SocketOptions options) {
+        super(options);
     }
 
     @Override
@@ -66,8 +65,7 @@ public class BusClient extends Bus {
                 throw new IllegalStateException("BusClient is already active.");
             }
 
-            this.connection = new BusClientConnection(this.getAddress(),
-                    this.getPort());
+            this.connection = new BusClientConnection(this.getSocketOptions());
             this.connection.activate();
             this.connection.handshake();
 

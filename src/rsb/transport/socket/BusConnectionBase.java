@@ -1,7 +1,6 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -33,8 +32,7 @@ public abstract class BusConnectionBase implements BusConnection {
     private Socket socket;
     private ReadableByteChannel reader;
     private WritableByteChannel writer;
-    private InetAddress address;
-    private int port;
+    private SocketOptions options;
 
     public Socket getSocket() {
         return this.socket;
@@ -46,24 +44,16 @@ public abstract class BusConnectionBase implements BusConnection {
         }
     }
 
-    public InetAddress getAddress() {
-        return this.address;
-    }
-
-    protected void setAddress(final InetAddress address) {
+    protected void setOptions(final SocketOptions options) {
+        assert options != null;
         synchronized (this) {
-            this.address = address;
+            this.options = options;
         }
     }
 
-    public int getPort() {
-        return this.port;
-    }
-
-    protected void setPort(final int port) {
-        synchronized (this) {
-            this.port = port;
-        }
+    @Override
+    public SocketOptions getOptions() {
+        return this.options;
     }
 
     protected ReadableByteChannel getReader() {
@@ -80,6 +70,7 @@ public abstract class BusConnectionBase implements BusConnection {
         synchronized (this) {
             assert this.socket != null;
             try {
+                this.socket.setTcpNoDelay(this.options.isTcpNoDelay());
                 this.reader = Channels.newChannel(getSocket().getInputStream());
                 this.writer = Channels
                         .newChannel(getSocket().getOutputStream());
@@ -168,8 +159,7 @@ public abstract class BusConnectionBase implements BusConnection {
 
         // read notification data
         final byte[] notificationData = new byte[length];
-        final ByteBuffer notifDataBuffer = ByteBuffer
-                .wrap(notificationData);
+        final ByteBuffer notifDataBuffer = ByteBuffer.wrap(notificationData);
         notifDataBuffer.order(ByteOrder.LITTLE_ENDIAN);
         final int bytesRead = this.reader.read(notifDataBuffer);
         if (bytesRead != length) {
