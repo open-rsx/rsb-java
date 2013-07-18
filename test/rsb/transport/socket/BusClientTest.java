@@ -34,14 +34,6 @@ import rsb.RSBException;
  */
 public class BusClientTest {
 
-    /**
-     * Test method for
-     * {@link rsb.transport.socket.BusClient#BusClient(java.net.InetAddress, int)}
-     * .
-     * 
-     * @throws RSBException
-     * @throws IOException
-     */
     @Test
     public void busClient() throws IOException, RSBException {
         final InetAddress addr = InetAddress.getLocalHost();
@@ -51,18 +43,8 @@ public class BusClientTest {
         client.deactivate();
     }
 
-    /**
-     * Test method for
-     * {@link rsb.transport.socket.Bus#handleOutgoing(rsb.protocol.NotificationType.Notification)}
-     * .
-     * 
-     * @throws RSBException
-     * @throws IOException
-     * @throws InterruptedException
-     */
     @Test
-    public void handleIncoming() throws IOException, RSBException,
-            InterruptedException {
+    public void handleIncoming() throws Throwable {
         final InetAddress addr = InetAddress.getLocalHost();
         final BusClient client = new BusClient(addr, 55555);
         // TODO add here some automated setup of the server side once it is
