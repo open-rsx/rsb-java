@@ -31,26 +31,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.nio.ByteBuffer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import rsb.Event;
-import rsb.EventId;
-import rsb.ParticipantId;
-import rsb.Scope;
-import rsb.converter.ConversionException;
-import rsb.converter.Converter;
-import rsb.converter.Uint64Converter;
 import rsb.protocol.NotificationType.Notification;
-import rsb.protocol.NotificationType.Notification.Builder;
-import rsb.protocol.ProtocolConversion;
-
-import com.google.protobuf.ByteString;
 
 /**
  * @author jwienke
@@ -62,7 +49,10 @@ public class BusConnectionRoundtripTest {
     private BusClientConnection client;
     private BusServerConnection server;
 
+    // we need to catch all exceptions here to ensure that all instances have a
+    // chance to shutdown. Otherwise ports might leak etc.
     @After
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void tearDown() throws Throwable {
         try {
             if (this.client != null) {
@@ -90,11 +80,10 @@ public class BusConnectionRoundtripTest {
     @Before
     public void mutualConnection() throws Throwable {
 
-        final int port = 55555;
+        this.serverSocket = new ServerSocket(Utilities.getSocketPort());
 
-        this.serverSocket = new ServerSocket(port);
-
-        this.client = new BusClientConnection(InetAddress.getLocalHost(), port);
+        this.client = new BusClientConnection(Utilities.getSocketHost(),
+                Utilities.getSocketPort());
         assertFalse(this.client.isActive());
         this.client.activate();
 
@@ -113,7 +102,7 @@ public class BusConnectionRoundtripTest {
     @Test
     public void clientToServer() throws Throwable {
 
-        final Notification sent = createNotification();
+        final Notification sent = Utilities.createNotification();
         this.client.sendNotification(sent);
 
         final Notification received = this.server.readNotification();
@@ -125,33 +114,12 @@ public class BusConnectionRoundtripTest {
     @Test
     public void serverToClient() throws Throwable {
 
-        final Notification sent = createNotification();
+        final Notification sent = Utilities.createNotification();
         this.server.sendNotification(sent);
 
         final Notification received = this.client.readNotification();
 
         assertEquals(sent, received);
-
-    }
-
-    private Notification createNotification() throws ConversionException {
-
-        // create a dummy event to send around
-        final Event event = new Event(Long.class, new Long(42));
-        event.setId(new EventId(new ParticipantId(), 7));
-        event.setScope(new Scope("/test/"));
-        final Builder builder = Notification.newBuilder();
-        builder.setEventId(ProtocolConversion.createEventIdBuilder(event
-                .getId()));
-        final Converter<ByteBuffer> converter = new Uint64Converter();
-        builder.setData(ByteString.copyFrom(converter
-                .serialize(event.getType(), event.getData()).getSerialization()
-                .array()));
-
-        ProtocolConversion.fillNotificationHeader(builder, event, converter
-                .getSignature().getSchema());
-
-        return builder.build();
 
     }
 

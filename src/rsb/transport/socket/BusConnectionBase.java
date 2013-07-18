@@ -96,7 +96,7 @@ public abstract class BusConnectionBase implements BusConnection {
      * Safely close I/O streams and sockets.
      */
     @Override
-    public void deactivate() {
+    public void deactivate() throws RSBException {
 
         synchronized (this) {
 
@@ -168,15 +168,15 @@ public abstract class BusConnectionBase implements BusConnection {
 
         // read notification data
         final byte[] notificationData = new byte[length];
-        final ByteBuffer notificationDataBuffer = ByteBuffer
+        final ByteBuffer notifDataBuffer = ByteBuffer
                 .wrap(notificationData);
-        notificationDataBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        final int bytesRead = this.reader.read(notificationDataBuffer);
+        notifDataBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        final int bytesRead = this.reader.read(notifDataBuffer);
         if (bytesRead != length) {
             throw new IOException("Received data length " + bytesRead
                     + " does not match the expected length " + length);
         }
-        notificationDataBuffer.rewind();
+        notifDataBuffer.rewind();
 
         LOG.fine("Received notification data. Decoding and returning.");
 
