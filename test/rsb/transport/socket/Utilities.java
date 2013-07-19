@@ -52,9 +52,10 @@ public final class Utilities {
         builder.setEventId(ProtocolConversion.createEventIdBuilder(event
                 .getId()));
         final Converter<ByteBuffer> converter = new Uint64Converter();
-        builder.setData(ByteString.copyFrom(converter
-                .serialize(event.getType(), event.getData()).getSerialization()
-                .array()));
+        final ByteBuffer serialization = converter.serialize(event.getType(),
+                event.getData()).getSerialization();
+        builder.setData(ByteString.copyFrom(serialization.array(), 0,
+                serialization.limit()));
 
         ProtocolConversion.fillNotificationHeader(builder, event, converter
                 .getSignature().getSchema());

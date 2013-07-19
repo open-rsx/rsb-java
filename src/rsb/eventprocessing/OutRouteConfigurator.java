@@ -2,7 +2,7 @@ package rsb.eventprocessing;
 
 import rsb.Event;
 import rsb.Participant;
-import rsb.converter.ConversionException;
+import rsb.RSBException;
 import rsb.transport.OutConnector;
 
 /**
@@ -21,10 +21,10 @@ public interface OutRouteConfigurator extends RouteConfigurator<OutConnector> {
      *
      * @param event
      *            event to send
-     * @throws ConversionException
-     *             unable to send the event because the contained data cannot be
-     *             converted for the wire
+     * @throws RSBException
+     *             sending error. e.g. impossible to convert data, transport
+     *             error
      */
-    void publishSync(Event event) throws ConversionException;
+    void publishSync(Event event) throws RSBException;
 
 }

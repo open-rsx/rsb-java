@@ -25,19 +25,32 @@
  *
  * ============================================================
  */
-package rsb.transport;
+package rsb.transport.socket;
 
-import rsb.Event;
-import rsb.RSBException;
+import rsb.transport.ConnectorCheck;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 
 /**
- * Enables sending {@link Event}s via a specific transport.
- *
+ * Test for socket connectors.
+ * 
  * @author jwienke
- * @author swrede
  */
-public interface OutConnector extends Connector {
+@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+public class SocketConnectorTest extends ConnectorCheck {
 
-    void push(Event event) throws RSBException;
+    @Override
+    protected InPushConnector createInConnector() throws Throwable {
+        return new SocketInPushConnector(
+                rsb.transport.socket.Utilities.getSocketOptions(),
+                ServerMode.AUTO, this.getConverterStrategy("utf-8-string"));
+    }
+
+    @Override
+    protected OutConnector createOutConnector() throws Throwable {
+        return new SocketOutConnector(Utilities.getSocketOptions(),
+                ServerMode.AUTO, this.getConverterStrategy(String.class
+                        .getName()));
+    }
 
 }
