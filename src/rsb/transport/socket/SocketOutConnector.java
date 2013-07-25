@@ -6,10 +6,7 @@ import rsb.Event;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.converter.ConversionException;
-import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
@@ -65,26 +62,12 @@ public class SocketOutConnector implements OutConnector {
         return this.utility.isActive();
     }
 
-    // TODO duplicated from SpreadOutConnector
-    private WireContents<ByteBuffer> convertEvent(final Event event)
-            throws ConversionException {
-        try {
-            final Converter<ByteBuffer> converter = this.utility
-                    .getConverters().getConverter(event.getType().getName());
-            final WireContents<ByteBuffer> convertedDataBuffer = converter
-                    .serialize(event.getType(), event.getData());
-            return convertedDataBuffer;
-        } catch (final NoSuchConverterException e) {
-            throw new ConversionException(e);
-        }
-    }
-
-    // TODO mostly duplicates spread connector
     @Override
     public void push(final Event event) throws RSBException {
 
         event.getMetaData().setSendTime(0);
-        final WireContents<ByteBuffer> data = convertEvent(event);
+        final WireContents<ByteBuffer> data = ProtocolConversion
+                .serializeEventData(event, this.utility.getConverters());
 
         final Builder builder = Notification.newBuilder();
         builder.setEventId(ProtocolConversion.createEventIdBuilder(event

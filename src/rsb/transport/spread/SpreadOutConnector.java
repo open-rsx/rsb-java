@@ -38,9 +38,7 @@ import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.converter.ConversionException;
-import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.NoSuchConverterException;
 import rsb.converter.WireContents;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
@@ -198,8 +196,8 @@ public class SpreadOutConnector implements OutConnector {
     @Override
     public void push(final Event event) throws ConversionException {
 
-        final WireContents<ByteBuffer> convertedDataBuffer = this
-                .convertEvent(event);
+        final WireContents<ByteBuffer> convertedDataBuffer = ProtocolConversion
+                .serializeEventData(event, this.converters);
 
         event.getMetaData().setSendTime(0);
 
@@ -334,19 +332,6 @@ public class SpreadOutConnector implements OutConnector {
 
         return fragments;
 
-    }
-
-    private WireContents<ByteBuffer> convertEvent(final Event event)
-            throws ConversionException {
-        try {
-            final Converter<ByteBuffer> converter = this.converters
-                    .getConverter(event.getType().getName());
-            final WireContents<ByteBuffer> convertedDataBuffer = converter
-                    .serialize(event.getType(), event.getData());
-            return convertedDataBuffer;
-        } catch (final NoSuchConverterException e) {
-            throw new ConversionException(e);
-        }
     }
 
     @Override
