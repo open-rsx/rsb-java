@@ -28,16 +28,16 @@
 package rsb.transport;
 
 import rsb.Event;
-import rsb.converter.ConversionException;
+import rsb.RSBException;
 
 /**
  * Enables sending {@link Event}s via a specific transport.
- * 
+ *
  * @author jwienke
  * @author swrede
  */
 public interface OutConnector extends Connector {
 
-    void push(Event event) throws ConversionException;
+    void push(Event event) throws RSBException;
 
 }

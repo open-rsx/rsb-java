@@ -28,38 +28,79 @@
 
 package rsb.transport.socket;
 
-import java.io.IOException;
-import java.net.InetAddress;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rsb.RSBException;
+import rsb.protocol.NotificationType.Notification;
 
 /**
+ * A {@link Bus} implementation which acts as a client to an existing server
+ * implementation. This means that new notifications are only sent to local
+ * receivers as well as to a single {@link BusConnection} connecting with the
+ * server.
+ *
  * @author swrede
+ * @author jwienke
  */
 public class BusClient extends Bus {
 
+    private static final Logger LOG = Logger.getLogger(BusClient.class
+            .getName());
+
     private BusClientConnection connection;
-    private Thread worker;
 
-    public BusClient(final InetAddress host, final int port) {
-        this.setAddress(host);
-        this.setPort(port);
+    public BusClient(final SocketOptions options) {
+        super(options);
     }
 
-    public void activate() throws IOException, RSBException {
-        this.connection = new BusClientConnection(this.getAddress(),
-                this.getPort());
-        this.connection.activate();
-        this.connection.handshake();
-        // TODO reenable this with an external thread
-        // this.worker = new Thread(this.connection);
-        // this.worker.start();
-        super.addConnection(this.connection);
-    }
+    @Override
+    public void activate() throws RSBException {
 
-    public void deactivate() {
-        if (this.connection != null) {
-            this.connection.deactivate();
+        LOG.log(Level.FINE, "Trying to activate BusClient");
+
+        synchronized (this) {
+
+            if (isActive()) {
+                throw new IllegalStateException("BusClient is already active.");
+            }
+
+            this.connection = new BusClientConnection(this.getSocketOptions());
+            this.connection.activate();
+            this.connection.handshake();
+
+            addConnection(this.connection);
+
         }
+
     }
+
+    @Override
+    public void deactivate() throws RSBException {
+
+        synchronized (this) {
+
+            if (!isActive()) {
+                throw new IllegalStateException("BusClient is not active.");
+            }
+
+            this.connection.deactivate();
+            removeConnection(this.connection);
+            this.connection = null;
+
+        }
+
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.connection != null;
+    }
+
+    @Override
+    public void handleIncoming(final Notification notification)
+            throws RSBException {
+        handleLocally(notification);
+    }
+
 }

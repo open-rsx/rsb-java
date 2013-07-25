@@ -27,226 +27,38 @@
  */
 package rsb.transport.spread;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import rsb.Event;
-import rsb.ParticipantId;
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
-import rsb.Scope;
 import rsb.Utilities;
-import rsb.converter.ConversionException;
-import rsb.converter.StringConverter;
-import rsb.converter.UnambiguousConverterMap;
-import rsb.transport.EventHandler;
+import rsb.transport.ConnectorCheck;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 
 /**
+ * Test for spread connectors.
+ *
  * @author jwienke
  */
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-public class SpreadConnectorTest {
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+public class SpreadConnectorTest extends ConnectorCheck {
 
-    private SpreadOutConnector outPort;
-    private static final Scope OUT_BASE_SCOPE = new Scope("/this");
-
-    @Before
-    public void setUp() throws Throwable {
-
-        final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
-        this.outPort = new SpreadOutConnector(
-                outWrapper,
-                this.getConverterStrategy(String.class.getName()),
-                new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
-        this.outPort.setScope(OUT_BASE_SCOPE);
-        this.outPort.activate();
-
-    }
-
-    private UnambiguousConverterMap<ByteBuffer> getConverterStrategy(
-            final String key) {
-        final UnambiguousConverterMap<ByteBuffer> strategy = new UnambiguousConverterMap<ByteBuffer>();
-        strategy.addConverter(key, new StringConverter());
-        return strategy;
-    }
-
-    @After
-    public void tearDown() throws Throwable {
-        this.outPort.deactivate();
-    }
-
-    @Test(expected = ConversionException.class)
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    public void noConverterPassedToClient() throws Throwable {
-        final Event event = new Event(OUT_BASE_SCOPE, Throwable.class,
-                new Throwable());
-        event.setId(new ParticipantId(), 42);
-        this.outPort.push(event);
-    }
-
-    // PMD false positive
-    @Test(timeout = 10000)
-    public void hierarchicalSending() throws Throwable {
-
-        final Scope sendScope = OUT_BASE_SCOPE.concat(new Scope(
-                "/is/a/hierarchy"));
-
-        final List<Scope> receiveScopes = sendScope.superScopes(true);
-
-        // install event handlers for all receive scopes
-        final Map<Scope, List<Event>> receivedEventsByScope = new HashMap<Scope, List<Event>>();
-        final List<SpreadInPushConnector> inPorts = new ArrayList<SpreadInPushConnector>();
-        for (final Scope scope : receiveScopes) {
-
-            final List<Event> receivedEvents = new ArrayList<Event>();
-            receivedEventsByScope.put(scope, receivedEvents);
-            final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
-            final SpreadInPushConnector inPort = new SpreadInPushConnector(
-                    inWrapper, this.getConverterStrategy("utf-8-string"));
-            inPort.addHandler(new EventHandler() {
-
-                @Override
-                public void handle(final Event event) {
-                    synchronized (receivedEventsByScope) {
-                        receivedEvents.add(event);
-                        receivedEventsByScope.notifyAll();
-                    }
-                }
-
-            });
-            inPort.setScope(scope);
-            inPort.activate();
-
-            inPorts.add(inPort);
-
-        }
-
-        // TODO: Don't know why this is needed, sometimes spread is too slow?
-        Thread.sleep(200);
-
-        final int numEvents = 100;
-
-        // send events
-        final Event event = new Event(sendScope, String.class, "a test string "
-                + numEvents);
-        event.setId(new ParticipantId(), 42);
-
-        this.outPort.push(event);
-
-        // wait for all receivers to get the scope
-        for (final Scope scope : receiveScopes) {
-            synchronized (receivedEventsByScope) {
-                while (receivedEventsByScope.get(scope).size() != 1) {
-                    receivedEventsByScope.wait();
-                }
-
-                final Event receivedEvent = receivedEventsByScope.get(scope)
-                        .get(0);
-
-                // normalize times as they are not important for this test
-                event.getMetaData().setReceiveTime(
-                        receivedEvent.getMetaData().getReceiveTime());
-
-                assertEquals(event, receivedEvent);
-            }
-        }
-
-        // deactivate ports
-        for (final SpreadInPushConnector inPort : inPorts) {
-            inPort.deactivate();
-        }
-
-    }
-
-    @Test
-    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-    public void longGroupNames() throws Throwable {
-
-        final Event event = new Event(String.class, "a test string");
-        event.setScope(OUT_BASE_SCOPE
-                .concat(new Scope(
-                        "/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly")));
-        event.setId(new ParticipantId(), 452334);
-
-        this.outPort.push(event);
-
-    }
-
-    @Test(timeout = 10000)
-    public void sendMetaData() throws Throwable {
-
-        // create an event to send
-        final Scope scope = OUT_BASE_SCOPE
-                .concat(new Scope("/test/scope/again"));
-        final Event event = new Event(scope, String.class, "a test string");
-        event.setId(new ParticipantId(), 634);
-
-        // create a receiver to wait for event
-        final List<Event> receivedEvents = new ArrayList<Event>();
+    @Override
+    protected InPushConnector createInConnector() throws Throwable {
         final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
         final SpreadInPushConnector inPort = new SpreadInPushConnector(
                 inWrapper, this.getConverterStrategy("utf-8-string"));
-        inPort.addHandler(new EventHandler() {
+        return inPort;
+    }
 
-            @Override
-            public void handle(final Event event) {
-                synchronized (receivedEvents) {
-                    receivedEvents.add(event);
-                    receivedEvents.notifyAll();
-                }
-            }
-
-        });
-        inPort.setScope(scope);
-        inPort.activate();
-
-        Thread.sleep(500);
-
-        // send event
-        final long beforeSend = System.currentTimeMillis() * 1000;
-        this.outPort.push(event);
-        final long afterSend = System.currentTimeMillis() * 1000;
-
-        assertTrue(event.getMetaData().getSendTime() >= beforeSend);
-        assertTrue(event.getMetaData().getSendTime() <= afterSend);
-
-        // wait for receiving the event
-        synchronized (receivedEvents) {
-            while (receivedEvents.size() != 1) {
-                receivedEvents.wait();
-            }
-
-            final Event receivedEvent = receivedEvents.get(0);
-
-            // first check that there is a receive time in the event
-            assertTrue(receivedEvent.getMetaData().getReceiveTime() >= beforeSend);
-            assertTrue(receivedEvent.getMetaData().getReceiveTime() >= receivedEvent
-                    .getMetaData().getSendTime());
-            assertTrue(receivedEvent.getMetaData().getReceiveTime() <= System
-                    .currentTimeMillis() * 1000);
-
-            // now adapt this time to use the normal equals method for comparing
-            // all other fields
-            event.getMetaData().setReceiveTime(
-                    receivedEvent.getMetaData().getReceiveTime());
-            receivedEvent.getMetaData().setSendTime(
-                    event.getMetaData().getSendTime());
-
-            assertEquals(event, receivedEvent);
-        }
-
-        inPort.deactivate();
+    @Override
+    protected OutConnector createOutConnector() throws Throwable {
+        final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
+        final SpreadOutConnector outConnector = new SpreadOutConnector(
+                outWrapper,
+                this.getConverterStrategy(String.class.getName()),
+                new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
+        return outConnector;
     }
 
 }

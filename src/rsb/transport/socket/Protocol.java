@@ -7,11 +7,6 @@ package rsb.transport.socket;
  */
 public final class Protocol {
 
-    private Protocol() {
-        super();
-        // prevent instantiation of utility class
-    }
-
     /**
      * The data to send for handshake requests and replies
      */
@@ -26,5 +21,10 @@ public final class Protocol {
      * The number of bytes encoding the data size to be sent.
      */
     public static final int DATA_SIZE_BYTES = 4;
+
+    private Protocol() {
+        super();
+        // prevent instantiation of utility class
+    }
 
 }

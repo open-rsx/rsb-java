@@ -50,17 +50,15 @@ import rsb.RSBException;
  *
  * @author swrede
  */
-// TODO synchronization
-// TODO nodelay flag
 public class BusServerConnection extends BusConnectionBase {
 
     private static final Logger LOG = Logger
             .getLogger(BusServerConnection.class.getName());
 
-    public BusServerConnection(final Socket socket) {
+    public BusServerConnection(final Socket socket, final boolean tcpNoDelay) {
         setSocket(socket);
-        setPort(socket.getLocalPort());
-        setAddress(socket.getInetAddress());
+        setOptions(new SocketOptions(socket.getLocalAddress(),
+                socket.getPort(), tcpNoDelay));
     }
 
     /**

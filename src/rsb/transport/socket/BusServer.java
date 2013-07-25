@@ -29,15 +29,13 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.RSBException;
+import rsb.protocol.NotificationType.Notification;
 
 /**
  * Instances of this class provide access to a socket-based bus for remote bus
@@ -51,79 +49,147 @@ import rsb.RSBException;
  * instances.
  *
  * @author swrede
+ * @author jwienke
  */
-public class BusServer extends Bus implements Runnable {
+public class BusServer extends Bus {
 
     private static final Logger LOG = Logger.getLogger(BusServer.class
             .getName());
     private ServerSocket serverSocket;
-    private ExecutorService pool;
-    private boolean isShutdown = false;
+    private AcceptorThread acceptor;
 
-    public BusServer(final InetAddress host, final int port) {
-        this.setAddress(host);
-        this.setPort(port);
-    }
+    /**
+     * A thread that listens on a {@link ServerSocket} and accepts connection
+     * requests by instantiating new {@link BusServerConnection} handling each
+     * new connection request.
+     *
+     * @author jwienke
+     */
+    private class AcceptorThread extends Thread {
 
-    public void activate() throws IOException {
-        this.pool = Executors.newCachedThreadPool();
-        this.serverSocket = new ServerSocket(this.getPort());
-    }
+        private volatile boolean shutdown = false;
 
-    public void deactivate() {
-        this.isShutdown = true;
-        LOG.info("BusServer terminating");
-        this.pool.shutdown();
-        try {
-            // wait for termination of active workers
-            this.pool.awaitTermination(4L, TimeUnit.SECONDS);
-            // exit run loop by closing the socket
-            if (!this.serverSocket.isClosed()) {
-                this.serverSocket.close();
-            }
-        } catch (final IOException e) {
-            // ignore
-        } catch (final InterruptedException ei) {
-            // ignore
+        /**
+         * Indicates that a termination should be performed. There is no
+         * guarantee when this will happen after a call to this method.
+         */
+        public void startShutdown() {
+            this.shutdown = true;
         }
+
+        @Override
+        @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+        public void run() {
+
+            while (!this.shutdown) {
+
+                // socket handling
+                try {
+                    // accept socket
+                    LOG.info("Waiting for new client connection");
+                    final Socket socket = BusServer.this.serverSocket.accept();
+                    LOG.log(Level.FINE, "Accepted a new client socket: {0}",
+                            socket);
+
+                    final BusServerConnection connection = new BusServerConnection(
+                            socket, getSocketOptions().isTcpNoDelay());
+                    connection.activate();
+                    connection.handshake();
+                    LOG.log(Level.FINER,
+                            "Activated a new client connection {0} for socket {1}",
+                            new Object[] { connection, socket });
+                    // add BusConnection instance to list of active
+                    // connections
+                    addConnection(connection);
+
+                } catch (final IOException e) {
+                    // TODO better way to handle this error, especially in case
+                    // of desired shutdown
+                    LOG.log(Level.WARNING,
+                            "Exception while accepting new client. Shutting down.",
+                            e);
+                    return;
+                } catch (final RSBException e) {
+                    LOG.log(Level.WARNING,
+                            "Exception while accepting new client.", e);
+                    // TODO what to do here?
+                }
+
+            }
+
+        }
+
+    }
+
+    public BusServer(final SocketOptions options) {
+        super(options);
     }
 
     @Override
-    public void run() {
-        while (true && !this.isShutdown) {
-            Socket socket = null;
+    public void activate() throws RSBException {
 
-            // socket handling
-            try {
-                // accept socket
-                LOG.info("waiting for new client connection");
-                socket = this.serverSocket.accept();
-            } catch (final IOException ex) {
-                LOG.info("BusServer interrupted on socket.accept!");
-                if (!this.isShutdown) {
-                    this.deactivate();
-                }
+        LOG.fine("Trying to activate BusServer.");
+
+        synchronized (this) {
+
+            if (this.serverSocket != null) {
+                throw new IllegalStateException("BusServer is already active.");
             }
 
-            // setup new RSB BusConnection for the client
-            if (socket != null && !this.isShutdown) {
-                // start BusConnection worker to serve this client
-                final BusServerConnection worker = new BusServerConnection(
-                        socket);
-                try {
-                    worker.activate();
-                    worker.handshake();
-                    // add BusConnection instance to list of active connections
-                    this.addConnection(worker);
-                    // worker fully constructed, schedule for execution
-                    // TODO reenable this with an external thread
-                    // this.pool.execute(worker);
-                } catch (final RSBException e) {
-                    // should not happen
-                    e.printStackTrace();
-                }
+            try {
+                this.serverSocket = new ServerSocket(this.getSocketOptions()
+                        .getPort());
+                this.acceptor = new AcceptorThread();
+                this.acceptor.start();
+            } catch (final IOException e) {
+                throw new RSBException(e);
             }
 
         }
+
     }
+
+    @Override
+    public void deactivate() throws RSBException {
+        LOG.info("Trying to deactivate BusServer.");
+
+        synchronized (this) {
+
+            if (this.serverSocket == null) {
+                throw new IllegalStateException("BusServer is not active.");
+            }
+
+            try {
+
+                this.serverSocket.close();
+                this.acceptor.startShutdown();
+                this.acceptor.join();
+
+            } catch (final IOException e) {
+                LOG.log(Level.WARNING, "Exception closing server socket.", e);
+            } catch (final InterruptedException e) {
+                LOG.log(Level.WARNING,
+                        "Interrupted while waiting for acceptor thread to terminate.",
+                        e);
+            }
+
+            this.serverSocket = null;
+            this.acceptor = null;
+
+        }
+
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.serverSocket != null;
+    }
+
+    @Override
+    public void handleIncoming(final Notification notification)
+            throws RSBException {
+        handleLocally(notification);
+        handleGlobally(notification);
+    }
+
 }

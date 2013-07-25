@@ -28,7 +28,6 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -54,26 +53,25 @@ import rsb.RSBException;
  * @author swrede
  * @author jwienke
  */
-// TODO synchronization
 // TODO nodelay flag
 public class BusClientConnection extends BusConnectionBase {
 
     private static final Logger LOG = Logger
             .getLogger(BusClientConnection.class.getName());
 
-    public BusClientConnection(final InetAddress addr, final int port) {
-        this.setAddress(addr);
-        this.setPort(port);
+    public BusClientConnection(final SocketOptions options) {
+        this.setOptions(options);
     }
 
     @Override
     public void activate() throws RSBException {
         try {
-            this.setSocket(new Socket(getAddress(), getPort()));
+            this.setSocket(new Socket(getOptions().getAddress(), getOptions()
+                    .getPort()));
             super.activate();
         } catch (final IOException e) {
             throw new RSBException("Unable to create client socket for "
-                    + getAddress() + ":" + getPort(), e);
+                    + getOptions(), e);
         }
     }
 
@@ -107,8 +105,7 @@ public class BusClientConnection extends BusConnectionBase {
             if (Protocol.HANDSHAKE_DATA != handshakeReplyBuffer.getInt()) {
                 throw new RSBException(
                         "RSB Handshake failed in SocketTransport at "
-                                + this.getAddress().toString() + ":"
-                                + this.getPort()
+                                + getOptions()
                                 + ". Received bytes sequence is not expected.");
             }
 

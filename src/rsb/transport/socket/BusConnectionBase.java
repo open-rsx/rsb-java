@@ -1,7 +1,6 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -33,8 +32,7 @@ public abstract class BusConnectionBase implements BusConnection {
     private Socket socket;
     private ReadableByteChannel reader;
     private WritableByteChannel writer;
-    private InetAddress address;
-    private int port;
+    private SocketOptions options;
 
     public Socket getSocket() {
         return this.socket;
@@ -46,24 +44,16 @@ public abstract class BusConnectionBase implements BusConnection {
         }
     }
 
-    public InetAddress getAddress() {
-        return this.address;
-    }
-
-    protected void setAddress(final InetAddress address) {
+    protected void setOptions(final SocketOptions options) {
+        assert options != null;
         synchronized (this) {
-            this.address = address;
+            this.options = options;
         }
     }
 
-    public int getPort() {
-        return this.port;
-    }
-
-    protected void setPort(final int port) {
-        synchronized (this) {
-            this.port = port;
-        }
+    @Override
+    public SocketOptions getOptions() {
+        return this.options;
     }
 
     protected ReadableByteChannel getReader() {
@@ -80,6 +70,7 @@ public abstract class BusConnectionBase implements BusConnection {
         synchronized (this) {
             assert this.socket != null;
             try {
+                this.socket.setTcpNoDelay(this.options.isTcpNoDelay());
                 this.reader = Channels.newChannel(getSocket().getInputStream());
                 this.writer = Channels
                         .newChannel(getSocket().getOutputStream());
@@ -96,7 +87,7 @@ public abstract class BusConnectionBase implements BusConnection {
      * Safely close I/O streams and sockets.
      */
     @Override
-    public void deactivate() {
+    public void deactivate() throws RSBException {
 
         synchronized (this) {
 
@@ -130,6 +121,28 @@ public abstract class BusConnectionBase implements BusConnection {
     }
 
     /**
+     * Reads data from a {@link ReadableByteChannel} until a give buffer is
+     * completely filled up.
+     *
+     * @param reader
+     *            the channel to read from
+     * @param buffer
+     *            the buffer to fill
+     * @throws IOException
+     *             reading error or reader disconnected while reading
+     */
+    private static void readCompleteBuffer(final ReadableByteChannel reader,
+            final ByteBuffer buffer) throws IOException {
+        do {
+            final int bytesRead = reader.read(buffer);
+            if (bytesRead < 0) {
+                throw new IOException("Socket connection error with negative "
+                        + "return value for read.");
+            }
+        } while (buffer.position() < buffer.limit());
+    }
+
+    /**
      * Extract length of next notification blob.
      *
      * @return Number of bytes
@@ -140,12 +153,7 @@ public abstract class BusConnectionBase implements BusConnection {
         final ByteBuffer lengthBytes = ByteBuffer
                 .allocateDirect(Protocol.DATA_SIZE_BYTES);
         lengthBytes.order(ByteOrder.LITTLE_ENDIAN);
-        final int bytesRead = this.reader.read(lengthBytes);
-        if (bytesRead != Protocol.DATA_SIZE_BYTES) {
-            throw new IOException(
-                    "Unexpected number of bytes received for the specification "
-                            + "of the next notification blob to receive.");
-        }
+        readCompleteBuffer(this.reader, lengthBytes);
         lengthBytes.rewind();
         return lengthBytes.getInt();
     }
@@ -168,15 +176,10 @@ public abstract class BusConnectionBase implements BusConnection {
 
         // read notification data
         final byte[] notificationData = new byte[length];
-        final ByteBuffer notificationDataBuffer = ByteBuffer
-                .wrap(notificationData);
-        notificationDataBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        final int bytesRead = this.reader.read(notificationDataBuffer);
-        if (bytesRead != length) {
-            throw new IOException("Received data length " + bytesRead
-                    + " does not match the expected length " + length);
-        }
-        notificationDataBuffer.rewind();
+        final ByteBuffer notifDataBuffer = ByteBuffer.wrap(notificationData);
+        notifDataBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        readCompleteBuffer(this.reader, notifDataBuffer);
+        notifDataBuffer.rewind();
 
         LOG.fine("Received notification data. Decoding and returning.");
 

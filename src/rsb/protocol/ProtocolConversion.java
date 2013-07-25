@@ -1,6 +1,13 @@
 package rsb.protocol;
 
+import java.nio.ByteBuffer;
+
 import rsb.Event;
+import rsb.converter.ConversionException;
+import rsb.converter.Converter;
+import rsb.converter.ConverterSelectionStrategy;
+import rsb.converter.NoSuchConverterException;
+import rsb.converter.WireContents;
 import rsb.protocol.EventIdType.EventId;
 import rsb.protocol.EventMetaDataType.EventMetaData;
 import rsb.protocol.EventMetaDataType.UserInfo;
@@ -86,6 +93,33 @@ public final class ProtocolConversion {
                     .createEventIdBuilder(cause));
         }
 
+    }
+
+    /**
+     * Serializes the payload contained in an {@link Event} instance using a
+     * specified {@link ConverterSelectionStrategy}.
+     *
+     * @param event
+     *            event containing the data to serialize
+     * @param converters
+     *            the converters to use
+     * @return the serialized data including the generated wire schema
+     * @throws ConversionException
+     *             error converting, e.g. no converter available or wrong class
+     */
+    public static WireContents<ByteBuffer> serializeEventData(
+            final Event event,
+            final ConverterSelectionStrategy<ByteBuffer> converters)
+            throws ConversionException {
+        try {
+            final Converter<ByteBuffer> converter = converters
+                    .getConverter(event.getType().getName());
+            final WireContents<ByteBuffer> convertedDataBuffer = converter
+                    .serialize(event.getType(), event.getData());
+            return convertedDataBuffer;
+        } catch (final NoSuchConverterException e) {
+            throw new ConversionException(e);
+        }
     }
 
 }

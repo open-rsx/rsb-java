@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.transport.spread;
+package rsb.transport.socket;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -35,10 +35,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import rsb.QualityOfServiceSpec;
-import rsb.QualityOfServiceSpec.Ordering;
-import rsb.QualityOfServiceSpec.Reliability;
-import rsb.Utilities;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.ConnectorRoundtripCheck;
@@ -46,15 +42,13 @@ import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 
 /**
- * Test for {@link SpreadOutConnector}.
- *
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
-public class SpreadRoundtripTest extends ConnectorRoundtripCheck {
+public class SocketRoundtripTest extends ConnectorRoundtripCheck {
 
-    public SpreadRoundtripTest(final int size) {
+    public SocketRoundtripTest(final int size) {
         super(size);
     }
 
@@ -67,23 +61,25 @@ public class SpreadRoundtripTest extends ConnectorRoundtripCheck {
 
     @Override
     protected OutConnector createOutConnector() throws Throwable {
-        final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
+
         final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
-        final SpreadOutConnector outPort = new SpreadOutConnector(outWrapper,
-                outStrategy, new QualityOfServiceSpec(Ordering.ORDERED,
-                        Reliability.RELIABLE));
-        return outPort;
+
+        return new SocketOutConnector(Utilities.getSocketOptions(),
+                ServerMode.AUTO, outStrategy);
+
     }
 
     @Override
     protected InPushConnector createInConnector() throws Throwable {
+
         final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
         inStrategy.addConverter("utf-8-string", new StringConverter());
-        final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
-        final SpreadInPushConnector inPort = new SpreadInPushConnector(
-                inWrapper, inStrategy);
-        return inPort;
+
+        return new SocketInPushConnector(
+                rsb.transport.socket.Utilities.getSocketOptions(),
+                ServerMode.AUTO, inStrategy);
+
     }
 
 }

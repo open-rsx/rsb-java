@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import rsb.Event;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.converter.ConversionException;
 import rsb.transport.OutConnector;
 
 /**
@@ -51,7 +50,7 @@ public class DefaultOutRouteConfigurator implements OutRouteConfigurator {
     }
 
     @Override
-    public void publishSync(final Event event) throws ConversionException {
+    public void publishSync(final Event event) throws RSBException {
         for (final OutConnector connector : this.utility.getConnectors()) {
             LOG.finer("Pushing event to connector " + connector);
             connector.push(event);

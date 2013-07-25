@@ -1,9 +1,9 @@
 /**
  * ============================================================
  *
- * This file is a part of the rsb-java project
+ * This file is part of the rsb-java project
  *
- * Copyright (C) 2012 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,18 +25,32 @@
  *
  * ============================================================
  */
-
 package rsb.transport.socket;
 
-import java.net.Socket;
+import rsb.transport.ConnectorCheck;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 
 /**
- * @author swrede
+ * Test for socket connectors.
+ *
+ * @author jwienke
  */
-public class RedirectThread extends Thread {
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+public class SocketConnectorTest extends ConnectorCheck {
 
-    public RedirectThread(final Socket s) {
-        // TODO Auto-generated constructor stub
+    @Override
+    protected InPushConnector createInConnector() throws Throwable {
+        return new SocketInPushConnector(
+                rsb.transport.socket.Utilities.getSocketOptions(),
+                ServerMode.AUTO, this.getConverterStrategy("utf-8-string"));
+    }
+
+    @Override
+    protected OutConnector createOutConnector() throws Throwable {
+        return new SocketOutConnector(Utilities.getSocketOptions(),
+                ServerMode.AUTO, this.getConverterStrategy(String.class
+                        .getName()));
     }
 
 }
