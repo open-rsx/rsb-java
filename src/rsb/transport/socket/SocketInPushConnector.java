@@ -30,25 +30,16 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
     private static final Logger LOG = Logger
             .getLogger(SocketInPushConnector.class.getName());
 
+    private final SocketConnectorUtility utility;
     private Scope scope;
-    private final SocketOptions socketOptions;
-    private final ServerMode serverMode;
-    private final ConverterSelectionStrategy<ByteBuffer> converters;
-    private Bus bus;
     private final Set<EventHandler> handlers = Collections
             .synchronizedSet(new HashSet<EventHandler>());
 
     public SocketInPushConnector(final SocketOptions socketOptions,
             final ServerMode serverMode,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
-
-        assert socketOptions != null;
-        assert converters != null;
-
-        this.socketOptions = socketOptions;
-        this.serverMode = serverMode;
-        this.converters = converters;
-
+        this.utility = new SocketConnectorUtility(socketOptions, serverMode,
+                converters);
     }
 
     @Override
@@ -69,65 +60,20 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
 
     @Override
     public void activate() throws RSBException {
-
-        // TODO largely duplicated
-        synchronized (this) {
-
-            if (isActive()) {
-                throw new IllegalStateException("Already active");
-            }
-
-            switch (this.serverMode) {
-            case YES:
-                this.bus = new BusServer(this.socketOptions);
-                this.bus.activate();
-                break;
-            case NO:
-                this.bus = new BusClient(this.socketOptions);
-            case AUTO:
-                try {
-                    this.bus = new BusServer(this.socketOptions);
-                    this.bus.activate();
-                } catch (final RSBException e) {
-                    this.bus = new BusClient(this.socketOptions);
-                    this.bus.activate();
-                }
-                break;
-            default:
-                assert false;
-                throw new RSBException("Unexpected server mode requested: "
-                        + this.serverMode);
-            }
-
-            // XXX this is not duplicated
-            this.bus.addNotificationReceiver(this);
-
+        synchronized (this.utility) {
+            this.utility.activate();
+            this.utility.getBus().addNotificationReceiver(this);
         }
-
     }
 
     @Override
     public void deactivate() throws RSBException {
-
-        // TODO complete duplication
-        synchronized (this) {
-
-            if (!isActive()) {
-                throw new IllegalStateException("Not active");
-            }
-
-            this.bus.deactivate();
-            this.bus = null;
-
-        }
-
+        this.utility.deactivate();
     }
 
     @Override
     public boolean isActive() {
-        synchronized (this) {
-            return this.bus != null;
-        }
+        return this.utility.isActive();
     }
 
     @Override
@@ -160,7 +106,7 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
             final Event resultEvent = EventBuilder.fromNotification(
                     notification,
                     notification.getData().asReadOnlyByteBuffer(),
-                    this.converters);
+                    this.utility.getConverters());
 
             // make a copy to avoid lengthy locking
             final Set<EventHandler> handlers = new HashSet<EventHandler>(
