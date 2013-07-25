@@ -98,6 +98,7 @@ public class SocketConnectorUtility {
                 break;
             case NO:
                 this.bus = getBusClient(this.socketOptions);
+                break;
             case AUTO:
                 try {
                     this.bus = getBusServer(this.socketOptions);

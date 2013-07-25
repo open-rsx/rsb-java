@@ -81,7 +81,7 @@ public class BusRoundtripTest {
             try {
                 this.secondClient.deactivate();
             } catch (final RSBException e) {
-                // we can't do anythingì
+                // we can't do anything
             }
             this.secondClient = null;
         }
@@ -89,7 +89,7 @@ public class BusRoundtripTest {
             try {
                 this.client.deactivate();
             } catch (final RSBException e) {
-                // we can't do anythingì
+                // we can't do anything
             }
             this.client = null;
         }
@@ -97,7 +97,7 @@ public class BusRoundtripTest {
             try {
                 this.server.deactivate();
             } catch (final RSBException e) {
-                // we can't do anythingì
+                // we can't do anything
             }
             this.server = null;
         }
