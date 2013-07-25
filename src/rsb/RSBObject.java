@@ -34,8 +34,12 @@ package rsb;
  * undefined.
  *
  * If not stated otherwise, activation and deactivation are not thread-safe.
- * 
+ *
+ * If not stated otherwise, object may only survive one activation -
+ * deactivation cycle and may not be reactivatable in a n ordered way.
+ *
  * @author swrede
+ * @author jwienke
  */
 public interface RSBObject {
 
