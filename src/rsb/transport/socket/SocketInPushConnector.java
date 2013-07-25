@@ -14,7 +14,7 @@ import rsb.Scope;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.filter.AbstractFilterObserver;
 import rsb.protocol.NotificationType.Notification;
-import rsb.transport.EventBuilder;
+import rsb.protocol.ProtocolConversion;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 import rsb.transport.socket.Bus.NotificationReceiver;
@@ -103,7 +103,7 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
 
         try {
 
-            final Event resultEvent = EventBuilder.fromNotification(
+            final Event resultEvent = ProtocolConversion.fromNotification(
                     notification,
                     notification.getData().asReadOnlyByteBuffer(),
                     this.utility.getConverters());

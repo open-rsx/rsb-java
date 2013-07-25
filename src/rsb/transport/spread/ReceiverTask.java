@@ -37,7 +37,7 @@ import rsb.converter.ConversionException;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
-import rsb.transport.EventBuilder;
+import rsb.protocol.ProtocolConversion;
 import rsb.transport.EventHandler;
 import spread.SpreadException;
 import spread.SpreadMessage;
@@ -160,7 +160,7 @@ class ReceiverTask extends Thread {
 
             final Notification initialNotification = joinedData
                     .getNotification();
-            return EventBuilder.fromNotification(initialNotification,
+            return ProtocolConversion.fromNotification(initialNotification,
                     joinedData.getData(), this.converters);
 
             // TODO better error handling with callback object
