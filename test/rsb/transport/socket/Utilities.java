@@ -14,6 +14,8 @@ import rsb.converter.Uint64Converter;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
 import rsb.protocol.ProtocolConversion;
+import rsb.util.ConfigLoader;
+import rsb.util.Properties;
 
 import com.google.protobuf.ByteString;
 
@@ -30,8 +32,9 @@ public final class Utilities {
     }
 
     public static int getSocketPort() {
-        // TODO determine this from the test configuration
-        return 55555;
+        final ConfigLoader loader = new ConfigLoader();
+        return loader.load(new Properties())
+                .getProperty("transport.socket.port", "55443").asInteger();
     }
 
     public static InetAddress getSocketHost() throws UnknownHostException {
