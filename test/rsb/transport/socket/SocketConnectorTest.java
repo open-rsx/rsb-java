@@ -33,10 +33,10 @@ import rsb.transport.OutConnector;
 
 /**
  * Test for socket connectors.
- * 
+ *
  * @author jwienke
  */
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class SocketConnectorTest extends ConnectorCheck {
 
     @Override

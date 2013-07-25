@@ -61,7 +61,7 @@ public final class SocketOptions {
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder(40);
         builder.append(getClass().getName());
         builder.append("[address=");
         builder.append(this.address);

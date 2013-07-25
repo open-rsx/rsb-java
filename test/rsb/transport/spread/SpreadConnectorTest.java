@@ -40,7 +40,7 @@ import rsb.transport.OutConnector;
  *
  * @author jwienke
  */
-@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class SpreadConnectorTest extends ConnectorCheck {
 
     @Override

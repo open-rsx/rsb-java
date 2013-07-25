@@ -62,6 +62,7 @@ public abstract class ConnectorCheck {
     }
 
     @Test(timeout = 10000)
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void hierarchicalSending() throws Throwable {
 
         final Scope sendScope = OUT_BASE_SCOPE.concat(new Scope(

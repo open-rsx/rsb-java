@@ -51,6 +51,7 @@ import rsb.transport.OutConnector;
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class SpreadRoundtripTest extends ConnectorRoundtripCheck {
 
     public SpreadRoundtripTest(final int size) {

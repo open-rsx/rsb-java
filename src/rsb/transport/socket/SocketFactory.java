@@ -24,14 +24,14 @@ public class SocketFactory implements TransportFactory {
 
         try {
 
-            final InetAddress address = InetAddress.getByName(properties
-                    .getProperty("transport.socket.host", "localhost")
-                    .asString());
             final int port = properties.getProperty("trnaport.socket.port",
                     55555).asInteger();
             if (port < 0) {
                 throw new InitializeException("Port must be a number >= 0");
             }
+            final InetAddress address = InetAddress.getByName(properties
+                    .getProperty("transport.socket.host", "localhost")
+                    .asString());
             final boolean tcpNoDelay = properties.getProperty(
                     "transport.socket.nodelay", true).asBoolean();
 
