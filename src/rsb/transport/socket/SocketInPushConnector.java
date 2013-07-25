@@ -14,11 +14,7 @@ import rsb.Scope;
 import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.converter.UserData;
-import rsb.filter.AbstractFilter;
-import rsb.filter.FilterAction;
-import rsb.filter.OriginFilter;
-import rsb.filter.ScopeFilter;
-import rsb.filter.TypeFilter;
+import rsb.filter.AbstractFilterObserver;
 import rsb.protocol.NotificationType.Notification;
 import rsb.transport.EventBuilder;
 import rsb.transport.EventHandler;
@@ -30,7 +26,8 @@ import rsb.transport.socket.Bus.NotificationReceiver;
  *
  * @author jwienke
  */
-public class SocketInPushConnector implements InPushConnector,
+public class SocketInPushConnector extends AbstractFilterObserver implements
+        InPushConnector,
         NotificationReceiver {
 
     private static final Logger LOG = Logger
@@ -134,29 +131,6 @@ public class SocketInPushConnector implements InPushConnector,
         synchronized (this) {
             return this.bus != null;
         }
-    }
-
-    @Override
-    public void notify(final AbstractFilter filter, final FilterAction action) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void notify(final ScopeFilter filter, final FilterAction action) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void notify(final TypeFilter filter, final FilterAction action) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void notify(final OriginFilter filter, final FilterAction action) {
-        // TODO Auto-generated method stub
     }
 
     @Override
