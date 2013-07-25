@@ -235,9 +235,9 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event[id=" + this.getId() + ", scope=" + this.scope
-                + ", type =" + this.type + ", metaData=" + this.metaData
-                + ", causes = " + this.causes.toString() + "]";
+        return "Event[id=" + this.getId() + ", scope=" + this.scope + ", type="
+                + this.type + ", metaData=" + this.metaData + ", causes="
+                + this.causes.toString() + "]";
     }
 
     /*
