@@ -24,6 +24,9 @@ public class SocketConnectorUtility {
     private final ConverterSelectionStrategy<ByteBuffer> converters;
     private Bus bus;
 
+    private static BusCache busClientCache = new BusCache();
+    private static BusCache busServerCache = new BusCache();
+
     public SocketConnectorUtility(final SocketOptions socketOptions,
             final ServerMode serverMode,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
@@ -45,6 +48,42 @@ public class SocketConnectorUtility {
         return this.converters;
     }
 
+    private static Bus getBusServer(final SocketOptions options)
+            throws RSBException {
+
+        synchronized (busServerCache.getSynchronizer()) {
+
+            if (busServerCache.hasBus(options)) {
+                return busServerCache.get(options);
+            }
+
+            final Bus bus = new BusServer(options);
+            bus.activate();
+            busServerCache.register(bus);
+            return bus;
+
+        }
+
+    }
+
+    private static Bus getBusClient(final SocketOptions options)
+            throws RSBException {
+
+        synchronized (busClientCache.getSynchronizer()) {
+
+            if (busClientCache.hasBus(options)) {
+                return busClientCache.get(options);
+            }
+
+            final Bus bus = new BusClient(options);
+            bus.activate();
+            busClientCache.register(bus);
+            return bus;
+
+        }
+
+    }
+
     public void activate() throws RSBException {
 
         synchronized (this) {
@@ -55,18 +94,15 @@ public class SocketConnectorUtility {
 
             switch (this.serverMode) {
             case YES:
-                this.bus = new BusServer(this.socketOptions);
-                this.bus.activate();
+                this.bus = getBusServer(this.socketOptions);
                 break;
             case NO:
-                this.bus = new BusClient(this.socketOptions);
+                this.bus = getBusClient(this.socketOptions);
             case AUTO:
                 try {
-                    this.bus = new BusServer(this.socketOptions);
-                    this.bus.activate();
+                    this.bus = getBusServer(this.socketOptions);
                 } catch (final RSBException e) {
-                    this.bus = new BusClient(this.socketOptions);
-                    this.bus.activate();
+                    this.bus = getBusClient(this.socketOptions);
                 }
                 break;
             default:
@@ -87,7 +123,7 @@ public class SocketConnectorUtility {
                 throw new IllegalStateException("Not active");
             }
 
-            this.bus.deactivate();
+            // we must not(!) deactivate the bus as it is in a cache
             this.bus = null;
 
         }
