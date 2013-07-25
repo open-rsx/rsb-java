@@ -11,9 +11,7 @@ import rsb.Event;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.UserData;
 import rsb.filter.AbstractFilterObserver;
 import rsb.protocol.NotificationType.Notification;
 import rsb.transport.EventBuilder;
@@ -27,8 +25,7 @@ import rsb.transport.socket.Bus.NotificationReceiver;
  * @author jwienke
  */
 public class SocketInPushConnector extends AbstractFilterObserver implements
-        InPushConnector,
-        NotificationReceiver {
+        InPushConnector, NotificationReceiver {
 
     private static final Logger LOG = Logger
             .getLogger(SocketInPushConnector.class.getName());
@@ -160,20 +157,10 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
 
         try {
 
-            System.out.println("Received notification: "
-                    + notification.toString());
-
-            // TODO completely copied from spread receive task
-            final Event resultEvent = EventBuilder
-                    .fromNotification(notification);
-
-            final Converter<ByteBuffer> converter = this.converters
-                    .getConverter(notification.getWireSchema().toStringUtf8());
-            final UserData<?> userData = converter.deserialize(notification
-                    .getWireSchema().toStringUtf8(), notification.getData()
-                    .asReadOnlyByteBuffer());
-            resultEvent.setData(userData.getData());
-            resultEvent.setType(userData.getTypeInfo());
+            final Event resultEvent = EventBuilder.fromNotification(
+                    notification,
+                    notification.getData().asReadOnlyByteBuffer(),
+                    this.converters);
 
             // make a copy to avoid lengthy locking
             final Set<EventHandler> handlers = new HashSet<EventHandler>(
@@ -183,7 +170,7 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
             }
 
         } catch (final Exception e) {
-            // TODO here would have to use an error handler
+            // TODO here we would have to use an error handler
             LOG.log(Level.WARNING,
                     "Error while dispatching notification to registered handlers. Ignoring this.",
                     e);

@@ -27,11 +27,16 @@
  */
 package rsb.transport;
 
+import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.ParticipantId;
 import rsb.Scope;
+import rsb.converter.ConversionException;
+import rsb.converter.Converter;
+import rsb.converter.ConverterSelectionStrategy;
+import rsb.converter.UserData;
 import rsb.protocol.EventIdType.EventId;
 import rsb.protocol.EventMetaDataType.UserInfo;
 import rsb.protocol.EventMetaDataType.UserTime;
@@ -39,7 +44,7 @@ import rsb.protocol.NotificationType.Notification;
 
 /**
  * A utility class to construct {@link Event}s from {@link Notification}s.
- * 
+ *
  * @author swrede
  */
 public final class EventBuilder {
@@ -55,7 +60,7 @@ public final class EventBuilder {
     /**
      * Build event from RSB Notification. Excludes user data de-serialization as
      * it is bound to the converter configuration.
-     * 
+     *
      * @param notification
      *            {@link Notification} instance to deserialize
      * @return deserialized {@link Event} instance
@@ -96,6 +101,40 @@ public final class EventBuilder {
         }
 
         return event;
+    }
+
+    /**
+     * Builds an {@link Event} instance from a {@link Notification} and a
+     * {@link ByteBuffer} containing the event payload. This includes the
+     * deserialization of the payload using a specified converter strategy.
+     *
+     * @param notification
+     *            the notification with the event meta data
+     * @param serializedData
+     *            the serialized data
+     * @param converters
+     *            converter strategy to use for deserializing the data
+     * @return the constructed and complete event including the payload
+     * @throws ConversionException
+     *             unable to deserialize the data with the specified converter
+     *             stategy
+     */
+    public static Event fromNotification(final Notification notification,
+            final ByteBuffer serializedData,
+            final ConverterSelectionStrategy<ByteBuffer> converters)
+            throws ConversionException {
+
+        final Event resultEvent = EventBuilder.fromNotification(notification);
+
+        final Converter<ByteBuffer> converter = converters
+                .getConverter(notification.getWireSchema().toStringUtf8());
+        final UserData<?> userData = converter.deserialize(notification
+                .getWireSchema().toStringUtf8(), serializedData);
+        resultEvent.setData(userData.getData());
+        resultEvent.setType(userData.getTypeInfo());
+
+        return resultEvent;
+
     }
 
 }

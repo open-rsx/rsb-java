@@ -34,9 +34,7 @@ import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.converter.ConversionException;
-import rsb.converter.Converter;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.UserData;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.transport.EventBuilder;
@@ -49,7 +47,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 /**
  * A task that continuously reads on a spread connection and decodes RSB
  * notifications from it.
- * 
+ *
  * @author jwienke
  */
 class ReceiverTask extends Thread {
@@ -141,7 +139,7 @@ class ReceiverTask extends Thread {
      * purpose of this method is the conversion of Spread data messages by
      * parsing the notification data structures as defined in RSB.Protocol using
      * the ProtoBuf data holder classes.
-     * 
+     *
      * @param receivedData
      *            data gathered from the wire
      * @return deserialized event or null if the event was fragmented and the
@@ -162,22 +160,8 @@ class ReceiverTask extends Thread {
 
             final Notification initialNotification = joinedData
                     .getNotification();
-            final Event resultEvent = EventBuilder
-                    .fromNotification(initialNotification);
-
-            // user data conversion
-            // why not do this lazy after / in the filtering?
-            // TODO deal with missing converters, errors
-            final Converter<ByteBuffer> converter = this.converters
-                    .getConverter(initialNotification.getWireSchema()
-                            .toStringUtf8());
-            final UserData<?> userData = converter.deserialize(
-                    initialNotification.getWireSchema().toStringUtf8(),
-                    joinedData.getData());
-            resultEvent.setData(userData.getData());
-            resultEvent.setType(userData.getTypeInfo());
-
-            return resultEvent;
+            return EventBuilder.fromNotification(initialNotification,
+                    joinedData.getData(), this.converters);
 
             // TODO better error handling with callback object
         } catch (final InvalidProtocolBufferException e1) {
