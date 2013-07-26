@@ -1,5 +1,6 @@
 package rsb.transport;
 
+import rsb.transport.socket.SocketFactory;
 import rsb.transport.spread.SpreadFactory;
 
 /**
@@ -29,6 +30,8 @@ public final class DefaultTransports {
 
             TransportRegistry.getDefaultInstance().registerTransport("spread",
                     new SpreadFactory());
+            TransportRegistry.getDefaultInstance().registerTransport("socket",
+                    new SocketFactory());
 
             registered = true;
 

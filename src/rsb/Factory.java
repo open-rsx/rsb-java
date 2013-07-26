@@ -61,8 +61,7 @@ public final class Factory {
         DefaultTransports.register();
 
         // construct default participant config with default transport
-        // TODO switch to socket once available
-        this.defaultConfig.getOrCreateTransport("spread").setEnabled(true);
+        this.defaultConfig.getOrCreateTransport("socket").setEnabled(true);
 
         // handle configuration
         new ConfigLoader().load(this.properties);
