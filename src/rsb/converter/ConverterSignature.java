@@ -55,11 +55,6 @@ public class ConverterSignature {
         return this.datatype;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @SuppressWarnings({ "PMD.AvoidFinalLocalVariable",
             "PMD.DataflowAnomalyAnalysis" })
     @Override
@@ -71,11 +66,6 @@ public class ConverterSignature {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @SuppressWarnings({ "PMD.OnlyOneReturn", "PMD.CyclomaticComplexity" })
     @Override
     public boolean equals(final Object obj) {

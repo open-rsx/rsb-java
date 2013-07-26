@@ -49,11 +49,6 @@ public class DefaultConverterRepository<WireType> implements
         return this.converterMap;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.converter.ConverterRepository#getConvertersForSerialization()
-     */
     @Override
     public ConverterSelectionStrategy<WireType> getConvertersForSerialization() {
         final UnambiguousConverterMap<WireType> outStrategy = new UnambiguousConverterMap<WireType>();
@@ -76,11 +71,6 @@ public class DefaultConverterRepository<WireType> implements
         return outStrategy;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.converter.ConverterRepository#getConvertersForDeserialization()
-     */
     @Override
     public ConverterSelectionStrategy<WireType> getConvertersForDeserialization() {
         final UnambiguousConverterMap<WireType> inStrategy = new UnambiguousConverterMap<WireType>();
@@ -93,12 +83,6 @@ public class DefaultConverterRepository<WireType> implements
         return inStrategy;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * rsb.converter.ConverterRepository#addConverter(rsb.converter.Converter)
-     */
     @Override
     public void addConverter(final Converter<WireType> converter) {
         if (this.converterMap.containsKey(converter.getSignature())) {

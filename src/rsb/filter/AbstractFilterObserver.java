@@ -37,46 +37,22 @@ public class AbstractFilterObserver implements FilterObserver {
     protected final static Logger LOG = Logger
             .getLogger(AbstractFilterObserver.class.getCanonicalName());
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.filter.FilterObserver#notify(rsb.filter.AbstractFilter,
-     * rsb.filter.FilterAction)
-     */
     @Override
     public void notify(final AbstractFilter event, final FilterAction action) {
         LOG.fine("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.filter.FilterObserver#notify(rsb.filter.ScopeFilter,
-     * rsb.filter.FilterAction)
-     */
     @Override
     public void notify(final ScopeFilter event, final FilterAction action) {
         LOG.fine("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.filter.FilterObserver#notify(rsb.filter.TypeFilter,
-     * rsb.filter.FilterAction)
-     */
     @Override
     public void notify(final TypeFilter event, final FilterAction action) {
         LOG.fine("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see rsb.filter.FilterObserver#notify(rsb.filter.OriginFilter,
-     * rsb.filter.FilterAction)
-     */
     @Override
     public void notify(final OriginFilter event, final FilterAction action) {
         LOG.fine("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
