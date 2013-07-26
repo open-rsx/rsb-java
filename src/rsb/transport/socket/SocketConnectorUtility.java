@@ -48,40 +48,67 @@ public class SocketConnectorUtility {
         return this.converters;
     }
 
-    private static Bus getBusServer(final SocketOptions options)
-            throws RSBException {
+    /**
+     * Implementations of this interface provide a factory method for creating
+     * {@link Bus} instances.
+     *
+     * @author jwienke
+     */
+    private interface BusCreator {
 
-        synchronized (busServerCache.getSynchronizer()) {
+        /**
+         * Creates a new instance.
+         *
+         * @param options
+         *            socket options for that instance
+         * @return new instance, not <code>null</code>
+         */
+        Bus create(SocketOptions options);
 
-            if (busServerCache.hasBus(options)) {
-                return busServerCache.get(options);
+    }
+
+    private static Bus getBusFromCache(final SocketOptions options,
+            final BusCache cache, final BusCreator creator) throws RSBException {
+
+        synchronized (cache.getSynchronizer()) {
+
+            if (cache.hasBus(options)) {
+                final Bus bus = cache.get(options);
+                bus.activate();
+                return bus;
             }
 
-            final Bus bus = new BusServer(options);
+            final Bus bus = new RefCountingBus(creator.create(options));
             bus.activate();
-            busServerCache.register(bus);
+            cache.register(bus);
             return bus;
 
         }
 
     }
 
-    private static Bus getBusClient(final SocketOptions options)
+    private static Bus getBusServer(final SocketOptions options)
             throws RSBException {
+        return getBusFromCache(options, busServerCache, new BusCreator() {
 
-        synchronized (busClientCache.getSynchronizer()) {
-
-            if (busClientCache.hasBus(options)) {
-                return busClientCache.get(options);
+            @Override
+            public Bus create(final SocketOptions options) {
+                return new BusServer(options);
             }
 
-            final Bus bus = new BusClient(options);
-            bus.activate();
-            busClientCache.register(bus);
-            return bus;
+        });
+    }
 
-        }
+    private static Bus getBusClient(final SocketOptions options)
+            throws RSBException {
+        return getBusFromCache(options, busClientCache, new BusCreator() {
 
+            @Override
+            public Bus create(final SocketOptions options) {
+                return new BusClient(options);
+            }
+
+        });
     }
 
     public void activate() throws RSBException {
@@ -124,7 +151,7 @@ public class SocketConnectorUtility {
                 throw new IllegalStateException("Not active");
             }
 
-            // we must not(!) deactivate the bus as it is in a cache
+            this.bus.deactivate();
             this.bus = null;
 
         }

@@ -43,7 +43,7 @@ import rsb.protocol.NotificationType.Notification;
  * @author swrede
  * @author jwienke
  */
-public class BusClient extends Bus {
+public class BusClient extends BusBase {
 
     private static final Logger LOG = Logger.getLogger(BusClient.class
             .getName());

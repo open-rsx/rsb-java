@@ -16,7 +16,7 @@ import rsb.protocol.NotificationType.Notification;
  */
 public class BusCacheTest {
 
-    class DummyBus extends Bus {
+    class DummyBus extends BusBase {
 
         public DummyBus(final SocketOptions options) {
             super(options);
