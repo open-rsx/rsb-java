@@ -15,9 +15,28 @@ public class RefCountingBus implements Bus {
 
     private final Bus bus;
     private int count = 0;
+    private final DeactivationHandler deactivationHandler;
 
-    public RefCountingBus(final Bus bus) {
+    /**
+     * A handler that will be called once the underlying bus will really be
+     * deactivated.
+     *
+     * @author jwienke
+     */
+    public interface DeactivationHandler {
+
+        /**
+         * Called on deactivation of a reference-counted bus instance
+         *
+         * @param bus
+         */
+        void deactivated(final RefCountingBus bus);
+
+    }
+
+    public RefCountingBus(final Bus bus, final DeactivationHandler handler) {
         this.bus = bus;
+        this.deactivationHandler = handler;
     }
 
     @Override
@@ -45,6 +64,7 @@ public class RefCountingBus implements Bus {
             --this.count;
             if (this.count == 0) {
                 this.bus.deactivate();
+                this.deactivationHandler.deactivated(this);
             }
         }
     }
@@ -63,6 +83,17 @@ public class RefCountingBus implements Bus {
     @Override
     public void addNotificationReceiver(final NotificationReceiver receiver) {
         this.bus.addNotificationReceiver(receiver);
+    }
+
+    /**
+     * Returns the underlying bus that is handled with reference counting. Do
+     * not call {@link Bus#activate()} or {@link Bus#deactivate()} on this
+     * instance!
+     *
+     * @return the managed bus
+     */
+    public Bus getContainedBus() {
+        return this.bus;
     }
 
 }

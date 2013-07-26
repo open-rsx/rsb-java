@@ -3,6 +3,8 @@ package rsb.transport.socket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A cache for {@link Bus} instances based on the required {@link SocketOptions}
@@ -14,6 +16,9 @@ import java.util.Map;
  * @author jwienke
  */
 public class BusCache {
+
+    private static final Logger LOG = Logger
+            .getLogger(BusCache.class.getName());
 
     private final Map<SocketOptions, Bus> cache = Collections
             .synchronizedMap(new HashMap<SocketOptions, Bus>());
@@ -60,6 +65,22 @@ public class BusCache {
                                 + bus.getSocketOptions());
             }
             this.cache.put(bus.getSocketOptions(), bus);
+            LOG.log(Level.FINER, "Added new bus {0}. New state is: {1}",
+                    new Object[] { bus, this.cache });
+        }
+    }
+
+    /**
+     * Removes a bus from the cache if it was present.
+     *
+     * @param bus
+     *            the bus to remove
+     */
+    public void unregister(final Bus bus) {
+        synchronized (this.cache) {
+            this.cache.remove(bus.getSocketOptions());
+            LOG.log(Level.FINER, "Removed bus {0}. New state is: {1}",
+                    new Object[] { bus, this.cache });
         }
     }
 

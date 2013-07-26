@@ -1,5 +1,6 @@
 package rsb.transport.socket;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -85,6 +86,20 @@ public class BusCacheTest {
         final Bus bus = new DummyBus(options);
         cache.register(bus);
         assertTrue(cache.hasBus(options));
+
+    }
+
+    @Test
+    public void unregister() throws Throwable {
+
+        final BusCache cache = new BusCache();
+        final SocketOptions options = new SocketOptions(
+                InetAddress.getLocalHost(), 2546, true);
+        final Bus bus = new DummyBus(options);
+        cache.register(bus);
+        cache.unregister(bus);
+        assertFalse(cache.hasBus(options));
+        cache.unregister(bus);
 
     }
 

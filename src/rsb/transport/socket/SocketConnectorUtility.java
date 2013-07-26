@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import rsb.RSBException;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.transport.Connector;
+import rsb.transport.socket.RefCountingBus.DeactivationHandler;
 
 /**
  * A class providing base functionality for {@link Connector} implementations of
@@ -78,7 +79,17 @@ public class SocketConnectorUtility {
                 return bus;
             }
 
-            final Bus bus = new RefCountingBus(creator.create(options));
+            final Bus bus = new RefCountingBus(creator.create(options),
+                    new DeactivationHandler() {
+
+                        @Override
+                        public void deactivated(final RefCountingBus bus) {
+                            synchronized (cache.getSynchronizer()) {
+                                cache.unregister(bus);
+                            }
+                        }
+
+                    });
             bus.activate();
             cache.register(bus);
             return bus;
