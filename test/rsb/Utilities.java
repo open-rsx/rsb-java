@@ -29,7 +29,7 @@ public final class Utilities {
     public static ParticipantConfig createParticipantConfig() {
 
         final ParticipantConfig config = new ParticipantConfig();
-        config.getOrCreateTransport("spread").setEnabled(true);
+        config.getOrCreateTransport("socket").setEnabled(true);
 
         // handle configuration
         final Properties properties = new Properties();
