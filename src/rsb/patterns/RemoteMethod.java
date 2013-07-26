@@ -116,9 +116,10 @@ public class RemoteMethod extends Method implements Handler {
         public void error(final Throwable error) {
             final Future<FutureDataType> future = this.future.get();
             if (future != null) {
-                this.error(error);
+                future.error(error);
             }
         }
+
     }
 
     /**
