@@ -33,14 +33,14 @@ import rsb.ParticipantId;
 /**
  * Events matched by this filter have to originate from a particular
  * participant.
- * 
+ *
  * @author swrede
  * @author jmoringe
  */
 public class OriginFilter extends AbstractFilter {
 
-    ParticipantId origin;
-    boolean invert = false;
+    private final ParticipantId origin;
+    private boolean invert = false;
 
     public OriginFilter(final ParticipantId origin, final boolean invert) {
         super(OriginFilter.class);
@@ -61,11 +61,11 @@ public class OriginFilter extends AbstractFilter {
     }
 
     @Override
-    public Event transform(final Event e) {
-        boolean matches = e.getId().getParticipantId().equals(this.origin);
+    public Event transform(final Event event) {
+        boolean matches = event.getId().getParticipantId().equals(this.origin);
         matches = this.invert ? !matches : matches;
         if (matches) {
-            return e;
+            return event;
         } else {
             return null;
         }
@@ -75,15 +75,22 @@ public class OriginFilter extends AbstractFilter {
      * Helper method for double dispatch of Filter registrations
      */
     @Override
-    public void dispachToObserver(final FilterObserver o, final FilterAction a) {
-        o.notify(this, a);
+    public void dispachToObserver(final FilterObserver observer,
+            final FilterAction action) {
+        observer.notify(this, action);
     }
 
     @Override
     public boolean equals(final Object that) {
         return that instanceof OriginFilter
                 && this.origin.equals(((OriginFilter) that).origin)
-                && (this.invert == ((OriginFilter) that).invert);
+                && this.invert == ((OriginFilter) that).invert;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * this.origin.hashCode() + 7
+                * Boolean.valueOf(this.invert).hashCode();
     }
 
 }

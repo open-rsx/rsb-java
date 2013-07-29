@@ -49,11 +49,13 @@ import rsb.transport.DefaultTransports;
 /**
  * @author swrede
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public class InformerTest {
 
-    transient private final Scope defaultScope = new Scope("/informer/example");
-    transient private Informer<String> stringInformer;
-    transient private Informer<?> genericInformer;
+    private static final Scope DEFAULT_SCOPE = new Scope("/informer/example");
+    private static final String DEFAULT_STRING_PAYLOAD = "Hello World!";
+    private Informer<String> stringInformer;
+    private Informer<?> genericInformer;
     @SuppressWarnings("unused")
     final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
             .getDefaultConverterRepository();
@@ -70,11 +72,10 @@ public class InformerTest {
 
         this.config = Utilities.createParticipantConfig();
 
-        this.stringInformer = new Informer<String>(this.defaultScope,
-                String.class, this.config);
-        this.stringInformer.activate();
-        this.genericInformer = new Informer<Object>(this.defaultScope,
+        this.stringInformer = new Informer<String>(DEFAULT_SCOPE, String.class,
                 this.config);
+        this.stringInformer.activate();
+        this.genericInformer = new Informer<Object>(DEFAULT_SCOPE, this.config);
         this.genericInformer.activate();
 
     }
@@ -92,7 +93,7 @@ public class InformerTest {
     @Test
     public void informerString() {
         assertNotNull("Informer is null", this.stringInformer);
-        assertEquals(this.stringInformer.getScope(), this.defaultScope);
+        assertEquals(this.stringInformer.getScope(), DEFAULT_SCOPE);
     }
 
     @Test
@@ -131,12 +132,12 @@ public class InformerTest {
      */
     @Test
     public void getScope() {
-        assertEquals(this.stringInformer.getScope(), this.defaultScope);
+        assertEquals(this.stringInformer.getScope(), DEFAULT_SCOPE);
     }
 
     /**
      * Test method for {@link rsb.Informer#activate()}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */
@@ -147,7 +148,7 @@ public class InformerTest {
 
     /**
      * Test method for {@link rsb.Informer#deactivate()}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */
@@ -162,15 +163,15 @@ public class InformerTest {
     @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation")
     private void testEvent(final Event event, final Participant participant) {
         assertEquals(String.class, event.getType());
-        assertEquals("Hello World!", event.getData());
+        assertEquals(DEFAULT_STRING_PAYLOAD, event.getData());
         assertNotNull(event.getId());
-        assertEquals(new Scope("/informer/example"), event.getScope());
+        assertEquals(DEFAULT_SCOPE, event.getScope());
         assertEquals(participant.getId(), event.getId().getParticipantId());
     }
 
     /**
      * Test method for {@link rsb.Informer#send(rsb.Event)}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */
@@ -178,23 +179,23 @@ public class InformerTest {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendEvent() throws Throwable {
-        Event sentEvent = this.stringInformer.send(new Event(this.defaultScope,
-                String.class, "Hello World!"));
+        Event sentEvent = this.stringInformer.send(new Event(DEFAULT_SCOPE,
+                String.class, DEFAULT_STRING_PAYLOAD));
         this.testEvent(sentEvent, this.stringInformer);
-        sentEvent = this.genericInformer.send(new Event(this.defaultScope,
-                String.class, "Hello World!"));
+        sentEvent = this.genericInformer.send(new Event(DEFAULT_SCOPE,
+                String.class, DEFAULT_STRING_PAYLOAD));
         this.testEvent(sentEvent, this.genericInformer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendWrongType() throws RSBException {
-        this.stringInformer.send(new Event(this.defaultScope, Object.class,
+        this.stringInformer.send(new Event(DEFAULT_SCOPE, Object.class,
                 "not allowed"));
     }
 
     /**
      * Test method for {@link rsb.Informer#send(rsb.Event)}.
-     * 
+     *
      * @throws Throwable
      *             any error
      */
@@ -202,14 +203,15 @@ public class InformerTest {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendT() throws Throwable {
-        final Event sentEvent = this.stringInformer.send("Hello World!");
+        final Event sentEvent = this.stringInformer
+                .send(DEFAULT_STRING_PAYLOAD);
         this.testEvent(sentEvent, this.stringInformer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventNullScope() throws Throwable {
         final Event sentEvent = new Event(this.stringInformer.getTypeInfo(),
-                "foo");
+                DEFAULT_STRING_PAYLOAD);
         sentEvent.setScope(null);
         this.stringInformer.send(sentEvent);
     }
@@ -217,21 +219,22 @@ public class InformerTest {
     @Test(expected = IllegalArgumentException.class)
     public void sendEventWrongScope() throws Throwable {
         this.stringInformer.send(new Event(new Scope("/blubb"),
-                this.stringInformer.getTypeInfo(), "foo"));
+                this.stringInformer.getTypeInfo(), DEFAULT_STRING_PAYLOAD));
     }
 
     // we just want to know that the call does not raise an exception
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendEventSubScope() throws Throwable {
-        this.stringInformer.send(new Event(this.defaultScope.concat(new Scope(
-                "/blubb")), this.stringInformer.getTypeInfo(), "foo"));
+        this.stringInformer.send(new Event(DEFAULT_SCOPE.concat(new Scope(
+                "/blubb")), this.stringInformer.getTypeInfo(),
+                DEFAULT_STRING_PAYLOAD));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventWrongType() throws Throwable {
         this.stringInformer.setTypeInfo(String.class);
-        this.stringInformer.send(new Event(this.defaultScope, Boolean.class,
-                "foo"));
+        this.stringInformer.send(new Event(DEFAULT_SCOPE, Boolean.class,
+                DEFAULT_STRING_PAYLOAD));
     }
 }

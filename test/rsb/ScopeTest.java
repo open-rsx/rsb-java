@@ -37,9 +37,10 @@ import org.junit.Test;
 
 /**
  * Test case for {@link Scope}.
- * 
+ *
  * @author jwienke
  */
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals" })
 public class ScopeTest {
 
     @Test

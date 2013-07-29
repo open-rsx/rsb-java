@@ -51,7 +51,7 @@ public class ServerTest {
 
     public class ShutdownCallback extends DataCallback<String, String> {
 
-        Server<?> server;
+        private final Server<?> server;
 
         public ShutdownCallback(final Server<?> server) {
             this.server = server;
@@ -71,22 +71,22 @@ public class ServerTest {
         assertNotNull(server);
     }
 
-    private Server<?> getServer() {
+    private LocalServer getServer() {
         final Factory factory = Factory.getInstance();
-        final Server<?> server = factory.createLocalServer(new Scope(
+        final LocalServer server = factory.createLocalServer(new Scope(
                 "/example/server"));
         return server;
     }
 
     /**
      * Test method for {@link rsb.patterns.Server#getMethods()}.
-     * 
+     *
      * @throws Throwable
      *             any exception
      */
     @Test
     public void getMethods() throws Throwable {
-        final LocalServer server = (LocalServer) this.getServer();
+        final LocalServer server = this.getServer();
         assertEquals(0, server.getMethods().size());
         server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         assertEquals(1, server.getMethods().size());
@@ -96,7 +96,7 @@ public class ServerTest {
 
     @Test
     public void addMethod() throws Throwable {
-        final LocalServer server = (LocalServer) this.getServer();
+        final LocalServer server = this.getServer();
         server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         server.addMethod("callmeEvent", new ReplyEventCallback());
         assertEquals(2, server.getMethods().size());
@@ -110,7 +110,7 @@ public class ServerTest {
      */
     @Test
     public void activate() throws Throwable {
-        final LocalServer server = (LocalServer) this.getServer();
+        final LocalServer server = this.getServer();
         assertFalse(server.isActive());
         server.activate();
         assertTrue(server.isActive());
@@ -129,7 +129,7 @@ public class ServerTest {
      */
     @Test
     public void deactivate() throws Throwable {
-        final LocalServer server = (LocalServer) this.getServer();
+        final LocalServer server = this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod(CALL_METHOD_NAME, method);
         server.activate();
@@ -141,8 +141,9 @@ public class ServerTest {
     }
 
     @Test
+    @SuppressWarnings("JUnitTestsShouldIncludeAssert")
     public void startServer() throws Throwable {
-        final LocalServer server = (LocalServer) this.getServer();
+        final LocalServer server = this.getServer();
         final DataCallback<String, String> method = new ReplyDataCallback();
         server.addMethod(CALL_METHOD_NAME, method);
         server.activate();
@@ -151,8 +152,9 @@ public class ServerTest {
     }
 
     @Test
+    @SuppressWarnings("JUnitTestsShouldIncludeAssert")
     public void blocking() throws Throwable {
-        final LocalServer server = (LocalServer) this.getServer();
+        final LocalServer server = this.getServer();
         final DataCallback<String, String> method = new ShutdownCallback(server);
         server.addMethod("shutdown", method);
         server.activate();

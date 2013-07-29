@@ -133,7 +133,7 @@ public class ParticipantConfig {
     @Override
     public String toString() {
 
-        final StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder(35);
         builder.append(getClass().getName());
         builder.append("[transports=");
         builder.append(Arrays

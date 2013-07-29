@@ -34,7 +34,7 @@ public class MethodFilter extends AbstractFilter {
     // private final static Logger LOG =
     // Logger.getLogger(MethodFilter.class.getName());
 
-    String method;
+    private final String method;
 
     public MethodFilter(final String method) {
         super(MethodFilter.class);
@@ -42,19 +42,20 @@ public class MethodFilter extends AbstractFilter {
     }
 
     @Override
-    public void dispachToObserver(final FilterObserver o, final FilterAction a) {
-        o.notify(this, a);
+    public void dispachToObserver(final FilterObserver observer,
+            final FilterAction action) {
+        observer.notify(this, action);
 
     }
 
     @Override
-    public Event transform(final Event e) {
-        Event result = null;
-        if (e.getMethod() != null
-                && e.getMethod().equalsIgnoreCase(this.method)) {
+    public Event transform(final Event event) {
+        if (event.getMethod() != null
+                && event.getMethod().equalsIgnoreCase(this.method)) {
 
-            result = e;
+            return event;
         }
-        return result;
+        return null;
     }
+
 }

@@ -72,13 +72,13 @@ public class FilteringHandler implements Handler {
     }
 
     @Override
-    public void internalNotify(final Event e) {
-        for (final Filter f : this.filters) {
-            if (f.transform(e) == null) {
+    public void internalNotify(final Event event) {
+        for (final Filter filter : this.filters) {
+            if (filter.transform(event) == null) {
                 return;
             }
         }
-        this.decorated.internalNotify(e);
+        this.decorated.internalNotify(event);
     }
 
 }

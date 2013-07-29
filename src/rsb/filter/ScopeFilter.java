@@ -93,8 +93,8 @@ public class ScopeFilter extends AbstractFilter {
             matches = true;
             this.skipped(event.getId());
         } else {
-            matches = (this.scope.equals(event.getScope()) || this.scope
-                    .isSuperScopeOf(event.getScope()));
+            matches = this.scope.equals(event.getScope())
+                    || this.scope.isSuperScopeOf(event.getScope());
         }
         if (matches) {
             LOG.fine("ScopeFilter matched successfully!");
@@ -102,6 +102,11 @@ public class ScopeFilter extends AbstractFilter {
             LOG.fine("ScopeFilter rejected event!");
         }
         return matches ? event : null;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * this.scope.hashCode();
     }
 
 }

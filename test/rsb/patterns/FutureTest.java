@@ -28,7 +28,7 @@
 
 package rsb.patterns;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -45,7 +45,7 @@ public class FutureTest {
     public void simpleGet() throws ExecutionException, TimeoutException {
         final Future<Integer> future = new Future<Integer>();
         future.complete(1);
-        assertEquals(new Integer(1), future.get());
+        assertEquals(Integer.valueOf(1), future.get());
     }
 
     @Test(expected = CancellationException.class)

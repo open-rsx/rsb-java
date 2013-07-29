@@ -75,17 +75,17 @@ public class UnorderedParallelEventReceivingStrategyTest {
     @Test
     public final void addHandler() {
         final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
-        final TestHandler h = new TestHandler();
-        strategy.addHandler(h, true);
-        assertTrue(strategy.getHandlers().contains(h));
+        final TestHandler handler = new TestHandler();
+        strategy.addHandler(handler, true);
+        assertTrue(strategy.getHandlers().contains(handler));
     }
 
     @Test
     public final void removeSubscription() throws InterruptedException {
         final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
-        final TestHandler h = new TestHandler();
-        strategy.addHandler(h, true);
-        strategy.removeHandler(h, true);
+        final TestHandler handler = new TestHandler();
+        strategy.addHandler(handler, true);
+        strategy.removeHandler(handler, true);
         assertEquals(0, strategy.getHandlers().size());
     }
 

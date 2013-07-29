@@ -27,9 +27,10 @@
  */
 package rsb.filter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -42,38 +43,34 @@ import rsb.Scope;
  */
 public class ScopeFilterTest {
 
+    private static final Scope DEFAULT_SCOPE = new Scope("/images");
+
     /**
      * Test method for {@link rsb.filter.ScopeFilter#transform(rsb.Event)}.
      */
     @Test
     public void transform() {
-        final Event e = new Event();
-        e.setScope(new Scope("/images"));
-        e.setId(new ParticipantId(), 234);
-        final ScopeFilter sf = new ScopeFilter(new Scope("/images"));
-        assertTrue(sf.transform(e) != null);
-        e.setScope(new Scope("/nomatch"));
-        assertTrue(sf.transform(e) == null);
+        final Event event = new Event();
+        event.setScope(DEFAULT_SCOPE);
+        event.setId(new ParticipantId(), 234);
+        final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
+        assertNotNull(filter.transform(event));
+        event.setScope(new Scope("/nomatch"));
+        assertNull(filter.transform(event));
     }
 
     @Test
     public void skipEventId() {
-        final Event e = new Event();
+        final Event event = new Event();
         // TODO actually, we need a mock object to test this correctly
         // setting the Scope to another name than the scope filters
         // configuration is just to check here whether the white-
         // listing really works
-        e.setScope(new Scope("/images/justfortesting"));
-        e.setId(new ParticipantId(), 43543);
-        final ScopeFilter sf = new ScopeFilter(new Scope("/images"));
-        sf.skip(e.getId());
-        assertTrue(sf.transform(e) != null);
-    }
-
-    @Test
-    public void scopeFilter() {
-        final ScopeFilter sf = new ScopeFilter(new Scope("/images"));
-        assertNotNull(sf);
+        event.setScope(DEFAULT_SCOPE.concat(new Scope("/justfortesting")));
+        event.setId(new ParticipantId(), 43543);
+        final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
+        filter.skip(event.getId());
+        assertNotNull(filter.transform(event));
     }
 
     /**
@@ -81,17 +78,17 @@ public class ScopeFilterTest {
      */
     @Test
     public void getScope() {
-        final ScopeFilter sf = new ScopeFilter(new Scope("/images"));
-        assertTrue(sf.getScope().equals(new Scope("/images")));
+        final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
+        assertEquals(DEFAULT_SCOPE, filter.getScope());
     }
 
     @Test
     public void equalsFilter() {
-        final ScopeFilter sf1 = new ScopeFilter(new Scope("/images"));
-        final ScopeFilter sf2 = new ScopeFilter(new Scope("/images"));
-        assertTrue(sf1.equals(sf2));
-        sf2.setScope(new Scope("/nope"));
-        assertFalse(sf1.equals(sf2));
+        final ScopeFilter filter1 = new ScopeFilter(DEFAULT_SCOPE);
+        final ScopeFilter filter2 = new ScopeFilter(DEFAULT_SCOPE);
+        assertEquals(filter1, filter2);
+        filter2.setScope(new Scope("/nope"));
+        assertFalse(filter1.equals(filter2));
     }
 
 }

@@ -28,6 +28,7 @@
 package rsb.filter;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import rsb.Event;
@@ -42,7 +43,7 @@ public abstract class AbstractFilter implements Filter {
             .getName());
 
     /* stores whitelisted event ids registered by skip() */
-    protected HashSet<EventId> whitelist = new HashSet<EventId>();
+    protected Set<EventId> whitelist = new HashSet<EventId>();
 
     /* stores type info */
     protected String type = AbstractFilter.class.getSimpleName();
@@ -54,7 +55,7 @@ public abstract class AbstractFilter implements Filter {
      * is discarded.
      */
     @Override
-    public abstract Event transform(Event e);
+    public abstract Event transform(Event event);
 
     protected AbstractFilter(final String type) {
         this.type = type;
@@ -67,39 +68,40 @@ public abstract class AbstractFilter implements Filter {
     /**
      * Skip this filter for any event with the specified ID. This will cause the
      * MTF to successfully transform the event without applying any checks.
-     * 
-     * @param id
+     *
+     * @param eventId
      *            the id to skip
      */
-    public void skip(final EventId id) {
-        LOG.info("Event with ID " + id + " will not be matched by " + this.type
-                + " as this was already done by network layer!");
-        this.whitelist.add(id);
+    public void skip(final EventId eventId) {
+        LOG.info("Event with ID " + eventId + " will not be matched by "
+                + this.type + " as this was already done by network layer!");
+        this.whitelist.add(eventId);
     }
 
     /**
      * returns whether events with the specified ID should be skipped or not.
-     * 
-     * @param id
+     *
+     * @param eventId
      * @return true, if the event with the specified ID should be skipped
      */
-    public boolean mustSkip(final EventId id) {
-        return this.whitelist.contains(id);
+    public boolean mustSkip(final EventId eventId) {
+        return this.whitelist.contains(eventId);
     }
 
     /**
      * remove ID from the list after the corresponding event has been skipped.
-     * 
-     * @param id
+     *
+     * @param eventId
      */
-    public void skipped(final EventId id) {
-        this.whitelist.remove(id);
+    public void skipped(final EventId eventId) {
+        this.whitelist.remove(eventId);
     }
 
     /**
      * Helper method for double dispatch of Filter registrations
      */
     @Override
-    public abstract void dispachToObserver(FilterObserver o, FilterAction a);
+    public abstract void dispachToObserver(FilterObserver observer,
+            FilterAction action);
 
 }

@@ -33,7 +33,7 @@ import rsb.Event;
 import rsb.EventId;
 
 /**
- * 
+ *
  * @author swrede
  */
 public class TypeFilter extends AbstractFilter {
@@ -41,23 +41,23 @@ public class TypeFilter extends AbstractFilter {
     private final static Logger LOG = Logger.getLogger(TypeFilter.class
             .getName());
 
-    Class<?> type;
+    private Class<?> type;
 
     public TypeFilter() {
         super(TypeFilter.class);
     }
 
-    public TypeFilter(final Class<?> c) {
+    public TypeFilter(final Class<?> type) {
         super(TypeFilter.class);
-        this.type = c;
+        this.type = type;
     }
 
     @Override
-    public void skip(final EventId id) {
+    public void skip(final EventId eventId) {
         LOG.info("Event with ID "
-                + id
+                + eventId
                 + " will not be matched by TypeFilter as this was already done by network layer!");
-        super.skip(id);
+        super.skip(eventId);
     }
 
     @Override
@@ -67,17 +67,17 @@ public class TypeFilter extends AbstractFilter {
     }
 
     @Override
-    public Event transform(final Event e) {
+    public Event transform(final Event event) {
         // check skip
-        final EventId eventId = e.getId();
+        final EventId eventId = event.getId();
         if (this.mustSkip(eventId)) {
             LOG.info("event with ID " + eventId + " whitelisted in TypeFilter!");
             this.skipped(eventId);
-            return e;
+            return event;
         }
         // condition: class types are equal
-        if (this.type.isAssignableFrom(e.getClass())) {
-            return e;
+        if (this.type.isAssignableFrom(event.getClass())) {
+            return event;
         } else {
             return null;
         }
@@ -87,7 +87,13 @@ public class TypeFilter extends AbstractFilter {
      * Helper method for double dispatch of Filter registrations
      */
     @Override
-    public void dispachToObserver(final FilterObserver o, final FilterAction a) {
-        o.notify(this, a);
+    public void dispachToObserver(final FilterObserver observer,
+            final FilterAction action) {
+        observer.notify(this, action);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * this.type.hashCode();
     }
 }

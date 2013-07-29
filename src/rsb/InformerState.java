@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 
 public class InformerState<T> {
 
+    private static final String NOT_ACTIVE_MESSAGE = "informer not activated";
+
     private final static Logger LOG = Logger.getLogger(InformerState.class
             .getName());
 
@@ -46,24 +48,24 @@ public class InformerState<T> {
 
     protected void activate() throws InitializeException {
         LOG.warning("invalid state exception during activate call");
-        throw new InvalidStateException("informer not activated");
+        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
     protected void deactivate() throws RSBException {
         LOG.warning("invalid state exception during deactivate call");
-        throw new InvalidStateException("informer not activated");
+        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
     protected Event send(@SuppressWarnings("unused") final Event event)
             throws RSBException {
         LOG.warning("invalid state exception during call to send");
-        throw new InvalidStateException("informer not activated");
+        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
     protected Event send(@SuppressWarnings("unused") final T data)
             throws RSBException {
         LOG.warning("invalid state exception during call to send");
-        throw new InvalidStateException("informer not activated");
+        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
 }

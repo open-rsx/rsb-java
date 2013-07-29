@@ -34,18 +34,19 @@ import rsb.Event;
  */
 public interface Filter {
 
-    // public boolean isStateless();
+    // boolean isStateless();
 
     /**
      * transform the given event into a result event according to this filters
      * rules. This may return null, if the event is dropped by the filter, the
      * passed-in event if no transformation is applied, or some new event.
-     * 
-     * @param e
+     *
+     * @param event
      *            the event to be transformed
-     * @return the transformed event or null
+     * @return the transformed event or <code>null</code> in case the filter
+     *         does not apply to this event
      */
-    public Event transform(Event e);
+    Event transform(Event event);
 
     // /**
     // * tell this MTF to skip any event matching the specified ID it
@@ -59,17 +60,14 @@ public interface Filter {
     // */
     // public void skip(EventId id);
 
-    @Override
-    public boolean equals(Object that);
-
     /**
      * Helper method for double dispatch of Filter registrations
-     * 
-     * @param o
+     *
+     * @param observer
      *            the observer to dispatch to
-     * @param a
+     * @param action
      *            the action that was performed
      */
-    public void dispachToObserver(FilterObserver o, FilterAction a);
+    void dispachToObserver(FilterObserver observer, FilterAction action);
 
 }

@@ -27,6 +27,7 @@
  */
 package rsb.filter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -42,29 +43,29 @@ public class FilterObservableTest {
 
     private final class TestObserver implements FilterObserver {
 
-        boolean notified_of = false;
-        boolean notified_tf = false;
-        boolean notified_sf = false;
-        boolean notified_af = false;
+        boolean notifiedOrigin = false;
+        boolean notifiedType = false;
+        boolean notifiedScope = false;
+        boolean notifiedAbstract = false;
 
         @Override
         public void notify(final OriginFilter event, final FilterAction action) {
-            this.notified_of = true;
+            this.notifiedOrigin = true;
         }
 
         @Override
         public void notify(final TypeFilter event, final FilterAction action) {
-            this.notified_tf = true;
+            this.notifiedType = true;
         }
 
         @Override
         public void notify(final ScopeFilter event, final FilterAction action) {
-            this.notified_sf = true;
+            this.notifiedScope = true;
         }
 
         @Override
         public void notify(final AbstractFilter event, final FilterAction action) {
-            this.notified_af = true;
+            this.notifiedAbstract = true;
         }
     }
 
@@ -75,9 +76,9 @@ public class FilterObservableTest {
      */
     @Test
     public void addObserver() {
-        final FilterObservable fo = new FilterObservable();
-        fo.addObserver(new TestObserver());
-        assertTrue(fo.observers.size() == 1);
+        final FilterObservable observable = new FilterObservable();
+        observable.addObserver(new TestObserver());
+        assertEquals(1, observable.observers.size());
     }
 
     /**
@@ -87,27 +88,28 @@ public class FilterObservableTest {
      */
     @Test
     public void removeObserver() {
-        final FilterObservable fo = new FilterObservable();
-        final TestObserver to = new TestObserver();
-        fo.addObserver(to);
-        fo.removeObserver(to);
-        assertTrue(fo.observers.size() == 0);
+        final FilterObservable observable = new FilterObservable();
+        final TestObserver observer = new TestObserver();
+        observable.addObserver(observer);
+        observable.removeObserver(observer);
+        assertEquals(0, observable.observers.size());
     }
 
     @Test
     public void notifyObservers() {
-        final FilterObservable fo = new FilterObservable();
-        final TestObserver to = new TestObserver();
-        fo.addObserver(to);
-        fo.notifyObservers(new ScopeFilter(new Scope("/blub")),
+        final FilterObservable observable = new FilterObservable();
+        final TestObserver observer = new TestObserver();
+        observable.addObserver(observer);
+        observable.notifyObservers(new ScopeFilter(new Scope("/blub")),
                 FilterAction.ADD);
-        fo.notifyObservers(new OriginFilter(new ParticipantId()),
+        observable.notifyObservers(new OriginFilter(new ParticipantId()),
                 FilterAction.ADD);
-        fo.notifyObservers(new TypeFilter(this.getClass()), FilterAction.ADD);
-        assertTrue(to.notified_sf);
-        assertTrue(to.notified_tf);
-        assertTrue(to.notified_of);
-        assertFalse(to.notified_af);
+        observable.notifyObservers(new TypeFilter(this.getClass()),
+                FilterAction.ADD);
+        assertTrue(observer.notifiedScope);
+        assertTrue(observer.notifiedType);
+        assertTrue(observer.notifiedOrigin);
+        assertFalse(observer.notifiedAbstract);
     }
 
     /**
@@ -115,11 +117,11 @@ public class FilterObservableTest {
      */
     @Test
     public void clearObservers() {
-        final FilterObservable fo = new FilterObservable();
-        final TestObserver to = new TestObserver();
-        fo.addObserver(to);
-        fo.clearObservers();
-        assertTrue(fo.observers.size() == 0);
+        final FilterObservable observable = new FilterObservable();
+        final TestObserver observer = new TestObserver();
+        observable.addObserver(observer);
+        observable.clearObservers();
+        assertEquals(0, observable.observers.size());
     }
 
 }

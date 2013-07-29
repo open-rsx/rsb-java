@@ -30,6 +30,8 @@ package rsb.eventprocessing;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.Handler;
@@ -39,6 +41,9 @@ import rsb.filter.Filter;
  * @author swrede
  */
 public class MatchAndDispatchTask implements Callable<Boolean> {
+
+    private static final Logger LOG = Logger
+            .getLogger(MatchAndDispatchTask.class.getName());
 
     private final Handler handler;
     private final Set<Filter> filters;
@@ -55,14 +60,16 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() throws Exception {
+    public Boolean call() {
         try {
             if (this.match(this.event)) {
                 try {
                     this.handler.internalNotify(this.event);
-                } catch (final Throwable ex) {
-                    // TODO add logger, re-throw exception to user-specified
-                    // exception handler
+                } catch (final Exception ex) {
+                    LOG.log(Level.WARNING,
+                            "Unable to dispatch event to handler"
+                                    + this.handler, ex);
+                    // TODO pass to exception handler
                 }
                 return true;
             }

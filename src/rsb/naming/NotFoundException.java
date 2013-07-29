@@ -34,7 +34,7 @@ import rsb.RSBException;
  * be resolved to an RSB resource. For instance, if a RemoteServer object is to
  * be created using a server name that is not existing, a NameNotFoundException
  * is thrown.
- * 
+ *
  * @author swrede
  */
 public class NotFoundException extends RSBException {
@@ -42,6 +42,7 @@ public class NotFoundException extends RSBException {
     private static final long serialVersionUID = -8852918216048184478L;
 
     public NotFoundException() {
+        // empty message an cause
     }
 
     /**

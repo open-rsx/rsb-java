@@ -27,7 +27,8 @@
  */
 package rsb.filter;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -37,7 +38,7 @@ import rsb.Scope;
 
 /**
  * Unit tests for the {@link rsb.filter.OriginFilter} class.
- * 
+ *
  * @author jmoringe
  */
 public class OriginFilterTest {
@@ -45,20 +46,22 @@ public class OriginFilterTest {
     @Test
     public void transform() {
         final ParticipantId origin1 = new ParticipantId();
-        final Event e1 = new Event(new Scope("/images"), String.class, "bla");
-        e1.setId(origin1, 234);
+        final Event event1 = new Event(new Scope("/images"), String.class,
+                "bla");
+        event1.setId(origin1, 234);
 
         final ParticipantId origin2 = new ParticipantId();
-        final Event e2 = new Event(new Scope("/images"), String.class, "bla");
-        e2.setId(origin2, 0);
+        final Event event2 = new Event(new Scope("/images"), String.class,
+                "bla");
+        event2.setId(origin2, 0);
 
-        final OriginFilter f1 = new OriginFilter(origin1);
-        assertTrue(f1.transform(e1) != null);
-        assertTrue(f1.transform(e2) == null);
+        final OriginFilter filter1 = new OriginFilter(origin1);
+        assertNotNull(filter1.transform(event1));
+        assertNull(filter1.transform(event2));
 
-        final OriginFilter f2 = new OriginFilter(origin1, true);
-        assertTrue(f2.transform(e1) == null);
-        assertTrue(f2.transform(e2) != null);
+        final OriginFilter filter2 = new OriginFilter(origin1, true);
+        assertNull(filter2.transform(event1));
+        assertNotNull(filter2.transform(event2));
     }
 
 };
