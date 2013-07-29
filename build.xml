@@ -32,6 +32,8 @@
     <property name="git.executable" value="git" />
     <property name="git.versionfile" location="${build.dir}/gitversion" />
     <property name="git.branchfile" location="${build.dir}/gitbranch" />
+	
+	<property name="failtests" value="false" />
 
     <!-- availability checks for external dependencies -->
     <fail message="Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.">
@@ -274,7 +276,7 @@
 
         <sleep seconds="10" />
 
-        <junit printsummary="yes" timeout="30000">
+        <junit printsummary="yes" haltonfailure="${failtests}" timeout="30000">
             <formatter type="xml" />
             <formatter type="plain" usefile="false" />
             <classpath refid="test.classpath" />
