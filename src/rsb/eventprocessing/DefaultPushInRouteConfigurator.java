@@ -50,17 +50,20 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
 
     @Override
     public void activate() throws RSBException {
-        for (final InPushConnector connector : this.utility.getConnectors()) {
-            connector.addHandler(this.receivingStrategy);
+        synchronized (this.utility) {
+            for (final InPushConnector connector : this.utility.getConnectors()) {
+                connector.addHandler(this.receivingStrategy);
+            }
+            this.utility.activate();
+            this.receivingStrategy.activate();
         }
-        this.utility.activate();
     }
 
     @Override
     public void deactivate() throws RSBException {
         synchronized (this.utility) {
             try {
-                this.receivingStrategy.shutdownAndWait();
+                this.receivingStrategy.deactivate();
                 this.utility.deactivate();
             } catch (final InterruptedException e) {
                 throw new RSBException(e);

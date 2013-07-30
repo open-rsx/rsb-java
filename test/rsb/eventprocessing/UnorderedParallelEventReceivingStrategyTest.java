@@ -66,23 +66,18 @@ public class UnorderedParallelEventReceivingStrategyTest {
     }
 
     @Test
-    public final void eventDispatcherIntIntInt() {
-        final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy(
-                1, 3, 100);
-        assertNotNull(strategy);
-    }
-
-    @Test
-    public final void addHandler() {
+    public final void addHandler() throws Throwable {
         final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        strategy.activate();
         final TestHandler handler = new TestHandler();
         strategy.addHandler(handler, true);
         assertTrue(strategy.getHandlers().contains(handler));
     }
 
     @Test
-    public final void removeSubscription() throws InterruptedException {
+    public final void removeSubscription() throws Throwable {
         final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        strategy.activate();
         final TestHandler handler = new TestHandler();
         strategy.addHandler(handler, true);
         strategy.removeHandler(handler, true);
@@ -90,14 +85,15 @@ public class UnorderedParallelEventReceivingStrategyTest {
     }
 
     @Test
-    public final void fire() throws InterruptedException {
+    public final void fire() throws Throwable {
         final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        strategy.activate();
         final TestHandler handler = new TestHandler();
         strategy.addHandler(handler, true);
         final long beforeFire = System.currentTimeMillis() * 1000;
         final Event event = new Event();
         strategy.handle(event);
-        strategy.shutdownAndWait();
+        strategy.deactivate();
         final long afterShutdown = System.currentTimeMillis() * 1000;
         assertTrue(handler.isNotified());
         assertSame(event, handler.event);

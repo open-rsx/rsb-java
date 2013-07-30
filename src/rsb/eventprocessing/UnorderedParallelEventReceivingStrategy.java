@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.Handler;
+import rsb.RSBException;
 import rsb.filter.Filter;
 
 /**
@@ -49,12 +50,11 @@ import rsb.filter.Filter;
  *
  * @author swrede
  */
-public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
-        implements EventReceivingStrategy {
+public class UnorderedParallelEventReceivingStrategy implements
+        EventReceivingStrategy {
 
     // TODO add support for single threaded, queue receive, pull style, lazy
     // evaluation
-    // TODO refactor to use ThreadPoolExecutor as delegate, not as derived class
 
     final static Logger LOG = Logger
             .getLogger(UnorderedParallelEventReceivingStrategy.class.getName());
@@ -63,21 +63,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
             .synchronizedSet(new HashSet<Filter>());
     private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks = new HashMap<Handler, Set<MatchAndDispatchTask>>();
 
-    public UnorderedParallelEventReceivingStrategy() {
-        super(1, 1, 60, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(1000));
-        LOG.fine("Creating ThreadPool with size: 1 (1)");
-        this.prestartAllCoreThreads();
-    }
-
-    public UnorderedParallelEventReceivingStrategy(final int coreThreads,
-            final int maxThreads, final int maxQueue) {
-        super(coreThreads, maxThreads, 60, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(maxQueue));
-        LOG.fine("Creating ThreadPool with size: " + coreThreads + "("
-                + maxThreads + ") and queue size: " + maxQueue);
-        this.prestartAllCoreThreads();
-    }
+    private ThreadPoolExecutor executor;
 
     @Override
     public void addFilter(final Filter filter) {
@@ -121,7 +107,7 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
                         handler, this.filters, event, this.handlerTasks);
                 try {
                     this.handlerTasks.get(handler).add(task);
-                    this.submit(task);
+                    this.executor.submit(task);
                 } catch (final RejectedExecutionException ex) {
                     this.handlerTasks.get(handler).remove(task);
                     LOG.log(Level.SEVERE,
@@ -138,15 +124,38 @@ public class UnorderedParallelEventReceivingStrategy extends ThreadPoolExecutor
      *             thrown if waiting for shutdown was interrupted.
      */
     @Override
-    public void shutdownAndWait() throws InterruptedException {
-        this.shutdown();
-        this.awaitTermination(10, TimeUnit.SECONDS);
+    public void deactivate() throws InterruptedException {
+        synchronized (this) {
+            if (!isActive()) {
+                throw new IllegalStateException("Not active");
+            }
+            this.executor.shutdown();
+            this.executor.awaitTermination(1000, TimeUnit.SECONDS);
+        }
     }
 
     Set<Handler> getHandlers() {
         synchronized (this.handlerTasks) {
             return this.handlerTasks.keySet();
         }
+    }
+
+    @Override
+    public void activate() throws RSBException {
+        synchronized (this) {
+            if (isActive()) {
+                throw new IllegalStateException("Already active");
+            }
+            this.executor = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<Runnable>(1000));
+            LOG.fine("Creating ThreadPool with size: 1 (1)");
+            this.executor.prestartAllCoreThreads();
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.executor != null;
     }
 
 }

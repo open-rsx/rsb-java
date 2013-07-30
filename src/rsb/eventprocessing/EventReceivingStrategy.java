@@ -27,6 +27,7 @@
  */
 package rsb.eventprocessing;
 
+import rsb.Activatable;
 import rsb.Handler;
 import rsb.filter.Filter;
 import rsb.transport.EventHandler;
@@ -35,15 +36,15 @@ import rsb.transport.EventHandler;
  * An interface for strategies that dispatch received events to {@link Handler}
  * s. Implementations have the task of freeing the caller of
  * {@link #handle(rsb.Event)} to dispatch the event in its thread.
- * 
+ *
  * @author jwienke
  */
-public interface EventReceivingStrategy extends EventHandler {
+public interface EventReceivingStrategy extends EventHandler, Activatable {
 
     /**
      * Adds a filter that is applied for all registered handlers some time after
      * this method call.
-     * 
+     *
      * @param filter
      *            filter to add, not <code>null</code>
      */
@@ -52,7 +53,7 @@ public interface EventReceivingStrategy extends EventHandler {
     /**
      * Removes a filter that is remove for all registered handlers some time
      * after this method call.
-     * 
+     *
      * @param filter
      *            filter to remove, not <code>null</code>
      */
@@ -62,7 +63,5 @@ public interface EventReceivingStrategy extends EventHandler {
 
     void removeHandler(Handler handler, boolean wait)
             throws InterruptedException;
-
-    void shutdownAndWait() throws InterruptedException;
 
 }

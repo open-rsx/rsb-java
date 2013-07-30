@@ -48,7 +48,9 @@ public class SingleThreadEventReceivingStrategy implements
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());
     private final BlockingQueue<Event> events = new SynchronousQueue<Event>();
-    private final DispatchThread thread;
+    private final Set<Handler> handlers = Collections
+            .synchronizedSet(new HashSet<Handler>());
+    private DispatchThread thread;
 
     /**
      * A thread that matches events and dispatches them to all handlers that are
@@ -60,22 +62,8 @@ public class SingleThreadEventReceivingStrategy implements
 
         private final BlockingQueue<Event> events;
 
-        private final Set<Handler> handlers = Collections
-                .synchronizedSet(new HashSet<Handler>());
-
         public DispatchThread(final BlockingQueue<Event> events) {
             this.events = events;
-        }
-
-        public void addHandler(final Handler handler,
-                @SuppressWarnings("unused") final boolean wait) {
-            this.handlers.add(handler);
-        }
-
-        public void removeHandler(final Handler handler,
-                @SuppressWarnings("unused") final boolean wait)
-                throws InterruptedException {
-            this.handlers.remove(handler);
         }
 
         @Override
@@ -99,8 +87,8 @@ public class SingleThreadEventReceivingStrategy implements
 
                     // dispatch
                     // TODO suboptimal locking. blocks handlers a very long time
-                    synchronized (this.handlers) {
-                        for (final Handler handler : this.handlers) {
+                    synchronized (SingleThreadEventReceivingStrategy.this.handlers) {
+                        for (final Handler handler : SingleThreadEventReceivingStrategy.this.handlers) {
                             handler.internalNotify(eventToDispatch);
                         }
                     }
@@ -113,11 +101,6 @@ public class SingleThreadEventReceivingStrategy implements
 
         }
 
-    }
-
-    public SingleThreadEventReceivingStrategy() {
-        this.thread = new DispatchThread(this.events);
-        this.thread.start();
     }
 
     @Override
@@ -143,19 +126,40 @@ public class SingleThreadEventReceivingStrategy implements
 
     @Override
     public void addHandler(final Handler handler, final boolean wait) {
-        this.thread.addHandler(handler, wait);
+        this.handlers.add(handler);
     }
 
     @Override
     public void removeHandler(final Handler handler, final boolean wait)
             throws InterruptedException {
-        this.thread.removeHandler(handler, wait);
+        this.handlers.remove(handler);
     }
 
     @Override
-    public void shutdownAndWait() throws InterruptedException {
-        this.thread.interrupt();
-        this.thread.join();
+    public void activate() {
+        synchronized (this) {
+            if (this.thread != null) {
+                throw new IllegalStateException("Already activated.");
+            }
+            this.thread = new DispatchThread(this.events);
+            this.thread.start();
+        }
+    }
+
+    @Override
+    public void deactivate() throws InterruptedException {
+        synchronized (this) {
+            if (this.thread == null) {
+                throw new IllegalStateException("Already deactivated.");
+            }
+            this.thread.interrupt();
+            this.thread.join();
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.thread != null;
     }
 
 }
