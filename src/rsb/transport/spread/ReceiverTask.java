@@ -39,6 +39,7 @@ import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.EventHandler;
+import rsb.util.ByteHelpers;
 import spread.SpreadException;
 import spread.SpreadMessage;
 
@@ -150,7 +151,8 @@ class ReceiverTask extends Thread {
         try {
 
             final FragmentedNotification fragment = FragmentedNotification
-                    .parseFrom(receivedData.getData().array());
+                    .parseFrom(ByteHelpers.byteBufferToArray(receivedData
+                            .getData()));
             final AssemblyPool.DataAndNotification joinedData = this.pool
                     .insert(fragment);
 

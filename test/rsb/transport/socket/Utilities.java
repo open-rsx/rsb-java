@@ -14,10 +14,9 @@ import rsb.converter.Uint64Converter;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
 import rsb.protocol.ProtocolConversion;
+import rsb.util.ByteHelpers;
 import rsb.util.ConfigLoader;
 import rsb.util.Properties;
-
-import com.google.protobuf.ByteString;
 
 /**
  * Utilities for testing the socket-based transport.
@@ -57,8 +56,7 @@ public final class Utilities {
         final Converter<ByteBuffer> converter = new Uint64Converter();
         final ByteBuffer serialization = converter.serialize(event.getType(),
                 event.getData()).getSerialization();
-        builder.setData(ByteString.copyFrom(serialization.array(), 0,
-                serialization.limit()));
+        builder.setData(ByteHelpers.buteBufferToByteString(serialization));
 
         ProtocolConversion.fillNotificationHeader(builder, event, converter
                 .getSignature().getSchema());

@@ -44,6 +44,7 @@ import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.OutConnector;
+import rsb.util.ByteHelpers;
 
 import com.google.protobuf.ByteString;
 
@@ -272,6 +273,9 @@ public class SpreadOutConnector implements OutConnector {
         int cursor = 0;
         int currentFragment = 0;
         // "currentFragment == 0" is required for the case when dataSize == 0
+        final byte data[] = ByteHelpers.byteBufferToArray(convertedData
+                .getSerialization());
+
         while (cursor < dataSize || currentFragment == 0) {
 
             final FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
@@ -307,8 +311,8 @@ public class SpreadOutConnector implements OutConnector {
             if (cursor + fragmentDataSize > dataSize) {
                 fragmentDataSize = dataSize - cursor;
             }
-            final ByteString dataPart = ByteString.copyFrom(convertedData
-                    .getSerialization().array(), cursor, fragmentDataSize);
+            final ByteString dataPart = ByteString.copyFrom(data, cursor,
+                    fragmentDataSize);
 
             notificationBuilder.setData(dataPart);
             fragmentBuilder.setDataPart(currentFragment);

@@ -30,6 +30,8 @@ package rsb.converter;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
+import rsb.util.ByteHelpers;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 
@@ -68,7 +70,7 @@ public class ProtocolBufferConverter<MessageType extends Message> implements
         MessageType result;
         try {
             result = (MessageType) this.defaultInstance.newBuilderForType()
-                    .mergeFrom(buffer.array()).build();
+                    .mergeFrom(ByteHelpers.byteBufferToArray(buffer)).build();
         } catch (final InvalidProtocolBufferException e) {
             throw new ConversionException(
                     "Error deserializing wire data because of a protobuf problem.",

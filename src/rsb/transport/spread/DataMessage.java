@@ -29,6 +29,7 @@ package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
 
+import rsb.util.ByteHelpers;
 import spread.SpreadMessage;
 
 /**
@@ -107,7 +108,7 @@ public class DataMessage {
 
     public void setData(final ByteBuffer buffer) throws SerializeException {
         this.checkSize(buffer);
-        this.msg.setData(buffer.array());
+        this.msg.setData(ByteHelpers.byteBufferToArray(buffer));
     }
 
     @SuppressWarnings("PMD.UseVarargs")

@@ -12,8 +12,7 @@ import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.OutConnector;
-
-import com.google.protobuf.ByteString;
+import rsb.util.ByteHelpers;
 
 /**
  * An {@link OutConnector} instance for the socket transport.
@@ -73,8 +72,8 @@ public class SocketOutConnector implements OutConnector {
         builder.setEventId(ProtocolConversion.createEventIdBuilder(event
                 .getId()));
 
-        builder.setData(ByteString.copyFrom(data.getSerialization().array(), 0,
-                data.getSerialization().limit()));
+        builder.setData(ByteHelpers.buteBufferToByteString(data
+                .getSerialization()));
 
         ProtocolConversion.fillNotificationHeader(builder, event,
                 data.getWireSchema());
