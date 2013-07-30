@@ -1,6 +1,7 @@
 package rsb.transport.socket;
 
 import java.io.IOException;
+import java.io.EOFException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -120,7 +121,9 @@ public abstract class BusConnectionBase implements BusConnection {
             final ByteBuffer buffer) throws IOException {
         do {
             final int bytesRead = reader.read(buffer);
-            if (bytesRead < 0) {
+            if (bytesRead == -1) {
+                throw new EOFException();
+            } else if (bytesRead < 0) {
                 throw new IOException("Socket connection error with negative "
                         + "return value for read.");
             }

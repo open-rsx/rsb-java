@@ -177,6 +177,8 @@ public class BusServer extends BusBase {
                         e);
             }
 
+            super.deactivate();
+
             this.serverSocket = null;
             this.acceptor = null;
 

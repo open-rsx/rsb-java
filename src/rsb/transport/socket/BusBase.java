@@ -28,13 +28,13 @@
 
 package rsb.transport.socket;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.channels.AsynchronousCloseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,8 +61,7 @@ public abstract class BusBase implements Bus {
 
     private final static Logger LOG = Logger.getLogger(Bus.class.getName());
     private final SocketOptions options;
-    private final Map<BusConnection, ReceiveThread> connections = Collections
-            .synchronizedMap(new HashMap<BusConnection, ReceiveThread>());
+    private final Map<BusConnection, ReceiveThread> connections = new HashMap<BusConnection, ReceiveThread>();
     private final Set<NotificationReceiver> receivers = Collections
             .synchronizedSet(new HashSet<NotificationReceiver>());
 
@@ -81,6 +80,7 @@ public abstract class BusBase implements Bus {
                 .getName());
 
         private final BusConnection connection;
+        private final Runnable eofHandler;
 
         /**
          * Constructs a new instance operating on the specified connection
@@ -88,9 +88,15 @@ public abstract class BusBase implements Bus {
          *
          * @param connection
          *            the connection to read from
+         * @param eofHandler
+         *            code to execute in case this receiving thread receives an
+         *            EOF, which indicates that the other endpoint of the
+         *            connection being received on terminates
          */
-        public ReceiveThread(final BusConnection connection) {
+        public ReceiveThread(final BusConnection connection,
+                final Runnable eofHandler) {
             this.connection = connection;
+            this.eofHandler = eofHandler;
         }
 
         @Override
@@ -103,8 +109,14 @@ public abstract class BusBase implements Bus {
                     final Notification notification = this.connection
                             .readNotification();
                     handleIncoming(notification, this.connection);
-                } catch (final AsynchronousCloseException e) {
+                } catch (final EOFException e) {
                     this.logger.log(Level.FINE,
+                            "End of stream from remote peer. Calling handler.",
+                            e);
+                    this.eofHandler.run();
+                    return;
+                } catch (final AsynchronousCloseException e) {
+                    this.logger.log(Level.INFO,
                             "Connection has been closed. Terminating.", e);
                     return;
                 } catch (final IOException e) {
@@ -112,8 +124,6 @@ public abstract class BusBase implements Bus {
                             .log(Level.WARNING,
                                     "Error while reading a new notification from the bus connection. Shutting down. Most likely this is actually desired.",
                                     e);
-                    // TODO how to differentiate between real errors and a
-                    // socket close in a better way?
                     return;
                 } catch (final RSBException e) {
                     this.logger
@@ -141,23 +151,33 @@ public abstract class BusBase implements Bus {
     @Override
     public void deactivate() throws RSBException, InterruptedException {
 
-        try {
+        synchronized (this) {
 
-            synchronized (this.connections) {
-                // terminate available connections and associated receiver
-                // threads
-                for (final Entry<BusConnection, ReceiveThread> threadByConn : this.connections
-                        .entrySet()) {
-                    threadByConn.getKey().deactivate();
-                    threadByConn.getValue().join();
-                }
-                this.connections.clear();
+            if (!isActive()) {
+                throw new IllegalStateException("Bus is not active.");
             }
 
-        } catch (final InterruptedException e) {
-            throw new RSBException(
-                    "Interrupted while waiting for receiver threads to finish.",
-                    e);
+            try {
+
+                // terminate available connections and associated receiver
+                // threads
+                for (final BusConnection connection : new HashSet<BusConnection>(
+                        this.connections.keySet())) {
+                    removeConnection(connection);
+                    synchronized (connection) {
+                        if (connection.isActive()) {
+                            connection.deactivate();
+                        }
+                    }
+                }
+                this.connections.clear();
+
+            } catch (final InterruptedException e) {
+                throw new RSBException(
+                        "Interrupted while waiting for receiver threads to finish.",
+                        e);
+            }
+
         }
 
     }
@@ -242,7 +262,7 @@ public abstract class BusBase implements Bus {
             final BusConnection ignoreConnection) throws RSBException {
         LOG.fine("Dispatching notification to bus connections");
 
-        synchronized (this.connections) {
+        synchronized (this) {
             for (final BusConnection con : this.connections.keySet()) {
                 if (con.equals(ignoreConnection)) {
                     continue;
@@ -250,9 +270,8 @@ public abstract class BusBase implements Bus {
                 try {
                     con.sendNotification(notification);
                 } catch (final IOException e) {
-                    throw new RSBException(
-                            "Unable to send notification on connection " + con,
-                            e);
+                    LOG.log(Level.WARNING,
+                            "Unable to send notification on connection " + con, e);
                 }
             }
         }
@@ -280,6 +299,43 @@ public abstract class BusBase implements Bus {
     }
 
     /**
+     *
+     * @author jwienke
+     */
+    private class CloseConnection implements Runnable {
+
+        private final Logger logger = Logger.getLogger(CloseConnection.class
+                .getName());
+
+        // no chance to make this logger final in a not final member class
+        @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
+        private final BusConnection connection;
+
+        public CloseConnection(final BusConnection connection) {
+            this.connection = connection;
+        }
+
+        @Override
+        public void run() {
+            try {
+                this.logger.log(Level.FINE,
+                        "If still active, trying to deactivate connection {0}",
+                        this.connection);
+                synchronized (this.connection) {
+                    if (this.connection.isActive()) {
+                        this.connection.deactivate();
+                    }
+                }
+            } catch (final Exception ex) {
+                this.logger.log(Level.WARNING,
+                        "Error during deactivation of connection "
+                                + this.connection, ex);
+            }
+        }
+
+    }
+
+    /**
      * Registers a connection for the dispatching logic in
      * {@link #handleGlobally(Notification)}.
      *
@@ -288,12 +344,13 @@ public abstract class BusBase implements Bus {
      */
     protected void addConnection(final BusConnection con) {
         LOG.log(Level.FINE, "Adding a new BusConnection: {0}", con);
-        synchronized (this.connections) {
+        synchronized (this) {
             if (this.connections.containsKey(con)) {
                 throw new IllegalArgumentException("Connection " + con
                         + " is already registered.");
             }
-            final ReceiveThread receiveThread = new ReceiveThread(con);
+            final ReceiveThread receiveThread = new ReceiveThread(con,
+                    new CloseConnection(con));
             receiveThread.start();
             LOG.log(Level.FINER,
                     "Started receiver thread {0} for this connection {1}.",
@@ -303,15 +360,35 @@ public abstract class BusBase implements Bus {
     }
 
     /**
-     * Removes a connection from the dispatching logic.
+     * Removes a connection from the dispatching logic. This will terminate the
+     * receiving thread but does not deactivate the connection. Callers should
+     * deactivate the connection beforehand (which will also terminate the
+     * thread) or afterwards.
      *
      * @param con
      *            the connection to remove
+     * @throws InterruptedException
+     *             interrupted while waiting for the thread to finish
      */
-    protected void removeConnection(final BusConnection con) {
-        if (this.connections.remove(con) == null) {
-            LOG.warning("Couldn't remove BusConnection " + con
-                    + " from connection queue.");
+    protected void removeConnection(final BusConnection con)
+            throws InterruptedException {
+        synchronized (this) {
+
+            if (!this.connections.containsKey(con)) {
+                return;
+            }
+
+            // before actually removing the connection, terminate the receiving
+            // thread
+            final ReceiveThread receiver = this.connections.get(con);
+            receiver.interrupt();
+            receiver.join();
+
+            if (this.connections.remove(con) == null) {
+                LOG.warning("Couldn't remove BusConnection " + con
+                        + " from connection queue.");
+            }
+
         }
     }
 
@@ -321,7 +398,9 @@ public abstract class BusBase implements Bus {
      * @return number of connections
      */
     public int numberOfConnections() {
-        return this.connections.size();
+        synchronized (this) {
+            return this.connections.size();
+        }
     }
 
     @Override

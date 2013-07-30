@@ -76,16 +76,12 @@ public class BusClient extends BusBase {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
 
         synchronized (this) {
 
-            if (!isActive()) {
-                throw new IllegalStateException("BusClient is not active.");
-            }
+            super.deactivate();
 
-            this.connection.deactivate();
-            removeConnection(this.connection);
             this.connection = null;
 
         }
