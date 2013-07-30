@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import rsb.Event;
 import rsb.Handler;
@@ -47,7 +47,7 @@ public class SingleThreadEventReceivingStrategy implements
 
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());
-    private final BlockingQueue<Event> events = new SynchronousQueue<Event>();
+    private final BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     private final Set<Handler> handlers = Collections
             .synchronizedSet(new HashSet<Handler>());
     private DispatchThread thread;
