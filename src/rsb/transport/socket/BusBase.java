@@ -118,8 +118,8 @@ public abstract class BusBase implements Bus {
                 } catch (final RSBException e) {
                     this.logger
                             .log(Level.WARNING,
-                                    "Unable to correctly handle a notiication. "
-                                            + "Continuiung with the next one and ignoring this error.",
+                                    "Unable to correctly handle a notification. "
+                                            + "Continuing with the next one and ignoring this error.",
                                     e);
                 }
 
