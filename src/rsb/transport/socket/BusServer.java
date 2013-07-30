@@ -103,15 +103,19 @@ public class BusServer extends BusBase {
                     addConnection(connection);
 
                 } catch (final IOException e) {
-                    // TODO better way to handle this error, especially in case
-                    // of desired shutdown
-                    LOG.log(Level.WARNING,
-                            "Exception while accepting new client. Shutting down.",
-                            e);
+                    if (this.shutdown) {
+                        LOG.log(Level.INFO,
+                                "Shutting down due to request and closed socket.");
+                    } else {
+                        LOG.log(Level.WARNING,
+                                "Unexpected exception while accepting new client. Shutting down.",
+                                e);
+                    }
                     return;
                 } catch (final RSBException e) {
                     LOG.log(Level.WARNING,
-                            "Exception while accepting new client.", e);
+                            "Unmexpected exception while accepting new client.",
+                            e);
                     // TODO what to do here?
                 }
 
@@ -150,7 +154,7 @@ public class BusServer extends BusBase {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         LOG.info("Trying to deactivate BusServer.");
 
         synchronized (this) {
@@ -161,8 +165,8 @@ public class BusServer extends BusBase {
 
             try {
 
-                this.serverSocket.close();
                 this.acceptor.startShutdown();
+                this.serverSocket.close();
                 this.acceptor.join();
 
             } catch (final IOException e) {

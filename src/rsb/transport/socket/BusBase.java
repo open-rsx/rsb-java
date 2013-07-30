@@ -139,7 +139,7 @@ public abstract class BusBase implements Bus {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
 
         try {
 
