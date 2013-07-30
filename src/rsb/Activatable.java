@@ -41,10 +41,10 @@ package rsb;
  * @author swrede
  * @author jwienke
  */
-public interface RSBObject {
+public interface Activatable {
 
     /**
-     * Activates all network resources that belong to a specific object.
+     * Activates all resources that belong to a specific object.
      *
      * @throws RSBException
      *             generic error related to RSB
@@ -55,16 +55,20 @@ public interface RSBObject {
     void activate() throws RSBException;
 
     /**
-     * Deactivate all network resources that are owned by a specific object in
-     * order to reactivate it.
+     * Deactivate all resources that are owned by a specific object in order to
+     * correctly tear down. The method should only return once the object is
+     * completely deactivated including possible background threads.
      *
      * @throws RSBException
      *             generic error related to RSB
      * @throws IllegalStateException
      *             Might be thrown by implementations to indicate that the
      *             respective instance is not active
+     * @throws InterruptedException
+     *             interrupted while waiting for proper deactivation. Object
+     *             might be in an undefined state now
      */
-    void deactivate() throws RSBException;
+    void deactivate() throws RSBException, InterruptedException;
 
     /**
      * Tells whether this class is currently active or not.

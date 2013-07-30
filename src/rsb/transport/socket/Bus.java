@@ -1,7 +1,7 @@
 package rsb.transport.socket;
 
 import rsb.RSBException;
-import rsb.RSBObject;
+import rsb.Activatable;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -12,7 +12,7 @@ import rsb.protocol.NotificationType.Notification;
  * @author jwienke
  */
 @SuppressWarnings("PMD.ShortClassName")
-public interface Bus extends RSBObject {
+public interface Bus extends Activatable {
 
     /**
      * Interfaces for observers of {@link Bus} instances that want to

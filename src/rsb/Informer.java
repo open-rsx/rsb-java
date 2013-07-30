@@ -110,7 +110,7 @@ public class Informer<DataType extends Object> extends Participant {
         }
 
         @Override
-        protected void deactivate() throws RSBException {
+        protected void deactivate() throws RSBException, InterruptedException {
             Informer.this.router.deactivate();
             this.ctx.state = new InformerStateInactive(this.ctx);
             LOG.fine("Informer deactivated: [Scope:" + Informer.this.getScope()
@@ -204,7 +204,7 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
             this.state.deactivate();
         }

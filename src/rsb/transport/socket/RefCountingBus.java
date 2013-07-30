@@ -55,7 +55,7 @@ public class RefCountingBus implements Bus {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         synchronized (this.bus) {
             if (this.count == 0) {
                 throw new IllegalStateException(

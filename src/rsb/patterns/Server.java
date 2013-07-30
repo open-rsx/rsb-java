@@ -73,7 +73,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
 
         public ServerState deactivate() throws InvalidStateException,
-                RSBException {
+                RSBException, InterruptedException {
             throw new InvalidStateException("Server not activated.");
         }
 
@@ -92,7 +92,8 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
 
         @Override
-        public ServerState deactivate() throws RSBException {
+        public ServerState deactivate() throws RSBException,
+                InterruptedException {
             for (final Method method : Server.this.methods.values()) {
                 method.deactivate();
             }
@@ -220,7 +221,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
             this.state = this.state.deactivate();
         }

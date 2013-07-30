@@ -28,7 +28,7 @@
 package rsb.transport;
 
 import rsb.QualityOfServiceSpec;
-import rsb.RSBObject;
+import rsb.Activatable;
 import rsb.Scope;
 
 /**
@@ -38,7 +38,7 @@ import rsb.Scope;
  * @author jwienke
  * @author swrede
  */
-public interface Connector extends RSBObject {
+public interface Connector extends Activatable {
 
     // TODO still required? What was the original meaning
     String getType();

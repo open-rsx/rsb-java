@@ -174,6 +174,10 @@ public class ServerTest {
                     // we can't do much about this except signaling this to the
                     // outside world with a runtime exception
                     throw new RuntimeException(e);
+                } catch (final InterruptedException e) {
+                    // we can't do much about this except signaling this to the
+                    // outside world with a runtime exception
+                    throw new RuntimeException(e);
                 }
 
             }

@@ -3,7 +3,7 @@ package rsb.transport.socket;
 import java.io.IOException;
 
 import rsb.RSBException;
-import rsb.RSBObject;
+import rsb.Activatable;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -11,7 +11,7 @@ import rsb.protocol.NotificationType.Notification;
  *
  * @author jwienke
  */
-public interface BusConnection extends RSBObject {
+public interface BusConnection extends Activatable {
 
     /**
      * Sends a notification over the connection.

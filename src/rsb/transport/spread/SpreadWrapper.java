@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 import rsb.InitializeException;
 import rsb.RSBException;
-import rsb.RSBObject;
+import rsb.Activatable;
 import spread.SpreadConnection;
 import spread.SpreadException;
 import spread.SpreadGroup;
@@ -51,7 +51,7 @@ import spread.SpreadMessage;
  *
  * @author swrede
  */
-public class SpreadWrapper implements RSBObject {
+public class SpreadWrapper implements Activatable {
 
     private State status = State.DEACTIVATED;
 

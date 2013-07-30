@@ -51,7 +51,7 @@ public class InformerState<T> {
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
-    protected void deactivate() throws RSBException {
+    protected void deactivate() throws RSBException, InterruptedException {
         LOG.warning("invalid state exception during deactivate call");
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }

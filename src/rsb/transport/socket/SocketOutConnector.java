@@ -53,7 +53,7 @@ public class SocketOutConnector implements OutConnector {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         this.utility.deactivate();
     }
 

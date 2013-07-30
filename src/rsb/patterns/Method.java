@@ -29,13 +29,13 @@ package rsb.patterns;
 
 import java.util.logging.Logger;
 
+import rsb.Activatable;
 import rsb.Factory;
 import rsb.Informer;
 import rsb.InitializeException;
 import rsb.InvalidStateException;
 import rsb.Listener;
 import rsb.RSBException;
-import rsb.RSBObject;
 import rsb.Scope;
 
 /**
@@ -48,7 +48,7 @@ import rsb.Scope;
  * @author jmoringe
  * @author swrede
  */
-public abstract class Method implements RSBObject {
+public abstract class Method implements Activatable {
 
     protected final static Logger LOG = Logger
             .getLogger(Method.class.getName());
@@ -68,7 +68,8 @@ public abstract class Method implements RSBObject {
             throw new InvalidStateException("Method already activated.");
         }
 
-        public MethodState deactivate() throws RSBException {
+        public MethodState deactivate() throws RSBException,
+                InterruptedException {
             throw new InvalidStateException("Method not activated.");
         }
     }
@@ -76,7 +77,8 @@ public abstract class Method implements RSBObject {
     protected class MethodStateActive extends MethodState {
 
         @Override
-        public MethodState deactivate() throws RSBException {
+        public MethodState deactivate() throws RSBException,
+                InterruptedException {
             // Deactivate informer and listener if necessary.
             if (Method.this.listener != null) {
                 Method.this.listener.deactivate();
@@ -172,7 +174,7 @@ public abstract class Method implements RSBObject {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         this.state = this.state.deactivate();
     }
 

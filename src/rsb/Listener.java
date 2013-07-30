@@ -74,7 +74,7 @@ public class Listener extends Participant {
         }
 
         @Override
-        protected void deactivate() throws RSBException {
+        protected void deactivate() throws RSBException, InterruptedException {
             Listener.this.getRouter().deactivate();
             this.getContext().state = new ListenerStateInactive(
                     this.getContext());
@@ -135,7 +135,7 @@ public class Listener extends Participant {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         this.state.deactivate();
     }
 

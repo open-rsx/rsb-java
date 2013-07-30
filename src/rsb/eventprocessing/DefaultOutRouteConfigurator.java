@@ -30,7 +30,7 @@ public class DefaultOutRouteConfigurator implements OutRouteConfigurator {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         this.utility.deactivate();
     }
 

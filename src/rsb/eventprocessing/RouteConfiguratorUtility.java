@@ -52,7 +52,7 @@ public class RouteConfiguratorUtility<ConnectorType extends Connector> {
 
     }
 
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
 
         synchronized (this) {
 

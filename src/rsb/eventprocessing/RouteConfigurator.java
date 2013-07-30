@@ -1,7 +1,7 @@
 package rsb.eventprocessing;
 
 import rsb.Participant;
-import rsb.RSBObject;
+import rsb.Activatable;
 import rsb.transport.Connector;
 
 /**
@@ -15,7 +15,7 @@ import rsb.transport.Connector;
  *            classes
  */
 public interface RouteConfigurator<ConnectorType extends Connector> extends
-        RSBObject {
+        Activatable {
 
     /**
      * Adds a connector which will subsequently be used for for sending events.

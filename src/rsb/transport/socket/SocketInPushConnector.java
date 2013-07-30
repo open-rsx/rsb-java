@@ -67,7 +67,7 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         this.utility.deactivate();
     }
 
