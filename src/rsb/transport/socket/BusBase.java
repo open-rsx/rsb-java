@@ -102,7 +102,7 @@ public abstract class BusBase implements Bus {
                     this.logger.finer("Waiting for a new notification.");
                     final Notification notification = this.connection
                             .readNotification();
-                    handleIncoming(notification);
+                    handleIncoming(notification, this.connection);
                 } catch (final AsynchronousCloseException e) {
                     this.logger.log(Level.FINE,
                             "Connection has been closed. Terminating.", e);
@@ -173,11 +173,36 @@ public abstract class BusBase implements Bus {
      *
      * @param notification
      *            the received connection
+     * @param sourceConnection
+     *            the source {@link BusConnection} providing this Notification
      * @throws RSBException
      *             processing error
      */
-    public abstract void handleIncoming(final Notification notification)
-            throws RSBException;
+    public abstract void handleIncoming(final Notification notification,
+            BusConnection sourceConnection) throws RSBException;
+
+    /**
+     * Implement this method to specify the behavior in case of an incoming
+     * notification received from a connection.
+     *
+     * Implementations can use the utility methods
+     * {@link #handleLocally(Notification)} and
+     * {@link #handleGlobally(Notification)} to implement their processing
+     * logic.
+     *
+     * This method assumes that the notification was not received from a
+     * {@link BusConnection} and passes <code>null</code> to
+     * {@link #handleIncoming(Notification, BusConnection)}.
+     *
+     * @param notification
+     *            the received connection
+     * @throws RSBException
+     *             processing error
+     */
+    public void handleIncoming(final Notification notification)
+            throws RSBException {
+        handleIncoming(notification, null);
+    }
 
     /**
      * Dispatches the specified notifications to all registered
@@ -206,15 +231,22 @@ public abstract class BusBase implements Bus {
      *
      * @param notification
      *            notification to dispatch
+     * @param ignoreConnection
+     *            for dispatching, ignore this connection and do not pass the
+     *            notification to this instance. Might be <code>null</code> if
+     *            this filtering is not required.
      * @throws RSBException
      *             error during dispatching
      */
-    protected void handleGlobally(final Notification notification)
-            throws RSBException {
+    protected void handleGlobally(final Notification notification,
+            final BusConnection ignoreConnection) throws RSBException {
         LOG.fine("Dispatching notification to bus connections");
 
         synchronized (this.connections) {
             for (final BusConnection con : this.connections.keySet()) {
+                if (con.equals(ignoreConnection)) {
+                    continue;
+                }
                 try {
                     con.sendNotification(notification);
                 } catch (final IOException e) {
@@ -225,6 +257,19 @@ public abstract class BusBase implements Bus {
             }
         }
 
+    }
+
+    /**
+     * Dispatches the notification to registered connections.
+     *
+     * @param notification
+     *            notification to dispatch
+     * @throws RSBException
+     *             error during dispatching
+     */
+    protected void handleGlobally(final Notification notification)
+            throws RSBException {
+        handleGlobally(notification, null);
     }
 
     @Override

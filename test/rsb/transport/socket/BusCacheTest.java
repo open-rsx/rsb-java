@@ -34,8 +34,8 @@ public class BusCacheTest {
         }
 
         @Override
-        public void handleIncoming(final Notification notification)
-                throws RSBException {
+        public void handleIncoming(final Notification notification,
+                final BusConnection source) throws RSBException {
             // dummy method
         }
 

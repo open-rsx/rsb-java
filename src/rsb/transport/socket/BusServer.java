@@ -186,10 +186,10 @@ public class BusServer extends BusBase {
     }
 
     @Override
-    public void handleIncoming(final Notification notification)
-            throws RSBException {
+    public void handleIncoming(final Notification notification,
+            final BusConnection sourceConnection) throws RSBException {
         handleLocally(notification);
-        handleGlobally(notification);
+        handleGlobally(notification, sourceConnection);
     }
 
 }
