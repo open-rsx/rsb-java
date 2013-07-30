@@ -24,7 +24,7 @@ public class SocketFactory implements TransportFactory {
 
         try {
 
-            final int port = properties.getProperty("trnaport.socket.port",
+            final int port = properties.getProperty("transport.socket.port",
                     55555).asInteger();
             if (port < 0) {
                 throw new InitializeException("Port must be a number >= 0");
