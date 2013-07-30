@@ -194,7 +194,7 @@ public abstract class BusConnectionBase implements BusConnection {
 
         if (!isActive()) {
             throw new IllegalStateException(
-                    "Cannot read. Connection is not active.");
+                    "Cannot send. Connection is not active.");
         }
 
         LOG.fine("Sending new notification.");
