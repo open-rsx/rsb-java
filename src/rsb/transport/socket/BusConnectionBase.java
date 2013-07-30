@@ -91,21 +91,6 @@ public abstract class BusConnectionBase implements BusConnection {
 
         synchronized (this) {
 
-            if (!isActive()) {
-                throw new IllegalStateException("Connection is not active.");
-            }
-
-            try {
-                this.writer.close();
-                this.reader.close();
-                this.socket.close();
-            } catch (final IOException e) {
-                LOG.log(Level.WARNING,
-                        "Exception during deactivation of BusConnectionBase. "
-                                + "Ignoring this exception and doing so as if nothing happened.",
-                        e);
-            }
-
             this.reader = null;
             this.writer = null;
 

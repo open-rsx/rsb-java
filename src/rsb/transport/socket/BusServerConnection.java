@@ -30,6 +30,7 @@ package rsb.transport.socket;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.RSBException;
@@ -59,6 +60,31 @@ public class BusServerConnection extends BusConnectionBase {
         setSocket(socket);
         setOptions(new SocketOptions(socket.getLocalAddress(),
                 socket.getPort(), tcpNoDelay));
+    }
+
+    @Override
+    public void deactivate() throws RSBException {
+
+        synchronized (this) {
+
+            if (!isActive()) {
+                throw new IllegalStateException("Connection is not active.");
+            }
+
+            try {
+                getSocket().shutdownOutput();
+                getSocket().close();
+            } catch (final IOException e) {
+                LOG.log(Level.WARNING,
+                        "Exception during deactivation. "
+                                + "Ignoring this exception and doing so as if nothing happened.",
+                        e);
+            }
+
+            super.deactivate();
+
+        }
+
     }
 
     /**
