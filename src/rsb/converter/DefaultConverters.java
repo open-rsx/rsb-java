@@ -49,12 +49,14 @@ public final class DefaultConverters {
                 .addConverter(new StringConverter("US-ASCII", "ascii-string"));
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new BoolConverter());
-        DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new Uint64Converter());
+        // DefaultConverterRepository.getDefaultConverterRepository()
+        // .addConverter(new Uint64Converter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new EventIdConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new NullConverter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new Int64Converter());
     }
 
 }
