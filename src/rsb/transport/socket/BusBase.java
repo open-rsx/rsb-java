@@ -112,7 +112,9 @@ public abstract class BusBase implements Bus {
                     handleIncoming(notification, this.connection);
                 } catch (final EOFException e) {
                     this.logger.log(Level.FINE,
-                            "End of stream from remote peer. Calling handler.",
+                                    "End of stream from remote peer on connection "
+                                            + this.connection
+                                            + ". Calling handler.",
                             e);
                     this.eofHandler.run();
                     return;
