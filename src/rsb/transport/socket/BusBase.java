@@ -61,7 +61,8 @@ public abstract class BusBase implements Bus {
 
     private final static Logger LOG = Logger.getLogger(Bus.class.getName());
     private final SocketOptions options;
-    private final Map<BusConnection, ReceiveThread> connections = new HashMap<BusConnection, ReceiveThread>();
+    private final Map<BusConnection, ReceiveThread> connections = Collections
+            .synchronizedMap(new HashMap<BusConnection, ReceiveThread>());
     private final Set<NotificationReceiver> receivers = Collections
             .synchronizedSet(new HashSet<NotificationReceiver>());
 
@@ -118,12 +119,16 @@ public abstract class BusBase implements Bus {
                 } catch (final AsynchronousCloseException e) {
                     this.logger.log(Level.INFO,
                             "Connection has been closed. Terminating.", e);
+                    final ReceiveThread thread = removeConnection(this.connection);
+                    assert thread == this;
                     return;
                 } catch (final IOException e) {
                     this.logger
                             .log(Level.WARNING,
                                     "Error while reading a new notification from the bus connection. Shutting down. Most likely this is actually desired.",
                                     e);
+                    final ReceiveThread thread = removeConnection(this.connection);
+                    assert thread == this;
                     return;
                 } catch (final RSBException e) {
                     this.logger
@@ -149,6 +154,7 @@ public abstract class BusBase implements Bus {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void deactivate() throws RSBException, InterruptedException {
 
         synchronized (this) {
@@ -163,7 +169,9 @@ public abstract class BusBase implements Bus {
                 // threads
                 for (final BusConnection connection : new HashSet<BusConnection>(
                         this.connections.keySet())) {
-                    removeConnection(connection);
+                    final ReceiveThread thread = removeConnection(connection);
+                    thread.interrupt();
+                    thread.join();
                     synchronized (connection) {
                         if (connection.isActive()) {
                             connection.deactivate();
@@ -207,8 +215,9 @@ public abstract class BusBase implements Bus {
      *
      * Implementations can use the utility methods
      * {@link #handleLocally(Notification)} and
-     * {@link #handleGlobally(Notification)} to implement their processing
-     * logic.
+     * {@link #handleGlobally(Notification)} or
+     * {@link #handleGlobally(Notification, BusConnection)} to implement their
+     * processing logic.
      *
      * This method assumes that the notification was not received from a
      * {@link BusConnection} and passes <code>null</code> to
@@ -258,21 +267,26 @@ public abstract class BusBase implements Bus {
      * @throws RSBException
      *             error during dispatching
      */
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     protected void handleGlobally(final Notification notification,
             final BusConnection ignoreConnection) throws RSBException {
         LOG.fine("Dispatching notification to bus connections");
 
-        synchronized (this) {
-            for (final BusConnection con : this.connections.keySet()) {
-                if (con.equals(ignoreConnection)) {
-                    continue;
-                }
-                try {
-                    con.sendNotification(notification);
-                } catch (final IOException e) {
-                    LOG.log(Level.WARNING,
-                            "Unable to send notification on connection " + con, e);
-                }
+        // makes an atomic copy of the available connections to prevent blocking
+        for (final BusConnection con : new HashSet<BusConnection>(
+                this.connections.keySet())) {
+            if (con.equals(ignoreConnection)) {
+                continue;
+            }
+            try {
+                con.sendNotification(notification);
+            } catch (final IOException e) {
+                LOG.log(Level.WARNING,
+                        "Unable to send notification on connection " + con
+                                + ". Removing this connection.", e);
+                // as the connection is obviously broken now, we assume that the
+                // receiving thread will automatically terminate
+                removeConnection(con);
             }
         }
 
@@ -304,11 +318,11 @@ public abstract class BusBase implements Bus {
      */
     private class CloseConnection implements Runnable {
 
+        // no chance to make this logger final in a not final member class
+        @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
         private final Logger logger = Logger.getLogger(CloseConnection.class
                 .getName());
 
-        // no chance to make this logger final in a not final member class
-        @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
         private final BusConnection connection;
 
         public CloseConnection(final BusConnection connection) {
@@ -325,6 +339,10 @@ public abstract class BusBase implements Bus {
                     if (this.connection.isActive()) {
                         this.connection.deactivate();
                     }
+                    // in this case we know that the receiving thread will
+                    // terminate immediately, so we do not have to take care of
+                    // this.
+                    removeConnection(this.connection);
                 }
             } catch (final Exception ex) {
                 this.logger.log(Level.WARNING,
@@ -360,36 +378,34 @@ public abstract class BusBase implements Bus {
     }
 
     /**
-     * Removes a connection from the dispatching logic. This will terminate the
-     * receiving thread but does not deactivate the connection. Callers should
-     * deactivate the connection beforehand (which will also terminate the
-     * thread) or afterwards.
+     * Removes a connection from the dispatching logic. The connection is
+     * neither closed automatically nor is the receiving thread terminated.
      *
      * @param con
      *            the connection to remove
-     * @throws InterruptedException
-     *             interrupted while waiting for the thread to finish
+     * @return the {@link ReceiveThread} responsible for this connection or
+     *         <code>null</code> if this connection was not part of the
+     *         dispatching logic
      */
-    protected void removeConnection(final BusConnection con)
-            throws InterruptedException {
-        synchronized (this) {
+    protected ReceiveThread removeConnection(final BusConnection con) {
+
+        synchronized (this.connections) {
 
             if (!this.connections.containsKey(con)) {
-                return;
+                return null;
             }
 
-            // before actually removing the connection, terminate the receiving
-            // thread
             final ReceiveThread receiver = this.connections.get(con);
-            receiver.interrupt();
-            receiver.join();
 
             if (this.connections.remove(con) == null) {
                 LOG.warning("Couldn't remove BusConnection " + con
-                        + " from connection queue.");
+                        + " from connection list.");
             }
 
+            return receiver;
+
         }
+
     }
 
     /**
