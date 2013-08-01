@@ -1,7 +1,7 @@
 package rsb.transport.socket;
 
-import java.io.IOException;
 import java.io.EOFException;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -34,6 +34,7 @@ public abstract class BusConnectionBase implements BusConnection {
     private ReadableByteChannel reader;
     private WritableByteChannel writer;
     private SocketOptions options;
+    private boolean activeShutdown = false;
 
     public Socket getSocket() {
         return this.socket;
@@ -84,6 +85,20 @@ public abstract class BusConnectionBase implements BusConnection {
 
     }
 
+    @Override
+    public void shutdown() throws IOException {
+        synchronized (this) {
+            assert !this.activeShutdown;
+            this.socket.shutdownOutput();
+            this.activeShutdown = true;
+        }
+    }
+
+    @Override
+    public boolean isActiveShutdown() {
+        return this.activeShutdown;
+    }
+
     /**
      * Safely close I/O streams and sockets.
      */
@@ -91,6 +106,19 @@ public abstract class BusConnectionBase implements BusConnection {
     public void deactivate() throws RSBException {
 
         synchronized (this) {
+
+            if (!isActive()) {
+                throw new IllegalStateException("Connection is not active.");
+            }
+
+            try {
+                getSocket().close();
+            } catch (final IOException e) {
+                LOG.log(Level.WARNING,
+                        "Exception during deactivation. "
+                                + "Ignoring this exception and doing so as if nothing happened.",
+                        e);
+            }
 
             this.reader = null;
             this.writer = null;
@@ -180,11 +208,6 @@ public abstract class BusConnectionBase implements BusConnection {
     public void sendNotification(final Notification notification)
             throws IOException {
 
-        if (!isActive()) {
-            throw new IllegalStateException(
-                    "Cannot send. Connection is not active.");
-        }
-
         LOG.fine("Sending new notification.");
 
         final byte[] data = notification.toByteArray();
@@ -194,12 +217,28 @@ public abstract class BusConnectionBase implements BusConnection {
                 .allocateDirect(Protocol.DATA_SIZE_BYTES);
         sizeBuffer.order(ByteOrder.LITTLE_ENDIAN);
         sizeBuffer.asIntBuffer().put(data.length);
-        this.writer.write(sizeBuffer);
-        LOG.log(Level.FINER, "Sent out size specification for {0} bytes",
-                data.length);
 
-        // send real data
-        this.writer.write(ByteBuffer.wrap(data));
+        synchronized (this) {
+
+            if (!isActive()) {
+                throw new IllegalStateException(
+                        "Cannot send. Connection is not active.");
+            }
+
+            if (isActiveShutdown()) {
+                LOG.fine("Ignoring send request for notification "
+                        + "because we are actively shutting down.");
+                return;
+            }
+
+            this.writer.write(sizeBuffer);
+            LOG.log(Level.FINER, "Sent out size specification for {0} bytes",
+                    data.length);
+
+            // send real data
+            this.writer.write(ByteBuffer.wrap(data));
+
+        }
 
         LOG.fine("Sending of notification succeeded");
 

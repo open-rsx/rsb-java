@@ -30,7 +30,6 @@ package rsb.transport.socket;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.nio.channels.AsynchronousCloseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +65,8 @@ public abstract class BusBase implements Bus {
     private final Set<NotificationReceiver> receivers = Collections
             .synchronizedSet(new HashSet<NotificationReceiver>());
 
+    private final static long RECEIVE_THREAD_JOIN_TIME = 20000;
+
     /**
      * A thread that continuously reads from a {@link BusConnection} and passes
      * the received {@link Notification}s to
@@ -81,7 +82,6 @@ public abstract class BusBase implements Bus {
                 .getName());
 
         private final BusConnection connection;
-        private final Runnable eofHandler;
 
         /**
          * Constructs a new instance operating on the specified connection
@@ -89,15 +89,9 @@ public abstract class BusBase implements Bus {
          *
          * @param connection
          *            the connection to read from
-         * @param eofHandler
-         *            code to execute in case this receiving thread receives an
-         *            EOF, which indicates that the other endpoint of the
-         *            connection being received on terminates
          */
-        public ReceiveThread(final BusConnection connection,
-                final Runnable eofHandler) {
+        public ReceiveThread(final BusConnection connection) {
             this.connection = connection;
-            this.eofHandler = eofHandler;
         }
 
         @Override
@@ -111,26 +105,40 @@ public abstract class BusBase implements Bus {
                             .readNotification();
                     handleIncoming(notification, this.connection);
                 } catch (final EOFException e) {
-                    this.logger.log(Level.FINE,
+                    this.logger
+                            .log(Level.FINE,
                                     "End of stream from remote peer on connection "
                                             + this.connection
-                                            + ". Calling handler.",
-                            e);
-                    this.eofHandler.run();
-                    return;
-                } catch (final AsynchronousCloseException e) {
-                    this.logger.log(Level.INFO,
-                            "Connection has been closed. Terminating.", e);
-                    final ReceiveThread thread = removeConnection(this.connection);
-                    assert thread == this;
+                                            + ". Calling handler.", e);
+                    this.logger
+                            .log(Level.FINE,
+                                    "If still active, trying to deactivate connection {0}",
+                                    this.connection);
+                    synchronized (this.connection) {
+
+                        if (!this.connection.isActiveShutdown()) {
+                            try {
+                                this.connection.shutdown();
+                            } catch (final IOException ioException) {
+                                this.logger
+                                        .log(Level.WARNING,
+                                                "Error while initiating active shutdown on connection "
+                                                        + this.connection
+                                                        + ". Ignoring this to force the shutdown.",
+                                                ioException);
+                            }
+                        }
+
+                        cleanUpConnection();
+
+                    }
                     return;
                 } catch (final IOException e) {
                     this.logger
                             .log(Level.WARNING,
                                     "Error while reading a new notification from the bus connection. Shutting down. Most likely this is actually desired.",
                                     e);
-                    final ReceiveThread thread = removeConnection(this.connection);
-                    assert thread == this;
+                    cleanUpConnection();
                     return;
                 } catch (final RSBException e) {
                     this.logger
@@ -143,6 +151,46 @@ public abstract class BusBase implements Bus {
             }
 
         }
+
+        private void cleanUpConnection() {
+
+            // in this case we know that the receiving thread will
+            // terminate immediately, so we do not have to take care
+            // of
+            // this.
+            final ReceiveThread thread = removeConnection(this.connection);
+            assert thread == this;
+
+            synchronized (this.connection) {
+
+                if (this.connection.isActive()) {
+                    try {
+                        this.connection.deactivate();
+                    } catch (final RSBException rsbException) {
+                        this.logger
+                                .log(Level.WARNING,
+                                        "Error while initiating active shutdown on connection "
+                                                + this.connection
+                                                + ". Ignoring this to force the shutdown.",
+                                        rsbException);
+                    } catch (final InterruptedException interruptedException) {
+                        this.logger
+                                .log(Level.WARNING,
+                                        "Error while initiating active shutdown on connection "
+                                                + this.connection
+                                                + ". Ignoring this to force the shutdown.",
+                                        interruptedException);
+                    }
+                } else {
+                    assert false : "This should not happen as the "
+                            + "receiver thread is always responsible of "
+                            + "terminating the connection.";
+                }
+
+            }
+
+        }
+
     }
 
     protected BusBase(final SocketOptions options) {
@@ -172,8 +220,23 @@ public abstract class BusBase implements Bus {
                 for (final BusConnection connection : new HashSet<BusConnection>(
                         this.connections.keySet())) {
                     final ReceiveThread thread = removeConnection(connection);
-                    thread.interrupt();
-                    thread.join();
+                    try {
+                        removeConnection(connection);
+                        connection.shutdown();
+                    } catch (final IOException e) {
+                        LOG.log(Level.WARNING,
+                                "Unable to indicate shutdown on connection "
+                                        + connection
+                                        + ". Interrupting receiver thread to stop it.",
+                                e);
+                        thread.interrupt();
+                    }
+                    // we must not interrupt the receiver thread as it is
+                    // responsible for correctly deactivating the connection
+                    thread.join(RECEIVE_THREAD_JOIN_TIME);
+                    assert !thread.isAlive();
+                    // finally, try to kill everything in case it still
+                    // survived. In normal cases this will never happen
                     synchronized (connection) {
                         if (connection.isActive()) {
                             connection.deactivate();
@@ -315,47 +378,6 @@ public abstract class BusBase implements Bus {
     }
 
     /**
-     *
-     * @author jwienke
-     */
-    private class CloseConnection implements Runnable {
-
-        // no chance to make this logger final in a not final member class
-        @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
-        private final Logger logger = Logger.getLogger(CloseConnection.class
-                .getName());
-
-        private final BusConnection connection;
-
-        public CloseConnection(final BusConnection connection) {
-            this.connection = connection;
-        }
-
-        @Override
-        public void run() {
-            try {
-                this.logger.log(Level.FINE,
-                        "If still active, trying to deactivate connection {0}",
-                        this.connection);
-                synchronized (this.connection) {
-                    if (this.connection.isActive()) {
-                        this.connection.deactivate();
-                    }
-                    // in this case we know that the receiving thread will
-                    // terminate immediately, so we do not have to take care of
-                    // this.
-                    removeConnection(this.connection);
-                }
-            } catch (final Exception ex) {
-                this.logger.log(Level.WARNING,
-                        "Error during deactivation of connection "
-                                + this.connection, ex);
-            }
-        }
-
-    }
-
-    /**
      * Registers a connection for the dispatching logic in
      * {@link #handleGlobally(Notification)}.
      *
@@ -369,8 +391,7 @@ public abstract class BusBase implements Bus {
                 throw new IllegalArgumentException("Connection " + con
                         + " is already registered.");
             }
-            final ReceiveThread receiveThread = new ReceiveThread(con,
-                    new CloseConnection(con));
+            final ReceiveThread receiveThread = new ReceiveThread(con);
             receiveThread.start();
             LOG.log(Level.FINER,
                     "Started receiver thread {0} for this connection {1}.",

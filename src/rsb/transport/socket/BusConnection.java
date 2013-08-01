@@ -2,8 +2,8 @@ package rsb.transport.socket;
 
 import java.io.IOException;
 
-import rsb.RSBException;
 import rsb.Activatable;
+import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -48,5 +48,23 @@ public interface BusConnection extends Activatable {
      * @return configuration of the connection
      */
     SocketOptions getOptions();
+
+    /**
+     * This method starts and orderly shutdown of the connection. It needs to be
+     * called before {@link #deactivate()} for this procedure to succeed.
+     *
+     * @throws IOException
+     *             error indicating the shutdown due to socket writing problems
+     */
+    void shutdown() throws IOException;
+
+    /**
+     * Indicates whether the connection is currently performing an active
+     * shutdown as a consequence of calling {@link #shutdown()}.
+     *
+     * @return <code>true</code> in case of active shutdown, else
+     *         <code>false</code>
+     */
+    boolean isActiveShutdown();
 
 }

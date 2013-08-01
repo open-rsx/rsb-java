@@ -74,30 +74,6 @@ public class BusClientConnection extends BusConnectionBase {
         }
     }
 
-    @Override
-    public void deactivate() throws RSBException {
-
-        synchronized (this) {
-
-            if (!isActive()) {
-                throw new IllegalStateException("Connection is not active.");
-            }
-
-            try {
-                getSocket().close();
-            } catch (final IOException e) {
-                LOG.log(Level.WARNING,
-                        "Exception during deactivation. "
-                                + "Ignoring this exception and doing so as if nothing happened.",
-                        e);
-            }
-
-            super.deactivate();
-
-        }
-
-    }
-
     /**
      * Perform simple handshake as specified in RSB socket protocol.
      *
