@@ -53,7 +53,6 @@ import rsb.RSBException;
  * @author swrede
  * @author jwienke
  */
-// TODO nodelay flag
 public class BusClientConnection extends BusConnectionBase {
 
     private static final Logger LOG = Logger
