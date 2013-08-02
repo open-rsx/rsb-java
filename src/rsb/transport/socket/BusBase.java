@@ -171,7 +171,7 @@ public abstract class BusBase implements Bus {
             // terminate immediately, so we do not have to take care
             // of this.
             final ReceiveThread thread = removeConnection(this.connection);
-            assert thread == this;
+            assert thread == null || thread == this;
 
             synchronized (this.connection) {
 
