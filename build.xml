@@ -374,7 +374,6 @@
         <checkstyle config="${dir.config.codecheck}/checkstyle.xml" classpathref="checkstyle.classpath">
             <fileset dir="src" includes="**/*.java" />
             <fileset dir="test" includes="**/*.java" />
-            <formatter type="plain" />
             <formatter type="xml" toFile="${dir.report.codecheck}/checkstyle_errors.xml" />
             <property key="config_loc" value="${dir.config.codecheck}" />
         </checkstyle>
