@@ -58,14 +58,14 @@ import rsb.protocol.NotificationType.Notification;
  */
 public abstract class BusBase implements Bus {
 
-    private final static Logger LOG = Logger.getLogger(Bus.class.getName());
+    private static final Logger LOG = Logger.getLogger(Bus.class.getName());
+    private static final long RECEIVE_THREAD_JOIN_TIME = 20000;
+
     private final SocketOptions options;
     private final Map<BusConnection, ReceiveThread> connections = Collections
             .synchronizedMap(new HashMap<BusConnection, ReceiveThread>());
     private final Set<NotificationReceiver> receivers = Collections
             .synchronizedSet(new HashSet<NotificationReceiver>());
-
-    private final static long RECEIVE_THREAD_JOIN_TIME = 20000;
 
     /**
      * A thread that continuously reads from a {@link BusConnection} and passes
@@ -94,60 +94,73 @@ public abstract class BusBase implements Bus {
             this.connection = connection;
         }
 
+        /**
+         * Reads and handles a single notification.
+         *
+         * @return <code>true</code> if we can continue reading from the
+         *         connection, else <code>false</code>
+         */
+        private boolean doOneNotification() {
+
+            try {
+
+                this.logger.finer("Waiting for a new notification.");
+                final Notification notification =
+                        this.connection.readNotification();
+                handleIncoming(notification, this.connection);
+                return true;
+
+            } catch (final EOFException e) {
+                this.logger.log(Level.FINE,
+                        "End of stream from remote peer on connection "
+                                + this.connection + ". Calling handler.", e);
+
+                this.logger.log(Level.FINE,
+                        "If still active, trying to deactivate connection {0}",
+                        this.connection);
+
+                synchronized (this.connection) {
+                    if (!this.connection.isActiveShutdown()) {
+                        safeShutdown();
+                    }
+                    cleanUpConnection();
+                }
+
+                return false;
+            } catch (final IOException e) {
+                this.logger.log(Level.WARNING,
+                        "Error while reading a new notification "
+                                + "from the bus connection. Shutting down. "
+                                + "Probably the other end point crashed.", e);
+                cleanUpConnection();
+                return false;
+            } catch (final RSBException e) {
+                this.logger.log(Level.WARNING,
+                        "Unable to correctly handle a notification. "
+                                + "Continuing with the next one "
+                                + "and ignoring this error.", e);
+                return true;
+            }
+
+        }
+
+        private void safeShutdown() {
+            try {
+                this.connection.shutdown();
+            } catch (final IOException ioException) {
+                this.logger.log(Level.WARNING, "Error while initiating "
+                        + "active shutdown on connection " + this.connection
+                        + ". Ignoring this to enforce the shutdown.",
+                        ioException);
+            }
+        }
+
         @Override
         public void run() {
 
-            while (true) {
-
-                try {
-                    this.logger.finer("Waiting for a new notification.");
-                    final Notification notification = this.connection
-                            .readNotification();
-                    handleIncoming(notification, this.connection);
-                } catch (final EOFException e) {
-                    this.logger
-                            .log(Level.FINE,
-                                    "End of stream from remote peer on connection "
-                                            + this.connection
-                                            + ". Calling handler.", e);
-                    this.logger
-                            .log(Level.FINE,
-                                    "If still active, trying to deactivate connection {0}",
-                                    this.connection);
-                    synchronized (this.connection) {
-
-                        if (!this.connection.isActiveShutdown()) {
-                            try {
-                                this.connection.shutdown();
-                            } catch (final IOException ioException) {
-                                this.logger
-                                        .log(Level.WARNING,
-                                                "Error while initiating active shutdown on connection "
-                                                        + this.connection
-                                                        + ". Ignoring this to force the shutdown.",
-                                                ioException);
-                            }
-                        }
-
-                        cleanUpConnection();
-
-                    }
-                    return;
-                } catch (final IOException e) {
-                    this.logger
-                            .log(Level.WARNING,
-                                    "Error while reading a new notification from the bus connection. Shutting down. Most likely this is actually desired.",
-                                    e);
-                    cleanUpConnection();
-                    return;
-                } catch (final RSBException e) {
-                    this.logger
-                            .log(Level.WARNING,
-                                    "Unable to correctly handle a notification. "
-                                            + "Continuing with the next one and ignoring this error.",
-                                    e);
-                }
-
+            boolean continueReading = true;
+            while (continueReading) {
+                continueReading = doOneNotification();
             }
 
         }
@@ -156,8 +169,7 @@ public abstract class BusBase implements Bus {
 
             // in this case we know that the receiving thread will
             // terminate immediately, so we do not have to take care
-            // of
-            // this.
+            // of this.
             final ReceiveThread thread = removeConnection(this.connection);
             assert thread == this;
 
@@ -167,19 +179,9 @@ public abstract class BusBase implements Bus {
                     try {
                         this.connection.deactivate();
                     } catch (final RSBException rsbException) {
-                        this.logger
-                                .log(Level.WARNING,
-                                        "Error while initiating active shutdown on connection "
-                                                + this.connection
-                                                + ". Ignoring this to force the shutdown.",
-                                        rsbException);
+                        logDeactivationError(rsbException);
                     } catch (final InterruptedException interruptedException) {
-                        this.logger
-                                .log(Level.WARNING,
-                                        "Error while initiating active shutdown on connection "
-                                                + this.connection
-                                                + ". Ignoring this to force the shutdown.",
-                                        interruptedException);
+                        logDeactivationError(interruptedException);
                     }
                 } else {
                     assert false : "This should not happen as the "
@@ -191,8 +193,21 @@ public abstract class BusBase implements Bus {
 
         }
 
+        private void logDeactivationError(final Exception exception) {
+            this.logger.log(Level.WARNING,
+                    "Error while properly deactivating the connection "
+                            + this.connection + ". Ignoring this to enforce "
+                            + "our own deactivation.", exception);
+        }
+
     }
 
+    /**
+     * Constructor.
+     *
+     * @param options
+     *            socket options to use
+     */
     protected BusBase(final SocketOptions options) {
         assert options != null;
         this.options = options;

@@ -43,7 +43,7 @@
     <!-- Allow a bit longer variable names -->
     <rule ref="rulesets/java/naming.xml/LongVariable">
         <properties>
-             <property name="minimum" value="21"/>
+             <property name="minimum" value="25"/>
         </properties>
     </rule>
     

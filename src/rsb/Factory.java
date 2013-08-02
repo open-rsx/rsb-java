@@ -82,7 +82,7 @@ public final class Factory {
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -92,33 +92,34 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final Scope scope, final Class<?> type)
-            throws InitializeException {
-        return new Informer<T>(scope, type, this.defaultConfig);
-    }
-
-    /**
-     * Creates a new informer instance.
-     *
-     * @param <T>
-     *            type of the data sent by this informer
-     * @param scope
-     *            scope of the informer
-     * @param type
-     *            type identifier of the informer
-     * @return new informer instance
-     * @throws InitializeException
-     *             error initializing the informer
-     */
-    public <T> Informer<T> createInformer(final String scope,
+    public <DataType> Informer<DataType> createInformer(final Scope scope,
             final Class<?> type) throws InitializeException {
-        return new Informer<T>(new Scope(scope), type, this.defaultConfig);
+        return new Informer<DataType>(scope, type, this.defaultConfig);
     }
 
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
+     *            type of the data sent by this informer
+     * @param scope
+     *            scope of the informer
+     * @param type
+     *            type identifier of the informer
+     * @return new informer instance
+     * @throws InitializeException
+     *             error initializing the informer
+     */
+    public <DataType> Informer<DataType> createInformer(final String scope,
+            final Class<?> type) throws InitializeException {
+        return new Informer<DataType>(new Scope(scope), type,
+                this.defaultConfig);
+    }
+
+    /**
+     * Creates a new informer instance.
+     *
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -130,16 +131,16 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final Scope scope,
+    public <DataType> Informer<DataType> createInformer(final Scope scope,
             final Class<?> type, final ParticipantConfig config)
             throws InitializeException {
-        return new Informer<T>(scope, type, config);
+        return new Informer<DataType>(scope, type, config);
     }
 
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -151,16 +152,16 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final String scope,
+    public <DataType> Informer<DataType> createInformer(final String scope,
             final Class<?> type, final ParticipantConfig config)
             throws InitializeException {
-        return new Informer<T>(new Scope(scope), type, config);
+        return new Informer<DataType>(new Scope(scope), type, config);
     }
 
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -168,15 +169,15 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final Scope scope)
+    public <DataType> Informer<DataType> createInformer(final Scope scope)
             throws InitializeException {
-        return new Informer<T>(scope, this.defaultConfig);
+        return new Informer<DataType>(scope, this.defaultConfig);
     }
 
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -184,15 +185,15 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final String scope)
+    public <DataType> Informer<DataType> createInformer(final String scope)
             throws InitializeException {
-        return new Informer<T>(new Scope(scope), this.defaultConfig);
+        return new Informer<DataType>(new Scope(scope), this.defaultConfig);
     }
 
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -202,15 +203,15 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final Scope scope,
+    public <DataType> Informer<DataType> createInformer(final Scope scope,
             final ParticipantConfig config) throws InitializeException {
-        return new Informer<T>(scope, config);
+        return new Informer<DataType>(scope, config);
     }
 
     /**
      * Creates a new informer instance.
      *
-     * @param <T>
+     * @param <DataType>
      *            type of the data sent by this informer
      * @param scope
      *            scope of the informer
@@ -220,9 +221,9 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <T> Informer<T> createInformer(final String scope,
+    public <DataType> Informer<DataType> createInformer(final String scope,
             final ParticipantConfig config) throws InitializeException {
-        return new Informer<T>(new Scope(scope), config);
+        return new Informer<DataType>(new Scope(scope), config);
     }
 
     /**

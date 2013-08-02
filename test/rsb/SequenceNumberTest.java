@@ -38,9 +38,9 @@ public class SequenceNumberTest {
     @Test
     public void overflowUsage() {
         // check max value
-        assertEquals((long) 2 * Integer.MAX_VALUE + 1,
-                Long.parseLong("4294967295"));
-        assertEquals(SequenceNumber.MAX_VALUE, Long.parseLong("4294967295"));
+        final String max = "4294967295";
+        assertEquals((long) 2 * Integer.MAX_VALUE + 1, Long.parseLong(max));
+        assertEquals(SequenceNumber.MAX_VALUE, Long.parseLong(max));
 
         // test int overflow in use
         SequenceNumber number = new SequenceNumber(Integer.MAX_VALUE);
@@ -50,7 +50,7 @@ public class SequenceNumberTest {
 
         // test uint32 overflow in use
         number = new SequenceNumber(SequenceNumber.MAX_VALUE);
-        assertEquals(number.get(), Long.parseLong("4294967295"));
+        assertEquals(number.get(), Long.parseLong(max));
         number.incrementAndGet();
         assertEquals(0, number.get());
     }

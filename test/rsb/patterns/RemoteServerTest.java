@@ -44,6 +44,7 @@ import rsb.Scope;
  */
 public class RemoteServerTest {
 
+    private static final double TIMEOUT_DELTA = 0.01;
     private static final Scope SCOPE = new Scope("/example/test");
     private Factory factory;
 
@@ -56,25 +57,23 @@ public class RemoteServerTest {
     public void constructionWithTimeout() {
 
         final double desiredTimeout = 10;
-        final RemoteServer remote = this.factory.createRemoteServer(SCOPE,
-                desiredTimeout);
-        assertNotNull("RemoteServer construction failed", remote);
+        final RemoteServer remote =
+                this.factory.createRemoteServer(SCOPE, desiredTimeout);
         assertEquals("Timeout not resepected upon construction",
-                desiredTimeout, remote.getTimeout(), 0.01);
+                desiredTimeout, remote.getTimeout(), TIMEOUT_DELTA);
         assertEquals(SCOPE, remote.getScope());
     }
 
     @Test
     public void constructionWithScope() {
         final RemoteServer remote = this.factory.createRemoteServer(SCOPE);
-        assertNotNull("RemoteServer construction failed", remote);
         assertEquals(SCOPE, remote.getScope());
     }
 
     @Test
     public void constructionWithScopeString() {
-        final RemoteServer remote = this.factory.createRemoteServer(SCOPE
-                .toString());
+        final RemoteServer remote =
+                this.factory.createRemoteServer(SCOPE.toString());
         assertNotNull("RemoteServer construction failed", remote);
         assertEquals(SCOPE, remote.getScope());
     }
@@ -83,16 +82,16 @@ public class RemoteServerTest {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void activate() throws Throwable {
-        final RemoteServer remote = this.factory.createRemoteServer(SCOPE
-                .toString());
+        final RemoteServer remote =
+                this.factory.createRemoteServer(SCOPE.toString());
         remote.activate();
         remote.deactivate();
     }
 
     @Test
     public void addMethod() throws Throwable {
-        final RemoteServer remote = this.factory.createRemoteServer(SCOPE
-                .toString());
+        final RemoteServer remote =
+                this.factory.createRemoteServer(SCOPE.toString());
         final String methodName = "callme";
         remote.addMethod(methodName);
         remote.activate();

@@ -35,56 +35,59 @@ import java.util.Map;
 import rsb.EventId;
 import rsb.ParticipantId;
 import rsb.protocol.FragmentedNotificationType;
+import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType;
-import rsb.protocol.NotificationType.Notification;
 
 import com.google.protobuf.ByteString;
 
 /**
  * A class that assembles fragmented messages received over spread in form of
- * {@link Notification}s.
- * 
+ * {@link rsb.protocol.NotificationType.Notification}s.
+ *
  * @author jwienke
  */
 public class AssemblyPool {
 
-    private final Map<EventId, Assembly> assemblies = new HashMap<EventId, Assembly>();
+    private final Map<EventId, Assembly> assemblies =
+            new HashMap<EventId, Assembly>();
 
     /**
      * Assembles a fragmented notification.
-     * 
+     *
      * @author jwienke
      */
     private class Assembly {
 
-        private final Map<Integer, FragmentedNotificationType.FragmentedNotification> notifications = new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
+        private final Map<Integer, FragmentedNotification> notifications =
+                new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
         private final int requiredParts;
 
         public Assembly(
-                @SuppressWarnings("PMD.LongVariable") final FragmentedNotificationType.FragmentedNotification initialNotification) {
+                @SuppressWarnings("PMD.LongVariable") final FragmentedNotification initialNotification) {
             assert initialNotification.getNumDataParts() > 1;
             this.notifications.put(initialNotification.getDataPart(),
                     initialNotification);
             this.requiredParts = initialNotification.getNumDataParts();
         }
 
-        public FragmentedNotificationType.FragmentedNotification getInitialFragment() {
+        public FragmentedNotification getInitialFragment() {
             return this.notifications.get(0);
         }
 
-        public ByteBuffer add(
-                final FragmentedNotificationType.FragmentedNotification notification) {
+        public ByteBuffer add(final FragmentedNotification notification) {
             assert !this.notifications.containsKey(notification.getDataPart());
             this.notifications.put(notification.getDataPart(), notification);
 
             if (this.notifications.size() == this.requiredParts) {
 
-                final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                final ByteArrayOutputStream stream =
+                        new ByteArrayOutputStream();
                 for (int part = 0; part < this.requiredParts; ++part) {
                     assert this.notifications.containsKey(part);
 
-                    final ByteString currentData = this.notifications.get(part)
-                            .getNotification().getData();
+                    final ByteString currentData =
+                            this.notifications.get(part).getNotification()
+                                    .getData();
                     stream.write(currentData.toByteArray(), 0,
                             currentData.size());
 
@@ -108,32 +111,52 @@ public class AssemblyPool {
         private final ByteBuffer data;
         private final NotificationType.Notification notification;
 
+        /**
+         * Constructor.
+         *
+         * @param data
+         *            data from the wire
+         * @param notification
+         *            causing notification for the data
+         */
         public DataAndNotification(final ByteBuffer data,
                 final NotificationType.Notification notification) {
             this.data = data;
             this.notification = notification;
         }
 
+        /**
+         * Returns the wire data.
+         *
+         * @return data
+         */
         public ByteBuffer getData() {
             return this.data;
         }
 
+        /**
+         * Returns the causing notification for the data.
+         *
+         * @return notification
+         */
         public NotificationType.Notification getNotification() {
             return this.notification;
         }
+
     };
 
     /**
      * Adds a new message to the assembly pool and joins the data of all
      * notifications of the same event, if all fragments were received.
-     * 
+     *
      * @param notification
      *            newly received notification
      * @return joined data or <code>null</code> if not event was completed with
      *         this notification
      */
-    public DataAndNotification insert(
-            final FragmentedNotificationType.FragmentedNotification notification) {
+    public
+            DataAndNotification
+            insert(final FragmentedNotificationType.FragmentedNotification notification) {
 
         assert notification.getNumDataParts() > 0;
         if (notification.getNumDataParts() == 1) {
@@ -143,9 +166,11 @@ public class AssemblyPool {
         }
 
         @SuppressWarnings("PMD.ShortVariable")
-        final EventId id = new EventId(new ParticipantId(notification
-                .getNotification().getEventId().getSenderId().toByteArray()),
-                notification.getNotification().getEventId().getSequenceNumber());
+        final EventId id =
+                new EventId(new ParticipantId(notification.getNotification()
+                        .getEventId().getSenderId().toByteArray()),
+                        notification.getNotification().getEventId()
+                                .getSequenceNumber());
         if (!this.assemblies.containsKey(id)) {
             this.assemblies.put(id, new Assembly(notification));
             return null;

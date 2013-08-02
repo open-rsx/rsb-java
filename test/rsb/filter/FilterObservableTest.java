@@ -27,7 +27,6 @@
  */
 package rsb.filter;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -43,10 +42,10 @@ public class FilterObservableTest {
 
     private final class TestObserver implements FilterObserver {
 
-        boolean notifiedOrigin = false;
-        boolean notifiedType = false;
-        boolean notifiedScope = false;
-        boolean notifiedAbstract = false;
+        private boolean notifiedOrigin = false;
+        private boolean notifiedType = false;
+        private boolean notifiedScope = false;
+        private boolean notifiedAbstract = false;
 
         @Override
         public void notify(final OriginFilter event, final FilterAction action) {
@@ -64,35 +63,10 @@ public class FilterObservableTest {
         }
 
         @Override
-        public void notify(final AbstractFilter event, final FilterAction action) {
+        public void
+                notify(final AbstractFilter event, final FilterAction action) {
             this.notifiedAbstract = true;
         }
-    }
-
-    /**
-     * Test method for
-     * {@link rsb.filter.FilterObservable#addObserver(rsb.filter.FilterObserver)}
-     * .
-     */
-    @Test
-    public void addObserver() {
-        final FilterObservable observable = new FilterObservable();
-        observable.addObserver(new TestObserver());
-        assertEquals(1, observable.observers.size());
-    }
-
-    /**
-     * Test method for
-     * {@link rsb.filter.FilterObservable#removeObserver(rsb.filter.FilterObserver)}
-     * .
-     */
-    @Test
-    public void removeObserver() {
-        final FilterObservable observable = new FilterObservable();
-        final TestObserver observer = new TestObserver();
-        observable.addObserver(observer);
-        observable.removeObserver(observer);
-        assertEquals(0, observable.observers.size());
     }
 
     @Test
@@ -110,18 +84,6 @@ public class FilterObservableTest {
         assertTrue(observer.notifiedType);
         assertTrue(observer.notifiedOrigin);
         assertFalse(observer.notifiedAbstract);
-    }
-
-    /**
-     * Test method for {@link rsb.filter.FilterObservable#clearObservers()}.
-     */
-    @Test
-    public void clearObservers() {
-        final FilterObservable observable = new FilterObservable();
-        final TestObserver observer = new TestObserver();
-        observable.addObserver(observer);
-        observable.clearObservers();
-        assertEquals(0, observable.observers.size());
     }
 
 }

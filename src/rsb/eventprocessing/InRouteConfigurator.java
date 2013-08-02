@@ -1,18 +1,16 @@
 package rsb.eventprocessing;
 
-import rsb.Participant;
 import rsb.filter.Filter;
-import rsb.transport.Connector;
 import rsb.transport.InConnector;
 
 /**
  * Implementing classes provide outgoing communication routes for
- * {@link Participant}s.
+ * {@link rsb.Participant}s.
  *
  * @author jwienke
  * @param <ConnectorType>
- *            The type of {@link Connector} instances used by the implementing
- *            classes
+ *            The type of {@link rsb.transport.Connector} instances used by the
+ *            implementing classes
  */
 public interface InRouteConfigurator<ConnectorType extends InConnector> extends
         RouteConfigurator<ConnectorType> {

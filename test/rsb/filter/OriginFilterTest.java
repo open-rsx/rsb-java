@@ -46,13 +46,14 @@ public class OriginFilterTest {
     @Test
     public void transform() {
         final ParticipantId origin1 = new ParticipantId();
-        final Event event1 = new Event(new Scope("/images"), String.class,
-                "bla");
-        event1.setId(origin1, 234);
+        final Scope aScope = new Scope("/images");
+        final String someContents = "bla";
+        final Event event1 = new Event(aScope, String.class, someContents);
+        final int randomSequence = 234;
+        event1.setId(origin1, randomSequence);
 
         final ParticipantId origin2 = new ParticipantId();
-        final Event event2 = new Event(new Scope("/images"), String.class,
-                "bla");
+        final Event event2 = new Event(aScope, String.class, someContents);
         event2.setId(origin2, 0);
 
         final OriginFilter filter1 = new OriginFilter(origin1);

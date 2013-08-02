@@ -30,17 +30,20 @@ package rsb.converter;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DefaultConverterRepository<WireType> implements
         ConverterRepository<WireType> {
 
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(DefaultConverterRepository.class.getName());
 
-    private static ConverterRepository<ByteBuffer> defaultInstance = new DefaultConverterRepository<ByteBuffer>();
+    private static ConverterRepository<ByteBuffer> defaultInstance =
+            new DefaultConverterRepository<ByteBuffer>();
 
-    private transient final Map<ConverterSignature, Converter<WireType>> converterMap = new HashMap<ConverterSignature, Converter<WireType>>();
+    private final Map<ConverterSignature, Converter<WireType>> converterMap =
+            new HashMap<ConverterSignature, Converter<WireType>>();
 
     /**
      * @return the converterMap
@@ -51,7 +54,8 @@ public class DefaultConverterRepository<WireType> implements
 
     @Override
     public ConverterSelectionStrategy<WireType> getConvertersForSerialization() {
-        final UnambiguousConverterMap<WireType> outStrategy = new UnambiguousConverterMap<WireType>();
+        final UnambiguousConverterMap<WireType> outStrategy =
+                new UnambiguousConverterMap<WireType>();
         // where to register the initial converters
         // outStrategy.addConverter("String", new StringConverter());
         // Query Map for types
@@ -64,7 +68,7 @@ public class DefaultConverterRepository<WireType> implements
                 LOG.fine("skipping ascii-string converter for Serialization map");
             } else {
                 // all other converters are added at this point
-                outStrategy.addConverter(signature.getDatatype().getName(),
+                outStrategy.addConverter(signature.getDataType().getName(),
                         this.converterMap.get(signature));
             }
         }
@@ -73,7 +77,8 @@ public class DefaultConverterRepository<WireType> implements
 
     @Override
     public ConverterSelectionStrategy<WireType> getConvertersForDeserialization() {
-        final UnambiguousConverterMap<WireType> inStrategy = new UnambiguousConverterMap<WireType>();
+        final UnambiguousConverterMap<WireType> inStrategy =
+                new UnambiguousConverterMap<WireType>();
         // Query Map for wire schemas
         for (final ConverterSignature signature : this.converterMap.keySet()) {
             // put datatype and converter into unambiguous converter map
@@ -86,13 +91,20 @@ public class DefaultConverterRepository<WireType> implements
     @Override
     public void addConverter(final Converter<WireType> converter) {
         if (this.converterMap.containsKey(converter.getSignature())) {
-            LOG.warning("Converter with signature "
-                    + converter.getSignature()
-                    + " already registered in DefaultConverterRepository. Existing entry will be overwritten!");
+            LOG.log(Level.WARNING,
+                    "Converter with signature {} already registered in "
+                            + "DefaultConverterRepository. "
+                            + "Existing entry will be overwritten!",
+                    converter.getSignature());
         }
         this.converterMap.put(converter.getSignature(), converter);
     }
 
+    /**
+     * Returns a global repository for wire type {@link ByteBuffer}.
+     *
+     * @return repository instance
+     */
     public static ConverterRepository<ByteBuffer> getDefaultConverterRepository() {
         return defaultInstance;
     }

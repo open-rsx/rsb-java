@@ -53,8 +53,8 @@ public class RemoteMethod extends Method implements Handler {
             .getName());
 
     // assuming usually eight threads will write simultaneously to the map
-    private final Map<EventId, FuturePreparator<?>> pendingRequests = new ConcurrentHashMap<EventId, FuturePreparator<?>>(
-            16, 0.75f, 8);
+    private final Map<EventId, FuturePreparator<?>> pendingRequests =
+            new ConcurrentHashMap<EventId, FuturePreparator<?>>(16, 0.75f, 8);
 
     /**
      * Instances of this class are used to prepare a {@link Future} instance
@@ -65,7 +65,7 @@ public class RemoteMethod extends Method implements Handler {
      * @param <FutureDataType>
      *            the data type of the contents inside the result future
      */
-    public static abstract class FuturePreparator<FutureDataType> {
+    public abstract static class FuturePreparator<FutureDataType> {
 
         private final WeakReference<Future<FutureDataType>> future;
 
@@ -131,6 +131,7 @@ public class RemoteMethod extends Method implements Handler {
      * @param name
      *            The name of the method.
      * @param config
+     *            the participant config to use for internal participants
      * @throws InterruptedException
      *             error while installing method
      * @throws InitializeException
@@ -141,10 +142,12 @@ public class RemoteMethod extends Method implements Handler {
             final ParticipantConfig config) throws InterruptedException,
             InitializeException {
         super(server, name);
-        this.listener = this.factory.createListener(this.REPLY_SCOPE, config);
-        this.informer = this.factory.createInformer(this.REQUEST_SCOPE, config);
-        this.listener.addFilter(new MethodFilter("REPLY"));
-        this.listener.addHandler(this, true);
+        this.setListener(getFactory().createListener(this.getReplyScope(),
+                config));
+        this.setInformer(getFactory().createInformer(this.getRequestScope(),
+                config));
+        this.getListener().addFilter(new MethodFilter("REPLY"));
+        this.getListener().addHandler(this, true);
     }
 
     /**
@@ -159,12 +162,12 @@ public class RemoteMethod extends Method implements Handler {
     void call(final Event request, final FuturePreparator<?> resultPreparator)
             throws RSBException {
         // set metadata
-        request.setScope(this.REQUEST_SCOPE);
+        request.setScope(this.getRequestScope());
         request.setMethod("REQUEST");
         // further metadata is set by informer
 
         synchronized (this) {
-            final Event sentEvent = this.informer.send(request);
+            final Event sentEvent = this.getInformer().send(request);
             // put future with id as weak ref in pending results table
             this.pendingRequests.put(sentEvent.getId(), resultPreparator);
             LOG.fine("registered future in pending requests with id: "

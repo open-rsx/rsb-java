@@ -34,20 +34,20 @@ import spread.SpreadMessage;
 /**
  * SpreadMessageConverter encapsulates the handling of regular spread messages
  * and considers Membership messages.
- * 
+ *
  * TODO (de-)multiplex large messages here
- * 
+ *
  * @author swrede
  */
 class SpreadMessageConverter {
 
-    public final static Logger LOG = Logger
+    public static final Logger LOG = Logger
             .getLogger(SpreadMessageConverter.class.getName());
 
     /**
      * Returns a {@link DataMessage} if presented by sm, else returns
      * <code>null</code>.
-     * 
+     *
      * @param message
      *            message to analyze
      * @return DataMessage or <code>null</code> if not contained in sm

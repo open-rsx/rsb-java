@@ -41,13 +41,13 @@ import rsb.util.UUIDTools;
  * 32bit unsigned integer and thus can overrun in a long-running system. In such
  * cases, the timestamp has to be additionally considered to further distinguish
  * between events.
- * 
+ *
  * @author swrede
  * @author jwienke
  */
 public class EventId {
 
-    private final static Logger LOG = Logger.getLogger(EventId.class.getName());
+    private static final Logger LOG = Logger.getLogger(EventId.class.getName());
 
     /**
      * ID of event generating participant.
@@ -66,7 +66,7 @@ public class EventId {
 
     /**
      * Creates a unique Id based on participant and sequence number.
-     * 
+     *
      * @param participantId
      *            the id of the participant causing this event
      * @param sequenceNumber
@@ -125,6 +125,11 @@ public class EventId {
         return true;
     }
 
+    /**
+     * Converts this {@link EventId} to a {@link UUID}.
+     *
+     * @return the UUID representation of this event id
+     */
     public UUID getAsUUID() {
         if (this.uuid == null) {
             final String seqNr = formatSequenceNumber(this.sequenceNumber);
@@ -139,7 +144,7 @@ public class EventId {
 
     /**
      * Returns the id of the participant that sent the event.
-     * 
+     *
      * @return participant id
      */
     public ParticipantId getParticipantId() {
@@ -149,7 +154,7 @@ public class EventId {
     /**
      * Returns the sequence number which makes this id unique combined with the
      * sending participants id.
-     * 
+     *
      * @return sequence number for sending participant
      * @see #getParticipantId()
      */

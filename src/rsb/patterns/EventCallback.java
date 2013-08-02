@@ -32,7 +32,7 @@ import rsb.Event;
 /**
  * Implementations of this interface are used to provide the behavior of exposed
  * methods.
- * 
+ *
  * @author jmoringe
  */
 public abstract class EventCallback implements Callback {
@@ -44,7 +44,7 @@ public abstract class EventCallback implements Callback {
 
     /**
      * This method is called to invoke the actual behavior of an exposed method.
-     * 
+     *
      * @param request
      *            The argument passed to the associated method by the remote
      *            caller.
@@ -54,4 +54,5 @@ public abstract class EventCallback implements Callback {
      *             Can throw anything.
      */
     public abstract Event invoke(Event request) throws Throwable;
+
 };

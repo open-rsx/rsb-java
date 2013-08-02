@@ -24,7 +24,7 @@ import spread.SpreadException;
 public class SpreadInPushConnector extends AbstractFilterObserver implements
         InPushConnector, EventHandler {
 
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(SpreadInPushConnector.class.getName());
 
     private final Set<EventHandler> eventHandlers = new HashSet<EventHandler>();
@@ -34,6 +34,14 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
 
+    /**
+     * Creates a new connector.
+     *
+     * @param spread
+     *            the spread wrapper to use. Must not be active.
+     * @param inStrategy
+     *            the converters to use for deserializing data
+     */
     public SpreadInPushConnector(final SpreadWrapper spread,
             final ConverterSelectionStrategy<ByteBuffer> inStrategy) {
         assert !spread.isActive() : "As the spread object is used for handling "
@@ -109,11 +117,6 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
         synchronized (this.eventHandlers) {
             return this.eventHandlers.remove(handler);
         }
-    }
-
-    @Override
-    public String getType() {
-        return "SpreadPort";
     }
 
     @Override

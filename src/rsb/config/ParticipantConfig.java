@@ -35,12 +35,11 @@ import java.util.Set;
 
 import rsb.eventprocessing.EventReceivingStrategyFactory;
 import rsb.eventprocessing.SingleThreadFactory;
-import rsb.util.Properties;
 
 /**
  * A class describing the configuration of Participant instances. Whenever
  * possible, this class contains API classes instead of configuration options.
- * Options, on the other hand, are maintained inside {@link Properties}
+ * Options, on the other hand, are maintained inside {@link rsb.util.Properties}
  * instances.
  *
  * @author swrede
@@ -49,9 +48,11 @@ import rsb.util.Properties;
  */
 public class ParticipantConfig {
 
-    private final Map<String, TransportConfig> transportsByName = new HashMap<String, TransportConfig>();
+    private final Map<String, TransportConfig> transportsByName =
+            new HashMap<String, TransportConfig>();
 
-    private EventReceivingStrategyFactory receivingStrategy = new SingleThreadFactory();
+    private EventReceivingStrategyFactory receivingStrategy =
+            new SingleThreadFactory();
 
     /**
      * Returns the internal map of available transport configurations by their
@@ -87,8 +88,8 @@ public class ParticipantConfig {
         if (this.transportsByName.containsKey(transportName)) {
             return this.transportsByName.get(transportName);
         } else {
-            final TransportConfig newTransport = new TransportConfig(
-                    transportName);
+            final TransportConfig newTransport =
+                    new TransportConfig(transportName);
             this.transportsByName.put(transportName, newTransport);
             return newTransport;
         }
@@ -101,7 +102,8 @@ public class ParticipantConfig {
      * @return set of transport configurations
      */
     public Set<TransportConfig> getEnabledTransports() {
-        final Set<TransportConfig> enabledTransports = new HashSet<TransportConfig>();
+        final Set<TransportConfig> enabledTransports =
+                new HashSet<TransportConfig>();
         for (final TransportConfig config : this.transportsByName.values()) {
             if (config.isEnabled()) {
                 enabledTransports.add(config);

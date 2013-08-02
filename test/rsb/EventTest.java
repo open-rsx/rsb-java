@@ -27,7 +27,10 @@
  */
 package rsb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -35,7 +38,7 @@ import org.junit.Test;
 
 /**
  * Test case for {@link Event}.
- * 
+ *
  * @author jwienke
  */
 public class EventTest {
@@ -95,7 +98,8 @@ public class EventTest {
         assertTrue(event1.equals(event2));
         assertTrue(event2.equals(event1));
 
-        event1.setId(new ParticipantId(), 23);
+        final int randomSequence = 23;
+        event1.setId(new ParticipantId(), randomSequence);
         assertFalse(event1.equals(event2));
         assertFalse(event2.equals(event1));
         event2.setId(event1.getId().getParticipantId(), event1.getId()
@@ -130,7 +134,8 @@ public class EventTest {
         assertEquals(event1.hashCode(), event2.hashCode());
 
         // causes
-        event1.addCause(new EventId(new ParticipantId(), 234234));
+        final int randomSequence = 234234;
+        event1.addCause(new EventId(new ParticipantId(), randomSequence));
         assertNotSame(event1.hashCode(), event2.hashCode());
 
     }

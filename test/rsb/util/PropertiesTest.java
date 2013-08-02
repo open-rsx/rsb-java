@@ -79,7 +79,7 @@ public class PropertiesTest {
         // add some stuff we do not want
         for (final String key : new String[] { "a", "other.root", "bar.bla",
                 "a.testing" }) {
-            props.setProperty(key, "blaaa");
+            props.setProperty(key, "blubb");
         }
 
         final Properties filtered = props.filter(desiredPrefix);

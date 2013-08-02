@@ -20,12 +20,26 @@ public final class Utilities {
         // prevent initialization of helper class
     }
 
+    /**
+     * Creates a {@link SpreadWrapper} instance while respecting the RSB global
+     * configuration.
+     *
+     * @return new instance
+     * @throws Throwable
+     *             error configuring
+     */
     public static SpreadWrapper createSpreadWrapper() throws Throwable {
         final ConfigLoader loader = new ConfigLoader();
         return new SpreadWrapper("localhost", loader.load(new Properties())
                 .getProperty("transport.spread.port", "4803").asInteger(), true);
     }
 
+    /**
+     * Creates a participant config to test participants which uses a reasonable
+     * transport configured from the configuration file.
+     *
+     * @return participant config
+     */
     public static ParticipantConfig createParticipantConfig() {
 
         final ParticipantConfig config = new ParticipantConfig();

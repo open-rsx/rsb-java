@@ -36,10 +36,10 @@ import java.util.logging.Logger;
  */
 public class FilterObservable {
 
-    private final static Logger LOG = Logger.getLogger(FilterObservable.class
+    private static final Logger LOG = Logger.getLogger(FilterObservable.class
             .getName());
 
-    List<FilterObserver> observers = new ArrayList<FilterObserver>();
+    private final List<FilterObserver> observers = new ArrayList<FilterObserver>();
 
     public void addObserver(final FilterObserver observer) {
         LOG.finest("Added observer" + observer);

@@ -36,9 +36,9 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.Activatable;
 import rsb.InitializeException;
 import rsb.RSBException;
-import rsb.Activatable;
 import spread.SpreadConnection;
 import spread.SpreadException;
 import spread.SpreadGroup;
@@ -53,6 +53,9 @@ import spread.SpreadMessage;
  */
 public class SpreadWrapper implements Activatable {
 
+    private static final Logger LOG = Logger.getLogger(SpreadWrapper.class
+            .getName());
+
     private State status = State.DEACTIVATED;
 
     private String privGrpId;
@@ -62,15 +65,13 @@ public class SpreadWrapper implements Activatable {
     private InetAddress spreadhost = null;
     private boolean useTcpNoDelay = true;
 
-    /** random number generator for connection names */
-    boolean shutdown = false;
+    /** Random number generator for connection names. */
+    private boolean shutdown = false;
 
     private boolean connectionLost = false;
 
     // TODO think about sub-classing SpreadConnection
     // TODO leave the complex stuff for SpreadPort
-
-    final static Logger LOG = Logger.getLogger(SpreadWrapper.class.getName());
 
     /**
      * @return the status
@@ -220,10 +221,9 @@ public class SpreadWrapper implements Activatable {
         // check group names for length
         for (final String group : msg.getGroups()) {
             if (group.length() > 31) {
-                throw new IllegalArgumentException(
-                        "Group with name '"
-                                + group
-                                + "' is too long for spread, only 31 characters are allowed.");
+                throw new IllegalArgumentException("Group with name '" + group
+                        + "' is too long for spread, "
+                        + "only 31 characters are allowed.");
             }
         }
 
@@ -237,12 +237,14 @@ public class SpreadWrapper implements Activatable {
             this.conn.multicast(msg.getSpreadMessage());
             return true;
         } catch (final SpreadException e) {
-            LOG.warning("SpreadException occurred during multicast send of message, reason: "
-                    + e.getMessage());
+            LOG.log(Level.WARNING,
+                    "SpreadException occurred during multicast send of message",
+                    e);
             return false;
         } catch (final SerializeException e) {
-            LOG.warning("SerializeException occurred during multicast send of message, reason: "
-                    + e.getMessage());
+            LOG.log(Level.WARNING,
+                    "SerializeException occurred during multicast send of message",
+                    e);
             return false;
         }
 
@@ -259,7 +261,7 @@ public class SpreadWrapper implements Activatable {
                 final SpreadGroup grp = groupIt.next();
                 try {
                     grp.leave();
-                    LOG.fine("SpreadGroup '" + grp + "' has been left.");
+                    LOG.log(Level.FINE, "SpreadGroup {} has been left.", grp);
                 } catch (final SpreadException e) {
                     // ignored
                     LOG.info("Caught a SpreadException while leaving group '"
@@ -336,6 +338,10 @@ public class SpreadWrapper implements Activatable {
     public SpreadMessage receive() throws InterruptedIOException,
             SpreadException {
         return this.conn.receive();
+    }
+
+    public boolean isShutdown() {
+        return this.shutdown;
     }
 
 }

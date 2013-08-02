@@ -29,7 +29,6 @@ package rsb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
 
@@ -38,8 +37,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rsb.Informer.InformerStateActive;
-import rsb.Informer.InformerStateInactive;
 import rsb.config.ParticipantConfig;
 import rsb.converter.ConverterRepository;
 import rsb.converter.DefaultConverterRepository;
@@ -54,11 +51,13 @@ public class InformerTest {
 
     private static final Scope DEFAULT_SCOPE = new Scope("/informer/example");
     private static final String DEFAULT_STRING_PAYLOAD = "Hello World!";
+    private static final String XML_TYPE = "XMLString";
+
     private Informer<String> stringInformer;
     private Informer<?> genericInformer;
     @SuppressWarnings("unused")
-    final private ConverterRepository<ByteBuffer> converters = DefaultConverterRepository
-            .getDefaultConverterRepository();
+    private final ConverterRepository<ByteBuffer> converters =
+            DefaultConverterRepository.getDefaultConverterRepository();
     private ParticipantConfig config;
 
     @BeforeClass
@@ -72,8 +71,8 @@ public class InformerTest {
 
         this.config = Utilities.createParticipantConfig();
 
-        this.stringInformer = new Informer<String>(DEFAULT_SCOPE, String.class,
-                this.config);
+        this.stringInformer =
+                new Informer<String>(DEFAULT_SCOPE, String.class, this.config);
         this.stringInformer.activate();
         this.genericInformer = new Informer<Object>(DEFAULT_SCOPE, this.config);
         this.genericInformer.activate();
@@ -98,33 +97,29 @@ public class InformerTest {
 
     @Test
     public void informerStringConfig() throws Throwable {
-        final Scope scope = new Scope("/x");
-        final Informer<String> informer = new Informer<String>(scope,
-                this.config);
-        assertNotNull("Informer is null", informer);
-        assertEquals("Wrong scope", informer.getScope(), scope);
+        final Informer<String> informer =
+                new Informer<String>(DEFAULT_SCOPE, this.config);
+        assertEquals("Wrong scope", informer.getScope(), DEFAULT_SCOPE);
     }
 
     @Test
     public void informerScopeTypeConfig() throws Throwable {
-        final Scope scope = new Scope("/x");
-        final String type = "XMLString";
-        final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), this.config);
+        final Informer<String> informer =
+                new Informer<String>(DEFAULT_SCOPE, XML_TYPE.getClass(),
+                        this.config);
         assertNotNull("Informer object is null", informer);
-        assertEquals(informer.getScope(), scope);
-        assertEquals(informer.getTypeInfo(), type.getClass());
+        assertEquals(informer.getScope(), DEFAULT_SCOPE);
+        assertEquals(informer.getTypeInfo(), XML_TYPE.getClass());
     }
 
     @Test
     public void informerScopeConfig() throws Throwable {
         final Scope scope = new Scope("/x");
-        final String type = "XMLString";
-        final Informer<String> informer = new Informer<String>(scope,
-                type.getClass(), this.config);
+        final Informer<String> informer =
+                new Informer<String>(scope, XML_TYPE.getClass(), this.config);
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
-        assertEquals(informer.getTypeInfo(), type.getClass());
+        assertEquals(informer.getTypeInfo(), XML_TYPE.getClass());
     }
 
     /**
@@ -133,30 +128,6 @@ public class InformerTest {
     @Test
     public void getScope() {
         assertEquals(this.stringInformer.getScope(), DEFAULT_SCOPE);
-    }
-
-    /**
-     * Test method for {@link rsb.Informer#activate()}.
-     *
-     * @throws Throwable
-     *             any error
-     */
-    @Test
-    public void activate() throws Throwable {
-        assertTrue(this.stringInformer.state instanceof InformerStateActive);
-    }
-
-    /**
-     * Test method for {@link rsb.Informer#deactivate()}.
-     *
-     * @throws Throwable
-     *             any error
-     */
-    @Test
-    public void deactivate() throws Throwable {
-        assertTrue(this.stringInformer.state instanceof InformerStateActive);
-        this.stringInformer.deactivate();
-        assertTrue(this.stringInformer.state instanceof InformerStateInactive);
     }
 
     // this is not a junit test case, we know that
@@ -179,11 +150,13 @@ public class InformerTest {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendEvent() throws Throwable {
-        Event sentEvent = this.stringInformer.send(new Event(DEFAULT_SCOPE,
-                String.class, DEFAULT_STRING_PAYLOAD));
+        Event sentEvent =
+                this.stringInformer.send(new Event(DEFAULT_SCOPE, String.class,
+                        DEFAULT_STRING_PAYLOAD));
         this.testEvent(sentEvent, this.stringInformer);
-        sentEvent = this.genericInformer.send(new Event(DEFAULT_SCOPE,
-                String.class, DEFAULT_STRING_PAYLOAD));
+        sentEvent =
+                this.genericInformer.send(new Event(DEFAULT_SCOPE,
+                        String.class, DEFAULT_STRING_PAYLOAD));
         this.testEvent(sentEvent, this.genericInformer);
     }
 
@@ -203,15 +176,16 @@ public class InformerTest {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendT() throws Throwable {
-        final Event sentEvent = this.stringInformer
-                .send(DEFAULT_STRING_PAYLOAD);
+        final Event sentEvent =
+                this.stringInformer.send(DEFAULT_STRING_PAYLOAD);
         this.testEvent(sentEvent, this.stringInformer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventNullScope() throws Throwable {
-        final Event sentEvent = new Event(this.stringInformer.getTypeInfo(),
-                DEFAULT_STRING_PAYLOAD);
+        final Event sentEvent =
+                new Event(this.stringInformer.getTypeInfo(),
+                        DEFAULT_STRING_PAYLOAD);
         sentEvent.setScope(null);
         this.stringInformer.send(sentEvent);
     }
@@ -227,7 +201,7 @@ public class InformerTest {
     @Test
     public void sendEventSubScope() throws Throwable {
         this.stringInformer.send(new Event(DEFAULT_SCOPE.concat(new Scope(
-                "/blubb")), this.stringInformer.getTypeInfo(),
+                "/bla")), this.stringInformer.getTypeInfo(),
                 DEFAULT_STRING_PAYLOAD));
     }
 

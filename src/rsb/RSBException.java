@@ -30,7 +30,7 @@ package rsb;
 /**
  * Superclass of all RSB exceptions that may be used in handlers that catch all
  * RSB-related exceptions.
- * 
+ *
  * @author swrede
  */
 public class RSBException extends Exception {
@@ -46,7 +46,7 @@ public class RSBException extends Exception {
 
     /**
      * Constructs an exception with an explanatory message.
-     * 
+     *
      * @param message
      *            the message
      */
@@ -56,7 +56,7 @@ public class RSBException extends Exception {
 
     /**
      * Constructs an exception with causing {@link Throwable}.
-     * 
+     *
      * @param cause
      *            causing exception
      */
@@ -66,7 +66,7 @@ public class RSBException extends Exception {
 
     /**
      * Constructs an exception with explanatory message and causing exception.
-     * 
+     *
      * @param message
      *            the message
      * @param cause

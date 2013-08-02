@@ -31,7 +31,7 @@ package rsb.util;
  * Unchecked Exception that signals not allowed attempts to access an already
  * closed queue, like pushing more elements in it or retrieving elements on an
  * empty and closed queue.
- * 
+ *
  * @author rgaertne
  */
 public class QueueClosedException extends RuntimeException {
@@ -40,7 +40,7 @@ public class QueueClosedException extends RuntimeException {
 
     /**
      * Creates a QueueClosedException with the specified detail message.
-     * 
+     *
      * @param message
      *            detail message
      */

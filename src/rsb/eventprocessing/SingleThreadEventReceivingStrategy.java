@@ -47,7 +47,8 @@ public class SingleThreadEventReceivingStrategy implements
 
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());
-    private final BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
+    private final BlockingQueue<Event> events =
+            new LinkedBlockingQueue<Event>();
     private final Set<Handler> handlers = Collections
             .synchronizedSet(new HashSet<Handler>());
     private DispatchThread thread;

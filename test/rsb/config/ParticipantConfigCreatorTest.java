@@ -65,20 +65,24 @@ public class ParticipantConfigCreatorTest {
     public void options() {
 
         final Properties props = new Properties();
-        props.setProperty("transport.spread.foo", "42");
-        props.setProperty("transport.test", "42");
-        props.setProperty("transport.blubb.nooo", "42");
+        final String key1 = "transport.spread.foo";
+        final String randomValue = "42";
+        props.setProperty(key1, randomValue);
+        final String key2 = "transport.test";
+        props.setProperty(key2, randomValue);
+        final String key3 = "transport.blubb.nooo";
+        props.setProperty(key3, randomValue);
 
         final ParticipantConfig config = new ParticipantConfig();
         config.getOrCreateTransport(SPREAD_TRANSPORT).setEnabled(true);
         new ParticipantConfigCreator().reconfigure(config, props);
 
         assertTrue(config.getTransports().get(SPREAD_TRANSPORT).getOptions()
-                .hasProperty("transport.spread.foo"));
+                .hasProperty(key1));
         assertFalse(config.getTransports().get(SPREAD_TRANSPORT).getOptions()
-                .hasProperty("transport.test"));
+                .hasProperty(key2));
         assertFalse(config.getTransports().get(SPREAD_TRANSPORT).getOptions()
-                .hasProperty("transport.blubb.nooo"));
+                .hasProperty(key3));
 
     }
 

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -17,6 +18,10 @@ import java.util.logging.Logger;
  * @author jwienke
  */
 public class ConfigLoader {
+
+    private static final String ENV_SEPARATOR = "_";
+
+    private static final String KEY_SEPARATOR = ".";
 
     private static final Logger LOG = Logger.getLogger(ConfigLoader.class
             .getName());
@@ -102,8 +107,9 @@ public class ConfigLoader {
                 this.loadFile(file, results);
             }
         } catch (final IOException ex) {
-            LOG.log(Level.SEVERE, "Caught IOException trying to read " + "'"
-                    + file.getPath() + "'", ex);
+            LOG.log(Level.SEVERE,
+                    String.format("Caught IOException trying to read  '%s'.",
+                            file.getPath()), ex);
         }
         return results;
     }
@@ -133,8 +139,9 @@ public class ConfigLoader {
                     + "' does not exist.");
         }
 
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(file)));
+        final BufferedReader reader =
+                new BufferedReader(new InputStreamReader(new FileInputStream(
+                        file)));
         try {
 
             String section = "";
@@ -154,12 +161,13 @@ public class ConfigLoader {
                 }
                 index = line.indexOf('=');
                 if (index == -1) {
-                    LOG.warning("Illegal line in configuration file: `" + line
-                            + "'");
+                    LOG.log(Level.WARNING,
+                            "Illegal line in configuration file: `{}`", line);
                     continue;
                 }
-                final String key = section + "."
-                        + line.substring(0, index).trim();
+                final String key =
+                        section + KEY_SEPARATOR
+                                + line.substring(0, index).trim();
                 final String value = line.substring(index + 1).trim();
                 results.setProperty(key, value);
             }
@@ -191,8 +199,10 @@ public class ConfigLoader {
         for (final Entry<String, String> entry : env.entrySet()) {
             final String key = entry.getKey();
             if (key.startsWith(this.environmentPrefix)) {
-                results.setProperty(key.substring(4).replace("_", ".")
-                        .toLowerCase(), entry.getValue());
+                results.setProperty(
+                        key.substring(this.prefix.length())
+                                .replace(ENV_SEPARATOR, KEY_SEPARATOR)
+                                .toLowerCase(Locale.US), entry.getValue());
             }
         }
     }

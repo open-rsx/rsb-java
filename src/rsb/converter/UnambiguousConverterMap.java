@@ -38,11 +38,11 @@ import java.util.Map;
 public class UnambiguousConverterMap<WireType> implements
         ConverterSelectionStrategy<WireType> {
 
-    Map<String, Converter<WireType>> converters = new HashMap<String, Converter<WireType>>();
+    private final Map<String, Converter<WireType>> converters =
+            new HashMap<String, Converter<WireType>>();
 
     @Override
-    public Converter<WireType> getConverter(final String key)
-            throws NoSuchConverterException {
+    public Converter<WireType> getConverter(final String key) {
         if (this.converters.containsKey(key)) {
             return this.converters.get(key);
         }
@@ -50,6 +50,17 @@ public class UnambiguousConverterMap<WireType> implements
                 + " registered in ConverterMap");
     }
 
+    /**
+     * Adds a new converter to this map which will be registered under a given
+     * key.
+     *
+     * @param key
+     *            the key
+     * @param converter
+     *            the converter
+     * @throws IllegalArgumentException
+     *             in case there already is a converter with the specified key
+     */
     public void addConverter(final String key,
             final Converter<WireType> converter) {
         if (this.converters.containsKey(key)) {

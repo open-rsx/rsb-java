@@ -61,7 +61,7 @@ public interface Filter {
     // public void skip(EventId id);
 
     /**
-     * Helper method for double dispatch of Filter registrations
+     * Helper method for double dispatch of Filter registrations.
      *
      * @param observer
      *            the observer to dispatch to

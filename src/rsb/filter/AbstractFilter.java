@@ -39,24 +39,24 @@ import rsb.EventId;
  */
 public abstract class AbstractFilter implements Filter {
 
-    private final static Logger LOG = Logger.getLogger(AbstractFilter.class
+    private static final Logger LOG = Logger.getLogger(AbstractFilter.class
             .getName());
 
-    /* stores whitelisted event ids registered by skip() */
+    /** Stores whitelisted event ids registered by {@link #skip(EventId)}. */
     protected Set<EventId> whitelist = new HashSet<EventId>();
 
-    /* stores type info */
+    /** Stores the type info for this filter. */
     protected String type = AbstractFilter.class.getSimpleName();
 
-    /**
-     * This method does the actual filtering step. If an event can be matched
-     * successfully against the condition of a specific filter, it is returned
-     * and processed by further filtering steps. If null is returned, the event
-     * is discarded.
-     */
     @Override
     public abstract Event transform(Event event);
 
+    /**
+     * Constructor.
+     *
+     * @param type
+     *            type of this filter
+     */
     protected AbstractFilter(final String type) {
         this.type = type;
     }
@@ -79,27 +79,27 @@ public abstract class AbstractFilter implements Filter {
     }
 
     /**
-     * returns whether events with the specified ID should be skipped or not.
+     * Returns whether events with the specified ID should be skipped or not.
      *
      * @param eventId
-     * @return true, if the event with the specified ID should be skipped
+     *            id to skip
+     * @return <code>true</code>, if the event with the specified ID should be
+     *         skipped
      */
     public boolean mustSkip(final EventId eventId) {
         return this.whitelist.contains(eventId);
     }
 
     /**
-     * remove ID from the list after the corresponding event has been skipped.
+     * Remove ID from the list after the corresponding event has been skipped.
      *
      * @param eventId
+     *            id to remove
      */
     public void skipped(final EventId eventId) {
         this.whitelist.remove(eventId);
     }
 
-    /**
-     * Helper method for double dispatch of Filter registrations
-     */
     @Override
     public abstract void dispachToObserver(FilterObserver observer,
             FilterAction action);

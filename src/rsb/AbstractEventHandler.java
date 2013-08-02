@@ -30,7 +30,7 @@ package rsb;
 /**
  * An interface for handlers that are interested in whole {@link Event}
  * instances.
- * 
+ *
  * @author swrede
  * @see Event
  */
@@ -41,6 +41,12 @@ public abstract class AbstractEventHandler implements Handler {
         this.handleEvent(event);
     };
 
+    /**
+     * Shall implement the real handling logic for an event.
+     *
+     * @param event
+     *            the event to handle
+     */
     public abstract void handleEvent(Event event);
 
 }

@@ -33,16 +33,13 @@ import java.nio.ByteBuffer;
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
  * unsigned integers that fit into 64 bits.
- * 
+ *
  * @author jmoringe
  */
 public class Uint64Converter implements Converter<ByteBuffer> {
 
-    private final ConverterSignature signature;
-
-    public Uint64Converter() {
-        this.signature = new ConverterSignature("uint64", Long.class);
-    }
+    private final ConverterSignature signature = new ConverterSignature(
+            "uint64", Long.class);
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,

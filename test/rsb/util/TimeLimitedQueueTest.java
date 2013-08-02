@@ -45,6 +45,8 @@ import rsb.Event;
  */
 public class TimeLimitedQueueTest {
 
+    private static final int WINDOW_MILLIS = 100;
+
     private static final int CAPACITY = 10;
 
     private TimeLimitedQueue queue;
@@ -54,11 +56,14 @@ public class TimeLimitedQueueTest {
      */
     @Before
     public void setUp() throws Exception {
-        this.queue = new TimeLimitedQueue(CAPACITY, 100, TimeUnit.MILLISECONDS);
+        this.queue =
+                new TimeLimitedQueue(CAPACITY, WINDOW_MILLIS,
+                        TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void addEvent() {
+        // CHECKSTYLE.OFF: MagicNumber - hard to write otherwise
         final Event firstEvent = new Event();
         final long firstTime = firstEvent.getMetaData().getCreateTime();
 
@@ -105,6 +110,7 @@ public class TimeLimitedQueueTest {
         assertSame(evenLater, this.queue.poll());
 
         assertEquals(0, this.queue.size());
+        // CHECKSTYLE.ON: MagicNumber
     }
 
 }

@@ -28,9 +28,9 @@
 package rsb.converter;
 
 /**
- * Implementation of this interface perform mappings of one of the followings
- * forms: - wire-schema -> @ref Converter - data-type -> @ref Converter
- * 
+ * Implementations of this interface perform mappings of one of the followings
+ * forms: - wire-schema -> @ref Converter - data-type -> @ref Converter.
+ *
  * @author jmoringe
  * @author swrede
  * @param <WireType>
@@ -40,13 +40,13 @@ public interface ConverterSelectionStrategy<WireType> {
 
     /**
      * Tries to look up the converter designated by @a key.
-     * 
+     *
      * @param key
+     *            the key
      * @return the converter for the given key
      * @throws NoSuchConverterException
      *             no converter found for that key
      */
-    Converter<WireType> getConverter(String key)
-            throws NoSuchConverterException;
+    Converter<WireType> getConverter(String key);
 
 }

@@ -30,29 +30,47 @@ package rsb.converter;
 /**
  * Immutable object representing a converter signature. Used to index the
  * converter maps.
- * 
+ *
  * @author swrede
  */
 public class ConverterSignature {
 
-    /** RSB WireSchema */
+    /** Contains the wire schema of the converter. */
     private final String schema;
-    /** Java Type */
-    private final Class<?> datatype;
+    /** Contains the data type that this converter can use. */
+    private final Class<?> dataType;
 
-    public ConverterSignature(final String schema, final Class<?> datatype) {
-        assert datatype != null;
+    /**
+     * Instantiates a new signature object.
+     *
+     * @param schema
+     *            the wire schema produced by a converter
+     * @param dataType
+     *            the datatype handled by a converter.
+     */
+    public ConverterSignature(final String schema, final Class<?> dataType) {
+        assert dataType != null;
         assert schema != null;
         this.schema = schema;
-        this.datatype = datatype;
+        this.dataType = dataType;
     }
 
+    /**
+     * Returns the wire schema the described converter produces and reads.
+     *
+     * @return wire schema string
+     */
     public String getSchema() {
         return this.schema;
     }
 
-    public Class<?> getDatatype() {
-        return this.datatype;
+    /**
+     * Returns the data type of the described converter.
+     *
+     * @return data type class
+     */
+    public Class<?> getDataType() {
+        return this.dataType;
     }
 
     @SuppressWarnings({ "PMD.AvoidFinalLocalVariable",
@@ -61,7 +79,7 @@ public class ConverterSignature {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + this.datatype.hashCode();
+        result = prime * result + this.dataType.hashCode();
         result = prime * result + this.schema.hashCode();
         return result;
     }
@@ -79,7 +97,7 @@ public class ConverterSignature {
             return false;
         }
         final ConverterSignature other = (ConverterSignature) obj;
-        if (!this.datatype.equals(other.datatype)) {
+        if (!this.dataType.equals(other.dataType)) {
             return false;
         }
         if (!this.schema.equals(other.schema)) {
@@ -91,7 +109,7 @@ public class ConverterSignature {
     @Override
     public String toString() {
         return "ConverterSignature [schema=" + this.schema + ", datatype="
-                + this.datatype + "]";
+                + this.dataType + "]";
     }
 
 }

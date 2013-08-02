@@ -56,9 +56,6 @@ class ReceiverTask extends Thread {
     private static final Logger LOG = Logger.getLogger(ReceiverTask.class
             .getName());
 
-    /**
-     * SpreadConnection
-     */
     private final SpreadWrapper spread;
 
     private final SpreadMessageConverter smc = new SpreadMessageConverter();
@@ -98,15 +95,15 @@ class ReceiverTask extends Thread {
                 // TODO check whether membership messages shall be handled
                 // similar to data messages and be converted into events
                 // TODO evaluate return value
-                final DataMessage receivedData = this.smc
-                        .process(receivedMessage);
+                final DataMessage receivedData =
+                        this.smc.process(receivedMessage);
                 if (receivedData == null) {
                     continue;
                 }
 
                 LOG.fine("Notification reveived by ReceiverTask");
-                final Event receivedFullEvent = this
-                        .convertNotification(receivedData);
+                final Event receivedFullEvent =
+                        this.convertNotification(receivedData);
                 if (receivedFullEvent != null) {
                     // dispatch event
                     this.eventHandler.handle(receivedFullEvent);
@@ -119,9 +116,9 @@ class ReceiverTask extends Thread {
                 if (!this.spread.isConnected()) {
                     LOG.fine("Spread connection is closed.");
                 }
-                if (!this.spread.shutdown) {
-                    LOG.warning("Caught a SpreadException while trying to receive a message: "
-                            + e1.getMessage());
+                if (!this.spread.isShutdown()) {
+                    LOG.log(Level.WARNING, "Caught a SpreadException while "
+                            + "trying to receive a message", e1);
                 }
                 // get out here, stop this thread as no further messages can be
                 // retrieved
@@ -150,18 +147,18 @@ class ReceiverTask extends Thread {
 
         try {
 
-            final FragmentedNotification fragment = FragmentedNotification
-                    .parseFrom(ByteHelpers.byteBufferToArray(receivedData
-                            .getData()));
-            final AssemblyPool.DataAndNotification joinedData = this.pool
-                    .insert(fragment);
+            final FragmentedNotification fragment =
+                    FragmentedNotification.parseFrom(ByteHelpers
+                            .byteBufferToArray(receivedData.getData()));
+            final AssemblyPool.DataAndNotification joinedData =
+                    this.pool.insert(fragment);
 
             if (joinedData == null) {
                 return null;
             }
 
-            final Notification initialNotification = joinedData
-                    .getNotification();
+            final Notification initialNotification =
+                    joinedData.getNotification();
             return ProtocolConversion.fromNotification(initialNotification,
                     joinedData.getData(), this.converters);
 

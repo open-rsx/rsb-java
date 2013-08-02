@@ -50,6 +50,19 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
     private final Event event;
     private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks;
 
+    /**
+     * Constructor.
+     *
+     * @param handler
+     *            handler to dispatch a received event to
+     * @param filters
+     *            filter to apply before dispatching
+     * @param event
+     *            the event to filter and eventually dispatch
+     * @param handlerTasks
+     *            internal map of handlers and their associated tasks to remove
+     *            this instance from once completed
+     */
     MatchAndDispatchTask(final Handler handler, final Set<Filter> filters,
             final Event event,
             final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks) {
@@ -82,7 +95,7 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
         }
     }
 
-    public boolean match(final Event event) {
+    private boolean match(final Event event) {
         Event result = event;
         synchronized (this.filters) {
             for (final Filter filter : this.filters) {

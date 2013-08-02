@@ -31,14 +31,14 @@ import rsb.Event;
 
 /**
  * A generic interface for handlers of {@link Event}s.
- * 
+ *
  * @author jwienke
  */
 public interface EventHandler {
 
     /**
      * The callback method.
-     * 
+     *
      * @param event
      *            the event to handle
      */

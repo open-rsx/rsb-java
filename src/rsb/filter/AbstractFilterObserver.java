@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class AbstractFilterObserver implements FilterObserver {
 
-    protected final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(AbstractFilterObserver.class.getCanonicalName());
 
     @Override

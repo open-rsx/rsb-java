@@ -36,13 +36,24 @@ import rsb.Event;
  * A time and space limited queue of RSB {@link Event}s that discards past
  * events older than a specified time limit. It will additionally discard old
  * events when reaching a set maximum capacity.
- * 
+ *
  * @author dklotz
  */
 public class TimeLimitedQueue extends LimitedQueue<Event> {
 
     private final long timeWindow;
 
+    /**
+     * Creates a new queue with the specified maximum capacity and time window
+     * for keeping events in the queue.
+     *
+     * @param capacity
+     *            maximum capacity before discarding events
+     * @param timeWindow
+     *            time to keep events in the specified unit
+     * @param unit
+     *            unit for the time window
+     */
     public TimeLimitedQueue(final int capacity, final long timeWindow,
             final TimeUnit unit) {
         super(capacity);
@@ -51,20 +62,20 @@ public class TimeLimitedQueue extends LimitedQueue<Event> {
 
     private void discardOldEvents(final long currentTime) {
         synchronized (this) {
-            if (this.queue.isEmpty()) {
+            if (getQueue().isEmpty()) {
                 return;
             }
 
-            Event oldestEvent = this.queue.peek();
+            Event oldestEvent = getQueue().peek();
             long oldestTime = oldestEvent.getMetaData().getCreateTime();
 
             while (currentTime - oldestTime > this.timeWindow
-                    && !this.queue.isEmpty()) {
+                    && !getQueue().isEmpty()) {
                 // Discard the oldest element
-                this.queue.poll();
+                getQueue().poll();
 
                 // Get the age of the next oldest element
-                oldestEvent = this.queue.peek();
+                oldestEvent = getQueue().peek();
                 oldestTime = oldestEvent.getMetaData().getCreateTime();
             }
         }

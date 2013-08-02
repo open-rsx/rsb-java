@@ -27,8 +27,6 @@
  */
 package rsb.patterns;
 
-import java.util.logging.Logger;
-
 import rsb.Activatable;
 import rsb.Factory;
 import rsb.Informer;
@@ -50,17 +48,14 @@ import rsb.Scope;
  */
 public abstract class Method implements Activatable {
 
-    protected final static Logger LOG = Logger
-            .getLogger(Method.class.getName());
-
-    protected Factory factory;
+    private final Factory factory;
     private final Server<?> server;
     private final String name;
-    protected Informer<?> informer;
-    protected Listener listener;
+    private Informer<?> informer;
+    private Listener listener;
     private MethodState state;
-    protected final Scope REQUEST_SCOPE;
-    protected final Scope REPLY_SCOPE;
+    private final Scope requestScope;
+    private final Scope replyScope;
 
     protected class MethodState {
 
@@ -80,13 +75,13 @@ public abstract class Method implements Activatable {
         public MethodState deactivate() throws RSBException,
                 InterruptedException {
             // Deactivate informer and listener if necessary.
-            if (Method.this.listener != null) {
-                Method.this.listener.deactivate();
-                Method.this.listener = null;
+            if (Method.this.getListener() != null) {
+                Method.this.getListener().deactivate();
+                Method.this.setListener(null);
             }
-            if (Method.this.informer != null) {
-                Method.this.informer.deactivate();
-                Method.this.informer = null;
+            if (Method.this.getInformer() != null) {
+                Method.this.getInformer().deactivate();
+                Method.this.setInformer(null);
             }
             return new MethodStateInactive();
         }
@@ -96,8 +91,8 @@ public abstract class Method implements Activatable {
 
         @Override
         public MethodState activate() throws RSBException {
-            Method.this.listener.activate();
-            Method.this.informer.activate();
+            Method.this.getListener().activate();
+            Method.this.getInformer().activate();
             return new MethodStateActive();
         }
     }
@@ -115,12 +110,22 @@ public abstract class Method implements Activatable {
         this.server = server;
         this.name = name;
         // TODO make sure that case doesn't matter (generally!)
-        this.REQUEST_SCOPE = server.getScope().concat(
-                new Scope("/request" + "/" + name));
-        this.REPLY_SCOPE = server.getScope().concat(
-                new Scope("/reply" + "/" + name));
+        this.requestScope =
+                server.getScope().concat(new Scope("/request/" + name));
+        this.replyScope =
+                server.getScope().concat(new Scope("/reply/" + name));
         this.factory = Factory.getInstance();
         this.state = new MethodStateInactive();
+    }
+
+    /**
+     * Returns the factory instance to use by this method for creating internal
+     * participants.
+     *
+     * @return factory instance
+     */
+    protected Factory getFactory() {
+        return this.factory;
     }
 
     /**
@@ -181,6 +186,22 @@ public abstract class Method implements Activatable {
     @Override
     public String toString() {
         return "Method[name=" + this.getName() + "]";
+    }
+
+    protected void setInformer(final Informer<?> informer) {
+        this.informer = informer;
+    }
+
+    protected void setListener(final Listener listener) {
+        this.listener = listener;
+    }
+
+    protected Scope getRequestScope() {
+        return this.requestScope;
+    }
+
+    protected Scope getReplyScope() {
+        return this.replyScope;
     }
 
 };

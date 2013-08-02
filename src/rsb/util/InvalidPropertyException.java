@@ -27,6 +27,9 @@
  */
 package rsb.util;
 
+/**
+ * Thrown in case a desired property does not exist.
+ */
 public class InvalidPropertyException extends RuntimeException {
 
     /**
@@ -34,18 +37,41 @@ public class InvalidPropertyException extends RuntimeException {
      */
     private static final long serialVersionUID = 5696967985100081449L;
 
+    /**
+     * Constructor without message and cause.
+     */
     public InvalidPropertyException() {
         super();
     }
 
+    /**
+     * Constructor with explanatory message.
+     *
+     * @param message
+     *            the message
+     */
     public InvalidPropertyException(final String message) {
         super(message);
     }
 
+    /**
+     * Constructor with explanatory message and cause.
+     *
+     * @param message
+     *            the message
+     * @param cause
+     *            the cause
+     */
     public InvalidPropertyException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Constructor with only cause.
+     *
+     * @param cause
+     *            the cause
+     */
     public InvalidPropertyException(final Throwable cause) {
         super(cause);
     }

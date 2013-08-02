@@ -42,35 +42,44 @@ import rsb.transport.TransportFactory;
 import rsb.util.Properties;
 
 /**
+ * A {@link TransportFactory} implementation for the spread transport.
+ *
  * @author jwienke
  * @author swrede
  */
 public class SpreadFactory implements TransportFactory {
 
+    private static final String QOS_RELIABILITY_KEY = "qualityofservice.reliability";
+    private static final String QOS_ORDERING_KEY = "qualityofservice.ordering";
+    private static final String HOST_KEY = "transport.spread.host";
+    private static final String DEFAULT_HOST = "localhost";
+    private static final String PORT_KEY = "transport.spread.port";
+    private static final String DEFAULT_PORT = "4803";
+    private static final String NODELAY_KEY = "transport.spread.tcpnodelay";
+    private static final String DEFAULT_NODELAY = "true";
+
     private SpreadWrapper createSpreadWrapper(final Properties properties)
             throws InitializeException {
         try {
-            return new SpreadWrapper(properties.getProperty(
-                    "transport.spread.host", "localhost").asString(),
-                    properties.getProperty("transport.spread.port", "4803")
-                            .asInteger(), properties.getProperty(
-                            "transport.spread.tcpnodelay", "true").asBoolean());
+            return new SpreadWrapper(properties.getProperty(HOST_KEY,
+                    DEFAULT_HOST).asString(), properties.getProperty(PORT_KEY,
+                    DEFAULT_PORT).asInteger(), properties.getProperty(
+                    NODELAY_KEY, DEFAULT_NODELAY).asBoolean());
         } catch (final NumberFormatException e) {
             throw new InitializeException(
                     "Unable to parse spread port from properties.", e);
         } catch (final UnknownHostException e) {
             throw new InitializeException("Unable to resolve host name "
-                    + properties.getProperty("transport.spread.host",
-                            "localhost"), e);
+                    + properties.getProperty(HOST_KEY, DEFAULT_HOST), e);
         }
     }
 
     @Override
     public InPushConnector createInPushConnector(final Properties properties)
             throws InitializeException {
-        final ConverterSelectionStrategy<ByteBuffer> inStrategy = DefaultConverterRepository
-                .getDefaultConverterRepository()
-                .getConvertersForDeserialization();
+        final ConverterSelectionStrategy<ByteBuffer> inStrategy =
+                DefaultConverterRepository.getDefaultConverterRepository()
+                        .getConvertersForDeserialization();
         return new SpreadInPushConnector(createSpreadWrapper(properties),
                 inStrategy);
 
@@ -80,19 +89,21 @@ public class SpreadFactory implements TransportFactory {
     public OutConnector createOutConnector(final Properties properties)
             throws InitializeException {
 
-        final ConverterSelectionStrategy<ByteBuffer> outStrategy = DefaultConverterRepository
-                .getDefaultConverterRepository()
-                .getConvertersForSerialization();
+        final ConverterSelectionStrategy<ByteBuffer> outStrategy =
+                DefaultConverterRepository.getDefaultConverterRepository()
+                        .getConvertersForSerialization();
 
         Ordering ordering = new QualityOfServiceSpec().getOrdering();
-        if (properties.hasProperty("qualityofservice.ordering")) {
-            ordering = Ordering.valueOf(properties.getProperty(
-                    "qualityofservice.ordering").asString());
+        if (properties.hasProperty(QOS_ORDERING_KEY)) {
+            ordering =
+                    Ordering.valueOf(properties.getProperty(
+                            QOS_ORDERING_KEY).asString());
         }
         Reliability reliability = new QualityOfServiceSpec().getReliability();
-        if (properties.hasProperty("qualityofservice.reliability")) {
-            reliability = Reliability.valueOf(properties.getProperty(
-                    "qualityofservice.reliability").asString());
+        if (properties.hasProperty(QOS_RELIABILITY_KEY)) {
+            reliability =
+                    Reliability.valueOf(properties.getProperty(
+                            QOS_RELIABILITY_KEY).asString());
         }
 
         return new SpreadOutConnector(createSpreadWrapper(properties),

@@ -12,6 +12,8 @@ import java.util.jar.Manifest;
  */
 public final class Version {
 
+    private static final String LAST_COMMIT_ENTRY = "Last-Commit";
+
     private static final Version INSTANCE = new Version();
 
     private String versionString;
@@ -32,11 +34,11 @@ public final class Version {
         // get last commit from jar Manifest if available
         final Manifest manifest = this.getManifest();
         if (manifest == null
-                || manifest.getMainAttributes().getValue("Last-Commit") == null) {
+                || manifest.getMainAttributes().getValue(LAST_COMMIT_ENTRY) == null) {
             this.lastCommit = "archive";
         } else {
             this.lastCommit = manifest.getMainAttributes().getValue(
-                    "Last-Commit");
+                    LAST_COMMIT_ENTRY);
         }
 
     }

@@ -60,29 +60,32 @@ public class SpreadRoundtripTest extends ConnectorRoundtripCheck {
 
     @Parameters
     public static Collection<Object[]> data() {
-        final Object[][] data = new Object[][] { { 100 }, { 90000 },
-                { 110000 }, { 350000 } };
+        final Object[][] data =
+                new Object[][] { { 100 }, { 90000 }, { 110000 }, { 350000 } };
         return Arrays.asList(data);
     }
 
     @Override
     protected OutConnector createOutConnector() throws Throwable {
         final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
-        final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
+        final UnambiguousConverterMap<ByteBuffer> outStrategy =
+                new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
-        final SpreadOutConnector outPort = new SpreadOutConnector(outWrapper,
-                outStrategy, new QualityOfServiceSpec(Ordering.ORDERED,
-                        Reliability.RELIABLE));
+        final SpreadOutConnector outPort =
+                new SpreadOutConnector(outWrapper, outStrategy,
+                        new QualityOfServiceSpec(Ordering.ORDERED,
+                                Reliability.RELIABLE));
         return outPort;
     }
 
     @Override
     protected InPushConnector createInConnector() throws Throwable {
-        final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
+        final UnambiguousConverterMap<ByteBuffer> inStrategy =
+                new UnambiguousConverterMap<ByteBuffer>();
         inStrategy.addConverter("utf-8-string", new StringConverter());
         final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
-        final SpreadInPushConnector inPort = new SpreadInPushConnector(
-                inWrapper, inStrategy);
+        final SpreadInPushConnector inPort =
+                new SpreadInPushConnector(inWrapper, inStrategy);
         return inPort;
     }
 

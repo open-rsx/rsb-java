@@ -9,45 +9,61 @@ import java.util.concurrent.TimeUnit;
 /**
  * A limited capacity BlockingQueue which overrides add in order to remove the
  * oldest element when the size limit is reached.
- * 
+ *
  * @author jwienke
- * 
- * @param <T>
+ *
+ * @param <ElementType>
  *            contained element type
  */
 @SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals",
         "PMD.UseVarargs" })
-public class LimitedQueue<T> implements BlockingQueue<T> {
+public class LimitedQueue<ElementType> implements BlockingQueue<ElementType> {
 
-    protected BlockingQueue<T> queue;
+    private final BlockingQueue<ElementType> queue;
 
+    /**
+     * Creates a queue with the specified capacity. Oldest elements are removed
+     * on add in case the capacity limit is reached.
+     *
+     * @param capacity
+     *            capacity of the queue
+     */
     public LimitedQueue(final int capacity) {
-        this.queue = new LinkedBlockingQueue<T>(capacity);
+        this.queue = new LinkedBlockingQueue<ElementType>(capacity);
+    }
+
+    /**
+     * Returns the underlying queue.
+     *
+     * @return queue instance
+     */
+    protected BlockingQueue<ElementType> getQueue() {
+        return this.queue;
     }
 
     @Override
-    public T remove() {
+    public ElementType remove() {
         synchronized (this) {
             return this.queue.remove();
         }
     }
 
     @Override
-    public T poll() {
+    public ElementType poll() {
         synchronized (this) {
             return this.queue.poll();
         }
     }
 
     @Override
-    public T element() {
+    public ElementType element() {
         synchronized (this) {
             return this.queue.element();
         }
     }
 
     @Override
-    public T peek() {
+    public ElementType peek() {
         synchronized (this) {
             return this.queue.peek();
         }
@@ -68,7 +84,7 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<ElementType> iterator() {
         synchronized (this) {
             return this.queue.iterator();
         }
@@ -82,7 +98,8 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public <U> U[] toArray(@SuppressWarnings("PMD.ShortVariable") final U[] a) {
+    public <TargetType> TargetType[] toArray(
+            @SuppressWarnings("PMD.ShortVariable") final TargetType[] a) {
         synchronized (this) {
             return this.queue.toArray(a);
         }
@@ -97,8 +114,9 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public boolean addAll(
-            @SuppressWarnings("PMD.ShortVariable") final Collection<? extends T> c) {
+    public
+            boolean
+            addAll(@SuppressWarnings("PMD.ShortVariable") final Collection<? extends ElementType> c) {
         synchronized (this) {
             return this.queue.addAll(c);
         }
@@ -129,7 +147,8 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public boolean add(@SuppressWarnings("PMD.ShortVariable") final T e) {
+    public boolean add(
+            @SuppressWarnings("PMD.ShortVariable") final ElementType e) {
         if (this.queue.remainingCapacity() == 0) {
             this.queue.poll();
         }
@@ -137,31 +156,33 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public boolean offer(@SuppressWarnings("PMD.ShortVariable") final T e) {
+    public boolean offer(
+            @SuppressWarnings("PMD.ShortVariable") final ElementType e) {
         return this.queue.offer(e);
     }
 
     @Override
-    public void put(@SuppressWarnings("PMD.ShortVariable") final T e)
+    public void put(@SuppressWarnings("PMD.ShortVariable") final ElementType e)
             throws InterruptedException {
         this.queue.put(e);
 
     }
 
     @Override
-    public boolean offer(@SuppressWarnings("PMD.ShortVariable") final T e,
+    public boolean offer(
+            @SuppressWarnings("PMD.ShortVariable") final ElementType e,
             final long timeout, final TimeUnit unit)
             throws InterruptedException {
         return this.queue.offer(e, timeout, unit);
     }
 
     @Override
-    public T take() throws InterruptedException {
+    public ElementType take() throws InterruptedException {
         return this.queue.take();
     }
 
     @Override
-    public T poll(final long timeout, final TimeUnit unit)
+    public ElementType poll(final long timeout, final TimeUnit unit)
             throws InterruptedException {
         return this.queue.poll(timeout, unit);
     }
@@ -172,7 +193,8 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public boolean remove(@SuppressWarnings("PMD.ShortVariable") final Object o) {
+    public boolean
+            remove(@SuppressWarnings("PMD.ShortVariable") final Object o) {
         return this.queue.remove(o);
     }
 
@@ -183,15 +205,17 @@ public class LimitedQueue<T> implements BlockingQueue<T> {
     }
 
     @Override
-    public int drainTo(
-            @SuppressWarnings("PMD.ShortVariable") final Collection<? super T> c) {
+    public
+            int
+            drainTo(@SuppressWarnings("PMD.ShortVariable") final Collection<? super ElementType> c) {
         return this.queue.drainTo(c);
     }
 
     @Override
-    public int drainTo(
-            @SuppressWarnings("PMD.ShortVariable") final Collection<? super T> c,
-            final int maxElements) {
+    public
+            int
+            drainTo(@SuppressWarnings("PMD.ShortVariable") final Collection<? super ElementType> c,
+                    final int maxElements) {
         return this.queue.drainTo(c, maxElements);
     }
 

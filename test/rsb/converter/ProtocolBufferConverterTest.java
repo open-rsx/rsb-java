@@ -45,16 +45,19 @@ import com.google.protobuf.ByteString;
  */
 public class ProtocolBufferConverterTest {
 
+    private static final int RANDOM_SEQUENCE = 23;
+
     private WireContents<ByteBuffer> buffer;
-    private final ProtocolBufferConverter<Notification> converter = new ProtocolBufferConverter<Notification>(
-            Notification.getDefaultInstance());
+    private final ProtocolBufferConverter<Notification> converter =
+            new ProtocolBufferConverter<Notification>(
+                    Notification.getDefaultInstance());
 
     public void serialize() throws ConversionException {
-        final Notification.Builder notificationBuilder = Notification
-                .newBuilder();
+        final Notification.Builder notificationBuilder =
+                Notification.newBuilder();
         // notification metadata
         final EventId.Builder eventIdBuilder = EventId.newBuilder();
-        eventIdBuilder.setSequenceNumber(23);
+        eventIdBuilder.setSequenceNumber(RANDOM_SEQUENCE);
         eventIdBuilder.setSenderId(ByteString.copyFrom(new ParticipantId()
                 .toByteArray()));
         notificationBuilder.setEventId(eventIdBuilder);
@@ -62,17 +65,20 @@ public class ProtocolBufferConverterTest {
                 .copyFromUtf8("rsb.notification"));
         notificationBuilder.setScope(ByteString.copyFromUtf8("rsb"));
 
-        this.buffer = this.converter.serialize(Notification.class,
-                notificationBuilder.build());
+        this.buffer =
+                this.converter.serialize(Notification.class,
+                        notificationBuilder.build());
         assertNotNull(this.buffer);
     }
 
     public void deserialize() throws ConversionException {
         assertNotNull(this.buffer);
-        final UserData<Notification> result = this.converter.deserialize(
-                ".rsb.protocol.Notification", this.buffer.getSerialization());
+        final UserData<Notification> result =
+                this.converter.deserialize(".rsb.protocol.Notification",
+                        this.buffer.getSerialization());
         final Notification notification = (Notification) result.getData();
-        assertEquals(23, notification.getEventId().getSequenceNumber());
+        assertEquals(RANDOM_SEQUENCE, notification.getEventId()
+                .getSequenceNumber());
     }
 
     @Test

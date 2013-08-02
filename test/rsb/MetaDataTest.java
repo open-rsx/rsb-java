@@ -35,18 +35,23 @@ import org.junit.Test;
 
 /**
  * Test for {@link MetaData}.
- * 
+ *
  * @author jwienke
  */
 public class MetaDataTest {
+
+    private static final int MILLIS_TO_MICROS = 1000;
+    private static final int ALLOWED_DELTA_MICROS = 100000;
 
     @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     @Test
     public void construction() {
 
         final MetaData meta = new MetaData();
-        assertTrue(meta.getCreateTime() >= System.currentTimeMillis() * 1000 - 100000);
-        assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getCreateTime() >= System.currentTimeMillis()
+                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getCreateTime() <= System.currentTimeMillis()
+                * MILLIS_TO_MICROS);
         assertEquals(0, meta.getReceiveTime());
         assertEquals(0, meta.getDeliverTime());
         assertEquals(0, meta.getSendTime());
@@ -64,14 +69,22 @@ public class MetaDataTest {
         meta.setReceiveTime(0);
         meta.setDeliverTime(0);
 
-        assertTrue(meta.getCreateTime() > System.currentTimeMillis() * 1000 - 100000);
-        assertTrue(meta.getCreateTime() <= System.currentTimeMillis() * 1000);
-        assertTrue(meta.getSendTime() > System.currentTimeMillis() * 1000 - 100000);
-        assertTrue(meta.getSendTime() <= System.currentTimeMillis() * 1000);
-        assertTrue(meta.getReceiveTime() > System.currentTimeMillis() * 1000 - 100000);
-        assertTrue(meta.getReceiveTime() <= System.currentTimeMillis() * 1000);
-        assertTrue(meta.getDeliverTime() > System.currentTimeMillis() * 1000 - 100000);
-        assertTrue(meta.getDeliverTime() <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getCreateTime() > System.currentTimeMillis()
+                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getCreateTime() <= System.currentTimeMillis()
+                * MILLIS_TO_MICROS);
+        assertTrue(meta.getSendTime() > System.currentTimeMillis()
+                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getSendTime() <= System.currentTimeMillis()
+                * MILLIS_TO_MICROS);
+        assertTrue(meta.getReceiveTime() > System.currentTimeMillis()
+                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getReceiveTime() <= System.currentTimeMillis()
+                * MILLIS_TO_MICROS);
+        assertTrue(meta.getDeliverTime() > System.currentTimeMillis()
+                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getDeliverTime() <= System.currentTimeMillis()
+                * MILLIS_TO_MICROS);
 
     }
 
@@ -126,8 +139,10 @@ public class MetaDataTest {
         final String autoKey = "auto";
         meta.setUserTime(autoKey, 0);
 
-        assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis() * 1000 - 100000);
-        assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis() * 1000);
+        assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis()
+                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis()
+                * MILLIS_TO_MICROS);
     }
 
     @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
@@ -135,7 +150,7 @@ public class MetaDataTest {
     public void userInfos() {
 
         final MetaData meta = new MetaData();
-        final String key = "afdadfasfd";
+        final String key = "afdadfasfdxxx";
         final String value = "213123";
 
         assertFalse(meta.hasUserInfo(key));
@@ -154,7 +169,7 @@ public class MetaDataTest {
     @Test(expected = IllegalArgumentException.class)
     public void userInfosUnknownException() {
         final MetaData meta = new MetaData();
-        meta.getUserInfo("unknown");
+        meta.getUserInfo("unknown-info");
     }
 
     // we want to test equals and call orderings here explicitly
@@ -163,7 +178,7 @@ public class MetaDataTest {
     public void comparison() throws InterruptedException {
 
         MetaData meta1 = new MetaData();
-        Thread.sleep(100);
+        Thread.sleep(ALLOWED_DELTA_MICROS / MILLIS_TO_MICROS);
         MetaData meta2 = new MetaData();
         assertFalse(meta1.equals(meta2)); // distinct times + no UUIDs
         meta2.setCreateTime(meta1.getCreateTime());
@@ -173,9 +188,11 @@ public class MetaDataTest {
         meta2 = new MetaData();
         meta2.setCreateTime(meta1.getCreateTime());
         assertEquals(meta1, meta2);
-        meta2.setUserInfo("foo", "bar");
+        final String infoKey = "foo";
+        final String infoValue = "bar";
+        meta2.setUserInfo(infoKey, infoValue);
         assertFalse(meta1.equals(meta2));
-        meta1.setUserInfo("foo", "bar");
+        meta1.setUserInfo(infoKey, infoValue);
         assertEquals(meta1, meta2);
 
     }

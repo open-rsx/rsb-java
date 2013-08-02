@@ -59,8 +59,32 @@ public interface EventReceivingStrategy extends EventHandler, Activatable {
      */
     void removeFilter(Filter filter);
 
-    void addHandler(Handler handler, boolean wait);
+    /**
+     * Registers a handler that will be informed in case of received events.
+     *
+     * @param handler
+     *            the handler to add, not <code>null</code>
+     * @param wait
+     *            if <code>true</code>, wait with returning from this method
+     *            until the handler is fully functional and will receive the
+     *            next issued event
+     * @throws InterruptedException
+     *             interrupted while waiting for the handler to be installed
+     */
+    void addHandler(Handler handler, boolean wait) throws InterruptedException;
 
+    /**
+     * Removes a handler from the event dispatching. In case the given handler
+     * was not registered the call is silently ignored.
+     *
+     * @param handler
+     *            the handler to remove
+     * @param wait
+     *            if <code>true</code>, wait with returning from this method
+     *            until the handler cannot receive any more events
+     * @throws InterruptedException
+     *             interrupted while waiting for the handler to be removed
+     */
     void removeHandler(Handler handler, boolean wait)
             throws InterruptedException;
 

@@ -32,7 +32,7 @@ package rsb.converter;
  * Implementations may support one or more domain types for (de-)serialization
  * to T and back to a specific object type referenced through the typeinfo
  * parameter.
- * 
+ *
  * @author swrede
  * @param <WireType>
  *            the wire format to serialize on
@@ -41,7 +41,7 @@ public interface Converter<WireType> {
 
     /**
      * Serializes user data to a wire representation.
-     * 
+     *
      * @param typeInfo
      *            Java class describing the type of the data to serialize
      * @param obj
@@ -55,7 +55,7 @@ public interface Converter<WireType> {
 
     /**
      * Deserializes the data from the wire.
-     * 
+     *
      * @param wireSchema
      *            wire schema of the serialized data
      * @param buffer
@@ -70,7 +70,7 @@ public interface Converter<WireType> {
 
     /**
      * Get signature for this converter.
-     * 
+     *
      * @return the @See ConverterSignature of this converter instance
      */
     ConverterSignature getSignature();

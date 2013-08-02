@@ -13,6 +13,16 @@ public final class SocketOptions {
     private final int port;
     private final boolean tcpNoDelay;
 
+    /**
+     * Constructor.
+     *
+     * @param address
+     *            host address
+     * @param port
+     *            socket port
+     * @param tcpNoDelay
+     *            wether to use tcp no delay or not
+     */
     public SocketOptions(final InetAddress address, final int port,
             final boolean tcpNoDelay) {
         assert address != null;
@@ -23,14 +33,29 @@ public final class SocketOptions {
         this.tcpNoDelay = tcpNoDelay;
     }
 
+    /**
+     * Returns the host.
+     *
+     * @return host
+     */
     public InetAddress getAddress() {
         return this.address;
     }
 
+    /**
+     * Returns the port.
+     *
+     * @return port
+     */
     public int getPort() {
         return this.port;
     }
 
+    /**
+     * Returns whether to use tcp no delay or not.
+     *
+     * @return <code>true</code> to use, else <code>false</code>
+     */
     public boolean isTcpNoDelay() {
         return this.tcpNoDelay;
     }

@@ -4,7 +4,7 @@
         Build file for Java Bindings of Robotics Service Bus Middleware
     </description>
 
-    <property name="version.major" value="0.9"/>
+    <property name="version.major" value="0.9" />
 
     <!-- set global properties for this build -->
     <property file="build.properties" />
@@ -32,8 +32,8 @@
     <property name="git.executable" value="git" />
     <property name="git.versionfile" location="${build.dir}/gitversion" />
     <property name="git.branchfile" location="${build.dir}/gitbranch" />
-	
-	<property name="failtests" value="false" />
+
+    <property name="failtests" value="false" />
 
     <!-- availability checks for external dependencies -->
     <fail message="Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.">
@@ -73,7 +73,7 @@
     </taskdef>
 
     <target name="gitversion" description="Get patch version from git">
-        
+
         <mkdir dir="${build.dir}" />
         <exec executable="${git.executable}" output="${git.versionfile}" failifexecutionfails="false" errorproperty="git.version.failed">
             <arg value="describe" />
@@ -126,7 +126,7 @@
                 <striplinebreaks />
             </filterchain>
         </loadfile>
-        
+
         <!-- Extract hash using git log for shallow copies -->
         <exec executable="${git.executable}" outputproperty="git.version.commit.online" failifexecutionfails="false" errorproperty="git.version.commit.failed">
             <arg value="log" />
@@ -141,7 +141,7 @@
                 <length string="${git.version.commit}" trim="yes" length="0" when="greater" />
             </and>
         </condition>
-        
+
         <!-- Second, use the one defined from git log which works even on shallow copies but should not override the one from the versio file -->
         <condition property="commit" value="${git.version.commit.online}">
             <and>
@@ -152,7 +152,7 @@
                 </not>
             </and>
         </condition>
-        
+
         <!-- If we cannot define anything real, use a default hash name -->
         <condition property="commit" value="archive">
             <not>
@@ -164,7 +164,7 @@
     </target>
 
     <target name="init" depends="gitversion">
-        
+
         <property name="jarname" value="rsb-${version}.jar" />
 
         <!-- Create the time stamp -->
@@ -218,6 +218,9 @@
         <pathelement location="${lib.dir}/asm-3.2.jar" />
     </path>
     <taskdef name="pmd" classpathref="pmd.classpath" classname="net.sourceforge.pmd.ant.PMDTask" />
+
+    <!-- setup checkstyle -->
+    <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/checkstyle-5.6-all.jar" />
 
     <target name="protocol" depends="init">
         <apply executable="${pbuf.protoc}">
@@ -346,16 +349,33 @@
 
     <target name="pmd">
         <pmd shortFilenames="true" rulesetfiles="pmd-rules.xml">
-        	<sourceLanguage name="java" version="${rsb.java.compatibility}"/>
+            <sourceLanguage name="java" version="${rsb.java.compatibility}" />
             <formatter type="xml" toFile="pmd.xml" />
             <formatter type="html" toFile="pmd_report.html" toConsole="true" />
             <formatter type="text" toConsole="true" />
             <fileset dir=".">
                 <include name="src/**/*.java" />
                 <include name="test/**/*.java" />
-                <exclude name="generated-protocol/**/*.java"/>
+                <exclude name="generated-protocol/**/*.java" />
             </fileset>
         </pmd>
+    </target>
+
+    <path id="checkstyle.classpath">
+        <path refid="compile.classpath" />
+        <path refid="test.classpath" />
+        <pathelement location="${build.dir}/classes" />
+    </path>
+
+    <target name="checkstyle" depends="compile,test-compile">
+        <checkstyle config="checkstyle.xml" classpathref="checkstyle.classpath">
+            <fileset dir="src" includes="**/*.java" />
+            <fileset dir="test" includes="**/*.java" />
+            <formatter type="plain" />
+            <formatter type="xml" toFile="checkstyle_errors.xml" />
+            <property key="config_loc" />
+        </checkstyle>
+        <style in="checkstyle_errors.xml" out="checkstyle_report.html" style="checkstyle-noframes.xsl" />
     </target>
 
     <target name="clean" description="clean up">

@@ -32,13 +32,13 @@ import java.util.logging.Logger;
 /**
  * A handler that receives the user payload of an event by extracting the data
  * and casting them to the specified type.
- * 
+ *
  * @author swrede
- * @param <V>
+ * @param <DataType>
  *            the desired target data type of the user handler. The event
  *            payload will be casted to this type
  */
-public abstract class AbstractDataHandler<V> implements Handler {
+public abstract class AbstractDataHandler<DataType> implements Handler {
 
     private static final Logger LOG = Logger
             .getLogger(AbstractDataHandler.class.getName());
@@ -47,7 +47,7 @@ public abstract class AbstractDataHandler<V> implements Handler {
     @Override
     public void internalNotify(final Event event) {
         try {
-            this.handleEvent((V) event.getData());
+            this.handleEvent((DataType) event.getData());
         } catch (final RuntimeException ex) {
             LOG.warning("RuntimeException during event dispatching: "
                     + ex.getMessage() + " Re-throwing it.");
@@ -55,6 +55,12 @@ public abstract class AbstractDataHandler<V> implements Handler {
         }
     }
 
-    public abstract void handleEvent(V data);
+    /**
+     * Called with the extracted data.
+     *
+     * @param data
+     *            data contained in the event to handle
+     */
+    public abstract void handleEvent(DataType data);
 
 }

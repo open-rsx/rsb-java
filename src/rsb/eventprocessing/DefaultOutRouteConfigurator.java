@@ -20,6 +20,12 @@ public class DefaultOutRouteConfigurator implements OutRouteConfigurator {
 
     private final RouteConfiguratorUtility<OutConnector> utility;
 
+    /**
+     * Constructor.
+     *
+     * @param scope
+     *            the scope the out route operates on
+     */
     public DefaultOutRouteConfigurator(final Scope scope) {
         this.utility = new RouteConfiguratorUtility<OutConnector>(scope);
     }

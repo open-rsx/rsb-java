@@ -30,9 +30,9 @@ package rsb.converter;
 /**
  * A wrapper around deserialized data that contains the unspecific
  * {@link Object} instance with a class object describing its type.
- * 
+ *
  * TODO is the unused generics type really required?
- * 
+ *
  * @author jwienke
  * @author swrede
  * @param <WireType>
@@ -43,6 +43,14 @@ public class UserData<WireType> {
     private final Object data;
     private final Class<?> typeInfo;
 
+    /**
+     * Constructor.
+     *
+     * @param data
+     *            the data to wrap
+     * @param typeInfo
+     *            a class object describing the data
+     */
     public UserData(final Object data, final Class<?> typeInfo) {
         this.data = data;
         this.typeInfo = typeInfo;
@@ -50,7 +58,7 @@ public class UserData<WireType> {
 
     /**
      * Returns the deserialized data.
-     * 
+     *
      * @return deserialized data
      */
     public Object getData() {
@@ -59,7 +67,7 @@ public class UserData<WireType> {
 
     /**
      * Class object describing the type of the deserialized data.
-     * 
+     *
      * @return class type info
      */
     public Class<?> getTypeInfo() {

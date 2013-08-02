@@ -33,16 +33,13 @@ import java.nio.ByteBuffer;
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling the
  * null value.
- * 
+ *
  * @author jmoringe
  */
 public class NullConverter implements Converter<ByteBuffer> {
 
-    private final ConverterSignature signature;
-
-    public NullConverter() {
-        this.signature = new ConverterSignature("void", Void.class);
-    }
+    private final ConverterSignature signature = new ConverterSignature("void",
+            Void.class);
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,

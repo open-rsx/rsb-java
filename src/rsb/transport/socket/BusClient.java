@@ -50,6 +50,12 @@ public class BusClient extends BusBase {
 
     private BusClientConnection connection;
 
+    /**
+     * Constructs a bus that is client of an active server.
+     *
+     * @param options
+     *            socket options to use for the connection
+     */
     public BusClient(final SocketOptions options) {
         super(options);
     }

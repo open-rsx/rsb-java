@@ -49,7 +49,8 @@ import java.util.Set;
 @SuppressWarnings("PMD.TooManyMethods")
 public class Properties {
 
-    private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
+    private final Map<String, Property> propertiesByName =
+            new HashMap<String, Property>();
 
     /**
      * Representation of a single value inside {@link Properties} with support
@@ -61,6 +62,12 @@ public class Properties {
 
         private final String value;
 
+        /**
+         * Creates a new property with the value given as a string.
+         *
+         * @param value
+         *            value string
+         */
         Property(final String value) {
             this.value = value.trim();
         }
@@ -139,6 +146,14 @@ public class Properties {
     }
 
     /**
+     * Creates a new instance without loading anything. The instance will
+     * initially be empty.
+     */
+    public Properties() {
+        // just for the documentation string
+    }
+
+    /**
      * Dumps the properties to the presented stream.
      *
      * @param stream
@@ -148,14 +163,6 @@ public class Properties {
         for (final String key : this.propertiesByName.keySet()) {
             stream.println(key + " => '" + this.propertiesByName.get(key) + "'");
         }
-    }
-
-    /**
-     * Creates a new instance without loading anything. The instance will
-     * initially be empty.
-     */
-    public Properties() {
-        // just for the documentation string
     }
 
     /**

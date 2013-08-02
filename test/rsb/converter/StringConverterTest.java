@@ -43,24 +43,28 @@ import org.junit.Test;
  */
 public class StringConverterTest {
 
+    private static final String ASCII_WIRE_SCHEMA = "ascii-string";
+    private static final String ASCII_ENCODING = "US-ASCII";
+
     @Test
     public void serialize() throws Throwable {
         final StringConverter converter = new StringConverter();
         final String input = "testcase";
-        final WireContents<ByteBuffer> buf = converter.serialize(String.class,
-                input);
+        final WireContents<ByteBuffer> buf =
+                converter.serialize(String.class, input);
         assertNotNull(buf);
     }
 
     @Test
     public void roundtrip() throws Throwable {
         final StringConverter converter = new StringConverter();
-        final String input = "testcase";
-        final WireContents<ByteBuffer> buf = converter.serialize(String.class,
-                input);
+        final String input = "testcase roundtrip";
+        final WireContents<ByteBuffer> buf =
+                converter.serialize(String.class, input);
         assertNotNull(buf);
-        final Object output = converter.deserialize(buf.getWireSchema(),
-                buf.getSerialization()).getData();
+        final Object output =
+                converter.deserialize(buf.getWireSchema(),
+                        buf.getSerialization()).getData();
         final String outputString = (String) output;
         assertEquals(input, outputString);
     }
@@ -74,19 +78,19 @@ public class StringConverterTest {
     @Test(expected = ConversionException.class)
     public void serializationEncodingError() throws Throwable {
         final String withNonAscii = "đħħ←ŋæ¶æŧđ";
-        final StringConverter converter = new StringConverter("US-ASCII",
-                "ascii-string");
+        final StringConverter converter =
+                new StringConverter(ASCII_ENCODING, ASCII_WIRE_SCHEMA);
         converter.serialize(String.class, withNonAscii);
     }
 
     @Test(expected = ConversionException.class)
     public void deserializationEncodingError() throws Throwable {
-        final String withNonAscii = "đħħ←ŋæ¶æŧđ";
+        final String withNonAscii = "đħħ←ŋæ¶æŧđui";
         final CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
         final ByteBuffer buffer = encoder.encode(CharBuffer.wrap(withNonAscii));
-        final StringConverter converter = new StringConverter("US-ASCII",
-                "ascii-string");
-        converter.deserialize("ascii-string", buffer);
+        final StringConverter converter =
+                new StringConverter(ASCII_ENCODING, ASCII_WIRE_SCHEMA);
+        converter.deserialize(ASCII_WIRE_SCHEMA, buffer);
     }
 
 }

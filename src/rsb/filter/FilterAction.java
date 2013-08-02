@@ -28,10 +28,25 @@
 package rsb.filter;
 
 /**
+ * Possible actions that can happen to a {@link Filter} instance.
+ *
  * @author swrede
  */
 public enum FilterAction {
 
-    ADD, REMOVE, UPDATE
+    /**
+     * Filter is added to a receiving route.
+     */
+    ADD,
+
+    /**
+     * Filter is removed from a receiving route.
+     */
+    REMOVE,
+
+    /**
+     * Filter paramters are updated?
+     */
+    UPDATE
 
 }

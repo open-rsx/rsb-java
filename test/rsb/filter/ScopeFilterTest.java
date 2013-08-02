@@ -44,6 +44,7 @@ import rsb.Scope;
 public class ScopeFilterTest {
 
     private static final Scope DEFAULT_SCOPE = new Scope("/images");
+    private static final int RANDOM_SEQUENCE = 2345;
 
     /**
      * Test method for {@link rsb.filter.ScopeFilter#transform(rsb.Event)}.
@@ -52,7 +53,7 @@ public class ScopeFilterTest {
     public void transform() {
         final Event event = new Event();
         event.setScope(DEFAULT_SCOPE);
-        event.setId(new ParticipantId(), 234);
+        event.setId(new ParticipantId(), RANDOM_SEQUENCE);
         final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
         assertNotNull(filter.transform(event));
         event.setScope(new Scope("/nomatch"));
@@ -67,7 +68,7 @@ public class ScopeFilterTest {
         // configuration is just to check here whether the white-
         // listing really works
         event.setScope(DEFAULT_SCOPE.concat(new Scope("/justfortesting")));
-        event.setId(new ParticipantId(), 43543);
+        event.setId(new ParticipantId(), RANDOM_SEQUENCE);
         final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
         filter.skip(event.getId());
         assertNotNull(filter.transform(event));

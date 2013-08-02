@@ -54,10 +54,10 @@ import rsb.transport.TransportRegistry;
  */
 public class Listener extends Participant {
 
-    protected final static Logger LOG = Logger.getLogger(Listener.class
-            .getName());
+    private static final Logger LOG = Logger
+            .getLogger(Listener.class.getName());
 
-    /** class state variable */
+    /** The class state currently being active. */
     private ListenerState state;
 
     @SuppressWarnings({ "deprecation", "unused" })
@@ -67,35 +67,67 @@ public class Listener extends Participant {
     private final List<Handler> handlers = new ArrayList<Handler>();
     private final PushInRouteConfigurator router;
 
+    /**
+     * {@link ListenerState} representing the active state.
+     *
+     * @author swrede
+     */
     protected class ListenerStateActive extends ListenerState {
 
-        public ListenerStateActive(final Listener ctx) {
-            super(ctx);
+        /**
+         * Constructor.
+         *
+         * @param listener
+         *            the listener to manage
+         */
+        public ListenerStateActive(final Listener listener) {
+            super(listener);
         }
 
         @Override
         protected void deactivate() throws RSBException, InterruptedException {
             Listener.this.getRouter().deactivate();
-            this.getContext().state = new ListenerStateInactive(
-                    this.getContext());
+            this.getListener().state = new ListenerStateInactive(
+                    this.getListener());
         }
 
     }
 
+    /**
+     * {@link ListenerState} representing the inactive state.
+     *
+     * @author swrede
+     */
     protected class ListenerStateInactive extends ListenerState {
 
-        public ListenerStateInactive(final Listener ctx) {
-            super(ctx);
+        /**
+         * Constructor.
+         *
+         * @param listener
+         *            the listener to manage
+         */
+        public ListenerStateInactive(final Listener listener) {
+            super(listener);
         }
 
         @Override
         protected void activate() throws RSBException {
             Listener.this.getRouter().activate();
-            this.getContext().state = new ListenerStateActive(this.getContext());
+            this.getListener().state = new ListenerStateActive(this.getListener());
         }
 
     }
 
+    /**
+     * Creates a listener for a given scope and participant config.
+     *
+     * @param scope
+     *            the scope to listen on
+     * @param config
+     *            the config to use
+     * @throws InitializeException
+     *             error initializing the listener
+     */
     Listener(final Scope scope, final ParticipantConfig config)
             throws InitializeException {
         super(scope, config);
@@ -115,6 +147,16 @@ public class Listener extends Participant {
 
     }
 
+    /**
+     * Creates a listener for a given scope and participant config.
+     *
+     * @param scope
+     *            the scope to listen on
+     * @param config
+     *            the config to use
+     * @throws InitializeException
+     *             error initializing the listener
+     */
     Listener(final String scope, final ParticipantConfig config)
             throws InitializeException {
         this(new Scope(scope), config);
@@ -139,23 +181,49 @@ public class Listener extends Participant {
         this.state.deactivate();
     }
 
+    /**
+     * Returns the filters currently being active on the listener.
+     *
+     * @return list of active filters
+     */
     public List<Filter> getFilters() {
         return this.filters;
     }
 
+    /**
+     * Returns an iterator overall active filters on this listener.
+     *
+     * @return filter iterator
+     */
     public Iterator<Filter> getFilterIterator() {
         return this.filters.iterator();
     }
 
+    /**
+     * Activates the specified filter for this informer.
+     *
+     * @param filter
+     *            the filter to activate
+     */
     public void addFilter(final Filter filter) {
         this.filters.add(filter);
         this.getRouter().filterAdded(filter);
     }
 
+    /**
+     * Returns a list of handlers attached to this listener.
+     *
+     * @return list of handlers
+     */
     public List<Handler> getHandlers() {
         return this.handlers;
     }
 
+    /**
+     * Returns an interator over all handlers attached to this listener.
+     *
+     * @return handler interator
+     */
     public Iterator<Handler> getHandlerIterator() {
         return this.handlers.iterator();
     }

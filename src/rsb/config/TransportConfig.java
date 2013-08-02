@@ -82,7 +82,7 @@ public class TransportConfig {
     }
 
     /**
-     * Indicates whether the transport shall be enabled in participants or not
+     * Indicates whether the transport shall be enabled in participants or not.
      *
      * @return <code>true</code> if transport shall be enabled, else
      *         <code>false</code>

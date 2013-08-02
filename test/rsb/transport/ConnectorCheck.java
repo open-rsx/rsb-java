@@ -27,8 +27,8 @@ import rsb.converter.UnambiguousConverterMap;
  */
 public abstract class ConnectorCheck {
 
-    private OutConnector outConnector;
     private static final Scope OUT_BASE_SCOPE = new Scope("/this");
+    private OutConnector outConnector;
 
     @Before
     public void setUp() throws Throwable {
@@ -48,15 +48,16 @@ public abstract class ConnectorCheck {
     @Test(expected = ConversionException.class)
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public void noConverterPassedToClient() throws Throwable {
-        final Event event = new Event(OUT_BASE_SCOPE, Throwable.class,
-                new Throwable());
+        final Event event =
+                new Event(OUT_BASE_SCOPE, Throwable.class, new Throwable());
         event.setId(new ParticipantId(), 42);
         this.getOutConnector().push(event);
     }
 
     protected UnambiguousConverterMap<ByteBuffer> getConverterStrategy(
             final String key) {
-        final UnambiguousConverterMap<ByteBuffer> strategy = new UnambiguousConverterMap<ByteBuffer>();
+        final UnambiguousConverterMap<ByteBuffer> strategy =
+                new UnambiguousConverterMap<ByteBuffer>();
         strategy.addConverter(key, new StringConverter());
         return strategy;
     }
@@ -65,13 +66,14 @@ public abstract class ConnectorCheck {
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void hierarchicalSending() throws Throwable {
 
-        final Scope sendScope = OUT_BASE_SCOPE.concat(new Scope(
-                "/is/a/hierarchy"));
+        final Scope sendScope =
+                OUT_BASE_SCOPE.concat(new Scope("/is/a/hierarchy"));
 
         final List<Scope> receiveScopes = sendScope.superScopes(true);
 
         // install event handlers for all receive scopes
-        final Map<Scope, List<Event>> receivedEventsByScope = new HashMap<Scope, List<Event>>();
+        final Map<Scope, List<Event>> receivedEventsByScope =
+                new HashMap<Scope, List<Event>>();
         final List<InPushConnector> inPorts = new ArrayList<InPushConnector>();
         for (final Scope scope : receiveScopes) {
 
@@ -102,8 +104,8 @@ public abstract class ConnectorCheck {
         final int numEvents = 100;
 
         // send events
-        final Event event = new Event(sendScope, String.class, "a test string "
-                + numEvents);
+        final Event event =
+                new Event(sendScope, String.class, "a test string " + numEvents);
         event.setId(new ParticipantId(), 42);
 
         this.getOutConnector().push(event);
@@ -115,8 +117,8 @@ public abstract class ConnectorCheck {
                     receivedEventsByScope.wait();
                 }
 
-                final Event receivedEvent = receivedEventsByScope.get(scope)
-                        .get(0);
+                final Event receivedEvent =
+                        receivedEventsByScope.get(scope).get(0);
 
                 // normalize times as they are not important for this test
                 event.getMetaData().setReceiveTime(
@@ -142,9 +144,9 @@ public abstract class ConnectorCheck {
     public void longGroupNames() throws Throwable {
 
         final Event event = new Event(String.class, "a test string");
-        event.setScope(OUT_BASE_SCOPE
-                .concat(new Scope(
-                        "/is/a/very/long/scope/that/would/never/fit/in/a/spread/group/directly")));
+        event.setScope(OUT_BASE_SCOPE.concat(new Scope(
+                "/is/a/very/long/scope/that/would/never/fit"
+                        + "/in/a/spread/group/directly")));
         event.setId(new ParticipantId(), 452334);
 
         this.getOutConnector().push(event);
@@ -155,8 +157,8 @@ public abstract class ConnectorCheck {
     public void sendMetaData() throws Throwable {
 
         // create an event to send
-        final Scope scope = OUT_BASE_SCOPE
-                .concat(new Scope("/test/scope/again"));
+        final Scope scope =
+                OUT_BASE_SCOPE.concat(new Scope("/test/scope/again"));
         final Event event = new Event(scope, String.class, "a test string");
         event.setId(new ParticipantId(), 634);
 

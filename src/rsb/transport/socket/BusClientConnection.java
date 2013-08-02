@@ -58,6 +58,12 @@ public class BusClientConnection extends BusConnectionBase {
     private static final Logger LOG = Logger
             .getLogger(BusClientConnection.class.getName());
 
+    /**
+     * Constructor.
+     *
+     * @param options
+     *            socket options to use for the connection
+     */
     public BusClientConnection(final SocketOptions options) {
         this.setOptions(options);
     }
@@ -78,6 +84,7 @@ public class BusClientConnection extends BusConnectionBase {
      * Perform simple handshake as specified in RSB socket protocol.
      *
      * @throws RSBException
+     *             error performing the handshake sequence
      */
     @Override
     public void handshake() throws RSBException {
@@ -87,8 +94,8 @@ public class BusClientConnection extends BusConnectionBase {
         try {
 
             // read handshake reply
-            final ByteBuffer handshakeReplyBuffer = ByteBuffer
-                    .allocateDirect(Protocol.HANDSHAKE_BYTES);
+            final ByteBuffer handshakeReplyBuffer =
+                    ByteBuffer.allocateDirect(Protocol.HANDSHAKE_BYTES);
             handshakeReplyBuffer.order(ByteOrder.LITTLE_ENDIAN);
             final int bytesRead = getReader().read(handshakeReplyBuffer);
             LOG.log(Level.FINER, "Received {0} handshake bytes",

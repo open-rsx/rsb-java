@@ -36,13 +36,13 @@ import com.google.protobuf.ByteString;
 
 /**
  * A converter for {@link EventId} instances.
- * 
+ *
  * @author jwienke
  */
 public class EventIdConverter implements Converter<ByteBuffer> {
 
-    private final ProtocolBufferConverter<EventId> converter = new ProtocolBufferConverter<EventId>(
-            EventId.getDefaultInstance());
+    private final ProtocolBufferConverter<EventId> converter =
+            new ProtocolBufferConverter<EventId>(EventId.getDefaultInstance());
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
@@ -71,11 +71,13 @@ public class EventIdConverter implements Converter<ByteBuffer> {
     @Override
     public UserData<ByteBuffer> deserialize(final String wireSchema,
             final ByteBuffer buffer) throws ConversionException {
-        final EventId protocolId = (EventId) this.converter.deserialize(
-                wireSchema, buffer).getData();
+        final EventId protocolId =
+                (EventId) this.converter.deserialize(wireSchema, buffer)
+                        .getData();
         @SuppressWarnings("PMD.ShortVariable")
-        final rsb.EventId id = new rsb.EventId(new ParticipantId(protocolId
-                .getSenderId().toByteArray()), protocolId.getSequenceNumber());
+        final rsb.EventId id =
+                new rsb.EventId(new ParticipantId(protocolId.getSenderId()
+                        .toByteArray()), protocolId.getSequenceNumber());
         return new UserData<ByteBuffer>(id, id.getClass());
     }
 

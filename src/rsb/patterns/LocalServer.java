@@ -43,12 +43,12 @@ import rsb.config.ParticipantConfig;
  */
 public class LocalServer extends Server<LocalMethod> {
 
-    private final static Logger LOG = Logger.getLogger(LocalServer.class
+    private static final Logger LOG = Logger.getLogger(LocalServer.class
             .getName());
 
     /**
-     * Create a new LocalServer object that exposes its methods under the scope @a
-     * scope.
+     * Create a new LocalServer object that exposes its methods under the
+     * provided scope.
      *
      * @param scope
      *            The common super-scope under which the methods of the newly
@@ -93,8 +93,8 @@ public class LocalServer extends Server<LocalMethod> {
                 + " with signature object: " + callback);
         synchronized (this) {
             try {
-                final LocalMethod method = new LocalMethod(this, name,
-                        callback, getConfig());
+                final LocalMethod method =
+                        new LocalMethod(this, name, callback, getConfig());
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
                 throw new InitializeException(e);
@@ -122,6 +122,10 @@ public class LocalServer extends Server<LocalMethod> {
         }
     }
 
+    /**
+     * After calling {@link #deactivate()} this methods waits until the server
+     * terminated completely.
+     */
     public void waitForShutdown() {
         synchronized (this) {
             // Blocks calling thread as long as this Server instance

@@ -32,14 +32,14 @@ import java.util.EventListener;
 /**
  * Internal handler interface. As a client use one of the specific interfaces
  * like {@link AbstractEventHandler} or {@link AbstractDataHandler}.
- * 
+ *
  * @author swrede
  */
 public interface Handler extends EventListener {
 
     /**
      * Internal notification with a received event.
-     * 
+     *
      * @param event
      *            the received event the handler should process
      */

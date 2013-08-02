@@ -33,7 +33,7 @@ package rsb;
  * means concrete port instances can implement "better" QoS specs without any
  * notification to the clients. Better is decided by the integer value of the
  * specification enums. Higher values mean better services.
- * 
+ *
  * @author jwienke
  */
 public class QualityOfServiceSpec {
@@ -43,7 +43,7 @@ public class QualityOfServiceSpec {
 
     /**
      * Possible ordering requirements for events.
-     * 
+     *
      * @author jwienke
      */
     public enum Ordering {
@@ -61,7 +61,7 @@ public class QualityOfServiceSpec {
 
     /**
      * Possible requirements on the reliability of events.
-     * 
+     *
      * @author jwienke
      */
     public enum Reliability {
@@ -86,7 +86,7 @@ public class QualityOfServiceSpec {
 
     /**
      * Constructor with specified settings.
-     * 
+     *
      * @param ordering
      *            desired ordering
      * @param reliability
@@ -100,7 +100,7 @@ public class QualityOfServiceSpec {
 
     /**
      * Returns the desired ordering setting.
-     * 
+     *
      * @return requested ordering setting
      */
     public Ordering getOrdering() {
@@ -109,7 +109,7 @@ public class QualityOfServiceSpec {
 
     /**
      * Returns the desired reliability setting.
-     * 
+     *
      * @return requested reliability setting
      */
     public Reliability getReliability() {

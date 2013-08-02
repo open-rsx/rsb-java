@@ -38,7 +38,7 @@ import rsb.EventId;
  */
 public class TypeFilter extends AbstractFilter {
 
-    private final static Logger LOG = Logger.getLogger(TypeFilter.class
+    private static final Logger LOG = Logger.getLogger(TypeFilter.class
             .getName());
 
     private Class<?> type;
@@ -54,9 +54,9 @@ public class TypeFilter extends AbstractFilter {
 
     @Override
     public void skip(final EventId eventId) {
-        LOG.info("Event with ID "
-                + eventId
-                + " will not be matched by TypeFilter as this was already done by network layer!");
+        LOG.info("Event with ID " + eventId
+                + " will not be matched by TypeFilter "
+                + "as this was already done by network layer!");
         super.skip(eventId);
     }
 
@@ -83,9 +83,6 @@ public class TypeFilter extends AbstractFilter {
         }
     }
 
-    /**
-     * Helper method for double dispatch of Filter registrations
-     */
     @Override
     public void dispachToObserver(final FilterObserver observer,
             final FilterAction action) {

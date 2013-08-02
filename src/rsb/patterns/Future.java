@@ -35,25 +35,31 @@ import java.util.concurrent.TimeoutException;
 /**
  * This class provides an implementation of Java's Future interface for use with
  * request invocations.
- * 
+ *
  * @author jschaefe
  * @author swrede
  * @author jmoringe
- * @param <T>
+ * @param <Data>
  *            the type of the result data eventually arriving in this future
- * 
+ *
  * @see java.util.concurrent.Future
  */
 
-public class Future<T> implements java.util.concurrent.Future<T> {
+public class Future<Data> implements java.util.concurrent.Future<Data> {
 
-    protected Throwable exception = null;
-    protected T result = null;
+    private Throwable exception = null;
+    private Data result = null;
 
-    protected boolean hasResult = false;
-    protected boolean cancelled = false;
+    private boolean hasResult = false;
+    private boolean cancelled = false;
 
-    public void complete(final T val) {
+    /**
+     * Fills the future with the result data and notifies waiting clients.
+     *
+     * @param val
+     *            result data
+     */
+    public void complete(final Data val) {
         synchronized (this) {
             this.result = val;
             this.hasResult = true;
@@ -61,6 +67,13 @@ public class Future<T> implements java.util.concurrent.Future<T> {
         }
     }
 
+    /**
+     * Indicates an exception as a result of the waiting operation and notifies
+     * clients.
+     *
+     * @param exception
+     *            the exception
+     */
     public void error(final Throwable exception) {
         synchronized (this) {
             this.exception = exception;
@@ -69,13 +82,6 @@ public class Future<T> implements java.util.concurrent.Future<T> {
         }
     }
 
-    /**
-     * This method makes the waiting thread return with a CancellationException
-     * but does not cancel the actual operation the thread was waiting for.
-     * 
-     * @param mayInterrupt
-     * @return false
-     */
     @Override
     public boolean cancel(final boolean mayInterrupt) {
         synchronized (this) {
@@ -87,13 +93,8 @@ public class Future<T> implements java.util.concurrent.Future<T> {
         }
     }
 
-    /**
-     * Convenience method for get(0, TimeUnit.MILLISECONDS).
-     * 
-     * @see Future#get(long, TimeUnit)
-     */
     @Override
-    public T get() throws ExecutionException {
+    public Data get() throws ExecutionException {
         synchronized (this) {
             try {
                 return this.get(0, TimeUnit.MILLISECONDS);
@@ -107,7 +108,7 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 
     /**
      * Convenience method for get(timeout, TimeUnit.MILLISECONDS).
-     * 
+     *
      * @param timeout
      *            wait this many milliseconds for a result
      * @return the result
@@ -115,35 +116,19 @@ public class Future<T> implements java.util.concurrent.Future<T> {
      *             an error occurred in the provider of the result
      * @throws TimeoutException
      *             timeout reached and no result received so far
-     * 
+     *
      * @see Future#get(long, TimeUnit)
      */
-    public T get(final long timeout) throws ExecutionException,
+    public Data get(final long timeout) throws ExecutionException,
             TimeoutException {
         synchronized (this) {
             return this.get(timeout, TimeUnit.MILLISECONDS);
         }
     }
 
-    /**
-     * Gets the results passed to this callback object. This method blocks until
-     * either the results are available, or the timeout is reached.
-     * 
-     * @param timeout
-     *            number of TimeUnits to wait for results to become available
-     * @param unit
-     *            TimeUnit to use
-     * @return the value resulting from the operation
-     * 
-     * @see Future#get(long, TimeUnit)
-     * @throws ExecutionException
-     *             if the operation resulted in an Exception
-     * @throws TimeoutException
-     *             if the timeout was reached before results were available
-     */
     @SuppressWarnings("PMD.ConfusingTernary")
     @Override
-    public T get(final long timeout, final TimeUnit unit)
+    public Data get(final long timeout, final TimeUnit unit)
             throws ExecutionException, TimeoutException {
         synchronized (this) {
             if (timeout == 0) {
@@ -155,7 +140,7 @@ public class Future<T> implements java.util.concurrent.Future<T> {
                     try {
                         this.wait();
                     } catch (final InterruptedException e) {
-                        // sourious wakeup?
+                        // spourious wakeup?
                     }
                 }
             } else {
@@ -206,7 +191,7 @@ public class Future<T> implements java.util.concurrent.Future<T> {
 
     /**
      * Checks whether results are already available.
-     * 
+     *
      * @return true if results have already been passed to this callback
      */
     @Override

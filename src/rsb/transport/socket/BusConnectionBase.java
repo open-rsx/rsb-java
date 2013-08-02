@@ -36,16 +36,33 @@ public abstract class BusConnectionBase implements BusConnection {
     private SocketOptions options;
     private boolean activeShutdown = false;
 
+    /**
+     * Returns the contained socket instance.
+     *
+     * @return socket instance or <code>null</code> if not set yet.
+     */
     public Socket getSocket() {
         return this.socket;
     }
 
+    /**
+     * Sets the internal socket instance.
+     *
+     * @param socket
+     *            new socket instance
+     */
     protected void setSocket(final Socket socket) {
         synchronized (this) {
             this.socket = socket;
         }
     }
 
+    /**
+     * Sets the options for the socket to hold in this instance.
+     *
+     * @param options
+     *            socket options to hold
+     */
     protected void setOptions(final SocketOptions options) {
         assert options != null;
         synchronized (this) {
@@ -58,10 +75,22 @@ public abstract class BusConnectionBase implements BusConnection {
         return this.options;
     }
 
+    /**
+     * Returns the reader for the internal socket.
+     *
+     * @return reader instance or <code>null</code> if called before
+     *         {@link #activate()}
+     */
     protected ReadableByteChannel getReader() {
         return this.reader;
     }
 
+    /**
+     * Returns the writer for the internal socket.
+     *
+     * @return writer instance or <code>null</code> if called before
+     *         {@link #activate()}
+     */
     protected WritableByteChannel getWriter() {
         return this.writer;
     }
@@ -74,8 +103,8 @@ public abstract class BusConnectionBase implements BusConnection {
             try {
                 this.socket.setTcpNoDelay(this.options.isTcpNoDelay());
                 this.reader = Channels.newChannel(getSocket().getInputStream());
-                this.writer = Channels
-                        .newChannel(getSocket().getOutputStream());
+                this.writer =
+                        Channels.newChannel(getSocket().getOutputStream());
             } catch (final IOException e) {
                 this.reader = null;
                 this.writer = null;
@@ -99,9 +128,6 @@ public abstract class BusConnectionBase implements BusConnection {
         return this.activeShutdown;
     }
 
-    /**
-     * Safely close I/O streams and sockets.
-     */
     @Override
     public void deactivate() throws RSBException {
 
@@ -114,10 +140,9 @@ public abstract class BusConnectionBase implements BusConnection {
             try {
                 getSocket().close();
             } catch (final IOException e) {
-                LOG.log(Level.WARNING,
-                        "Exception during deactivation. "
-                                + "Ignoring this exception and doing so as if nothing happened.",
-                        e);
+                LOG.log(Level.WARNING, "Exception during deactivation. "
+                        + "Ignoring this exception and doing so "
+                        + "as if nothing happened.", e);
             }
 
             this.reader = null;
@@ -163,11 +188,12 @@ public abstract class BusConnectionBase implements BusConnection {
      *
      * @return Number of bytes
      * @throws IOException
+     *             error while reading from the socket
      */
     protected int readLength() throws IOException {
         assert isActive();
-        final ByteBuffer lengthBytes = ByteBuffer
-                .allocateDirect(Protocol.DATA_SIZE_BYTES);
+        final ByteBuffer lengthBytes =
+                ByteBuffer.allocateDirect(Protocol.DATA_SIZE_BYTES);
         lengthBytes.order(ByteOrder.LITTLE_ENDIAN);
         readCompleteBuffer(this.reader, lengthBytes);
         lengthBytes.rewind();
@@ -213,8 +239,8 @@ public abstract class BusConnectionBase implements BusConnection {
         final byte[] data = notification.toByteArray();
 
         // send data size
-        final ByteBuffer sizeBuffer = ByteBuffer
-                .allocateDirect(Protocol.DATA_SIZE_BYTES);
+        final ByteBuffer sizeBuffer =
+                ByteBuffer.allocateDirect(Protocol.DATA_SIZE_BYTES);
         sizeBuffer.order(ByteOrder.LITTLE_ENDIAN);
         sizeBuffer.asIntBuffer().put(data.length);
 

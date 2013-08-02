@@ -23,16 +23,22 @@ public class SocketOutConnector implements OutConnector {
 
     private final SocketConnectorUtility utility;
 
+    /**
+     * Constructor.
+     *
+     * @param socketOptions
+     *            options for the socket
+     * @param serverMode
+     *            server mode to use
+     * @param converters
+     *            converters to use for serialization
+     */
     public SocketOutConnector(final SocketOptions socketOptions,
             final ServerMode serverMode,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
-        this.utility = new SocketConnectorUtility(socketOptions, serverMode,
-                converters);
-    }
-
-    @Override
-    public String getType() {
-        return "Socket";
+        this.utility =
+                new SocketConnectorUtility(socketOptions, serverMode,
+                        converters);
     }
 
     @Override
@@ -65,8 +71,9 @@ public class SocketOutConnector implements OutConnector {
     public void push(final Event event) throws RSBException {
 
         event.getMetaData().setSendTime(0);
-        final WireContents<ByteBuffer> data = ProtocolConversion
-                .serializeEventData(event, this.utility.getConverters());
+        final WireContents<ByteBuffer> data =
+                ProtocolConversion.serializeEventData(event,
+                        this.utility.getConverters());
 
         final Builder builder = Notification.newBuilder();
         builder.setEventId(ProtocolConversion.createEventIdBuilder(event
@@ -82,4 +89,5 @@ public class SocketOutConnector implements OutConnector {
         this.utility.getBus().handleOutgoing(notification);
 
     }
+
 }

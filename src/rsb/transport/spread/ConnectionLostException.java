@@ -27,6 +27,9 @@
  */
 package rsb.transport.spread;
 
+/**
+ * Indicates that the connection with the spread daemon was lost.
+ */
 public class ConnectionLostException extends RuntimeException {
 
     /**
@@ -34,6 +37,12 @@ public class ConnectionLostException extends RuntimeException {
      */
     private static final long serialVersionUID = 8534009312901101329L;
 
+    /**
+     * Constructor with causing message.
+     *
+     * @param msg
+     *            message
+     */
     public ConnectionLostException(final String msg) {
         super(msg);
     }

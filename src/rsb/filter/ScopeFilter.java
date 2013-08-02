@@ -38,7 +38,7 @@ import rsb.Scope;
  */
 public class ScopeFilter extends AbstractFilter {
 
-    protected final static Logger LOG = Logger.getLogger(ScopeFilter.class
+    private static final Logger LOG = Logger.getLogger(ScopeFilter.class
             .getName());
 
     private Scope scope;
@@ -48,9 +48,6 @@ public class ScopeFilter extends AbstractFilter {
         this.scope = scope;
     }
 
-    /**
-     * Helper method for double dispatch of Filter registrations
-     */
     @Override
     public void dispachToObserver(final FilterObserver observer,
             final FilterAction action) {
@@ -67,9 +64,9 @@ public class ScopeFilter extends AbstractFilter {
 
     @Override
     public void skip(final EventId eventId) {
-        LOG.info("Event with ID "
-                + eventId
-                + " will not be matched by ScopeFilter as this was already done by network layer!");
+        LOG.info("Event with ID " + eventId
+                + " will not be matched by ScopeFilter "
+                + "as this was already done by network layer!");
         super.skip(eventId);
     }
 
@@ -93,8 +90,9 @@ public class ScopeFilter extends AbstractFilter {
             matches = true;
             this.skipped(event.getId());
         } else {
-            matches = this.scope.equals(event.getScope())
-                    || this.scope.isSuperScopeOf(event.getScope());
+            matches =
+                    this.scope.equals(event.getScope())
+                            || this.scope.isSuperScopeOf(event.getScope());
         }
         if (matches) {
             LOG.fine("ScopeFilter matched successfully!");

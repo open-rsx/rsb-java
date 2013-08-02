@@ -35,16 +35,22 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
     private final Set<EventHandler> handlers = Collections
             .synchronizedSet(new HashSet<EventHandler>());
 
+    /**
+     * Constructor.
+     *
+     * @param socketOptions
+     *            socket options to use
+     * @param serverMode
+     *            server mode to use
+     * @param converters
+     *            converters to use for serialization
+     */
     public SocketInPushConnector(final SocketOptions socketOptions,
             final ServerMode serverMode,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
-        this.utility = new SocketConnectorUtility(socketOptions, serverMode,
-                converters);
-    }
-
-    @Override
-    public String getType() {
-        return "Socket";
+        this.utility =
+                new SocketConnectorUtility(socketOptions, serverMode,
+                        converters);
     }
 
     @Override
@@ -91,35 +97,34 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
 
         LOG.log(Level.FINEST, "Received a notification with scope {0}",
                 notification.getScope().toStringUtf8());
-        final Scope notificationScope = new Scope(notification.getScope()
-                .toStringUtf8());
+        final Scope notificationScope =
+                new Scope(notification.getScope().toStringUtf8());
         if (!this.scope.equals(notificationScope)
                 && !notificationScope.isSubScopeOf(this.scope)) {
-            LOG.log(Level.FINER,
-                    "Ignoring notification on scope {0} because it is not a (sub)scope of {1}",
-                    new Object[] { notificationScope, this.scope });
+            LOG.log(Level.FINER, "Ignoring notification on scope {0} "
+                    + "because it is not a (sub)scope of {1}", new Object[] {
+                    notificationScope, this.scope });
             return;
         }
 
         try {
 
-            final Event resultEvent = ProtocolConversion.fromNotification(
-                    notification,
-                    notification.getData().asReadOnlyByteBuffer(),
-                    this.utility.getConverters());
+            final Event resultEvent =
+                    ProtocolConversion.fromNotification(notification,
+                            notification.getData().asReadOnlyByteBuffer(),
+                            this.utility.getConverters());
 
             // make a copy to avoid lengthy locking
-            final Set<EventHandler> handlers = new HashSet<EventHandler>(
-                    this.handlers);
+            final Set<EventHandler> handlers =
+                    new HashSet<EventHandler>(this.handlers);
             for (final EventHandler handler : handlers) {
                 handler.handle(resultEvent);
             }
 
         } catch (final Exception e) {
             // TODO here we would have to use an error handler
-            LOG.log(Level.WARNING,
-                    "Error while dispatching notification to registered handlers. Ignoring this.",
-                    e);
+            LOG.log(Level.WARNING, "Error while dispatching notification to "
+                    + "registered handlers. Ignoring this.", e);
         }
 
     }

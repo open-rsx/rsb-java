@@ -38,13 +38,14 @@ public class MethodFilterTest {
 
     @Test
     public void test() {
-        final MethodFilter filter = new MethodFilter("REQUEST");
+        final String desiredMethod = "REQUEST";
+        final MethodFilter filter = new MethodFilter(desiredMethod);
         final Event event = new Event();
-        event.setMethod("REQUEST");
+        event.setMethod(desiredMethod);
         assertNotNull(filter.transform(event));
         event.setMethod("REPLY");
         assertNull(filter.transform(event));
-        event.setMethod("request");
+        event.setMethod(desiredMethod.toLowerCase());
         assertNotNull(filter.transform(event));
     }
 

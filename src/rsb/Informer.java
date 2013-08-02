@@ -27,12 +27,11 @@
  */
 package rsb;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.TransportConfig;
-import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.DefaultConverterRepository;
 import rsb.eventprocessing.DefaultOutRouteConfigurator;
 import rsb.eventprocessing.OutRouteConfigurator;
 import rsb.transport.SequenceNumber;
@@ -52,45 +51,45 @@ import rsb.transport.TransportRegistry;
  */
 public class Informer<DataType extends Object> extends Participant {
 
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(Informer.class.getName());
 
-    /** state variable for publisher instance */
-    protected InformerState<DataType> state;
+    /** Contains the state instance currently being active. */
+    private InformerState<DataType> state;
 
-    /** atomic uint32 counter object for event sequence numbers */
-    protected SequenceNumber sequenceNumber = new SequenceNumber();
+    /** An atomic uint32 counter object for event sequence numbers. */
+    private final SequenceNumber sequenceNumber = new SequenceNumber();
 
-    /** converter repository for type mappings */
-    protected ConverterSelectionStrategy<?> converter;
-
-    /** default data type for this publisher */
-    protected Class<?> type;
+    /** The default data type for this informer. */
+    private Class<?> type;
 
     private OutRouteConfigurator router;
 
+    /**
+     * {@link InformerState} in case the informer is inactive.
+     *
+     * @author swrede
+     */
     protected class InformerStateInactive extends InformerState<DataType> {
 
+        /**
+         * Constructor.
+         *
+         * @param ctx
+         *            the host informer
+         */
         protected InformerStateInactive(final Informer<DataType> ctx) {
             super(ctx);
-            LOG.fine("Informer state activated: [Scope:"
-                    + Informer.this.getScope() + ",State:Inactive,Type:"
-                    + Informer.this.type.getName() + "]");
         }
 
         @Override
         protected void activate() throws InitializeException {
-            // TODO check where to put the type mangling java type to wire type
-            // probably this should be translated in the respective converter
-            // itself
-            // however: this information is part of the notification! so, that
-            // is a problem
-            Informer.this.converter = DefaultConverterRepository
-                    .getDefaultConverterRepository()
-                    .getConvertersForSerialization();
-            this.ctx.state = new InformerStateActive(this.ctx);
-            LOG.fine("Informer activated: [Scope:" + Informer.this.getScope()
-                    + ",Type:" + Informer.this.type.getName() + "]");
+            this.getInformer().state = new InformerStateActive(
+                    this.getInformer());
+            LOG.log(Level.FINE,
+                    "Informer activated: [Scope={}, Type={}]",
+                    new Object[] { Informer.this.getScope(),
+                            Informer.this.type.getName() });
             try {
                 Informer.this.router.activate();
             } catch (final RSBException e) {
@@ -100,21 +99,32 @@ public class Informer<DataType extends Object> extends Participant {
 
     }
 
+    /**
+     * {@link InformerState} in case the informer is active.
+     *
+     * @author swrede
+     */
     protected class InformerStateActive extends InformerState<DataType> {
 
+        /**
+         * Constructor.
+         *
+         * @param ctx
+         *            the host informer
+         */
         protected InformerStateActive(final Informer<DataType> ctx) {
             super(ctx);
-            LOG.fine("Informer state activated: [Scope:"
-                    + Informer.this.getScope() + ",State:Active,Type:"
-                    + Informer.this.type.getName() + "]");
         }
 
         @Override
         protected void deactivate() throws RSBException, InterruptedException {
             Informer.this.router.deactivate();
-            this.ctx.state = new InformerStateInactive(this.ctx);
-            LOG.fine("Informer deactivated: [Scope:" + Informer.this.getScope()
-                    + ",Type:" + Informer.this.type.getName() + "]");
+            this.getInformer().state = new InformerStateInactive(
+                    this.getInformer());
+            LOG.log(Level.FINE,
+                    "Informer deactivated: [Scope={}, Type={}]",
+                    new Object[] { Informer.this.getScope(),
+                            Informer.this.type.getName() });
         }
 
         @Override
@@ -130,9 +140,11 @@ public class Informer<DataType extends Object> extends Participant {
                 throw new IllegalArgumentException(
                         "Event scope not a sub-scope of informer scope.");
             }
-            if (!this.ctx.getTypeInfo().isAssignableFrom(event.getType())) {
+            if (!this.getInformer().getTypeInfo()
+                    .isAssignableFrom(event.getType())) {
                 throw new IllegalArgumentException(
-                        "Type of event data does not match nor is a sub-class of the Informer data type.");
+                        "Type of event data does not match nor "
+                                + "is a sub-class of the Informer data type.");
             }
 
             // set participant metadata
@@ -156,21 +168,69 @@ public class Informer<DataType extends Object> extends Participant {
 
     }
 
+    /**
+     * Creates an informer for any data type with a given scope and with a
+     * specified config.
+     *
+     * @param scope
+     *            the scope
+     * @param config
+     *            the config
+     * @throws InitializeException
+     *             error initializing the informer
+     */
     Informer(final String scope, final ParticipantConfig config)
             throws InitializeException {
         this(new Scope(scope), config);
     }
 
+    /**
+     * Creates an informer for any data type with a given scope and with a
+     * specified config.
+     *
+     * @param scope
+     *            the scope
+     * @param config
+     *            the config
+     * @throws InitializeException
+     *             error initializing the informer
+     */
     Informer(final Scope scope, final ParticipantConfig config)
             throws InitializeException {
         this(scope, Object.class, config);
     }
 
+    /**
+     * Creates an informer for a specific data type with a given scope and with
+     * a specified config.
+     *
+     * @param scope
+     *            the scope
+     * @param type
+     *            the data type to send by this informer
+     * @param config
+     *            the config
+     * @throws InitializeException
+     *             error initializing the informer
+     */
     Informer(final String scope, final Class<?> type,
             final ParticipantConfig config) throws InitializeException {
         this(new Scope(scope), type, config);
     }
 
+    /**
+     * Creates an informer for a specific data type with a given scope and with
+     * a specified config.
+     *
+     * @param scope
+     *            the scope
+     * @param type
+     *            the data type to send by this informer
+     * @param config
+     *            the config
+     * @throws InitializeException
+     *             error initializing the informer
+     */
     Informer(final Scope scope, final Class<?> type,
             final ParticipantConfig config) throws InitializeException {
         super(scope, config);

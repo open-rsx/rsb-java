@@ -91,13 +91,15 @@ public class BusServer extends BusBase {
                     LOG.log(Level.FINE, "Accepted a new client socket: {0}",
                             socket);
 
-                    final BusServerConnection connection = new BusServerConnection(
-                            socket, getSocketOptions().isTcpNoDelay());
+                    final BusServerConnection connection =
+                            new BusServerConnection(socket, getSocketOptions()
+                                    .isTcpNoDelay());
                     connection.activate();
                     connection.handshake();
                     LOG.log(Level.FINER,
-                            "Activated a new client connection {0} for socket {1}",
-                            new Object[] { connection, socket });
+                            "Activated a new client connection {0} "
+                                    + "for socket {1}", new Object[] {
+                                    connection, socket });
                     // add BusConnection instance to list of active
                     // connections
                     addConnection(connection);
@@ -108,8 +110,8 @@ public class BusServer extends BusBase {
                                 "Shutting down due to request and closed socket.");
                     } else {
                         LOG.log(Level.WARNING,
-                                "Unexpected exception while accepting new client. Shutting down.",
-                                e);
+                                "Unexpected exception while accepting "
+                                        + "new client. Shutting down.", e);
                     }
                     return;
                 } catch (final RSBException e) {
@@ -125,6 +127,12 @@ public class BusServer extends BusBase {
 
     }
 
+    /**
+     * Constructor.
+     *
+     * @param options
+     *            socket options to use for the communication
+     */
     public BusServer(final SocketOptions options) {
         super(options);
     }
@@ -141,8 +149,8 @@ public class BusServer extends BusBase {
             }
 
             try {
-                this.serverSocket = new ServerSocket(this.getSocketOptions()
-                        .getPort());
+                this.serverSocket =
+                        new ServerSocket(this.getSocketOptions().getPort());
                 this.acceptor = new AcceptorThread();
                 this.acceptor.start();
             } catch (final IOException e) {

@@ -31,7 +31,7 @@ import rsb.RSBException;
 
 /**
  * An exception that indicates a conversion error in a {@link Converter}.
- * 
+ *
  * @author jwienke
  */
 public class ConversionException extends RSBException {
@@ -43,7 +43,7 @@ public class ConversionException extends RSBException {
 
     /**
      * Constructor with a message.
-     * 
+     *
      * @param message
      *            error message
      */
@@ -53,7 +53,7 @@ public class ConversionException extends RSBException {
 
     /**
      * Constructor with a root cause.
-     * 
+     *
      * @param cause
      *            root cause
      */
@@ -63,7 +63,7 @@ public class ConversionException extends RSBException {
 
     /**
      * Constructor with message and root cause.
-     * 
+     *
      * @param message
      *            error message
      * @param cause

@@ -38,11 +38,8 @@ import java.nio.ByteBuffer;
  */
 public class Int64Converter implements Converter<ByteBuffer> {
 
-    private final ConverterSignature signature;
-
-    public Int64Converter() {
-        this.signature = new ConverterSignature("int64", Long.class);
-    }
+    private final ConverterSignature signature = new ConverterSignature(
+            "int64", Long.class);
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,

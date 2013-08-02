@@ -29,6 +29,11 @@ package rsb.filter;
 
 import rsb.Event;
 
+/**
+ * Filters for a specific method in the event.
+ *
+ * @author jwienke
+ */
 public class MethodFilter extends AbstractFilter {
 
     // private final static Logger LOG =
@@ -36,6 +41,12 @@ public class MethodFilter extends AbstractFilter {
 
     private final String method;
 
+    /**
+     * Constructor.
+     *
+     * @param method
+     *            method to allow
+     */
     public MethodFilter(final String method) {
         super(MethodFilter.class);
         this.method = method;

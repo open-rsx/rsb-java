@@ -44,7 +44,7 @@ public class ConverterSignatureTest {
         final ConverterSignature sig = new ConverterSignature(ENCODING,
                 String.class);
         assertTrue(sig.getSchema().contentEquals(ENCODING));
-        assertTrue(sig.getDatatype().getName()
+        assertTrue(sig.getDataType().getName()
                 .contentEquals("java.lang.String"));
     }
 

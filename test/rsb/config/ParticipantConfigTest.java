@@ -32,7 +32,7 @@ public class ParticipantConfigTest {
         final ParticipantConfig config = new ParticipantConfig();
         assertTrue(config.getEnabledTransports().isEmpty());
 
-        final String name = "bla";
+        final String name = "narf";
         config.getOrCreateTransport(name);
         assertTrue(config.getEnabledTransports().isEmpty());
 

@@ -35,15 +35,15 @@ import org.junit.Test;
 
 public class DefaultErrorHandlerTest {
 
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(DefaultErrorHandlerTest.class.getName());
 
     @Test
     public void error() {
         final DefaultErrorHandler handler = new DefaultErrorHandler(LOG);
         assertNotNull(handler);
-        final RSBException except = new RSBException(
-                new IllegalArgumentException("Foo test"));
+        final RSBException except =
+                new RSBException(new IllegalArgumentException("Foo test"));
         handler.warning(except);
         handler.error(except);
     }

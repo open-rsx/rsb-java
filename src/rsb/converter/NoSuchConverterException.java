@@ -30,7 +30,7 @@ package rsb.converter;
 /**
  * An exception indicating that no {@link Converter} is available for the
  * intended operation.
- * 
+ *
  * @author swrede
  */
 public class NoSuchConverterException extends RuntimeException {
@@ -46,7 +46,7 @@ public class NoSuchConverterException extends RuntimeException {
 
     /**
      * Constructs an exception with explanatory message and causing exception.
-     * 
+     *
      * @param message
      *            the message
      * @param cause
@@ -58,7 +58,7 @@ public class NoSuchConverterException extends RuntimeException {
 
     /**
      * Constructs an exception with explanatory message.
-     * 
+     *
      * @param message
      *            the message
      */
@@ -68,7 +68,7 @@ public class NoSuchConverterException extends RuntimeException {
 
     /**
      * Constructs an exception with causing exception.
-     * 
+     *
      * @param cause
      *            causing exception
      */

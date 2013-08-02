@@ -12,13 +12,15 @@ import java.util.Set;
  */
 public class TransportRegistry {
 
+    private static final TransportRegistry DEFAULT_INSTANCE =
+            new TransportRegistry();
+
     /**
      * A map from transport name to factory instances representing the available
      * transports.
      */
-    private final Map<String, TransportFactory> factories = new HashMap<String, TransportFactory>();
-
-    private static final TransportRegistry DEFAULT_INSTANCE = new TransportRegistry();
+    private final Map<String, TransportFactory> factories =
+            new HashMap<String, TransportFactory>();
 
     /**
      * Returns a default instance of this class with the globally available

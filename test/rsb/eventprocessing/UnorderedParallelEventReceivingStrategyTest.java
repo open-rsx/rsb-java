@@ -44,8 +44,8 @@ public class UnorderedParallelEventReceivingStrategyTest {
 
     private final class TestHandler extends AbstractEventHandler {
 
-        boolean notified = false;
-        public Event event;
+        private boolean notified = false;
+        private Event event;
 
         public boolean isNotified() {
             return this.notified;
@@ -56,18 +56,25 @@ public class UnorderedParallelEventReceivingStrategyTest {
             this.event = event;
             this.notified = true;
         }
+
+        public Event getEvent() {
+            return this.event;
+        }
+
     }
 
     @Test
     public final void eventDispatcher() {
-        final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        final UnorderedParallelEventReceivingStrategy strategy =
+                new UnorderedParallelEventReceivingStrategy();
         assertNotNull(strategy);
         // TODO test configuration
     }
 
     @Test
     public final void addHandler() throws Throwable {
-        final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        final UnorderedParallelEventReceivingStrategy strategy =
+                new UnorderedParallelEventReceivingStrategy();
         strategy.activate();
         final TestHandler handler = new TestHandler();
         strategy.addHandler(handler, true);
@@ -76,7 +83,8 @@ public class UnorderedParallelEventReceivingStrategyTest {
 
     @Test
     public final void removeSubscription() throws Throwable {
-        final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        final UnorderedParallelEventReceivingStrategy strategy =
+                new UnorderedParallelEventReceivingStrategy();
         strategy.activate();
         final TestHandler handler = new TestHandler();
         strategy.addHandler(handler, true);
@@ -86,7 +94,8 @@ public class UnorderedParallelEventReceivingStrategyTest {
 
     @Test
     public final void fire() throws Throwable {
-        final UnorderedParallelEventReceivingStrategy strategy = new UnorderedParallelEventReceivingStrategy();
+        final UnorderedParallelEventReceivingStrategy strategy =
+                new UnorderedParallelEventReceivingStrategy();
         strategy.activate();
         final TestHandler handler = new TestHandler();
         strategy.addHandler(handler, true);
@@ -96,7 +105,7 @@ public class UnorderedParallelEventReceivingStrategyTest {
         strategy.deactivate();
         final long afterShutdown = System.currentTimeMillis() * 1000;
         assertTrue(handler.isNotified());
-        assertSame(event, handler.event);
+        assertSame(event, handler.getEvent());
         assertTrue(event.getMetaData().getDeliverTime() >= beforeFire);
         assertTrue(event.getMetaData().getDeliverTime() <= afterShutdown);
     }

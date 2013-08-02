@@ -58,12 +58,15 @@ public class ParticipantConfigCreator {
                     .getOrCreateTransport(transportName);
 
             // handle enabled
+            // CHECKSTYLE.OFF: AvoidNestedBlocks - limit scope of the one
+            // options
             {
                 final String enabledKey = transportPropPrefix + ".enabled";
                 transportConfig.setEnabled(transportProps.getProperty(
                         enabledKey, transportConfig.isEnabled()).asBoolean());
                 handledKeys.add(enabledKey);
             }
+            // CHECKSTYLE.ON: AvoidNestedBlocks
 
             // pass remaining options to the transport config
             transportProps.remove(handledKeys);

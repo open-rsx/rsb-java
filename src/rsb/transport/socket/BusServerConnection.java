@@ -55,25 +55,29 @@ public class BusServerConnection extends BusConnectionBase {
     private static final Logger LOG = Logger
             .getLogger(BusServerConnection.class.getName());
 
+    /**
+     * Constructs a new server.
+     *
+     * @param socket
+     *            socket to use for the server side. This is usually the result
+     *            of calling {@link java.net.ServerSocket#accept()}.
+     * @param tcpNoDelay
+     *            if <code>true</code>, configure the socket to use tcp no delay
+     */
     public BusServerConnection(final Socket socket, final boolean tcpNoDelay) {
         setSocket(socket);
         setOptions(new SocketOptions(socket.getLocalAddress(),
                 socket.getPort(), tcpNoDelay));
     }
 
-    /**
-     * Perform simple handshake as specified in RSB socket protocol.
-     *
-     * @throws RSBException
-     */
     @Override
     public void handshake() throws RSBException {
 
         LOG.fine("Performing handshake.");
 
         try {
-            final ByteBuffer handshakeBytes = ByteBuffer
-                    .allocateDirect(Protocol.HANDSHAKE_BYTES);
+            final ByteBuffer handshakeBytes =
+                    ByteBuffer.allocateDirect(Protocol.HANDSHAKE_BYTES);
             handshakeBytes.asIntBuffer().put(Protocol.HANDSHAKE_DATA);
             getWriter().write(handshakeBytes);
         } catch (final IOException e) {

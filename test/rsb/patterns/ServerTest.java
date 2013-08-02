@@ -46,7 +46,7 @@ import rsb.Scope;
 public class ServerTest {
 
     private static final String CALL_METHOD_NAME = "callme";
-    final static private Logger LOG = Logger.getLogger(ServerTest.class
+    private static final Logger LOG = Logger.getLogger(ServerTest.class
             .getName());
 
     public class ShutdownCallback extends DataCallback<String, String> {
@@ -73,8 +73,8 @@ public class ServerTest {
 
     private LocalServer getServer() {
         final Factory factory = Factory.getInstance();
-        final LocalServer server = factory.createLocalServer(new Scope(
-                "/example/server"));
+        final LocalServer server =
+                factory.createLocalServer(new Scope("/example/server"));
         return server;
     }
 
@@ -155,7 +155,8 @@ public class ServerTest {
     @SuppressWarnings("JUnitTestsShouldIncludeAssert")
     public void blocking() throws Throwable {
         final LocalServer server = this.getServer();
-        final DataCallback<String, String> method = new ShutdownCallback(server);
+        final DataCallback<String, String> method =
+                new ShutdownCallback(server);
         server.addMethod("shutdown", method);
         server.activate();
         final Thread deactivatingThread = new Thread(new Runnable() {
@@ -163,7 +164,8 @@ public class ServerTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(500);
+                    final int waitUntilDeactivate = 500;
+                    Thread.sleep(waitUntilDeactivate);
                 } catch (final InterruptedException e) {
                     // must not happen
                 }

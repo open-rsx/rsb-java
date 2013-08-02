@@ -38,6 +38,14 @@ public final class DumpVersion {
         // empty constructor to prevent initialization
     }
 
+    /**
+     * Main method.
+     *
+     * @param args
+     *            command line args
+     * @throws Throwable
+     *             in case of any error
+     */
     @SuppressWarnings({ "PMD.UseVarargs", "PMD.SystemPrintln" })
     public static void main(final String[] args) throws Throwable {
         System.out.println("RSB Version: "

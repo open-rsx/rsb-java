@@ -1,12 +1,12 @@
 package rsb.eventprocessing;
 
-import rsb.Participant;
 import rsb.Activatable;
 import rsb.transport.Connector;
 
 /**
  * Abstract interface for classes setting up event receiving or sending routes
- * from {@link Participant} instances to the concrete transport implementations.
+ * from {@link rsb.Participant} instances to the concrete transport
+ * implementations.
  *
  * @author jwienke
  *

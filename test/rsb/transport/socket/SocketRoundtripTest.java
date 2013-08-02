@@ -54,15 +54,16 @@ public class SocketRoundtripTest extends ConnectorRoundtripCheck {
 
     @Parameters
     public static Collection<Object[]> data() {
-        final Object[][] data = new Object[][] { { 100 }, { 90000 },
-                { 110000 }, { 350000 } };
+        final Object[][] data =
+                new Object[][] { { 100 }, { 90000 }, { 110000 }, { 350000 } };
         return Arrays.asList(data);
     }
 
     @Override
     protected OutConnector createOutConnector() throws Throwable {
 
-        final UnambiguousConverterMap<ByteBuffer> outStrategy = new UnambiguousConverterMap<ByteBuffer>();
+        final UnambiguousConverterMap<ByteBuffer> outStrategy =
+                new UnambiguousConverterMap<ByteBuffer>();
         outStrategy.addConverter(String.class.getName(), new StringConverter());
 
         return new SocketOutConnector(Utilities.getSocketOptions(),
@@ -73,7 +74,8 @@ public class SocketRoundtripTest extends ConnectorRoundtripCheck {
     @Override
     protected InPushConnector createInConnector() throws Throwable {
 
-        final UnambiguousConverterMap<ByteBuffer> inStrategy = new UnambiguousConverterMap<ByteBuffer>();
+        final UnambiguousConverterMap<ByteBuffer> inStrategy =
+                new UnambiguousConverterMap<ByteBuffer>();
         inStrategy.addConverter("utf-8-string", new StringConverter());
 
         return new SocketInPushConnector(

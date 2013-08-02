@@ -54,8 +54,9 @@ public final class Utilities {
         builder.setEventId(ProtocolConversion.createEventIdBuilder(event
                 .getId()));
         final Converter<ByteBuffer> converter = new Uint64Converter();
-        final ByteBuffer serialization = converter.serialize(event.getType(),
-                event.getData()).getSerialization();
+        final ByteBuffer serialization =
+                converter.serialize(event.getType(), event.getData())
+                        .getSerialization();
         builder.setData(ByteHelpers.buteBufferToByteString(serialization));
 
         ProtocolConversion.fillNotificationHeader(builder, event, converter

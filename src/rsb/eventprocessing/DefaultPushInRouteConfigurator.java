@@ -41,9 +41,16 @@ import rsb.transport.InPushConnector;
  */
 public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
 
-    private EventReceivingStrategy receivingStrategy = new SingleThreadEventReceivingStrategy();
+    private EventReceivingStrategy receivingStrategy =
+            new SingleThreadEventReceivingStrategy();
     private final RouteConfiguratorUtility<InPushConnector> utility;
 
+    /**
+     * Constructor.
+     *
+     * @param scope
+     *            the scope events are reeived on
+     */
     public DefaultPushInRouteConfigurator(final Scope scope) {
         this.utility = new RouteConfiguratorUtility<InPushConnector>(scope);
     }
@@ -83,7 +90,8 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
     }
 
     @Override
-    public void handlerAdded(final Handler handler, final boolean wait) {
+    public void handlerAdded(final Handler handler, final boolean wait)
+            throws InterruptedException {
         this.receivingStrategy.addHandler(handler, wait);
     }
 
@@ -110,7 +118,8 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
     }
 
     @Override
-    public void setEventReceivingStrategy(final EventReceivingStrategy strategy) {
+    public void
+            setEventReceivingStrategy(final EventReceivingStrategy strategy) {
         synchronized (this.utility) {
             assert !this.utility.isActive();
             assert strategy != null;

@@ -34,10 +34,15 @@ import java.util.UUID;
 
 /**
  * UUID helper functions.
- * 
+ *
  * @author swrede
  */
 public final class UUIDTools {
+
+    /**
+     * Length of a byte array representing a UUID.
+     */
+    public static final int UUID_BYTE_REP_LENGTH = 16;
 
     private static Object synchronizer = new Object();
     private static MessageDigest digester = null;
@@ -49,14 +54,15 @@ public final class UUIDTools {
 
     /**
      * Generates name-based URIs according to Version 5 (SHA-1).
-     * 
+     *
      * @param namespace
      *            Namespace UUID
      * @param name
      *            Actual name to be encoded in UUID
      * @return Byte buffer with V5 UUID
      */
-    public static UUID getNameBasedUUID(final UUID namespace, final String name) {
+    public static UUID
+            getNameBasedUUID(final UUID namespace, final String name) {
 
         synchronized (synchronizer) {
 
@@ -76,7 +82,9 @@ public final class UUIDTools {
             digester.update(UUIDTools.toByteArray(namespace));
             digester.update(name.getBytes());
 
-            byte[] bytes = Arrays.copyOfRange(digester.digest(), 0, 16);
+            byte[] bytes =
+                    Arrays.copyOfRange(digester.digest(), 0,
+                            UUID_BYTE_REP_LENGTH);
 
             bytes = setVersionAndVariant(bytes);
 
@@ -93,7 +101,7 @@ public final class UUIDTools {
     /**
      * Updates byte vector with version 5 information and return the updated
      * byte array.
-     * 
+     *
      * @param bytes
      *            vector to update
      * @return updated byte vector
@@ -103,27 +111,27 @@ public final class UUIDTools {
         // Constants and bit manipulation from:
         // http://svn.apache.org/repos/asf/commons/sandbox/id/trunk/
         /** Byte position of the clock sequence and reserved field */
-        final short TIME_HI_AND_VERSION_BYTE_6 = 6;
+        final short timeHiAndVersionByte6 = 6;
         /** Byte position of the clock sequence and reserved field */
-        final short CLOCK_SEQ_HI_AND_RESERVED_BYTE_8 = 8;
+        final short clockSeqHiAndReservedByte8 = 8;
 
         /** Version five constant for indicating UUID version */
         // Different to above mentioned code, otherwise version
         // information is still misleading (set to 3)
-        final int VERSION_FIVE = 5;
-        bytes[TIME_HI_AND_VERSION_BYTE_6] &= 0x0F;
-        bytes[TIME_HI_AND_VERSION_BYTE_6] |= VERSION_FIVE << 4;
+        final int versionFive = 5;
+        bytes[timeHiAndVersionByte6] &= 0x0F;
+        bytes[timeHiAndVersionByte6] |= versionFive << 4;
 
         // Set variant
-        bytes[CLOCK_SEQ_HI_AND_RESERVED_BYTE_8] &= 0x3F; // 0011 1111
-        bytes[CLOCK_SEQ_HI_AND_RESERVED_BYTE_8] |= 0x80; // 1000 0000
+        bytes[clockSeqHiAndReservedByte8] &= 0x3F; // 0011 1111
+        bytes[clockSeqHiAndReservedByte8] |= 0x80; // 1000 0000
 
         return bytes;
     }
 
     /**
      * Creates an ID from a byte representation.
-     * 
+     *
      * @param bytes
      *            byte representation of the id.
      * @return the generated {@link UUID} instance
@@ -131,14 +139,14 @@ public final class UUIDTools {
     @SuppressWarnings("PMD.UseVarargs")
     public static UUID fromByteArray(final byte[] bytes) {
 
-        assert bytes.length == 16;
+        assert bytes.length == UUID_BYTE_REP_LENGTH;
 
         long msb = 0;
         long lsb = 0;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < UUID_BYTE_REP_LENGTH / 2; i++) {
             msb = (msb << 8) | (bytes[i] & 0xff);
         }
-        for (int i = 8; i < 16; i++) {
+        for (int i = UUID_BYTE_REP_LENGTH / 2; i < UUID_BYTE_REP_LENGTH; i++) {
             lsb = (lsb << 8) | (bytes[i] & 0xff);
         }
 
@@ -147,7 +155,7 @@ public final class UUIDTools {
 
     /**
      * Returns the bytes representing the id.
-     * 
+     *
      * @param id
      *            {@link UUID} instance to serialize
      * @return byte representing the id (length 16)
@@ -157,12 +165,12 @@ public final class UUIDTools {
 
         final long msb = id.getMostSignificantBits();
         final long lsb = id.getLeastSignificantBits();
-        final byte[] buffer = new byte[16];
+        final byte[] buffer = new byte[UUID_BYTE_REP_LENGTH];
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < UUID_BYTE_REP_LENGTH / 2; i++) {
             buffer[i] = (byte) (msb >>> 8 * (7 - i));
         }
-        for (int i = 8; i < 16; i++) {
+        for (int i = UUID_BYTE_REP_LENGTH / 2; i < UUID_BYTE_REP_LENGTH; i++) {
             buffer[i] = (byte) (lsb >>> 8 * (7 - i));
         }
 

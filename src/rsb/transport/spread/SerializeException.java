@@ -29,6 +29,9 @@ package rsb.transport.spread;
 
 import rsb.RSBException;
 
+/**
+ * Indicates an error with the serialization.
+ */
 public class SerializeException extends RSBException {
 
     /**
@@ -36,6 +39,12 @@ public class SerializeException extends RSBException {
      */
     private static final long serialVersionUID = -6286452461407036752L;
 
+    /**
+     * Constructor with describing message.
+     *
+     * @param msg
+     *            error description
+     */
     public SerializeException(final String msg) {
         super(msg);
     }

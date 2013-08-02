@@ -36,27 +36,27 @@ import rsb.AbstractDataHandler;
  * Synchronized queue implementing the rsb.DataHandler interface. Can be
  * directly registered as handler in rsb.Listener instance and used for
  * receiving and storing dispatched events.
- * 
+ *
  * @author swrede
  * @author dklotz
- * @param <T>
+ * @param <DataType>
  *            type of data to be handled
  */
-public class QueueAdapter<T> extends AbstractDataHandler<T> {
+public class QueueAdapter<DataType> extends AbstractDataHandler<DataType> {
 
-    BlockingQueue<T> queue;
+    private BlockingQueue<DataType> queue;
 
     /**
      * Creates an adapter with a preset unlimited queue inside.
      */
     public QueueAdapter() {
-        this.queue = new LinkedBlockingDeque<T>();
+        this.queue = new LinkedBlockingDeque<DataType>();
     }
 
     /**
      * Creates an adapter with a preset queue inside that is limited to
      * <code>capacity</code> elements.
-     * 
+     *
      * @param capacity
      *            capacity of the internal queue
      * @param discardOldest
@@ -65,22 +65,33 @@ public class QueueAdapter<T> extends AbstractDataHandler<T> {
      */
     public QueueAdapter(final int capacity, final boolean discardOldest) {
         if (discardOldest) {
-            this.queue = new LimitedQueue<T>(capacity);
+            this.queue = new LimitedQueue<DataType>(capacity);
         } else {
-            this.queue = new LinkedBlockingDeque<T>(capacity);
+            this.queue = new LinkedBlockingDeque<DataType>(capacity);
         }
     }
 
-    public QueueAdapter(final BlockingQueue<T> queue) {
+    /**
+     * Creates an adapter that uses the specified queue as target for new data.
+     *
+     * @param queue
+     *            queue for new data
+     */
+    public QueueAdapter(final BlockingQueue<DataType> queue) {
         this.queue = queue;
     }
 
     @Override
-    public void handleEvent(final T data) {
+    public void handleEvent(final DataType data) {
         this.queue.add(data);
     }
 
-    public BlockingQueue<T> getQueue() {
+    /**
+     * Returns the queue instance used for new data.
+     *
+     * @return queue instance
+     */
+    public BlockingQueue<DataType> getQueue() {
         return this.queue;
     }
 }

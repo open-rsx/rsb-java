@@ -44,14 +44,16 @@ public class DataMessage {
     /* from spread.SpreadConnection */
     @SuppressWarnings("PMD.LongVariable")
     private static final int SPREAD_OVERHEAD_OFFSET = 20000;
+
     /**
      * Maximum length in bytes of messages that can be sent via spread.
      */
     @SuppressWarnings("PMD.LongVariable")
-    public static final int MAX_MESSAGE_LENGTH = 140000 - SPREAD_OVERHEAD_OFFSET;
+    public static final int MAX_MESSAGE_LENGTH =
+            140000 - SPREAD_OVERHEAD_OFFSET;
 
     /* decorated spread message */
-    SpreadMessage msg = new SpreadMessage();
+    private SpreadMessage msg = new SpreadMessage();
 
     public DataMessage() {
         super();

@@ -31,12 +31,21 @@ public final class ByteHelpers {
             return buffer.array();
         }
 
-        final byte array[] = new byte[buffer.remaining()];
+        final byte[] array = new byte[buffer.remaining()];
         buffer.get(array);
         return array;
 
     }
 
+    /**
+     * Converts a {@link ByteBuffer} to a {@link ByteString}.
+     *
+     * @param buffer
+     *            buffer to convert
+     * @return {@link ByteString} instance with the same contents. Might be
+     *         coupled to the passed in {@link ByteBuffer} and reflect changes
+     *         on that buffer.
+     */
     public static ByteString buteBufferToByteString(final ByteBuffer buffer) {
         return ByteString.copyFrom(buffer);
     }

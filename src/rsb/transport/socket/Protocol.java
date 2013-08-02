@@ -8,7 +8,7 @@ package rsb.transport.socket;
 public final class Protocol {
 
     /**
-     * The data to send for handshake requests and replies
+     * The data to send for handshake requests and replies.
      */
     public static final int HANDSHAKE_DATA = 0x00000000;
 

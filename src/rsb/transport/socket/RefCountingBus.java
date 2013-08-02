@@ -26,14 +26,23 @@ public class RefCountingBus implements Bus {
     public interface DeactivationHandler {
 
         /**
-         * Called on deactivation of a reference-counted bus instance
+         * Called on deactivation of a reference-counted bus instance.
          *
          * @param bus
+         *            the bus being deactivated
          */
         void deactivated(final RefCountingBus bus);
 
     }
 
+    /**
+     * Constructor.
+     *
+     * @param bus
+     *            bus to manage
+     * @param handler
+     *            handler to be called on deactivation of the bus
+     */
     public RefCountingBus(final Bus bus, final DeactivationHandler handler) {
         this.bus = bus;
         this.deactivationHandler = handler;

@@ -27,8 +27,8 @@
  */
 package rsb.transport;
 
-import rsb.QualityOfServiceSpec;
 import rsb.Activatable;
+import rsb.QualityOfServiceSpec;
 import rsb.Scope;
 
 /**
@@ -39,9 +39,6 @@ import rsb.Scope;
  * @author swrede
  */
 public interface Connector extends Activatable {
-
-    // TODO still required? What was the original meaning
-    String getType();
 
     /**
      * Sets the quality of service requirements on sending and receiving event

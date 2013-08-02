@@ -61,19 +61,40 @@ public abstract class Server<MethodType extends Method> extends Participant {
     private abstract class ServerState {
 
         // reference to server instance
-        protected Server<MethodType> server;
+        private Server<MethodType> server;
 
-        protected ServerState(final Server<MethodType> ctx) {
-            this.server = ctx;
+        protected ServerState(final Server<MethodType> server) {
+            this.setServer(server);
         }
 
-        public ServerState activate() throws InvalidStateException,
-                InitializeException, RSBException {
+        /**
+         * Activates this state.
+         *
+         * @return the state that should follow this operation
+         * @throws InvalidStateException
+         *             server in incorrect state
+         * @throws InitializeException
+         *             error initializing the server
+         * @throws RSBException
+         *             error initializing the server
+         */
+        public ServerState activate() throws InitializeException, RSBException {
             throw new InvalidStateException("Server already activated.");
         }
 
-        public ServerState deactivate() throws InvalidStateException,
-                RSBException, InterruptedException {
+        /**
+         * Deactivates this state.
+         *
+         * @return the state that should follow this operation
+         * @throws InvalidStateException
+         *             server in incorrect state
+         * @throws RSBException
+         *             error initializing the server
+         * @throws InterruptedException
+         *             interrupted while waiting for deactivation to finish
+         */
+        public ServerState deactivate() throws RSBException,
+                InterruptedException {
             throw new InvalidStateException("Server not activated.");
         }
 
@@ -83,12 +104,29 @@ public abstract class Server<MethodType extends Method> extends Participant {
 
         public abstract boolean isActive();
 
+        protected Server<MethodType> getServer() {
+            return this.server;
+        }
+
+        protected void setServer(final Server<MethodType> server) {
+            this.server = server;
+        }
+
     }
 
+    /**
+     * Represent an active server.
+     */
     protected class ServerStateActive extends ServerState {
 
-        protected ServerStateActive(final Server<MethodType> ctx) {
-            super(ctx);
+        /**
+         * Constructor.
+         *
+         * @param server
+         *            server managed by this state
+         */
+        ServerStateActive(final Server<MethodType> server) {
+            super(server);
         }
 
         @Override
@@ -98,10 +136,10 @@ public abstract class Server<MethodType extends Method> extends Participant {
                 method.deactivate();
             }
             // send signal to thread in waitForShutdown
-            synchronized (this.server) {
-                this.server.notifyAll();
+            synchronized (this.getServer()) {
+                this.getServer().notifyAll();
             }
-            return new ServerStateInactive(this.server);
+            return new ServerStateInactive(this.getServer());
         }
 
         @Override
@@ -110,10 +148,21 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
     }
 
+    /**
+     * Represents an inactive server.
+     *
+     * @author jwienke
+     */
     protected class ServerStateInactive extends ServerState {
 
-        protected ServerStateInactive(final Server<MethodType> ctx) {
-            super(ctx);
+        /**
+         * Constructor.
+         *
+         * @param server
+         *            server managed by this state
+         */
+        ServerStateInactive(final Server<MethodType> server) {
+            super(server);
         }
 
         @Override
@@ -121,7 +170,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
             for (final Method method : Server.this.methods.values()) {
                 method.activate();
             }
-            return new ServerStateActive(this.server);
+            return new ServerStateActive(this.getServer());
         }
 
         @Override
@@ -130,12 +179,28 @@ public abstract class Server<MethodType extends Method> extends Participant {
         }
     }
 
+    /**
+     * Constructs a new server.
+     *
+     * @param scope
+     *            base scope of the server
+     * @param config
+     *            participant config to use for internal participants
+     */
     protected Server(final Scope scope, final ParticipantConfig config) {
         super(scope, config);
         this.methods = new HashMap<String, MethodType>();
         this.state = new ServerStateInactive(this);
     }
 
+    /**
+     * Constructs a new server.
+     *
+     * @param scope
+     *            base scope of the server
+     * @param config
+     *            participant config to use for internal participants
+     */
     protected Server(final String scope, final ParticipantConfig config) {
         this(new Scope(scope), config);
     }

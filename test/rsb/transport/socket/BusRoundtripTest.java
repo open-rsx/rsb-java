@@ -106,6 +106,7 @@ public class BusRoundtripTest {
 
     private void checkResults(final Notification sent) throws Throwable {
 
+        // CHECKSTYLE.OFF: AvoidNestedBlocks - desired here
         {
             final Notification serverResult = this.serverResult.waitForResult();
             assertNotNull(
@@ -123,13 +124,14 @@ public class BusRoundtripTest {
         }
 
         {
-            final Notification secondClientResult = this.secondClientResult
-                    .waitForResult();
+            final Notification secondClientResult =
+                    this.secondClientResult.waitForResult();
             assertNotNull(
                     "We must have received something after waiting this long",
                     secondClientResult);
             assertEquals(sent, secondClientResult);
         }
+        // CHECKSTYLE.ON: AvoidNestedBlocks
 
     }
 

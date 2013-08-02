@@ -16,6 +16,7 @@ import rsb.Utilities;
  */
 public class RpcIntegrationTest {
 
+    private static final int NUM_CALLS = 100;
     private static final String TEST_DATA = "A test String";
     private static final String METHOD_NAME = "myMethod";
     private static final String VOID_VOID_METHOD_NAME = "voidvoid";
@@ -58,7 +59,7 @@ public class RpcIntegrationTest {
 
     @Test
     public void roundtripSmoke() throws Throwable {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < NUM_CALLS; i++) {
             final String reply = this.remote.call(METHOD_NAME, TEST_DATA);
             assertEquals(reply, TEST_DATA);
         }

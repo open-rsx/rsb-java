@@ -36,7 +36,7 @@ import rsb.Event;
  */
 public class ReplyEventCallback extends EventCallback {
 
-    public AtomicInteger counter = new AtomicInteger();
+    private final AtomicInteger counter = new AtomicInteger();
 
     @Override
     public Event invoke(final Event request) throws Throwable {

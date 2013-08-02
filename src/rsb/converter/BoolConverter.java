@@ -33,13 +33,16 @@ import java.nio.ByteBuffer;
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
  * boolean values.
- * 
+ *
  * @author jmoringe
  */
 public class BoolConverter implements Converter<ByteBuffer> {
 
     private final ConverterSignature signature;
 
+    /**
+     * Constructor.
+     */
     public BoolConverter() {
         this.signature = new ConverterSignature("bool", Boolean.class);
     }

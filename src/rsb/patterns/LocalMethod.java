@@ -29,6 +29,7 @@ package rsb.patterns;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.Event;
@@ -50,7 +51,7 @@ import rsb.filter.MethodFilter;
  */
 class LocalMethod extends Method implements Handler {
 
-    private final static Logger LOG = Logger.getLogger(LocalMethod.class
+    private static final Logger LOG = Logger.getLogger(LocalMethod.class
             .getName());
 
     private final Callback callback;
@@ -80,10 +81,10 @@ class LocalMethod extends Method implements Handler {
             throws InterruptedException, InitializeException {
         super(server, name);
         this.callback = callback;
-        this.listener = this.factory.createListener(this.REQUEST_SCOPE, config);
-        this.listener.addFilter(new MethodFilter("REQUEST"));
-        this.listener.addHandler(this, true);
-        this.informer = this.factory.createInformer(this.REPLY_SCOPE, config);
+        this.setListener(getFactory().createListener(this.getRequestScope(), config));
+        this.getListener().addFilter(new MethodFilter("REQUEST"));
+        this.getListener().addHandler(this, true);
+        this.setInformer(getFactory().createInformer(this.getReplyScope(), config));
     }
 
     @Override
@@ -93,21 +94,24 @@ class LocalMethod extends Method implements Handler {
         try {
             reply = this.callback.internalInvoke(request);
         } catch (final Throwable exception) {
-            LOG.warning("Exception during method invocation in participant: "
-                    + this.REQUEST_SCOPE + " Exception message: " + exception);
+            LOG.log(Level.WARNING,
+                    "Exception during method invocation in participant: {}. "
+                            + "Exception message: {}", new Object[] {
+                            this.getRequestScope(), exception });
             final StringWriter exceptionWriter = new StringWriter();
-            final PrintWriter exceptionPrinter = new PrintWriter(
-                    exceptionWriter);
+            final PrintWriter exceptionPrinter =
+                    new PrintWriter(exceptionWriter);
             exception.printStackTrace(exceptionPrinter);
-            final String error = exception.toString() + " Details: "
-                    + exception.getMessage() + "\n"
-                    + exceptionWriter.toString();
+            final String error =
+                    exception.toString() + " Details: "
+                            + exception.getMessage() + "\n"
+                            + exceptionWriter.toString();
             // return error information
             reply = new Event(String.class, error);
             reply.getMetaData().setUserInfo("rsb:error?", "1");
         }
 
-        reply.setScope(this.REPLY_SCOPE);
+        reply.setScope(this.getReplyScope());
         reply.setMethod("REPLY");
         reply.addCause(request.getId());
 
@@ -116,9 +120,10 @@ class LocalMethod extends Method implements Handler {
             this.getInformer().send(reply);
         } catch (final RSBException exception) {
             // TODO call local error handler
-            LOG.severe("Exception while sending reply in server method: "
-                    + this.REPLY_SCOPE + " Exception message: "
-                    + exception.getMessage());
+            LOG.log(Level.WARNING,
+                    "Exception while sending reply in server: {}."
+                            + " Exception message: {}", new Object[] {
+                            this.getRequestScope(), exception });
         }
     }
 

@@ -47,20 +47,23 @@ public class UUIDToolsTest {
      * .
      */
     @Test
-    public void getNameBasedUUID() {
+    public void getNameBasedUUIDA() {
         // Testcase A (see https://code.cor-lab.org/projects/rsb/wiki/Events)
         // event id v5-uuid(D8FBFEF4-4EB0-4C89-9716-C425DED3C527, "00000000")
         // => 84F43861-433F-5253-AFBB-A613A5E04D71
-        String idString = "D8FBFEF4-4EB0-4C89-9716-C425DED3C527";
-        long seqNr = 0;
-        UUID uuid = this.buildUUID(idString, seqNr);
+        final String idString = "D8FBFEF4-4EB0-4C89-9716-C425DED3C527";
+        final long seqNr = 0;
+        final UUID uuid = this.buildUUID(idString, seqNr);
         assertTrue(uuid.toString().equals(
                 "84F43861-433F-5253-AFBB-A613A5E04D71".toLowerCase()));
+    }
 
+    @Test
+    public void getNameBasedUUIDB() {
         // Testcase B (see https://code.cor-lab.org/projects/rsb/wiki/Events)
-        idString = "BF948D47-618F-4B04-AAC5-0AB5A1A79267";
-        seqNr = 378;
-        uuid = this.buildUUID(idString, seqNr);
+        final String idString = "BF948D47-618F-4B04-AAC5-0AB5A1A79267";
+        final long seqNr = 378;
+        final UUID uuid = this.buildUUID(idString, seqNr);
         // v5-uuid(BF948D47-618F-4B04-AAC5-0AB5A1A79267, "0000017a")
         // => BD27BE7D-87DE-5336-BECA-44FC60DE46A0
         assertEquals("BD27BE7D-87DE-5336-BECA-44FC60DE46A0".toLowerCase(),
@@ -91,7 +94,7 @@ public class UUIDToolsTest {
     public void byteArrayConversion() {
         final UUID id1 = UUID.randomUUID();
         final byte[] buffer = UUIDTools.toByteArray(id1);
-        assertEquals(16, buffer.length);
+        assertEquals(UUIDTools.UUID_BYTE_REP_LENGTH, buffer.length);
         final UUID id2 = UUIDTools.fromByteArray(buffer);
         assertEquals(id1, id2);
     }

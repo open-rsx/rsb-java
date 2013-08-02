@@ -106,8 +106,9 @@ public class BusCacheTest {
     @Test
     public void getNotCached() throws Throwable {
         final BusCache cache = new BusCache();
+        final int randomPort = 2546;
         assertNull(cache.get(new SocketOptions(InetAddress.getLocalHost(),
-                2546, true)));
+                randomPort, true)));
     }
 
 }

@@ -35,29 +35,44 @@ import rsb.util.ByteHelpers;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 
+/**
+ * Converter for protocol buffer generated messages.
+ *
+ * @author jmoringe
+ *
+ * @param <MessageType>
+ *            the protocol buffer type to convert
+ */
 public class ProtocolBufferConverter<MessageType extends Message> implements
         Converter<ByteBuffer> {
 
-    final static Logger LOG = Logger.getLogger(ProtocolBufferConverter.class
-            .getName());
+    private static final Logger LOG = Logger
+            .getLogger(ProtocolBufferConverter.class.getName());
 
-    MessageType defaultInstance;
-    ConverterSignature signature;
+    private final MessageType defaultInstance;
+    private final ConverterSignature signature;
 
+    /**
+     * Constructor.
+     *
+     * @param instance
+     *            provide a default instance for the type to convert
+     */
     public ProtocolBufferConverter(final MessageType instance) {
         this.defaultInstance = instance;
         LOG.fine("Result of instance.getClass().getName() "
                 + instance.getClass().getName());
-        this.signature = new ConverterSignature(this.getWireSchema(),
-                instance.getClass());
+        this.signature =
+                new ConverterSignature(this.getWireSchema(),
+                        instance.getClass());
     }
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
             final Object obj) throws ConversionException {
         @SuppressWarnings("unchecked")
-        final ByteBuffer serialized = ByteBuffer.wrap(((MessageType) obj)
-                .toByteArray());
+        final ByteBuffer serialized =
+                ByteBuffer.wrap(((MessageType) obj).toByteArray());
         return new WireContents<ByteBuffer>(serialized, this.getWireSchema());
     }
 
@@ -69,8 +84,10 @@ public class ProtocolBufferConverter<MessageType extends Message> implements
 
         MessageType result;
         try {
-            result = (MessageType) this.defaultInstance.newBuilderForType()
-                    .mergeFrom(ByteHelpers.byteBufferToArray(buffer)).build();
+            result =
+                    (MessageType) this.defaultInstance.newBuilderForType()
+                            .mergeFrom(ByteHelpers.byteBufferToArray(buffer))
+                            .build();
         } catch (final InvalidProtocolBufferException e) {
             throw new ConversionException(
                     "Error deserializing wire data because of a protobuf problem.",

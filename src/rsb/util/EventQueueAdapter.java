@@ -39,12 +39,12 @@ import rsb.Event;
  * queue of RSB {@link Event}s instead of directly to the payload data. It can
  * also be directly registered as handler in an rsb.Listener instance and used
  * for receiving and storing dispatched events.
- * 
+ *
  * @author dklotz
  */
 public class EventQueueAdapter extends AbstractEventHandler {
 
-    BlockingQueue<Event> queue;
+    private BlockingQueue<Event> queue;
 
     /**
      * Creates an adapter with a preset unlimited queue inside.
@@ -56,7 +56,7 @@ public class EventQueueAdapter extends AbstractEventHandler {
     /**
      * Creates an adapter with a preset queue inside that is limited to
      * <code>capacity</code> elements.
-     * 
+     *
      * @param capacity
      *            capacity of the internal queue
      * @param discardOldest
@@ -73,7 +73,7 @@ public class EventQueueAdapter extends AbstractEventHandler {
 
     /**
      * Creates an adapter with the given queue implementation.
-     * 
+     *
      * @param queue
      *            The queue this adapter should fill.
      */
@@ -88,7 +88,7 @@ public class EventQueueAdapter extends AbstractEventHandler {
 
     /**
      * Provides access to the queue filled by this queue adapter.
-     * 
+     *
      * @return The current with the events received by this adapter.
      */
     public BlockingQueue<Event> getQueue() {

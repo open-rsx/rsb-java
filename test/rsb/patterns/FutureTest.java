@@ -58,7 +58,8 @@ public class FutureTest {
     @Test(expected = TimeoutException.class)
     public void timeout() throws ExecutionException, TimeoutException {
         final Future<Integer> future = new Future<Integer>();
-        future.get(10);
+        final int shortTimeout = 10;
+        future.get(shortTimeout);
     }
 
 }

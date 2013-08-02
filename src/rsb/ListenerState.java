@@ -37,27 +37,54 @@ import java.util.logging.Logger;
  */
 public class ListenerState {
 
-    protected final static Logger LOG = Logger.getLogger(InformerState.class
+    private static final Logger LOG = Logger.getLogger(InformerState.class
             .getName());
 
-    private final Listener context;
+    private final Listener listener;
 
-    protected ListenerState(final Listener ctx) {
-        this.context = ctx;
+    /**
+     * Constructor.
+     *
+     * @param listener
+     *            the listener being managed
+     */
+    protected ListenerState(final Listener listener) {
+        this.listener = listener;
     }
 
+    /**
+     * Delegate for {@link Listener#activate()}.
+     *
+     * @throws RSBException
+     *             error activating
+     * @see Listener#activate()
+     */
     protected void activate() throws RSBException {
         LOG.warning("invalid state exception during activate call");
         throw new InvalidStateException("subscriber already activated");
     }
 
+    /**
+     * Delegate for {@link Listener#deactivate()}.
+     *
+     * @throws RSBException
+     *             error deactivating
+     * @throws InterruptedException
+     *             error waiting for deactivation
+     * @see Listener#deactivate()
+     */
     protected void deactivate() throws RSBException, InterruptedException {
         LOG.warning("invalid state exception during deactivate call");
         throw new InvalidStateException("subscriber already deactivated");
     }
 
-    protected Listener getContext() {
-        return this.context;
+    /**
+     * Returns the listener being managed by this state instance.
+     *
+     * @return the listener instance
+     */
+    protected Listener getListener() {
+        return this.listener;
     }
 
 }

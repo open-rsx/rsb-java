@@ -35,6 +35,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+// CHECKSTYLE.OFF: MultipleStringLiterals - we are testing parsing code.
+//                 Contains a lot of strings.
 /**
  * Test case for {@link Scope}.
  *
@@ -203,3 +205,4 @@ public class ScopeTest {
     }
 
 }
+// CHECKSTYLE.ON: MultipleStringLiterals

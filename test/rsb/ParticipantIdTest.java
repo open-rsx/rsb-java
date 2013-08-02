@@ -33,6 +33,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import rsb.util.UUIDTools;
+
 /**
  * @author swrede
  */
@@ -62,11 +64,12 @@ public class ParticipantIdTest {
 
     @Test
     public void toByteArray() {
-        final ParticipantId participantId = new ParticipantId(
-                "2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
+        final ParticipantId participantId =
+                new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
 
-        final byte[] data = new byte[16];
+        final byte[] data = new byte[UUIDTools.UUID_BYTE_REP_LENGTH];
 
+        // CHECKSTYLE.OFF: MagicNumber - hand calculated
         data[0] = (byte) 42;
         data[1] = (byte) 75;
         data[2] = (byte) 137;
@@ -83,6 +86,7 @@ public class ParticipantIdTest {
         data[13] = (byte) 248;
         data[14] = (byte) 150;
         data[15] = (byte) 29;
+        // CHECKSTYLE.ON: MagicNumber
 
         assertArrayEquals(data, participantId.toByteArray());
 
@@ -91,8 +95,9 @@ public class ParticipantIdTest {
     @Test
     public void fromByteArray() {
 
-        final byte[] data = new byte[16];
+        final byte[] data = new byte[UUIDTools.UUID_BYTE_REP_LENGTH];
 
+        // CHECKSTYLE.OFF: MagicNumber - hand calculated
         data[0] = (byte) 42;
         data[1] = (byte) 75;
         data[2] = (byte) 137;
@@ -109,6 +114,7 @@ public class ParticipantIdTest {
         data[13] = (byte) 248;
         data[14] = (byte) 150;
         data[15] = (byte) 29;
+        // CHECKSTYLE.ON: MagicNumber
 
         assertEquals(new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"),
                 new ParticipantId(data));

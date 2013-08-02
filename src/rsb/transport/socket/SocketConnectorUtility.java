@@ -4,12 +4,12 @@ import java.nio.ByteBuffer;
 
 import rsb.RSBException;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.transport.Connector;
 import rsb.transport.socket.RefCountingBus.DeactivationHandler;
 
 /**
- * A class providing base functionality for {@link Connector} implementations of
- * the socket transport. It is intended to be used via composition.
+ * A class providing base functionality for {@link rsb.transport.Connector}
+ * implementations of the socket transport. It is intended to be used via
+ * composition.
  *
  * Provided methods are generally thread-safe if not indicated otherwise. The
  * respective instance of this class is used for synchronizing in case clients
@@ -20,14 +20,24 @@ import rsb.transport.socket.RefCountingBus.DeactivationHandler;
  */
 public class SocketConnectorUtility {
 
+    private static BusCache busClientCache = new BusCache();
+    private static BusCache busServerCache = new BusCache();
+
     private final SocketOptions socketOptions;
     private final ServerMode serverMode;
     private final ConverterSelectionStrategy<ByteBuffer> converters;
     private Bus bus;
 
-    private static BusCache busClientCache = new BusCache();
-    private static BusCache busServerCache = new BusCache();
-
+    /**
+     * Constructor.
+     *
+     * @param socketOptions
+     *            socket options to use
+     * @param serverMode
+     *            the kind of server mode to use
+     * @param converters
+     *            the converters to use for serialization
+     */
     public SocketConnectorUtility(final SocketOptions socketOptions,
             final ServerMode serverMode,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
@@ -41,10 +51,21 @@ public class SocketConnectorUtility {
 
     }
 
+    /**
+     * Returns the underlying bus instance when called after {@link #activate()}
+     * .
+     *
+     * @return bus instance or <code>null</code>
+     */
     public Bus getBus() {
         return this.bus;
     }
 
+    /**
+     * Returns the contained converters to use.
+     *
+     * @return converters
+     */
     public ConverterSelectionStrategy<ByteBuffer> getConverters() {
         return this.converters;
     }
@@ -79,17 +100,19 @@ public class SocketConnectorUtility {
                 return bus;
             }
 
-            final Bus bus = new RefCountingBus(creator.create(options),
-                    new DeactivationHandler() {
+            final Bus bus =
+                    new RefCountingBus(creator.create(options),
+                            new DeactivationHandler() {
 
-                        @Override
-                        public void deactivated(final RefCountingBus bus) {
-                            synchronized (cache.getSynchronizer()) {
-                                cache.unregister(bus);
-                            }
-                        }
+                                @Override
+                                public void
+                                        deactivated(final RefCountingBus bus) {
+                                    synchronized (cache.getSynchronizer()) {
+                                        cache.unregister(bus);
+                                    }
+                                }
 
-                    });
+                            });
             bus.activate();
             cache.register(bus);
             return bus;
@@ -122,6 +145,13 @@ public class SocketConnectorUtility {
         });
     }
 
+    /**
+     * Acquires a new {@link Bus} instance and activates it respecting the
+     * requested {@link ServerMode}.
+     *
+     * @throws RSBException
+     *             error initializing {@link Bus}
+     */
     public void activate() throws RSBException {
 
         synchronized (this) {
@@ -154,6 +184,14 @@ public class SocketConnectorUtility {
 
     }
 
+    /**
+     * Deactivates the underlying bus instance.
+     *
+     * @throws RSBException
+     *             error deactivating {@link Bus}
+     * @throws InterruptedException
+     *             interrupted while waiting for the bus to terminate
+     */
     public void deactivate() throws RSBException, InterruptedException {
 
         synchronized (this) {
@@ -169,6 +207,11 @@ public class SocketConnectorUtility {
 
     }
 
+    /**
+     * Indicates whether this class has been activated or not.
+     *
+     * @return <code>true</code> if activated
+     */
     public boolean isActive() {
         synchronized (this) {
             return this.bus != null;

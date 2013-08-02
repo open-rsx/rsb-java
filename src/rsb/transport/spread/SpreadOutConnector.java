@@ -56,7 +56,7 @@ import com.google.protobuf.ByteString;
  */
 public class SpreadOutConnector implements OutConnector {
 
-    private final static Logger LOG = Logger.getLogger(SpreadOutConnector.class
+    private static final Logger LOG = Logger.getLogger(SpreadOutConnector.class
             .getName());
 
     private static final int MIN_DATA_SIZE = 5;
@@ -183,8 +183,8 @@ public class SpreadOutConnector implements OutConnector {
      */
     private class Fragment {
 
-        public FragmentedNotification.Builder fragmentBuilder = null;
-        public Notification.Builder notificationBuilder = null;
+        private final FragmentedNotification.Builder fragmentBuilder;
+        private final Notification.Builder notificationBuilder;
 
         public Fragment(final FragmentedNotification.Builder fragmentBuilder,
                 final Notification.Builder notificationBuilder) {
@@ -192,28 +192,36 @@ public class SpreadOutConnector implements OutConnector {
             this.notificationBuilder = notificationBuilder;
         }
 
+        public FragmentedNotification.Builder getFragmentBuilder() {
+            return this.fragmentBuilder;
+        }
+
+        public Notification.Builder getNotificationBuilder() {
+            return this.notificationBuilder;
+        }
+
     }
 
     @Override
     public void push(final Event event) throws ConversionException {
 
-        final WireContents<ByteBuffer> convertedDataBuffer = ProtocolConversion
-                .serializeEventData(event, this.converters);
+        final WireContents<ByteBuffer> convertedDataBuffer =
+                ProtocolConversion.serializeEventData(event, this.converters);
 
         event.getMetaData().setSendTime(0);
 
-        final List<Fragment> fragments = prepareFragments(event,
-                convertedDataBuffer);
+        final List<Fragment> fragments =
+                prepareFragments(event, convertedDataBuffer);
 
         // send all fragments
         for (final Fragment fragment : fragments) {
 
-            fragment.fragmentBuilder
-                    .setNotification(fragment.notificationBuilder);
+            fragment.getFragmentBuilder().setNotification(
+                    fragment.getNotificationBuilder());
 
             // build final notification
-            final FragmentedNotification serializedFragment = fragment.fragmentBuilder
-                    .build();
+            final FragmentedNotification serializedFragment =
+                    fragment.getFragmentBuilder().build();
 
             // send message on spread
             // TODO remove data message
@@ -236,8 +244,8 @@ public class SpreadOutConnector implements OutConnector {
                 this.spreadServiceHandler.apply(message);
             } catch (final SerializeException ex) {
                 throw new ConversionException(
-                        "Unable to apply quality of service settings for a spread message.",
-                        ex);
+                        "Unable to apply quality of service settings "
+                                + "for a spread message.", ex);
             }
 
             final boolean sent = this.spread.send(message);
@@ -273,15 +281,15 @@ public class SpreadOutConnector implements OutConnector {
         int cursor = 0;
         int currentFragment = 0;
         // "currentFragment == 0" is required for the case when dataSize == 0
-        final byte data[] = ByteHelpers.byteBufferToArray(convertedData
-                .getSerialization());
+        final byte[] data =
+                ByteHelpers.byteBufferToArray(convertedData.getSerialization());
 
         while (cursor < dataSize || currentFragment == 0) {
 
-            final FragmentedNotification.Builder fragmentBuilder = FragmentedNotification
-                    .newBuilder();
-            final Notification.Builder notificationBuilder = Notification
-                    .newBuilder();
+            final FragmentedNotification.Builder fragmentBuilder =
+                    FragmentedNotification.newBuilder();
+            final Notification.Builder notificationBuilder =
+                    Notification.newBuilder();
 
             notificationBuilder.setEventId(ProtocolConversion
                     .createEventIdBuilder(event.getId()));
@@ -295,11 +303,11 @@ public class SpreadOutConnector implements OutConnector {
 
             // determine how much space can still be used for data
             // TODO this is really suboptimal with the java API...
-            final FragmentedNotification.Builder fragmentBuilderClone = fragmentBuilder
-                    .clone();
+            final FragmentedNotification.Builder fragmentBuilderClone =
+                    fragmentBuilder.clone();
             fragmentBuilderClone.setNotification(notificationBuilder.clone());
-            final int thisNotificationSize = fragmentBuilderClone
-                    .buildPartial().getSerializedSize();
+            final int thisNotificationSize =
+                    fragmentBuilderClone.buildPartial().getSerializedSize();
             if (thisNotificationSize > MAX_MSG_SIZE - MIN_DATA_SIZE) {
                 throw new ConversionException(
                         "There is not enough space for data in this message. "
@@ -311,8 +319,8 @@ public class SpreadOutConnector implements OutConnector {
             if (cursor + fragmentDataSize > dataSize) {
                 fragmentDataSize = dataSize - cursor;
             }
-            final ByteString dataPart = ByteString.copyFrom(data, cursor,
-                    fragmentDataSize);
+            final ByteString dataPart =
+                    ByteString.copyFrom(data, cursor, fragmentDataSize);
 
             notificationBuilder.setData(dataPart);
             fragmentBuilder.setDataPart(currentFragment);
@@ -330,7 +338,7 @@ public class SpreadOutConnector implements OutConnector {
         // after we now know this number
         if (fragments.size() > 1) {
             for (final Fragment fragment : fragments) {
-                fragment.fragmentBuilder.setNumDataParts(fragments.size());
+                fragment.getFragmentBuilder().setNumDataParts(fragments.size());
             }
         }
 
@@ -345,11 +353,6 @@ public class SpreadOutConnector implements OutConnector {
         }
         LOG.fine("deactivating SpreadPort");
         this.spread.deactivate();
-    }
-
-    @Override
-    public String getType() {
-        return "SpreadPort";
     }
 
     @Override

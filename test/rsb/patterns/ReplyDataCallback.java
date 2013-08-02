@@ -32,8 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class ReplyDataCallback extends DataCallback<String, String> {
 
-    AtomicBoolean flag = new AtomicBoolean(false);
-    public AtomicInteger counter = new AtomicInteger();
+    private final AtomicBoolean flag = new AtomicBoolean(false);
+    private final AtomicInteger counter = new AtomicInteger();
 
     @Override
     public String invoke(final String request) throws Throwable {

@@ -39,10 +39,12 @@ import rsb.transport.DefaultTransports;
 
 /**
  * User-level test for RSBJava.
- * 
+ *
  * @author jwienke
  */
 public class UserLevelTest {
+
+    private static final int EVENTS_TO_SEND = 100;
 
     @Test(timeout = 15000)
     public void roundtrip() throws Throwable {
@@ -54,8 +56,8 @@ public class UserLevelTest {
 
         // set up a receiver for events
         final Set<String> receivedMessages = new HashSet<String>();
-        final Listener listener = new Listener(scope,
-                Utilities.createParticipantConfig());
+        final Listener listener =
+                new Listener(scope, Utilities.createParticipantConfig());
         listener.activate();
         listener.addHandler(new AbstractEventHandler() {
 
@@ -70,12 +72,12 @@ public class UserLevelTest {
 
         // send events
         final Set<String> sentMessages = new HashSet<String>();
-        final Informer<String> informer = new Informer<String>(scope,
-                Utilities.createParticipantConfig());
+        final Informer<String> informer =
+                new Informer<String>(scope, Utilities.createParticipantConfig());
         informer.activate();
-        for (int i = 0; i < 100; ++i) {
-            final String message = "<message val=\"Hello World!\" nr=\"" + i
-                    + "\"/>";
+        for (int i = 0; i < EVENTS_TO_SEND; ++i) {
+            final String message =
+                    "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
             informer.send(message);
             sentMessages.add(message);
         }

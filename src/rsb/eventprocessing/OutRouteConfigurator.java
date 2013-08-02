@@ -1,13 +1,12 @@
 package rsb.eventprocessing;
 
 import rsb.Event;
-import rsb.Participant;
 import rsb.RSBException;
 import rsb.transport.OutConnector;
 
 /**
  * Implementing classes provide outgoing communication routes for
- * {@link Participant}s.
+ * {@link rsb.Participant}s.
  *
  * @author jwienke
  */

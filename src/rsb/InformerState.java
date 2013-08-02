@@ -29,21 +29,35 @@ package rsb;
 
 import java.util.logging.Logger;
 
-public class InformerState<T> {
+/**
+ * Interface specification for state classes used to represent the state pattern
+ * in {@link Informer} instances.
+ *
+ * @author swrede
+ *
+ * @param <DataType>
+ *            the type of data to be sent by the informer
+ */
+public class InformerState<DataType> {
 
     private static final String NOT_ACTIVE_MESSAGE = "informer not activated";
 
-    private final static Logger LOG = Logger.getLogger(InformerState.class
+    private static final Logger LOG = Logger.getLogger(InformerState.class
             .getName());
 
-    protected Informer<T> ctx;
+    /**
+     * The informer being managed by this state class.
+     */
+    private final Informer<DataType> informer;
 
-    protected InformerState() {
-        // prevent instantiation without subclassing
-    }
-
-    protected InformerState(final Informer<T> ctx) {
-        this.ctx = ctx;
+    /**
+     * Constructor.
+     *
+     * @param informer
+     *            the informer being managed by this state class.
+     */
+    protected InformerState(final Informer<DataType> informer) {
+        this.informer = informer;
     }
 
     protected void activate() throws InitializeException {
@@ -62,10 +76,14 @@ public class InformerState<T> {
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
-    protected Event send(@SuppressWarnings("unused") final T data)
+    protected Event send(@SuppressWarnings("unused") final DataType data)
             throws RSBException {
         LOG.warning("invalid state exception during call to send");
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
+    }
+
+    public Informer<DataType> getInformer() {
+        return this.informer;
     }
 
 }

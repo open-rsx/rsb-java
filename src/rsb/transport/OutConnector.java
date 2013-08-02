@@ -38,6 +38,14 @@ import rsb.RSBException;
  */
 public interface OutConnector extends Connector {
 
+    /**
+     * Synchronously sends and event over the transport.
+     *
+     * @param event
+     *            the event to send
+     * @throws RSBException
+     *             error while sending
+     */
     void push(Event event) throws RSBException;
 
 }

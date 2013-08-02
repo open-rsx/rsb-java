@@ -38,7 +38,7 @@ import java.nio.charset.CodingErrorAction;
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
  * strings with different encodings.
- * 
+ *
  * @author swrede
  * @author jwienke
  */
@@ -57,7 +57,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
     /**
      * Creates a converter that uses the specified encoding for strings.
-     * 
+     *
      * @param encoding
      *            encoding name for the data
      * @param wireSchema
@@ -78,7 +78,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
     /**
      * Creates a converter that uses the specified charset for strings.
-     * 
+     *
      * @param charset
      *            encoding for the data
      * @param wireSchema
@@ -128,8 +128,8 @@ public class StringConverter implements Converter<ByteBuffer> {
 
             final String string = (String) data;
 
-            final ByteBuffer serialized = this.encoder.get().encode(
-                    CharBuffer.wrap(string));
+            final ByteBuffer serialized =
+                    this.encoder.get().encode(CharBuffer.wrap(string));
             return new WireContents<ByteBuffer>(serialized,
                     this.signature.getSchema());
 

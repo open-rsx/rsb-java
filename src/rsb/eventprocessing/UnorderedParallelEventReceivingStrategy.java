@@ -56,12 +56,19 @@ public class UnorderedParallelEventReceivingStrategy implements
     // TODO add support for single threaded, queue receive, pull style, lazy
     // evaluation
 
-    final static Logger LOG = Logger
+    private static final int TERMINATE_TIMEOUT_SECS = 1000;
+
+    private static final int QUEUE_SIZE = 1000;
+
+    private static final int KEEP_ALIVE_SECS = 60;
+
+    private static final Logger LOG = Logger
             .getLogger(UnorderedParallelEventReceivingStrategy.class.getName());
 
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());
-    private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks = new HashMap<Handler, Set<MatchAndDispatchTask>>();
+    private final Map<Handler, Set<MatchAndDispatchTask>> handlerTasks =
+            new HashMap<Handler, Set<MatchAndDispatchTask>>();
 
     private ThreadPoolExecutor executor;
 
@@ -103,8 +110,9 @@ public class UnorderedParallelEventReceivingStrategy implements
         synchronized (this.handlerTasks) {
             for (final Handler handler : this.handlerTasks.keySet()) {
                 count++;
-                final MatchAndDispatchTask task = new MatchAndDispatchTask(
-                        handler, this.filters, event, this.handlerTasks);
+                final MatchAndDispatchTask task =
+                        new MatchAndDispatchTask(handler, this.filters, event,
+                                this.handlerTasks);
                 try {
                     this.handlerTasks.get(handler).add(task);
                     this.executor.submit(task);
@@ -130,10 +138,17 @@ public class UnorderedParallelEventReceivingStrategy implements
                 throw new IllegalStateException("Not active");
             }
             this.executor.shutdown();
-            this.executor.awaitTermination(1000, TimeUnit.SECONDS);
+            this.executor.awaitTermination(TERMINATE_TIMEOUT_SECS,
+                    TimeUnit.SECONDS);
         }
     }
 
+    /**
+     * Returns the handlers registered in this strategy that will be notified of
+     * new events.
+     *
+     * @return list of handlers
+     */
     Set<Handler> getHandlers() {
         synchronized (this.handlerTasks) {
             return this.handlerTasks.keySet();
@@ -146,8 +161,10 @@ public class UnorderedParallelEventReceivingStrategy implements
             if (isActive()) {
                 throw new IllegalStateException("Already active");
             }
-            this.executor = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS,
-                    new ArrayBlockingQueue<Runnable>(1000));
+            this.executor =
+                    new ThreadPoolExecutor(1, 1, KEEP_ALIVE_SECS,
+                            TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(
+                                    QUEUE_SIZE));
             LOG.fine("Creating ThreadPool with size: 1 (1)");
             this.executor.prestartAllCoreThreads();
         }
