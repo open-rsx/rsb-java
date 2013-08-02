@@ -1,411 +1,433 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<!-- General project settings. -->
-	<groupId>rsb</groupId>
-	<artifactId>rsb</artifactId>
-	<version>0.9-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <!-- General project settings. -->
+    <groupId>rsb</groupId>
+    <artifactId>rsb</artifactId>
+    <version>0.9-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<name>RSB</name>
-	<url>https://code.cor-lab.org/projects/rsb/</url>
+    <name>RSB</name>
+    <url>https://code.cor-lab.org/projects/rsb/</url>
 
-	<description>The Robotics Service Bus (RSB) is a message-oriented, event-driven middleware aiming at scalable integration of robotics systems in diverse environments. Being fundamentally a bus architecture, RSB structures heterogeneous systems of service providers and consumers using broadcast communication over a hierarchy of logically unified channels instead of a large number of point-to-point connections. Nevertheless RSB comes with a collection of communication patterns and other tools for structuring communication, but does not require a particular functional or decomposition style.</description>
+    <description>The Robotics Service Bus (RSB) is a message-oriented, event-driven middleware aiming at scalable integration of robotics systems in diverse environments. Being fundamentally a bus architecture, RSB structures heterogeneous systems of service providers and consumers using broadcast communication over a hierarchy of logically unified channels instead of a large number of point-to-point connections. Nevertheless RSB comes with a collection of communication patterns and other tools for structuring communication, but does not require a particular functional or decomposition style.</description>
 
-	<organization>
-		<name>CoR-Lab</name>
-		<url>http://www.cor-lab.org/</url>
-	</organization>
+    <organization>
+        <name>CoR-Lab</name>
+        <url>http://www.cor-lab.org/</url>
+    </organization>
 
-	<scm>
-		<developerConnection>scm:git:https://code.cor-lab.org/git/rsb.git.java</developerConnection>
-		<url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
-	</scm>
+    <scm>
+        <developerConnection>scm:git:https://code.cor-lab.org/git/rsb.git.java</developerConnection>
+        <url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
+    </scm>
 
-	<!-- Properties that can be overridden using e.g. 'mvn -Dspread.daemon=/some/path 
-		package'. -->
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<pbuf.protopath>${env.prefix}/share/rsbprotocol</pbuf.protopath>
-		<pbuf.protoc>/usr/bin/protoc</pbuf.protoc>
-		<pbuf.version>2.4.1</pbuf.version>
-		<pbuf.outpath>target/generated-protocol</pbuf.outpath>
-		<spread.daemon>/usr/sbin/spread</spread.daemon>
-		<target.java.version>1.6</target.java.version>
-	</properties>
+    <!-- Properties that can be overridden using e.g. 'mvn -Dspread.daemon=/some/path 
+        package'. -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <pbuf.protopath>${env.prefix}/share/rsbprotocol</pbuf.protopath>
+        <pbuf.protoc>/usr/bin/protoc</pbuf.protoc>
+        <pbuf.version>2.4.1</pbuf.version>
+        <pbuf.outpath>target/generated-protocol</pbuf.outpath>
+        <spread.daemon>/usr/sbin/spread</spread.daemon>
+        <target.java.version>1.6</target.java.version>
+    </properties>
 
-	<build>
-		<!-- Set up the source and test source folders. -->
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<!-- Use the source dir also for resources. -->
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
+    <build>
+        <!-- Set up the source and test source folders. -->
+        <sourceDirectory>src</sourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
+        <!-- Use the source dir also for resources. -->
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
 
-		<plugins>
-			<!-- Check the availability of different external dependencies. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.1.1</version>
-				<executions>
-					<execution>
-						<id>enforce-external-dependencies</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<!-- This makes it fail when the first check fails. -->
-							<failFast>true</failFast>
-							<rules>
-								<requireJavaVersion>
-									<!-- This defines the minimum version. -->
-									<version>${target.java.version}</version>
-								</requireJavaVersion>
-								<requireFilesExist>
-									<message>Could not find 'gitversion' and 'gitbranch' files,
-										please run mvnprep.sh before building with Maven.</message>
-									<files>
-										<file>gitversion</file>
-										<file>gitbranch</file>
-									</files>
-								</requireFilesExist>
-								<requireFilesExist>
-									<message>Google Protocol Buffers compiler not found at
-										'${pbuf.protoc}'. Please set pbuf.protoc.</message>
-									<files>
-										<file>${pbuf.protoc}</file>
-									</files>
-								</requireFilesExist>
-								<requireFilesExist>
-									<message>RSB protocol property pbuf.protopath does not point to
-										a valid installation of RSBProtocol at '${pbuf.protopath}'</message>
-									<files>
-										<file>${pbuf.protopath}/rsb/protocol/Notification.proto</file>
-									</files>
-								</requireFilesExist>
-								<requireFilesExist>
-									<message>Spread daemon not found at '${spread.daemon}'. Please
-										set spread.daemon.</message>
-									<files>
-										<file>${spread.daemon}</file>
-									</files>
-								</requireFilesExist>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <!-- Check the availability of different external dependencies. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-external-dependencies</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <!-- This makes it fail when the first check 
+                                fails. -->
+                            <failFast>true</failFast>
+                            <rules>
+                                <requireJavaVersion>
+                                    <!-- This defines the minimum version. -->
+                                    <version>${target.java.version}</version>
+                                </requireJavaVersion>
+                                <requireFilesExist>
+                                    <message>Could not find 'gitversion'
+                                        and 'gitbranch' files,
+                                        please run
+                                        mvnprep.sh before building with
+                                        Maven.</message>
+                                    <files>
+                                        <file>gitversion</file>
+                                        <file>gitbranch</file>
+                                    </files>
+                                </requireFilesExist>
+                                <requireFilesExist>
+                                    <message>Google Protocol Buffers
+                                        compiler not found at
+                                        '${pbuf.protoc}'. Please set
+                                        pbuf.protoc.</message>
+                                    <files>
+                                        <file>${pbuf.protoc}</file>
+                                    </files>
+                                </requireFilesExist>
+                                <requireFilesExist>
+                                    <message>RSB protocol property
+                                        pbuf.protopath does not point to
+                                        a valid installation of
+                                        RSBProtocol at
+                                        '${pbuf.protopath}'</message>
+                                    <files>
+                                        <file>${pbuf.protopath}/rsb/protocol/Notification.proto</file>
+                                    </files>
+                                </requireFilesExist>
+                                <requireFilesExist>
+                                    <message>Spread daemon not found at
+                                        '${spread.daemon}'. Please
+                                        set
+                                        spread.daemon.</message>
+                                    <files>
+                                        <file>${spread.daemon}</file>
+                                    </files>
+                                </requireFilesExist>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<!-- Compiler settings -->
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>${target.java.version}</source>
-					<target>${target.java.version}</target>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-				</configuration>
-			</plugin>
+            <!-- Compiler settings -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${target.java.version}</source>
+                    <target>${target.java.version}</target>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
 
-			<!-- Load the last git commit from gitversion. -->
-			<plugin>
-				<groupId>org.codehaus.gmaven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<properties>
-								<git.version.file>gitversion</git.version.file>
-							</properties>
-							<source>
-								def file = new File(project.properties["git.version.file"])
-								commit = file.getText().replaceFirst(/^.*-/,"")
-								project.properties["git.commit"] = commit
-							</source>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+            <!-- Load the last git commit from gitversion. -->
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <git.version.file>gitversion</git.version.file>
+                            </properties>
+                            <source>
+                                def file = new
+                                File(project.properties["git.version.file"])
+                                commit =
+                                file.getText().replaceFirst(/^.*-/,"")
+                                project.properties["git.commit"] =
+                                commit
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<!-- Settings for the generated JAR. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
-						</manifest>
-						<manifestEntries>
-							<Last-Commit>${git.commit}</Last-Commit>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
+            <!-- Settings for the generated JAR. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <!-- <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> -->
+                        </manifest>
+                        <manifestEntries>
+                            <Last-Commit>${git.commit}</Last-Commit>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
 
-			<!-- Different steps realized using ant. -->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<!-- Generate protobuf classes. -->
-					<execution>
-						<id>generate-protocol</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<tasks>
-								<mkdir dir="${pbuf.outpath}" />
-								<apply failonerror="true" executable="${pbuf.protoc}">
-									<arg value="--java_out=${pbuf.outpath}" />
-									<arg value="--proto_path=${pbuf.protopath}" />
-									<fileset dir="${pbuf.protopath}" includes="**/*.proto" />
-								</apply>
-								<apply failonerror="true" executable="${pbuf.protoc}">
-									<arg value="--java_out=${pbuf.outpath}" />
-									<arg value="--proto_path=${basedir}/examples/tutorial/protocol" />
-									<fileset dir="examples/tutorial/protocol" includes="*.proto" />
-								</apply>
-							</tasks>
+            <!-- Different steps realized using ant. -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <!-- Generate protobuf classes. -->
+                    <execution>
+                        <id>generate-protocol</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${pbuf.outpath}" />
+                                <apply failonerror="true"
+                                    executable="${pbuf.protoc}">
+                                    <arg value="--java_out=${pbuf.outpath}" />
+                                    <arg
+                                        value="--proto_path=${pbuf.protopath}" />
+                                    <fileset dir="${pbuf.protopath}"
+                                        includes="**/*.proto" />
+                                </apply>
+                                <apply failonerror="true"
+                                    executable="${pbuf.protoc}">
+                                    <arg value="--java_out=${pbuf.outpath}" />
+                                    <arg
+                                        value="--proto_path=${basedir}/examples/tutorial/protocol" />
+                                    <fileset
+                                        dir="examples/tutorial/protocol"
+                                        includes="*.proto" />
+                                </apply>
+                            </tasks>
 
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
 
-					<!-- Start spread before running tests. -->
-					<execution>
-						<id>start-spread</id>
-						<phase>generate-test-resources</phase>
-						<configuration>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath" />
-								<if>
-									<not>
-										<equals arg1="${skipTests}" arg2="true" />
-									</not>
-									<then>
-										<forget>
-											<exec executable="${spread.daemon}">
-												<arg line="-n localhost -c ${basedir}/etc/spread.conf" />
-											</exec>
-										</forget>
+                    <!-- Start spread before running tests. -->
+                    <execution>
+                        <id>start-spread</id>
+                        <phase>generate-test-resources</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef
+                                    resource="net/sf/antcontrib/antcontrib.properties"
+                                    classpathref="maven.plugin.classpath" />
+                                <if>
+                                    <not>
+                                        <equals arg1="${skipTests}"
+                                            arg2="true" />
+                                    </not>
+                                    <then>
+                                        <forget>
+                                            <exec executable="${spread.daemon}">
+                                                <arg
+                                                    line="-n localhost -c ${basedir}/etc/spread.conf" />
+                                            </exec>
+                                        </forget>
 
-										<sleep seconds="10" />
-									</then>
-								</if>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<!-- All this is needed to get ant-contrib in the ant task above. -->
-					<dependency>
-						<groupId>ant-contrib</groupId>
-						<artifactId>ant-contrib</artifactId>
-						<version>1.0b3</version>
-						<exclusions>
-							<exclusion>
-								<groupId>ant</groupId>
-								<artifactId>ant</artifactId>
-							</exclusion>
-						</exclusions>
-					</dependency>
-					<dependency>
-						<groupId>ant</groupId>
-						<artifactId>ant-nodeps</artifactId>
-						<version>1.6.5</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+                                        <sleep seconds="10" />
+                                    </then>
+                                </if>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <!-- All this is needed to get ant-contrib in the ant 
+                        task above. -->
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>1.6.5</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
-			<!-- Add the spread and protobuf-generated sources to the build. -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>spread-4.0.0</source>
-								<source>${pbuf.outpath}</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+            <!-- Add the spread and protobuf-generated sources to the build. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>spread-4.0.0</source>
+                                <source>${pbuf.outpath}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<!-- Settings for generating cobertura test coverage reports. -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5.2</version>
-				<configuration>
-					<instrumentation>
-						<excludes>
-							<exclude>rsb/protocol/**/*.class</exclude>
-							<exclude>spread/**/*.class</exclude>
-						</excludes>
-					</instrumentation>
-				</configuration>
-				<executions>
-					<execution>
-						<id>clean</id>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>instrument</id>
-						<phase>site</phase>
-						<goals>
-							<goal>cobertura</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.2</version>
-			</plugin>
-		</plugins>
-	</build>
+            <!-- Settings for generating cobertura test coverage reports. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>rsb/protocol/**/*.class</exclude>
+                            <exclude>spread/**/*.class</exclude>
+                        </excludes>
+                    </instrumentation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>clean</id>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>instrument</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>cobertura</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.2</version>
+            </plugin>
+        </plugins>
+    </build>
 
-	<reporting>
-		<plugins>
-			<!-- Some more cobertura settings, also to get the generated report included 
-				in the generated maven site. -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5.2</version>
-				<configuration>
-					<formats>
-						<format>html</format>
-						<format>xml</format>
-					</formats>
-				</configuration>
-			</plugin>
+    <reporting>
+        <plugins>
+            <!-- Some more cobertura settings, also to get the generated 
+                report included in the generated maven site. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                </configuration>
+            </plugin>
 
-			<!-- Generate cross-referenced HTML for the sources. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
+            <!-- Generate cross-referenced HTML for the sources. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
 
-			<!-- Generate Javadoc -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<show>public</show>
-					<excludePackageNames>spread:tutorial.protobuf</excludePackageNames>
-				</configuration>
-			</plugin>
+            <!-- Generate Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <show>public</show>
+                    <excludePackageNames>spread:tutorial.protobuf</excludePackageNames>
+                </configuration>
+            </plugin>
 
-			<!-- Also generate a PMD report. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.7.1</version>
-				<configuration>
-					<targetJdk>${target.java.version}</targetJdk>
-					<rulesets>
-						<ruleset>/rulesets/basic.xml</ruleset>
-						<ruleset>/rulesets/braces.xml</ruleset>
-						<ruleset>/rulesets/clone.xml</ruleset>
-						<ruleset>/rulesets/codesize.xml</ruleset>
-						<!-- <ruleset>/rulesets/controversial.xml</ruleset> -->
-						<ruleset>/rulesets/coupling.xml</ruleset>
-						<ruleset>/rulesets/design.xml</ruleset>
-						<ruleset>/rulesets/finalizers.xml</ruleset>
-						<ruleset>/rulesets/imports.xml</ruleset>
-						<ruleset>/rulesets/junit.xml</ruleset>
-						<ruleset>/rulesets/logging-java.xml</ruleset>
-						<ruleset>/rulesets/naming.xml</ruleset>
-						<ruleset>/rulesets/optimizations.xml</ruleset>
-						<ruleset>/rulesets/strings.xml</ruleset>
-						<ruleset>/rulesets/typeresolution.xml</ruleset>
-						<ruleset>/rulesets/unusedcode.xml</ruleset>
-					</rulesets>
-					<excludes>
-						<exclude>**/protocol/*.java</exclude>
-					</excludes>
-					<excludeRoots>
-						<excludeRoot>target/generated-protocol</excludeRoot>
-						<excludeRoot>spread-4.0.0</excludeRoot>
-					</excludeRoots>
-				</configuration>
-			</plugin>
+            <!-- Also generate a PMD report. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <targetJdk>${target.java.version}</targetJdk>
+                    <rulesets>
+                        <ruleset>${project.basedir}/codecheck/pmd-rules.xml</ruleset>
+                    </rulesets>
+                    <excludes>
+                        <exclude>**/protocol/*.java</exclude>
+                    </excludes>
+                    <excludeRoots>
+                        <excludeRoot>target/generated-protocol</excludeRoot>
+                        <excludeRoot>spread-4.0.0</excludeRoot>
+                    </excludeRoots>
+                </configuration>
+            </plugin>
 
-			<!-- Just so maven doesn't complain about a missing version. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.6</version>
-			</plugin>
-		</plugins>
-	</reporting>
+            <!-- Checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <configLocation>codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=codecheck</propertyExpansion>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                </configuration>
+            </plugin>
 
-	<!-- All direct dependencies need to be specified here. -->
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
-		</dependency>
+            <!-- Just so maven doesn't complain about a missing version. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>${pbuf.version}</version>
-		</dependency>
-	</dependencies>
+    <!-- All direct dependencies need to be specified here. -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
 
-	<!-- Since we're not descending from the "ai-common" project, we have to 
-		specify our default repository ourself -->
-	<distributionManagement>
-		<!-- use the following if you're not using a snapshot version. -->
-		<repository>
-			<id>citec</id>
-			<name>CIT-EC Repository</name>
-			<url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-releases/</url>
-		</repository>
-		<!-- use the following if you ARE using a snapshot version. -->
-		<snapshotRepository>
-			<id>citec</id>
-			<name>CIT-EC Repository</name>
-			<url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${pbuf.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Since we're not descending from the "ai-common" project, we have 
+        to specify our default repository ourself -->
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>citec</id>
+            <name>CIT-EC Repository</name>
+            <url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-releases/</url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>citec</id>
+            <name>CIT-EC Repository</name>
+            <url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
