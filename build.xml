@@ -22,7 +22,7 @@
     <property name="license.dir" location="${prefix.dir}/share/doc/rsbjava" />
     <property name="install.dir" location="${prefix.dir}/share/java" />
     <property name="dir.report.unittests.xml" location="testreports" />
-	<property name="dir.config.codecheck" location="codecheck" />
+    <property name="dir.config.codecheck" location="codecheck" />
     <property name="dir.report.codecheck" location="codecheckreports" />
     <property name="dir.doc" location="doc" />
     <property name="cobertura.dir" value="${lib.dir}" />
@@ -377,12 +377,10 @@
             <formatter type="xml" toFile="${dir.report.codecheck}/checkstyle_errors.xml" />
             <property key="config_loc" value="${dir.config.codecheck}" />
         </checkstyle>
-        <xslt in="${dir.report.codecheck}/checkstyle_errors.xml"
-        	out="${dir.report.codecheck}/checkstyle_report.html"
-        	style="${dir.config.codecheck}/checkstyle-noframes.xsl" />
+        <xslt in="${dir.report.codecheck}/checkstyle_errors.xml" out="${dir.report.codecheck}/checkstyle_report.html" style="${dir.config.codecheck}/checkstyle-noframes.xsl" />
     </target>
-	
-	<target name="codecheck" depends="pmd,checkstyle" />
+
+    <target name="codecheck" depends="pmd,checkstyle" />
 
     <target name="clean" description="clean up">
         <!-- Delete the ${build} and ${dist} directory trees -->
@@ -409,6 +407,8 @@
 
     <target name="doc">
         <javadoc excludepackagenames="org.jaxen.xom" destdir="${dir.doc}" author="true" version="true" use="true" windowtitle="rsb-java">
+
+            <classpath refid="test.classpath" />
 
             <fileset dir="." defaultexcludes="yes">
                 <exclude name="**/jaxen/**/*" />

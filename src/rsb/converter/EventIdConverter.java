@@ -35,7 +35,7 @@ import rsb.protocol.EventIdType.EventId;
 import com.google.protobuf.ByteString;
 
 /**
- * A converter for {@link EventId} instances.
+ * A converter for {@link rsb.EventId} instances.
  *
  * @author jwienke
  */

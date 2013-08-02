@@ -275,9 +275,9 @@ public abstract class BusBase implements Bus {
      * notification received from a connection.
      *
      * Implementations can use the utility methods
-     * {@link #handleLocally(Notification)} and
-     * {@link #handleGlobally(Notification)} to implement their processing
-     * logic.
+     * {@link #handleLocally(rsb.protocol.NotificationType.Notification)} and
+     * {@link #handleGlobally(rsb.protocol.NotificationType.Notification)} to
+     * implement their processing logic.
      *
      * @param notification
      *            the received connection
@@ -294,14 +294,15 @@ public abstract class BusBase implements Bus {
      * notification received from a connection.
      *
      * Implementations can use the utility methods
-     * {@link #handleLocally(Notification)} and
-     * {@link #handleGlobally(Notification)} or
-     * {@link #handleGlobally(Notification, BusConnection)} to implement their
-     * processing logic.
+     * {@link #handleLocally(rsb.protocol.NotificationType.Notification)} and
+     * {@link #handleGlobally(rsb.protocol.NotificationType.Notification)} or
+     * {@link #handleGlobally(rsb.protocol.NotificationType.Notification, BusConnection)}
+     * to implement their processing logic.
      *
      * This method assumes that the notification was not received from a
      * {@link BusConnection} and passes <code>null</code> to
-     * {@link #handleIncoming(Notification, BusConnection)}.
+     * {@link #handleIncoming(rsb.protocol.NotificationType.Notification, BusConnection)}
+     * .
      *
      * @param notification
      *            the received connection
@@ -394,7 +395,7 @@ public abstract class BusBase implements Bus {
 
     /**
      * Registers a connection for the dispatching logic in
-     * {@link #handleGlobally(Notification)}.
+     * {@link #handleGlobally(rsb.protocol.NotificationType.Notification)}.
      *
      * @param con
      *            the connection to register
@@ -421,7 +422,7 @@ public abstract class BusBase implements Bus {
      *
      * @param con
      *            the connection to remove
-     * @return the {@link ReceiveThread} responsible for this connection or
+     * @return the ReceiveThread responsible for this connection or
      *         <code>null</code> if this connection was not part of the
      *         dispatching logic
      */
