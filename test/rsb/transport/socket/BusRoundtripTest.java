@@ -40,7 +40,7 @@ public class BusRoundtripTest {
         public Notification waitForResult() throws InterruptedException {
             synchronized (this) {
 
-                final long waitTime = 10000;
+                final long waitTime = 25000;
                 final long waitStart = System.currentTimeMillis();
                 while (this.received == null
                         && System.currentTimeMillis() < waitStart + waitTime) {
