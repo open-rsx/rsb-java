@@ -8,6 +8,5 @@
 /bin
 /gitversion
 /gitbranch
-/pmd.xml
-/pmd_report.html
+/codecheckreports
 

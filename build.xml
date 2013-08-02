@@ -22,6 +22,8 @@
     <property name="license.dir" location="${prefix.dir}/share/doc/rsbjava" />
     <property name="install.dir" location="${prefix.dir}/share/java" />
     <property name="dir.report.unittests.xml" location="testreports" />
+	<property name="dir.config.codecheck" location="codecheck" />
+    <property name="dir.report.codecheck" location="codecheckreports" />
     <property name="dir.doc" location="doc" />
     <property name="cobertura.dir" value="${lib.dir}" />
     <property name="cobertura.out.dir" value="coverage" />
@@ -177,6 +179,7 @@
         <mkdir dir="${instrumented.dir}" />
         <mkdir dir="${cobertura.out.dir}" />
         <mkdir dir="${dir.report.unittests.xml}" />
+        <mkdir dir="${dir.report.codecheck}" />
         <mkdir dir="${dir.doc}" />
         <mkdir dir="generated-protocol" />
         <echo message="Using pbuf: ${pbuf.lib}" />
@@ -347,11 +350,11 @@
 
     </target>
 
-    <target name="pmd">
-        <pmd shortFilenames="true" rulesetfiles="pmd-rules.xml">
+    <target name="pmd" depends="init">
+        <pmd shortFilenames="true" rulesetfiles="${dir.config.codecheck}/pmd-rules.xml">
             <sourceLanguage name="java" version="${rsb.java.compatibility}" />
-            <formatter type="xml" toFile="pmd.xml" />
-            <formatter type="html" toFile="pmd_report.html" toConsole="true" />
+            <formatter type="xml" toFile="${dir.report.codecheck}/pmd.xml" />
+            <formatter type="html" toFile="${dir.report.codecheck}/pmd_report.html" toConsole="true" />
             <formatter type="text" toConsole="true" />
             <fileset dir=".">
                 <include name="src/**/*.java" />
@@ -367,16 +370,20 @@
         <pathelement location="${build.dir}/classes" />
     </path>
 
-    <target name="checkstyle" depends="compile,test-compile">
-        <checkstyle config="checkstyle.xml" classpathref="checkstyle.classpath">
+    <target name="checkstyle" depends="compile">
+        <checkstyle config="${dir.config.codecheck}/checkstyle.xml" classpathref="checkstyle.classpath">
             <fileset dir="src" includes="**/*.java" />
             <fileset dir="test" includes="**/*.java" />
             <formatter type="plain" />
-            <formatter type="xml" toFile="checkstyle_errors.xml" />
-            <property key="config_loc" />
+            <formatter type="xml" toFile="${dir.report.codecheck}/checkstyle_errors.xml" />
+            <property key="config_loc" value="${dir.config.codecheck}" />
         </checkstyle>
-        <style in="checkstyle_errors.xml" out="checkstyle_report.html" style="checkstyle-noframes.xsl" />
+        <xslt in="${dir.report.codecheck}/checkstyle_errors.xml"
+        	out="${dir.report.codecheck}/checkstyle_report.html"
+        	style="${dir.config.codecheck}/checkstyle-noframes.xsl" />
     </target>
+	
+	<target name="codecheck" depends="pmd,checkstyle" />
 
     <target name="clean" description="clean up">
         <!-- Delete the ${build} and ${dist} directory trees -->
@@ -388,6 +395,7 @@
         <delete dir="${cobertura.out.dir}" />
         <delete file="cobertura.ser" />
         <delete dir="${dir.report.unittests.xml}" />
+        <delete dir="${dir.report.codecheck}" />
         <delete dir="${dir.doc}" />
     </target>
 
