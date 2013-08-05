@@ -51,7 +51,9 @@ public interface BusConnection extends Activatable {
 
     /**
      * This method starts and orderly shutdown of the connection. It needs to be
-     * called before {@link #deactivate()} for this procedure to succeed.
+     * called before {@link #deactivate()} for this procedure to succeed. Should
+     * be callable multiple times without raising an error. Calls after the
+     * first are usually ignored.
      *
      * @throws IOException
      *             error indicating the shutdown due to socket writing problems

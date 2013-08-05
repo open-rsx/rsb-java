@@ -121,9 +121,7 @@ public abstract class BusBase implements Bus {
                         this.connection);
 
                 synchronized (this.connection) {
-                    if (!this.connection.isActiveShutdown()) {
-                        safeShutdown();
-                    }
+                    safeShutdown();
                     cleanUpConnection();
                 }
 
@@ -241,12 +239,8 @@ public abstract class BusBase implements Bus {
                         // we should initiate a shutdown in case the receiving
                         // thread on that connection did not already do so
                         // because the remote peer initiated the shut down
-                        // before us.
-                        synchronized (connection) {
-                            if (!connection.isActiveShutdown()) {
-                                connection.shutdown();
-                            }
-                        }
+                        // before us. (condition handled by shutdown method)
+                        connection.shutdown();
                     } catch (final IOException e) {
                         LOG.log(Level.WARNING,
                                 "Unable to indicate shutdown on connection "

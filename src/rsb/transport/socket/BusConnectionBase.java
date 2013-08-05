@@ -117,9 +117,10 @@ public abstract class BusConnectionBase implements BusConnection {
     @Override
     public void shutdown() throws IOException {
         synchronized (this) {
-            assert !this.activeShutdown;
-            this.socket.shutdownOutput();
-            this.activeShutdown = true;
+            if (!this.activeShutdown) {
+                this.socket.shutdownOutput();
+                this.activeShutdown = true;
+            }
         }
     }
 
