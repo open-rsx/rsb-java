@@ -27,7 +27,7 @@ public class SocketFactory implements TransportFactory {
     private static final int DEFAULT_PORT = 55555;
     private static final String HOST_KEY = "transport.socket.host";
     private static final String DEFAULT_HOST = "localhost";
-    private static final String NODELAY_KEY = "transport.socket.nodelay";
+    private static final String NODELAY_KEY = "transport.socket.tcpnodelay";
     private static final boolean DEFAULT_NODELAY = true;
     private static final String SERVER_MODE_KEY = "transport.socket.server";
     private static final String DEFAULT_SERVER_MODE = SERVER_MODE_AUTO;
