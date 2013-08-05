@@ -64,6 +64,8 @@ public class ConfigLoader {
      */
     public Properties load(final Properties results) {
 
+        LOG.log(Level.INFO, "Loading properties into {0}", results);
+
         // parse rsb.conf files in standard locations
         this.loadFiles(results);
 
@@ -75,6 +77,10 @@ public class ConfigLoader {
     }
 
     private void loadFiles(final Properties results) {
+
+        LOG.log(Level.INFO,
+                "Loading properties for default config files into {0}", results);
+
         // Read configuration properties in the following order:
         // 1. from /etc/rsb.conf, if the file exists
         // 2. from ${HOME}/.config/rsb.conf, if the file exists
@@ -102,8 +108,12 @@ public class ConfigLoader {
      */
     public Properties loadFileIfAvailable(final File file,
             final Properties results) {
+        LOG.log(Level.INFO,
+                "Loading properties from {0} into {1} if available.",
+                new Object[] { file, results });
         try {
             if (file.exists()) {
+                LOG.log(Level.FINE, "{0} does exist, loading.", file);
                 this.loadFile(file, results);
             }
         } catch (final IOException ex) {
@@ -134,6 +144,9 @@ public class ConfigLoader {
     public Properties loadFile(final File file, final Properties results)
             throws IOException {
 
+        LOG.log(Level.INFO, "Loading properties from file {0} into {1}",
+                new Object[] { file, results });
+
         if (!file.exists()) {
             throw new IllegalArgumentException("The file '" + file
                     + "' does not exist.");
@@ -162,13 +175,16 @@ public class ConfigLoader {
                 index = line.indexOf('=');
                 if (index == -1) {
                     LOG.log(Level.WARNING,
-                            "Illegal line in configuration file: `{}`", line);
+                            "Illegal line in configuration file: `{0}`", line);
                     continue;
                 }
                 final String key =
                         section + KEY_SEPARATOR
                                 + line.substring(0, index).trim();
                 final String value = line.substring(index + 1).trim();
+                LOG.log(Level.FINER,
+                        "Parsed key {0} to be {1}. Setting in result object.",
+                        new Object[] { key, value });
                 results.setProperty(key, value);
             }
 
@@ -190,6 +206,8 @@ public class ConfigLoader {
      * @return the passed in instance
      */
     public Properties loadEnv(final Properties results) {
+        LOG.log(Level.INFO, "Loading properties from environment into {0}",
+                results);
         this.parseMap(System.getenv(), results);
         return results;
     }
@@ -199,10 +217,13 @@ public class ConfigLoader {
         for (final Entry<String, String> entry : env.entrySet()) {
             final String key = entry.getKey();
             if (key.startsWith(this.environmentPrefix)) {
-                results.setProperty(
-                        key.substring(this.prefix.length())
+                final String propsKey =
+                        key.substring(this.environmentPrefix.length())
                                 .replace(ENV_SEPARATOR, KEY_SEPARATOR)
-                                .toLowerCase(Locale.US), entry.getValue());
+                                .toLowerCase(Locale.US);
+                LOG.log(Level.FINER, "Parsed from map: {0} = {1}",
+                        new Object[] { propsKey, entry.getValue() });
+                results.setProperty(propsKey, entry.getValue());
             }
         }
     }
