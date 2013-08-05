@@ -33,6 +33,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A {@link ConverterRepository} implementation used as the default in RSB. The
+ * accessor methods return {@link ConverterSelectionStrategy} instances of type
+ * {@link UnambiguousConverterMap}.
+ *
+ * @param <WireType>
+ *            wire type of contained converters
+ */
 public class DefaultConverterRepository<WireType> implements
         ConverterRepository<WireType> {
 
@@ -76,7 +84,8 @@ public class DefaultConverterRepository<WireType> implements
     }
 
     @Override
-    public ConverterSelectionStrategy<WireType> getConvertersForDeserialization() {
+    public ConverterSelectionStrategy<WireType>
+            getConvertersForDeserialization() {
         final UnambiguousConverterMap<WireType> inStrategy =
                 new UnambiguousConverterMap<WireType>();
         // Query Map for wire schemas
@@ -92,7 +101,7 @@ public class DefaultConverterRepository<WireType> implements
     public void addConverter(final Converter<WireType> converter) {
         if (this.converterMap.containsKey(converter.getSignature())) {
             LOG.log(Level.WARNING,
-                    "Converter with signature {} already registered in "
+                    "Converter with signature {0} already registered in "
                             + "DefaultConverterRepository. "
                             + "Existing entry will be overwritten!",
                     converter.getSignature());
@@ -105,7 +114,8 @@ public class DefaultConverterRepository<WireType> implements
      *
      * @return repository instance
      */
-    public static ConverterRepository<ByteBuffer> getDefaultConverterRepository() {
+    public static ConverterRepository<ByteBuffer>
+            getDefaultConverterRepository() {
         return defaultInstance;
     }
 

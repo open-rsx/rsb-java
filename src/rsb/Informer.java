@@ -87,7 +87,7 @@ public class Informer<DataType extends Object> extends Participant {
             this.getInformer().state = new InformerStateActive(
                     this.getInformer());
             LOG.log(Level.FINE,
-                    "Informer activated: [Scope={}, Type={}]",
+                    "Informer activated: [Scope={0}, Type={1}]",
                     new Object[] { Informer.this.getScope(),
                             Informer.this.type.getName() });
             try {
@@ -122,7 +122,7 @@ public class Informer<DataType extends Object> extends Participant {
             this.getInformer().state = new InformerStateInactive(
                     this.getInformer());
             LOG.log(Level.FINE,
-                    "Informer deactivated: [Scope={}, Type={}]",
+                    "Informer deactivated: [Scope={0}, Type={1}]",
                     new Object[] { Informer.this.getScope(),
                             Informer.this.type.getName() });
         }

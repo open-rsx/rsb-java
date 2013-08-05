@@ -261,7 +261,7 @@ public class SpreadWrapper implements Activatable {
                 final SpreadGroup grp = groupIt.next();
                 try {
                     grp.leave();
-                    LOG.log(Level.FINE, "SpreadGroup {} has been left.", grp);
+                    LOG.log(Level.FINE, "SpreadGroup {0} has been left.", grp);
                 } catch (final SpreadException e) {
                     // ignored
                     LOG.info("Caught a SpreadException while leaving group '"

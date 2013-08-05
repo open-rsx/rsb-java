@@ -95,8 +95,8 @@ class LocalMethod extends Method implements Handler {
             reply = this.callback.internalInvoke(request);
         } catch (final Throwable exception) {
             LOG.log(Level.WARNING,
-                    "Exception during method invocation in participant: {}. "
-                            + "Exception message: {}", new Object[] {
+                    "Exception during method invocation in participant: {0}. "
+                            + "Exception message: {1}", new Object[] {
                             this.getRequestScope(), exception });
             final StringWriter exceptionWriter = new StringWriter();
             final PrintWriter exceptionPrinter =
@@ -121,8 +121,8 @@ class LocalMethod extends Method implements Handler {
         } catch (final RSBException exception) {
             // TODO call local error handler
             LOG.log(Level.WARNING,
-                    "Exception while sending reply in server: {}."
-                            + " Exception message: {}", new Object[] {
+                    "Exception while sending reply in server: {0}."
+                            + " Exception message: {1}", new Object[] {
                             this.getRequestScope(), exception });
         }
     }
