@@ -70,7 +70,8 @@ public abstract class BusBase implements Bus {
     /**
      * A thread that continuously reads from a {@link BusConnection} and passes
      * the received {@link Notification}s to
-     * {@link BusBase#handleIncoming(Notification)}.
+     * {@link BusBase#handleIncoming(rsb.protocol.NotificationType.Notification)}
+     * .
      *
      * @author jwienke
      */
