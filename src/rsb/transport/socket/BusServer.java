@@ -94,15 +94,28 @@ public class BusServer extends BusBase {
                     final BusServerConnection connection =
                             new BusServerConnection(socket, getSocketOptions()
                                     .isTcpNoDelay());
-                    connection.activate();
-                    connection.handshake();
+                    // we need to lock this whole procedure to ensure that no
+                    // new messages are sent to unfinished new connection or
+                    // missed in the dispatching logic for clients of the server
+                    synchronized (BusServer.this) {
+                        // add BusConnection instance to list of active
+                        // connections. This must be done BEFORE performing the
+                        // handshake. Otherwise, a BusClient.activate call might
+                        // return before this connection is really installed in
+                        // our own dispatching logic.
+                        final ReceiveThread thread = addConnection(connection);
+                        // now we are safe to perform the handshake as
+                        // everything else is set up
+                        connection.activate();
+                        connection.handshake();
+                        // We need to wait with starting the receive thread
+                        // until the connection is fully functional
+                        thread.start();
+                    }
                     LOG.log(Level.FINER,
                             "Activated a new client connection {0} "
                                     + "for socket {1}", new Object[] {
                                     connection, socket });
-                    // add BusConnection instance to list of active
-                    // connections
-                    addConnection(connection);
 
                 } catch (final IOException e) {
                     if (this.shutdown) {

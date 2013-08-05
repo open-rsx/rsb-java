@@ -75,7 +75,7 @@ public class BusClient extends BusBase {
             this.connection.activate();
             this.connection.handshake();
 
-            addConnection(this.connection);
+            addConnection(this.connection).start();
 
         }
 

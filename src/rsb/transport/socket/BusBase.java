@@ -74,7 +74,7 @@ public abstract class BusBase implements Bus {
      *
      * @author jwienke
      */
-    private class ReceiveThread extends Thread {
+    protected class ReceiveThread extends Thread {
 
         // no chance to make this logger final in a not final member class
         @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
@@ -403,12 +403,19 @@ public abstract class BusBase implements Bus {
 
     /**
      * Registers a connection for the dispatching logic in
-     * {@link #handleGlobally(rsb.protocol.NotificationType.Notification)}.
+     * {@link #handleGlobally(rsb.protocol.NotificationType.Notification)} and
+     * creates a new instance of a thread receiving notifications from this
+     * connection. However, this thread is not started. It is the responsibility
+     * of the client calling this method to start the thread at an appropriate
+     * time. This manual handling is necessary as the procedure varies for bus
+     * server and clients.
      *
      * @param con
      *            the connection to register
+     * @return receiver thread for the added connection. Should be started using
+     *         {@link Thread#start()} at an appropriate time.
      */
-    protected void addConnection(final BusConnection con) {
+    protected ReceiveThread addConnection(final BusConnection con) {
         LOG.log(Level.FINE, "Adding a new BusConnection: {0}", con);
         synchronized (this) {
             if (this.connections.containsKey(con)) {
@@ -416,11 +423,11 @@ public abstract class BusBase implements Bus {
                         + " is already registered.");
             }
             final ReceiveThread receiveThread = new ReceiveThread(con);
-            receiveThread.start();
             LOG.log(Level.FINER,
-                    "Started receiver thread {0} for this connection {1}.",
+                    "Created receiver thread {0} for this connection {1}.",
                     new Object[] { receiveThread, con });
             this.connections.put(con, receiveThread);
+            return receiveThread;
         }
     }
 
