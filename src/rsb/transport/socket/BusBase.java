@@ -237,7 +237,15 @@ public abstract class BusBase implements Bus {
                     final ReceiveThread thread = removeConnection(connection);
                     try {
                         removeConnection(connection);
-                        connection.shutdown();
+                        // we should initiate a shutdown in case the receiving
+                        // thread on that connection did not already do so
+                        // because the remote peer initiated the shut down
+                        // before us.
+                        synchronized (connection) {
+                            if (!connection.isActiveShutdown()) {
+                                connection.shutdown();
+                            }
+                        }
                     } catch (final IOException e) {
                         LOG.log(Level.WARNING,
                                 "Unable to indicate shutdown on connection "
