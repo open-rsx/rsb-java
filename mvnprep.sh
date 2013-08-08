@@ -18,9 +18,9 @@ else
   GITBRANCH=`cat gitbranch`
 fi
 
-GITPATCH=`sed -e 's/-g[0-9a-fA-F]+$//' -e 's/^.*-//' gitversion`
+GITPATCH=`perl -p -e 's/-g[0-9a-fA-F]+$//;s/^.*-//' gitversion`
 
-RELBRANCH=`sed -e 's/^[0-9]+\.[0-9]+$//' gitbranch`
+RELBRANCH=`perl -p -e 's/^[0-9]+\.[0-9]+$//' gitbranch`
 
 if [ -z "$GITPATCH" ] || [ -z "$GITBRANCH" ]; then
   echo "Could not get version/branch information. Is this either a git checkout or an official source archive?" 1>&2
