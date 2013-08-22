@@ -14,6 +14,11 @@ public final class SpreadUtilities {
 
     private static final Object MD5_DIGEST_MUTEX = new Object();
 
+    /**
+     * Maximum length of a spread group name.
+     */
+    public static final int MAX_GROUP_NAME_LENGTH = 31;
+
     private SpreadUtilities() {
         // prevent initialization of helper class
         super();
@@ -55,7 +60,7 @@ public final class SpreadUtilities {
             hexString.append(hexRep);
         }
 
-        return hexString.toString().substring(0, 31);
+        return hexString.toString().substring(0, MAX_GROUP_NAME_LENGTH);
 
     }
 

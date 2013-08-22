@@ -41,6 +41,9 @@ public class DataMessage {
     // messages are not longer than MAX_MESSAGE_LENGTH
     // TODO add GroupName length checks
 
+    // CHECKSTYLE.OFF: DeclarationOrderCheck - no chance to cure this here as
+    // MAX_MESSAGE_LENGTH requires the private constant
+
     /* from spread.SpreadConnection */
     @SuppressWarnings("PMD.LongVariable")
     private static final int SPREAD_OVERHEAD_OFFSET = 20000;
@@ -54,6 +57,8 @@ public class DataMessage {
 
     /* decorated spread message */
     private SpreadMessage msg = new SpreadMessage();
+
+    // CHECKSTYLE.ON: DeclarationOrderCheck
 
     public DataMessage() {
         super();

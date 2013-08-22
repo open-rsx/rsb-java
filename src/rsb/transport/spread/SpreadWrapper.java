@@ -220,7 +220,7 @@ public class SpreadWrapper implements Activatable {
 
         // check group names for length
         for (final String group : msg.getGroups()) {
-            if (group.length() > 31) {
+            if (group.length() > SpreadUtilities.MAX_GROUP_NAME_LENGTH) {
                 throw new IllegalArgumentException("Group with name '" + group
                         + "' is too long for spread, "
                         + "only 31 characters are allowed.");

@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rsb.InitializeException;
 import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.RSBException;
@@ -73,12 +72,12 @@ public abstract class Server<MethodType extends Method> extends Participant {
          * @return the state that should follow this operation
          * @throws InvalidStateException
          *             server in incorrect state
-         * @throws InitializeException
+         * @throws rsb.InitializeException
          *             error initializing the server
          * @throws RSBException
          *             error initializing the server
          */
-        public ServerState activate() throws InitializeException, RSBException {
+        public ServerState activate() throws RSBException {
             throw new InvalidStateException("Server already activated.");
         }
 

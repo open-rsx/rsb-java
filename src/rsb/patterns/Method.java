@@ -30,7 +30,6 @@ package rsb.patterns;
 import rsb.Activatable;
 import rsb.Factory;
 import rsb.Informer;
-import rsb.InitializeException;
 import rsb.InvalidStateException;
 import rsb.Listener;
 import rsb.RSBException;
@@ -42,6 +41,10 @@ import rsb.Scope;
  *
  * This class is primarily intended as a superclass for local and remote method
  * classes.
+ *
+ * This class manages the {@link Listener} and {@link Informer} instances used
+ * to communicate between methods as well as a state pattern for activating
+ * them.
  *
  * @author jmoringe
  * @author swrede
@@ -57,18 +60,47 @@ public abstract class Method implements Activatable {
     private final Scope requestScope;
     private final Scope replyScope;
 
-    protected class MethodState {
+    /**
+     * Abstract base class for states of a {@link Method} based on the state
+     * pattern.
+     */
+    protected abstract class MethodState {
 
-        public MethodState activate() throws InitializeException, RSBException {
+        /**
+         * Activates the method.
+         *
+         * @return the next state of the method
+         * @throws rsb.InitializeException
+         *             error initializing the method
+         * @throws RSBException
+         *             error initializing the method
+         * @throws InvalidStateException
+         *             method in wrong state for this operation
+         */
+        public MethodState activate() throws RSBException {
             throw new InvalidStateException("Method already activated.");
         }
 
+        /**
+         * Deactivates the method.
+         *
+         * @return next method state
+         * @throws RSBException
+         *             error deactivating underlying RSB objects.
+         * @throws InterruptedException
+         *             interrupted while waiting for the shutdown of RSB objects
+         * @throws InvalidStateException
+         *             method in wrong state for this operation
+         */
         public MethodState deactivate() throws RSBException,
                 InterruptedException {
             throw new InvalidStateException("Method not activated.");
         }
     }
 
+    /**
+     * Represents the state of a method that is currently active.
+     */
     protected class MethodStateActive extends MethodState {
 
         @Override
@@ -87,6 +119,9 @@ public abstract class Method implements Activatable {
         }
     }
 
+    /**
+     * Represents the state of a method that is currently inactive.
+     */
     protected class MethodStateInactive extends MethodState {
 
         @Override
@@ -112,8 +147,7 @@ public abstract class Method implements Activatable {
         // TODO make sure that case doesn't matter (generally!)
         this.requestScope =
                 server.getScope().concat(new Scope("/request/" + name));
-        this.replyScope =
-                server.getScope().concat(new Scope("/reply/" + name));
+        this.replyScope = server.getScope().concat(new Scope("/reply/" + name));
         this.factory = Factory.getInstance();
         this.state = new MethodStateInactive();
     }
@@ -188,18 +222,42 @@ public abstract class Method implements Activatable {
         return "Method[name=" + this.getName() + "]";
     }
 
+    /**
+     * Sets the informer instances used by this method communicate with
+     * counterparts.
+     *
+     * @param informer
+     *            the new informer instances
+     */
     protected void setInformer(final Informer<?> informer) {
         this.informer = informer;
     }
 
+    /**
+     * Sets the listener instance used by this method to communicate with
+     * counterparts.
+     *
+     * @param listener
+     *            the new listeners
+     */
     protected void setListener(final Listener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Returns the scope on which this method issues or receives requests.
+     *
+     * @return scope
+     */
     protected Scope getRequestScope() {
         return this.requestScope;
     }
 
+    /**
+     * Returns the scope on which this method issues or receives replies.
+     *
+     * @return scope
+     */
     protected Scope getReplyScope() {
         return this.replyScope;
     }

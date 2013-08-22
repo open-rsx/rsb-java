@@ -38,6 +38,10 @@ import java.nio.ByteBuffer;
  */
 public class Uint64Converter implements Converter<ByteBuffer> {
 
+    private static final int BYTES_PER_INT = 8;
+    private static final int BYTE_LENGTH = 8;
+    private static final int MASK = 0xff;
+
     private final ConverterSignature signature = new ConverterSignature(
             "uint64", Long.class);
 
@@ -47,9 +51,10 @@ public class Uint64Converter implements Converter<ByteBuffer> {
 
         try {
             final long value = (Long) data;
-            final byte[] backing = new byte[8];
-            for (int i = 0; i < 8; ++i) {
-                backing[i] = (byte) ((value & (0xff << (i * 8))) >> (i * 8));
+            final byte[] backing = new byte[BYTES_PER_INT];
+            for (int i = 0; i < BYTES_PER_INT; ++i) {
+                backing[i] =
+                        (byte) ((value & (MASK << (i * BYTE_LENGTH))) >> (i * BYTE_LENGTH));
             }
             final ByteBuffer serialized = ByteBuffer.wrap(backing);
             return new WireContents<ByteBuffer>(serialized,

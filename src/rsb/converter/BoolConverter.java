@@ -54,7 +54,11 @@ public class BoolConverter implements Converter<ByteBuffer> {
         try {
             final Boolean value = (Boolean) data;
             final byte[] backing = new byte[1];
-            backing[0] = (byte) (value ? 1 : 0);
+            if (value) {
+                backing[0] = (byte) 1;
+            } else {
+                backing[0] = (byte) 0;
+            }
             final ByteBuffer serialized = ByteBuffer.wrap(backing);
             return new WireContents<ByteBuffer>(serialized,
                     this.signature.getSchema());
