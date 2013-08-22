@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * type.
  *
  * @author swrede
+ * @author jwienke
  */
 public class SequenceNumber {
 
@@ -41,26 +42,40 @@ public class SequenceNumber {
      * Represents the highest possible value for a sequence number: uint32 max:
      * 4.294.967.295.
      */
-    public static final long MAX_VALUE = (long) 2 * Integer.MAX_VALUE + 1;
+    public static final long MAX_VALUE = 4294967295L;
 
-    private AtomicInteger count = new AtomicInteger();
+    /**
+     * Mask to transfer a negative integer to a positive long representation.
+     */
+    private static final long MASK_NEG_TO_POS = 0xffffffffL;
+
+    /**
+     * An atomic integer representing the sequence numbers. Internally we use
+     * the negative integer range for value > Integer.MAX, which still fit into
+     * a uint32.
+     */
+    private final AtomicInteger count;
 
     /**
      * Constructor starting with 0 as the sequence number.
      */
     public SequenceNumber() {
-        super();
+        this(0);
     }
 
     /**
      * Constructor starting with the specified number for the internal counter.
      *
      * @param value
-     *            start number
+     *            start number within uint32 range
+     * @throws IllegalArgumentException
+     *             value outside uint32 range
      */
     public SequenceNumber(final long value) {
-        if (Math.abs(value) > (SequenceNumber.MAX_VALUE)) {
+        if (value > (SequenceNumber.MAX_VALUE)) {
             throw new IllegalArgumentException("Value larger than uint32");
+        } else if (value < 0) {
+            throw new IllegalArgumentException("Value < 0.");
         }
         this.count = new AtomicInteger((int) value);
     }
@@ -72,17 +87,7 @@ public class SequenceNumber {
      * @return new counter value
      */
     public long incrementAndGet() {
-        synchronized (this) {
-            // respect uint32 size
-            final long inc = this.get() + 1;
-            if (inc > SequenceNumber.MAX_VALUE) {
-                // reset to zero
-                this.count = new AtomicInteger();
-            } else {
-                this.count.incrementAndGet();
-            }
-            return this.count.get() & 0xffffffffL;
-        }
+        return this.count.incrementAndGet() & MASK_NEG_TO_POS;
     }
 
     /**
@@ -91,7 +96,7 @@ public class SequenceNumber {
      * @return value
      */
     public long get() {
-        return this.count.get() & 0xffffffffL;
+        return this.count.get() & MASK_NEG_TO_POS;
     }
 
 }

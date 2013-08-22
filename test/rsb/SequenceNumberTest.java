@@ -33,35 +33,48 @@ import org.junit.Test;
 
 import rsb.transport.SequenceNumber;
 
+/**
+ * @author swrede
+ * @author jwienke
+ */
 public class SequenceNumberTest {
 
     @Test
-    public void overflowUsage() {
-        // check max value
-        final String max = "4294967295";
-        assertEquals((long) 2 * Integer.MAX_VALUE + 1, Long.parseLong(max));
-        assertEquals(SequenceNumber.MAX_VALUE, Long.parseLong(max));
+    public void defaultConstructor() {
+        assertEquals(0, new SequenceNumber().get());
+    }
 
-        // test int overflow in use
-        SequenceNumber number = new SequenceNumber(Integer.MAX_VALUE);
-        assertEquals(number.get(), Integer.MAX_VALUE);
-        number.incrementAndGet();
-        assertEquals(number.get(), (long) Integer.MAX_VALUE + 1);
-
-        // test uint32 overflow in use
-        number = new SequenceNumber(SequenceNumber.MAX_VALUE);
-        assertEquals(number.get(), Long.parseLong(max));
-        number.incrementAndGet();
-        assertEquals(0, number.get());
+    @SuppressWarnings("unused")
+    @Test(expected = IllegalArgumentException.class)
+    public void constructNegative() {
+        new SequenceNumber(-1);
     }
 
     @Test
-    public void overflowInit() {
-        // integer overflow in constructor
-        final SequenceNumber number = new SequenceNumber(Integer.MAX_VALUE + 1);
-        assertEquals(Integer.MAX_VALUE + 1, Integer.MIN_VALUE);
-        assertEquals(number.get(), (long) Integer.MAX_VALUE + 1);
-        number.incrementAndGet();
+    public void increment() {
+        assertEquals(1, new SequenceNumber().incrementAndGet());
+    }
+
+    @Test
+    public void maxValue() {
+        // CHECKSTYLE.OFF: MagicNumber - no real value in this specific case
+        assertEquals(SequenceNumber.MAX_VALUE, (1L << 32L) - 1L);
+        // CHECKSTYLE.ON: MagicNumber
+    }
+
+    @Test
+    public void usesLongRange() {
+        final SequenceNumber number = new SequenceNumber(Integer.MAX_VALUE);
+        assertEquals(number.get(), Integer.MAX_VALUE);
+        assertEquals(number.incrementAndGet(), Long.valueOf(Integer.MAX_VALUE) + 1);
+        assertEquals(number.incrementAndGet(), Long.valueOf(Integer.MAX_VALUE) + 2);
+    }
+
+    @Test
+    public void rangeOverflow() {
+        final SequenceNumber number = new SequenceNumber(SequenceNumber.MAX_VALUE);
+        assertEquals(number.get(), SequenceNumber.MAX_VALUE);
+        assertEquals(0, number.incrementAndGet());
     }
 
 }
