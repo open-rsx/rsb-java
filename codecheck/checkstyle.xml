@@ -10,14 +10,6 @@
 -->
 <module name="Checker">
   <property name="severity" value="warning"/>
-  <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
-    <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
-    <property name="checkFormat" value=".*"/>
-  </module>
-  <module name="SuppressionFilter">
-    <property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
-  </module>
   <module name="TreeWalker">
     <module name="FileContentsHolder"/>
     <module name="JavadocMethod">
@@ -46,7 +38,7 @@
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
     <module name="LineLength">
-      <property name="max" value="90" />
+      <property name="max" value="90"/>
     </module>
     <module name="MethodLength"/>
     <module name="ParameterNumber"/>
@@ -54,7 +46,7 @@
     <module name="GenericWhitespace"/>
     <module name="MethodParamPad"/>
     <module name="NoWhitespaceAfter">
-      <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS" />
+      <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
     </module>
     <module name="NoWhitespaceBefore"/>
     <module name="OperatorWrap"/>
@@ -66,7 +58,7 @@
     <module name="RedundantModifier"/>
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock">
-      <property name="tokens" value="LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_IF,LITERAL_FOR,LITERAL_TRY,LITERAL_WHILE,INSTANCE_INIT,STATIC_INIT" />
+      <property name="tokens" value="LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_IF,LITERAL_FOR,LITERAL_TRY,LITERAL_WHILE,INSTANCE_INIT,STATIC_INIT"/>
     </module>
     <module name="LeftCurly"/>
     <module name="NeedBraces"/>
@@ -119,10 +111,10 @@
       <property name="suppressLoadErrors" value="true"/>
     </module>
     <module name="JavadocMethod">
+      <property name="scope" value="package"/>
       <property name="allowUndeclaredRTE" value="true"/>
       <property name="allowThrowsTagsForSubclasses" value="true"/>
       <property name="suppressLoadErrors" value="true"/>
-      <property name="scope" value="package"/>
     </module>
     <module name="LineLength">
       <property name="max" value="90"/>
@@ -132,6 +124,13 @@
       <property name="max" value="90"/>
     </module>
   </module>
+  <module name="SuppressionCommentFilter">
+    <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+    <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+  </module>
+  <module name="SuppressionFilter">
+    <property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
+  </module>
   <module name="JavadocPackage"/>
   <module name="NewlineAtEndOfFile"/>
   <module name="Translation"/>
@@ -140,5 +139,9 @@
   <module name="RegexpSingleline">
     <property name="format" value="\s+$"/>
     <property name="message" value="Line has trailing spaces."/>
+  </module>
+  <module name="Header">
+    <property name="headerFile" value="${config_loc}/header.txt"/>
+    <property name="ignoreLines" value="6"/>
   </module>
 </module>

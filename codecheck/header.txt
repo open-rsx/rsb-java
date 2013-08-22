@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2013 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,12 +25,3 @@
  *
  * ============================================================
  */
-
-/**
- * Contains classes handling the flow of events from Participants to the
- * transport implementations and vice versa.
- *
- * @author jwienke
- */
-package rsb.eventprocessing;
-
