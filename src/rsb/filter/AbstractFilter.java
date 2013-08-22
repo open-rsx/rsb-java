@@ -48,9 +48,6 @@ public abstract class AbstractFilter implements Filter {
     /** Stores the type info for this filter. */
     protected String type = AbstractFilter.class.getSimpleName();
 
-    @Override
-    public abstract Event transform(Event event);
-
     /**
      * Constructor.
      *
@@ -64,6 +61,9 @@ public abstract class AbstractFilter implements Filter {
     public AbstractFilter(final Class<? extends AbstractFilter> type) {
         this.type = type.getSimpleName();
     }
+
+    @Override
+    public abstract Event transform(Event event);
 
     /**
      * Skip this filter for any event with the specified ID. This will cause the

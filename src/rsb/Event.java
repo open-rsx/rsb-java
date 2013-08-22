@@ -267,21 +267,28 @@ public class Event {
 
     @Override
     public int hashCode() {
+        // CHECKSTYLE.OFF: AvoidInlineConditionals - this method is more
+        // readable with the inline conditionals
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((this.data == null) ? 0 : this.data.hashCode());
-        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-        result = prime * result
-                + ((this.metaData == null) ? 0 : this.metaData.hashCode());
-        result = prime * result
-                + ((this.method == null) ? 0 : this.method.hashCode());
-        result = prime * result
-                + ((this.scope == null) ? 0 : this.scope.hashCode());
-        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-        result = prime * result + this.type.hashCode();
-        result = prime * result + this.causes.hashCode();
+        result *= prime;
+        result += this.data == null ? 0 : this.data.hashCode();
+        result *= prime;
+        result += this.id == null ? 0 : this.id.hashCode();
+        result *= prime;
+        result += this.metaData == null ? 0 : this.metaData.hashCode();
+        result *= prime;
+        result += this.method == null ? 0 : this.method.hashCode();
+        result *= prime;
+        result += this.scope == null ? 0 : this.scope.hashCode();
+        result *= prime;
+        result += this.id == null ? 0 : this.id.hashCode();
+        result *= prime;
+        result += this.type.hashCode();
+        result *= prime;
+        result += this.causes.hashCode();
         return result;
+        // CHECKSTYLE.ON: AvoidInlineConditionals
     }
 
     @Override

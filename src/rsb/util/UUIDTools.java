@@ -98,6 +98,9 @@ public final class UUIDTools {
 
     }
 
+    // CHECKSTYLE.OFF: MagicNumber - we don not want to make this code more
+    // clumsy than necessary for typical bit constants.
+
     /**
      * Updates byte vector with version 5 information and return the updated
      * byte array.
@@ -177,5 +180,7 @@ public final class UUIDTools {
         return buffer;
 
     }
+
+    // CHECKSTYLE.ON: MagicNumber
 
 }

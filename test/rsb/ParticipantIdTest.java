@@ -40,6 +40,9 @@ import rsb.util.UUIDTools;
  */
 public class ParticipantIdTest {
 
+    private static final String KNOWN_ID =
+            "2a4b89df-d5a2-4671-af2e-7e7f7ff8961d";
+
     // this will merely test that nothing is thrown in constructor
     @SuppressWarnings({ "unused", "PMD.JUnitTestsShouldIncludeAssert" })
     @Test
@@ -64,8 +67,7 @@ public class ParticipantIdTest {
 
     @Test
     public void toByteArray() {
-        final ParticipantId participantId =
-                new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d");
+        final ParticipantId participantId = new ParticipantId(KNOWN_ID);
 
         final byte[] data = new byte[UUIDTools.UUID_BYTE_REP_LENGTH];
 
@@ -116,8 +118,7 @@ public class ParticipantIdTest {
         data[15] = (byte) 29;
         // CHECKSTYLE.ON: MagicNumber
 
-        assertEquals(new ParticipantId("2a4b89df-d5a2-4671-af2e-7e7f7ff8961d"),
-                new ParticipantId(data));
+        assertEquals(new ParticipantId(KNOWN_ID), new ParticipantId(data));
 
     }
 

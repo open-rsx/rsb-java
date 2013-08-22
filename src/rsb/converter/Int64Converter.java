@@ -78,12 +78,12 @@ public class Int64Converter implements Converter<ByteBuffer> {
         }
 
         long result = 0;
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < BYTES_PER_INT; ++i) {
             long value = bytes.get(i);
             if (value < 0L) {
                 value = 256L + value;
             }
-            result |= value << (i * 8);
+            result |= value << (i * BYTE_LENGTH);
         }
         return new UserData<ByteBuffer>(result, Long.class);
     }

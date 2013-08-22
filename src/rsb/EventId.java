@@ -80,17 +80,18 @@ public class EventId {
 
     @Override
     public int hashCode() {
+        // CHECKSTYLE.OFF: AvoidInlineConditionals - more readable like this
         final int prime = 31;
         int result = 1;
-        result = prime
-                * result
-                + ((this.participantId == null) ? 0 : this.participantId
-                        .hashCode());
-        result = prime * result
-                + (int) (this.sequenceNumber ^ (this.sequenceNumber >>> 32));
-        result = prime * result
-                + ((this.uuid == null) ? 0 : this.uuid.hashCode());
+        result *= prime;
+        result +=
+                this.participantId == null ? 0 : this.participantId.hashCode();
+        result *= prime;
+        result += (int) (this.sequenceNumber ^ (this.sequenceNumber >>> 32));
+        result *= prime;
+        result += this.uuid == null ? 0 : this.uuid.hashCode();
         return result;
+        // CHECKSTYLE.ON: AvoidInlineConditionals
     }
 
     @Override
@@ -136,8 +137,9 @@ public class EventId {
             LOG.finest("UUID generation for Event with ParticipantId "
                     + this.participantId.toString() + " and sequence number: "
                     + seqNr);
-            this.uuid = UUIDTools.getNameBasedUUID(
-                    this.participantId.getUUID(), seqNr);
+            this.uuid =
+                    UUIDTools.getNameBasedUUID(this.participantId.getUUID(),
+                            seqNr);
         }
         return this.uuid;
     }

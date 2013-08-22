@@ -53,6 +53,9 @@ import spread.SpreadMessage;
  */
 public class SpreadWrapper implements Activatable {
 
+    private static final String CONNECTION_LOST_MSG =
+            "Lost connection to spread daemon";
+
     private static final Logger LOG = Logger.getLogger(SpreadWrapper.class
             .getName());
 
@@ -72,6 +75,26 @@ public class SpreadWrapper implements Activatable {
 
     // TODO think about sub-classing SpreadConnection
     // TODO leave the complex stuff for SpreadPort
+
+    public SpreadWrapper(final String spreadHost, final int spreadPort,
+            final boolean tcpNoDelay) throws UnknownHostException {
+
+        if (spreadHost == null || spreadHost.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Spread host must not be null or empty string. "
+                            + "Instead a valid host name or ip address is required.");
+        }
+        if (spreadPort <= 0) {
+            throw new IllegalArgumentException(
+                    "Spread port must be a number > 0.");
+        }
+
+        this.port = spreadPort;
+        // TODO handle this in a way that in this constructor no exceptions
+        // may occur
+        this.setSpreadhost(spreadHost);
+        this.useTcpNoDelay = tcpNoDelay;
+    }
 
     /**
      * @return the status
@@ -133,26 +156,6 @@ public class SpreadWrapper implements Activatable {
         ACTIVATED, DEACTIVATED
     };
 
-    public SpreadWrapper(final String spreadHost, final int spreadPort,
-            final boolean tcpNoDelay) throws UnknownHostException {
-
-        if (spreadHost == null || spreadHost.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Spread host must not be null or empty string. "
-                            + "Instead a valid host name or ip address is required.");
-        }
-        if (spreadPort <= 0) {
-            throw new IllegalArgumentException(
-                    "Spread port must be a number > 0.");
-        }
-
-        this.port = spreadPort;
-        // TODO handle this in a way that in this constructor no exceptions
-        // may occur
-        this.setSpreadhost(spreadHost);
-        this.useTcpNoDelay = tcpNoDelay;
-    }
-
     public void join(final String group) throws SpreadException {
         this.checkConnection();
         final SpreadGroup grp = new SpreadGroup();
@@ -172,14 +175,12 @@ public class SpreadWrapper implements Activatable {
             return; // not initialized yet
         }
         if (this.isConnectionLost()) {
-            LOG.severe("lost connection to spread daemon");
-            throw new ConnectionLostException(
-                    "Lost connection to spread daemon");
+            LOG.severe(CONNECTION_LOST_MSG);
+            throw new ConnectionLostException(CONNECTION_LOST_MSG);
         }
         if (!this.conn.isConnected() && !this.shutdown) {
-            LOG.severe("lost connection to spread daemon");
-            throw new ConnectionLostException(
-                    "Lost connection to spread daemon");
+            LOG.severe(CONNECTION_LOST_MSG);
+            throw new ConnectionLostException(CONNECTION_LOST_MSG);
         }
     }
 

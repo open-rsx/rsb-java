@@ -39,6 +39,9 @@ import rsb.EventId;
 import rsb.ParticipantId;
 import rsb.Scope;
 
+// CHECKSTYLE.OFF: MagicNumber - test values
+// CHECKSTYLE.OFF: JavadocMethod - test class
+
 /**
  * Base class for a generic roundtrip check for Connectors.
  *
@@ -119,3 +122,6 @@ public abstract class ConnectorRoundtripCheck {
     protected abstract InPushConnector createInConnector() throws Throwable;
 
 }
+
+//CHECKSTYLE.ON: JavadocMethod
+//CHECKSTYLE.ON: MagicNumber

@@ -47,6 +47,9 @@ import rsb.converter.ConversionException;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 
+// CHECKSTYLE.OFF: JavadocMethod - test class
+// CHECKSTYLE.OFF: MagicNumber - random test values
+
 /**
  * An abstract test class to implement tests for connectors.
  *
@@ -170,7 +173,7 @@ public abstract class ConnectorCheck {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void longGroupNames() throws Throwable {
 
-        final Event event = new Event(String.class, "a test string");
+        final Event event = new Event(String.class, "a test string again");
         event.setScope(OUT_BASE_SCOPE.concat(new Scope(
                 "/is/a/very/long/scope/that/would/never/fit"
                         + "/in/a/spread/group/directly")));
@@ -253,3 +256,6 @@ public abstract class ConnectorCheck {
     }
 
 }
+
+//CHECKSTYLE.ON: MagicNumber
+//CHECKSTYLE.ON: JavadocMethod

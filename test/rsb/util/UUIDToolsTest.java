@@ -70,6 +70,7 @@ public class UUIDToolsTest {
                 uuid.toString());
     }
 
+    // CHECKSTYLE.OFF: MagicNumber - hand-calculated values
     private UUID buildUUID(final String idString, final long seqNr) {
         final UUID uuid = UUID.fromString(idString);
         // java UUId's are formatted lower case...
@@ -86,6 +87,7 @@ public class UUIDToolsTest {
 
         return UUIDTools.getNameBasedUUID(uuid, seqNumber);
     }
+    // CHECKSTYLE.ON: MagicNumber
 
     /**
      * Test method for {@link rsb.util.UUIDTools#fromByteArray(byte[])}.

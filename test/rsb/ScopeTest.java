@@ -66,6 +66,7 @@ public class ScopeTest {
     @Test
     public void parsingManuParts() {
 
+        // CHECKSTYLE.OFF: MagicNumber - hand calculated
         final Scope manyParts = new Scope("/this/is/a/dumb3/test/");
         assertEquals(5, manyParts.getComponents().size());
         assertEquals("this", manyParts.getComponents().get(0));
@@ -73,6 +74,7 @@ public class ScopeTest {
         assertEquals("a", manyParts.getComponents().get(2));
         assertEquals("dumb3", manyParts.getComponents().get(3));
         assertEquals("test", manyParts.getComponents().get(4));
+        // CHECKSTYLE.ON: MagicNumber - hand calculated
 
     }
 
@@ -183,6 +185,7 @@ public class ScopeTest {
                                                                    // false
                                                                    // positive
 
+        // CHECKSTYLE.OFF: MagicNumber - hand calculated
         List<Scope> supers = new Scope("/this/is/a/test/").superScopes(false);
         assertEquals(4, supers.size());
         assertEquals(new Scope("/"), supers.get(0));
@@ -201,6 +204,7 @@ public class ScopeTest {
         assertEquals(new Scope("/this/is/"), supers.get(2));
         assertEquals(new Scope("/this/is/a/"), supers.get(3));
         assertEquals(new Scope("/this/is/a/test/"), supers.get(4));
+        // CHECKSTYLE.OFF: MagicNumber - hand calculated
 
     }
 

@@ -4,7 +4,6 @@
  * This file is part of the rsb-java project
  *
  * Copyright (C) 2010,2011 CoR-Lab, Bielefeld University
- * Copyright (C) 2011 David Klotz <david -at- sofaecke -dot- org>
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -23,6 +22,7 @@
  * The development of this software was supported by:
  *   CoR-Lab, Research Institute for Cognition and Robotics
  *     Bielefeld University
+ *
  * ============================================================
  */
 

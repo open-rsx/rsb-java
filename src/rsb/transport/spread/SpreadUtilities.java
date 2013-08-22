@@ -39,12 +39,12 @@ import rsb.Scope;
  */
 public final class SpreadUtilities {
 
-    private static final Object MD5_DIGEST_MUTEX = new Object();
-
     /**
      * Maximum length of a spread group name.
      */
     public static final int MAX_GROUP_NAME_LENGTH = 31;
+
+    private static final Object MD5_DIGEST_MUTEX = new Object();
 
     private SpreadUtilities() {
         // prevent initialization of helper class

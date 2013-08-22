@@ -45,6 +45,9 @@ import rsb.util.ByteHelpers;
 import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
+//CHECKSTYLE.OFF: MagicNumber - test values
+//CHECKSTYLE.OFF: JavadocMethod - test class
+
 /**
  * Utilities for testing the socket-based transport.
  *
@@ -94,3 +97,6 @@ public final class Utilities {
     }
 
 }
+
+//CHECKSTYLE.ON: JavadocMethod
+//CHECKSTYLE.ON: MagicNumber

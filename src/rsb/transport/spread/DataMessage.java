@@ -48,12 +48,15 @@ public class DataMessage {
     @SuppressWarnings("PMD.LongVariable")
     private static final int SPREAD_OVERHEAD_OFFSET = 20000;
 
+    // CHECKSTYLE.OFF: MagicNumber - we are calculating a constant. No need to
+    // warn here
     /**
      * Maximum length in bytes of messages that can be sent via spread.
      */
     @SuppressWarnings("PMD.LongVariable")
     public static final int MAX_MESSAGE_LENGTH =
             140000 - SPREAD_OVERHEAD_OFFSET;
+    // CHECKSTYLE.ON: MagicNumber
 
     /* decorated spread message */
     private SpreadMessage msg = new SpreadMessage();
