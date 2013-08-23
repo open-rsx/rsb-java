@@ -91,7 +91,7 @@ public class ConfigLoader {
      */
     public Properties load(final Properties results) {
 
-        LOG.log(Level.INFO, "Loading properties into {0}", results);
+        LOG.log(Level.FINE, "Loading properties into {0}", results);
 
         // parse rsb.conf files in standard locations
         this.loadFiles(results);
@@ -105,7 +105,7 @@ public class ConfigLoader {
 
     private void loadFiles(final Properties results) {
 
-        LOG.log(Level.INFO,
+        LOG.log(Level.FINE,
                 "Loading properties for default config files into {0}", results);
 
         // Read configuration properties in the following order:
@@ -135,7 +135,7 @@ public class ConfigLoader {
      */
     public Properties loadFileIfAvailable(final File file,
             final Properties results) {
-        LOG.log(Level.INFO,
+        LOG.log(Level.FINE,
                 "Loading properties from {0} into {1} if available.",
                 new Object[] { file, results });
         try {
@@ -171,7 +171,7 @@ public class ConfigLoader {
     public Properties loadFile(final File file, final Properties results)
             throws IOException {
 
-        LOG.log(Level.INFO, "Loading properties from file {0} into {1}",
+        LOG.log(Level.FINE, "Loading properties from file {0} into {1}",
                 new Object[] { file, results });
 
         if (!file.exists()) {
@@ -233,7 +233,7 @@ public class ConfigLoader {
      * @return the passed in instance
      */
     public Properties loadEnv(final Properties results) {
-        LOG.log(Level.INFO, "Loading properties from environment into {0}",
+        LOG.log(Level.FINE, "Loading properties from environment into {0}",
                 results);
         this.parseMap(System.getenv(), results);
         return results;
