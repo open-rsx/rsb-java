@@ -25,48 +25,33 @@
  *
  * ============================================================
  */
-package rsb.transport;
+package rsb.transport.inprocess;
 
-import rsb.transport.inprocess.InProcessFactory;
-import rsb.transport.socket.SocketFactory;
-import rsb.transport.spread.SpreadFactory;
+import rsb.InitializeException;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
+import rsb.transport.TransportFactory;
+import rsb.util.Properties;
 
 /**
- * A class statically registering all directly implemented transports.
+ * A {@link TransportFactory} for the inprocess transport.
  *
  * @author jwienke
  */
-public final class DefaultTransports {
+public class InProcessFactory implements TransportFactory {
 
-    private static Boolean registered = false;
+    private static Bus defaultBus = new Bus();
 
-    private DefaultTransports() {
-        super();
-        // prevent instantiation of a utility class
+    @Override
+    public OutConnector createOutConnector(final Properties properties)
+            throws InitializeException {
+        return new rsb.transport.inprocess.OutConnector(defaultBus);
     }
 
-    /**
-     * Registers the known transports. Can be called multiple times.
-     */
-    public static void register() {
-
-        synchronized (registered) {
-
-            if (registered) {
-                return;
-            }
-
-            TransportRegistry.getDefaultInstance().registerTransport("spread",
-                    new SpreadFactory());
-            TransportRegistry.getDefaultInstance().registerTransport("socket",
-                    new SocketFactory());
-            TransportRegistry.getDefaultInstance().registerTransport(
-                    "inprocess", new InProcessFactory());
-
-            registered = true;
-
-        }
-
+    @Override
+    public InPushConnector createInPushConnector(final Properties properties)
+            throws InitializeException {
+        return new rsb.transport.inprocess.InPushConnector(defaultBus);
     }
 
 }
