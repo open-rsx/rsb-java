@@ -25,48 +25,39 @@
  *
  * ============================================================
  */
-package rsb.transport;
+package rsb.transport.inprocess;
 
-import rsb.transport.inprocess.InProcessFactory;
-import rsb.transport.socket.SocketFactory;
-import rsb.transport.spread.SpreadFactory;
+import org.junit.Test;
+
+import rsb.transport.ConnectorCheck;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 
 /**
- * A class statically registering all directly implemented transports.
+ * Test for in process connectors.
  *
  * @author jwienke
  */
-public final class DefaultTransports {
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+public class InprocessConnectorTest extends ConnectorCheck {
 
-    private static Boolean registered = false;
+    private final rsb.transport.inprocess.Bus bus =
+            new rsb.transport.inprocess.Bus();
 
-    private DefaultTransports() {
-        super();
-        // prevent instantiation of a utility class
+    @Override
+    protected InPushConnector createInConnector() throws Throwable {
+        return new rsb.transport.inprocess.InPushConnector(this.bus);
     }
 
-    /**
-     * Registers the known transports. Can be called multiple times.
-     */
-    public static void register() {
+    @Override
+    protected OutConnector createOutConnector() throws Throwable {
+        return new rsb.transport.inprocess.OutConnector(this.bus);
+    }
 
-        synchronized (registered) {
-
-            if (registered) {
-                return;
-            }
-
-            TransportRegistry.getDefaultInstance().registerTransport("spread",
-                    new SpreadFactory());
-            TransportRegistry.getDefaultInstance().registerTransport("socket",
-                    new SocketFactory());
-            TransportRegistry.getDefaultInstance().registerTransport(
-                    "inprocess", new InProcessFactory());
-
-            registered = true;
-
-        }
-
+    @Test
+    @Override
+    public void noConverterPassedToClient() throws Throwable {
+        // not applicable for inprocess
     }
 
 }
