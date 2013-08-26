@@ -61,13 +61,19 @@ public class OutConnector implements rsb.transport.OutConnector {
 
     @Override
     public void setScope(final Scope scope) {
-        this.scope = scope;
+        synchronized (this) {
+            if (isActive()) {
+                throw new IllegalStateException(
+                        "Scope can only be set when not active.");
+            }
+            this.scope = scope;
+        }
     }
 
     @Override
     public void activate() throws RSBException {
         synchronized (this) {
-            if (this.active) {
+            if (isActive()) {
                 throw new IllegalStateException("Already active");
             }
             if (this.scope == null) {
@@ -81,7 +87,7 @@ public class OutConnector implements rsb.transport.OutConnector {
     @Override
     public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
-            if (!this.active) {
+            if (!isActive()) {
                 throw new IllegalStateException("Not active");
             }
             this.active = false;
@@ -97,8 +103,14 @@ public class OutConnector implements rsb.transport.OutConnector {
 
     @Override
     public void push(final Event event) throws RSBException {
-        event.getMetaData().setSendTime(0);
-        this.bus.push(event);
+        synchronized (this) {
+            if (!isActive()) {
+                throw new IllegalStateException(
+                        "Connector needs to be active for sending events");
+            }
+            event.getMetaData().setSendTime(0);
+            this.bus.push(event);
+        }
     }
 
 }
