@@ -1,5 +1,6 @@
 package rsb.transport;
 
+import rsb.transport.inprocess.InProcessFactory;
 import rsb.transport.socket.SocketFactory;
 import rsb.transport.spread.SpreadFactory;
 
@@ -32,6 +33,8 @@ public final class DefaultTransports {
                     new SpreadFactory());
             TransportRegistry.getDefaultInstance().registerTransport("socket",
                     new SocketFactory());
+            TransportRegistry.getDefaultInstance().registerTransport(
+                    "inprocess", new InProcessFactory());
 
             registered = true;
 
