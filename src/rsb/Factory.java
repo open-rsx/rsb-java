@@ -255,19 +255,6 @@ public final class Factory {
     }
 
     /**
-     * Creates a new LocalServer object which exposes methods under the scope @a
-     * scope.
-     *
-     * @param scope
-     *            The scope under which methods of the LocalServer object should
-     *            be exposed.
-     * @return The new LocalServer object.
-     */
-    public LocalServer createLocalServer(final Scope scope) {
-        return new LocalServer(scope, this.defaultConfig);
-    }
-
-    /**
      * Creates a new listener instance.
      *
      * @param scope
@@ -306,11 +293,40 @@ public final class Factory {
      * @param scope
      *            The scope under which methods of the LocalServer object should
      *            be exposed.
+     * @return The new LocalServer object.
+     */
+    public LocalServer createLocalServer(final Scope scope) {
+        return new LocalServer(scope, this.defaultConfig);
+    }
+
+    /**
+     * Creates a new LocalServer object which exposes methods under the scope @a
+     * scope.
+     *
+     * @param scope
+     *            The scope under which methods of the LocalServer object should
+     *            be exposed.
      * @param config
      *            participant configuration to use
      * @return The new LocalServer object.
      */
     public LocalServer createLocalServer(final Scope scope,
+            final ParticipantConfig config) {
+        return new LocalServer(scope, config);
+    }
+
+    /**
+     * Creates a new LocalServer object which exposes methods under the scope @a
+     * scope.
+     *
+     * @param scope
+     *            The scope under which methods of the LocalServer object should
+     *            be exposed.
+     * @param config
+     *            participant configuration to use
+     * @return The new LocalServer object.
+     */
+    public LocalServer createLocalServer(final String scope,
             final ParticipantConfig config) {
         return new LocalServer(scope, config);
     }
