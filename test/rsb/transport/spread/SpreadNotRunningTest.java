@@ -27,15 +27,20 @@
  */
 package rsb.transport.spread;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rsb.Factory;
 import rsb.Informer;
 import rsb.InitializeException;
+import rsb.Listener;
+import rsb.RSBException;
+import rsb.Scope;
+import rsb.config.ParticipantConfig;
+import rsb.config.TransportConfig;
 import rsb.patterns.DataCallback;
 import rsb.patterns.LocalServer;
+import rsb.patterns.RemoteServer;
+import rsb.util.Properties;
 
 /**
  * Test for situations where no connection to a Spread daemon is available.
@@ -43,39 +48,63 @@ import rsb.patterns.LocalServer;
  * Pre-Condition: Spread is not running
  *
  * @author swrede
+ * @author jwienke
  */
 public class SpreadNotRunningTest {
 
-    @BeforeClass
-    public static void prepare() {
-        // TODO restore this!
-        // final Properties prop = Properties.getInstance();
-        // // prop.setProperty("transport.socket.enabled", "false");
-        // prop.setProperty("transport.spread.enabled", "true");
-        // prop.setProperty("transport.spread.retry", "1");
+    private static final Scope SCOPE = new Scope("/test/");
+
+    private ParticipantConfig createParticipantConfig() throws Throwable {
+        final ParticipantConfig config = new ParticipantConfig();
+        final TransportConfig spreadConfig =
+                config.getOrCreateTransport("spread");
+        spreadConfig.setEnabled(true);
+        final Properties spreadOptions = new Properties();
+        // 4 should be a free port according to some port lists
+        spreadOptions.setProperty("transport.spread.port", "4");
+        spreadConfig.setOptions(spreadOptions);
+        return config;
     }
 
-    @Ignore
     @Test(expected = InitializeException.class)
-    public void informer() throws InitializeException {
+    public void informer() throws Throwable {
         final Factory factory = Factory.getInstance();
-        final Informer<Object> inf = factory.createInformer("/foo");
-        inf.activate();
+        final Informer<Object> informer =
+                factory.createInformer(SCOPE, createParticipantConfig());
+        informer.activate();
     }
 
-    @Ignore
+    @Test(expected = InitializeException.class)
+    public void listener() throws Throwable {
+        final Factory factory = Factory.getInstance();
+        final Listener listener =
+                factory.createListener(SCOPE, createParticipantConfig());
+        listener.activate();
+    }
+
     @Test(expected = InitializeException.class)
     public void server() throws Throwable {
         final Factory factory = Factory.getInstance();
-        final LocalServer server = factory.createLocalServer("/bar");
+        final LocalServer server =
+                factory.createLocalServer(SCOPE, createParticipantConfig());
         server.addMethod("foobar", new DataCallback<String, String>() {
 
             @Override
             public String invoke(final String request) throws Throwable {
-                return "foobar";
+                return "";
             }
+
         });
         server.activate();
+    }
+
+    @Test(expected = RSBException.class)
+    public void remoteServer() throws Throwable {
+        final Factory factory = Factory.getInstance();
+        final RemoteServer server =
+                factory.createRemoteServer(SCOPE, createParticipantConfig());
+        server.activate();
+        server.call("foo");
     }
 
 }
