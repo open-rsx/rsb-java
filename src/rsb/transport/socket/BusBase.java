@@ -235,7 +235,6 @@ public abstract class BusBase implements Bus {
                         this.connections.keySet())) {
                     final ReceiveThread thread = removeConnection(connection);
                     try {
-                        removeConnection(connection);
                         // we should initiate a shutdown in case the receiving
                         // thread on that connection did not already do so
                         // because the remote peer initiated the shut down
