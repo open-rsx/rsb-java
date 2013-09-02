@@ -235,7 +235,6 @@ public abstract class BusBase implements Bus {
                         this.connections.keySet())) {
                     final ReceiveThread thread = removeConnection(connection);
                     try {
-                        removeConnection(connection);
                         // we should initiate a shutdown in case the receiving
                         // thread on that connection did not already do so
                         // because the remote peer initiated the shut down
@@ -247,12 +246,26 @@ public abstract class BusBase implements Bus {
                                         + connection
                                         + ". Interrupting receiver thread to stop it.",
                                 e);
-                        thread.interrupt();
+                        // thread might not exist in our map anymore. See
+                        // comment below for explanation.
+                        if (thread != null) {
+                            thread.interrupt();
+                        }
                     }
-                    // we must not interrupt the receiver thread as it is
-                    // responsible for correctly deactivating the connection
-                    thread.join(RECEIVE_THREAD_JOIN_TIME);
-                    assert !thread.isAlive();
+                    // We must not interrupt the receiver thread as it is
+                    // responsible for correctly deactivating the connection.
+                    // It might also have happened that the thread received an
+                    // EOF in the meantime, started to deactivated itself, and
+                    // during that process removed itself from the connections
+                    // map. We will still iterate over that entry as we created
+                    // a copy of the key set for our own iteration over the
+                    // connections in order to prevent a deadlock. Hence, it is
+                    // legal in this case for removeConnection to return null,
+                    // which we must handle here correctly.
+                    if (thread != null) {
+                        thread.join(RECEIVE_THREAD_JOIN_TIME);
+                        assert !thread.isAlive();
+                    }
                     // finally, try to kill everything in case it still
                     // survived. In normal cases this will never happen
                     synchronized (connection) {
@@ -413,16 +426,18 @@ public abstract class BusBase implements Bus {
     protected ReceiveThread addConnection(final BusConnection con) {
         LOG.log(Level.FINE, "Adding a new BusConnection: {0}", con);
         synchronized (this) {
-            if (this.connections.containsKey(con)) {
-                throw new IllegalArgumentException("Connection " + con
-                        + " is already registered.");
+            synchronized (this.connections) {
+                if (this.connections.containsKey(con)) {
+                    throw new IllegalArgumentException("Connection " + con
+                            + " is already registered.");
+                }
+                final ReceiveThread receiveThread = new ReceiveThread(con);
+                LOG.log(Level.FINER,
+                        "Created receiver thread {0} for this connection {1}.",
+                        new Object[] { receiveThread, con });
+                this.connections.put(con, receiveThread);
+                return receiveThread;
             }
-            final ReceiveThread receiveThread = new ReceiveThread(con);
-            LOG.log(Level.FINER,
-                    "Created receiver thread {0} for this connection {1}.",
-                    new Object[] { receiveThread, con });
-            this.connections.put(con, receiveThread);
-            return receiveThread;
         }
     }
 
