@@ -412,16 +412,18 @@ public abstract class BusBase implements Bus {
     protected ReceiveThread addConnection(final BusConnection con) {
         LOG.log(Level.FINE, "Adding a new BusConnection: {0}", con);
         synchronized (this) {
-            if (this.connections.containsKey(con)) {
-                throw new IllegalArgumentException("Connection " + con
-                        + " is already registered.");
+            synchronized (this.connections) {
+                if (this.connections.containsKey(con)) {
+                    throw new IllegalArgumentException("Connection " + con
+                            + " is already registered.");
+                }
+                final ReceiveThread receiveThread = new ReceiveThread(con);
+                LOG.log(Level.FINER,
+                        "Created receiver thread {0} for this connection {1}.",
+                        new Object[] { receiveThread, con });
+                this.connections.put(con, receiveThread);
+                return receiveThread;
             }
-            final ReceiveThread receiveThread = new ReceiveThread(con);
-            LOG.log(Level.FINER,
-                    "Created receiver thread {0} for this connection {1}.",
-                    new Object[] { receiveThread, con });
-            this.connections.put(con, receiveThread);
-            return receiveThread;
         }
     }
 
