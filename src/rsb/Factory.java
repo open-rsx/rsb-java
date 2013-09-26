@@ -439,4 +439,16 @@ public final class Factory {
         return this.properties;
     }
 
+    /**
+     * Returns the participant config used per default for new participants.
+     *
+     * This instance might be modified but changes are only applied to newly
+     * created participants.
+     *
+     * @return default participant config
+     */
+    public ParticipantConfig getDefaulParticipantConfig() {
+        return this.defaultConfig;
+    }
+
 }
