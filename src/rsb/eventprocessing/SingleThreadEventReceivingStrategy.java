@@ -79,19 +79,25 @@ public class SingleThreadEventReceivingStrategy implements
                     // match
                     // TODO blocks filter potentially a long time
                     synchronized (SingleThreadEventReceivingStrategy.this.filters) {
+                        // CHECKSTYLE.OFF: LineLength - no way to convince
+                        // eclipse to wrap this
                         for (final Filter filter : SingleThreadEventReceivingStrategy.this.filters) {
                             if (filter.transform(eventToDispatch) == null) {
                                 continue outer;
                             }
                         }
+                        // CHECKSTYLE.ON: LineLength
                     }
 
                     // dispatch
                     // TODO suboptimal locking. blocks handlers a very long time
                     synchronized (SingleThreadEventReceivingStrategy.this.handlers) {
+                        // CHECKSTYLE.OFF: LineLength - no way to convince
+                        // eclipse to wrap this
                         for (final Handler handler : SingleThreadEventReceivingStrategy.this.handlers) {
                             handler.internalNotify(eventToDispatch);
                         }
+                        // CHECKSTYLE.ON: LineLength
                     }
 
                 }

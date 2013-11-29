@@ -141,13 +141,16 @@ public class LimitedQueue<ElementType> implements BlockingQueue<ElementType> {
     }
 
     @Override
-    public
+    // CHECKSTYLE.OFF: LineLength - Eclipse will not format this better
+            public
             boolean
             addAll(@SuppressWarnings("PMD.ShortVariable") final Collection<? extends ElementType> c) {
         synchronized (this) {
             return this.queue.addAll(c);
         }
     }
+
+    // CHECKSTYLE.ON: LineLength
 
     @Override
     public boolean removeAll(
@@ -231,6 +234,7 @@ public class LimitedQueue<ElementType> implements BlockingQueue<ElementType> {
         return this.queue.contains(o);
     }
 
+    // CHECKSTYLE.OFF: LineLength - Eclipse will not format this better
     @Override
     public
             int
@@ -245,5 +249,6 @@ public class LimitedQueue<ElementType> implements BlockingQueue<ElementType> {
                     final int maxElements) {
         return this.queue.drainTo(c, maxElements);
     }
+    // CHECKSTYLE.ON: LineLength
 
 }

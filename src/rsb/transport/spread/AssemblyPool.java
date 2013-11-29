@@ -62,8 +62,10 @@ public class AssemblyPool {
                 new HashMap<Integer, FragmentedNotificationType.FragmentedNotification>();
         private final int requiredParts;
 
+        // CHECKSTYLE.OFF: LineLength - Eclipse will not format this better
         public Assembly(
                 @SuppressWarnings("PMD.LongVariable") final FragmentedNotification initialNotification) {
+            // CHECKSTYLE.ON: LineLength
             assert initialNotification.getNumDataParts() > 1;
             this.notifications.put(initialNotification.getDataPart(),
                     initialNotification);

@@ -53,8 +53,11 @@ public class Int64Converter implements Converter<ByteBuffer> {
             final long value = (Long) data;
             final byte[] backing = new byte[BYTES_PER_INT];
             for (int i = 0; i < BYTES_PER_INT; ++i) {
+                // CHECKSTYLE.OFF: LineLength - no way to convince
+                // eclipse to wrap this
                 backing[i] =
                         (byte) ((value & (MASK << (i * BYTE_LENGTH))) >> (i * BYTE_LENGTH));
+                // CHECKSTYLE.ON: LineLength
             }
             final ByteBuffer serialized = ByteBuffer.wrap(backing);
             return new WireContents<ByteBuffer>(serialized,

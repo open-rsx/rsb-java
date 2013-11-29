@@ -270,6 +270,7 @@ public class MetaData {
         this.userInfos.put(key, value);
     }
 
+    // CHECKSTYLE.OFF: AvoidInlineConditionals - Simplify code in this case
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -288,6 +289,7 @@ public class MetaData {
                 + ((this.userTimes == null) ? 0 : this.userTimes.hashCode());
         return result;
     }
+    // CHECKSTYLE.ON: AvoidInlineConditionals
 
     @Override
     public boolean equals(final Object obj) {

@@ -60,28 +60,67 @@ public class InformerState<DataType> {
         this.informer = informer;
     }
 
+    /**
+     * Implements {@link Informer#activate()}.
+     *
+     * @throws InitializeException
+     *             initialization error
+     */
     protected void activate() throws InitializeException {
         LOG.warning("invalid state exception during activate call");
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
+    /**
+     * Implements {@link Informer#deactivate()}.
+     *
+     * @throws RSBException
+     *             generic error
+     * @throws InterruptedException
+     *             error while waiting for termination
+     */
     protected void deactivate() throws RSBException, InterruptedException {
         LOG.warning("invalid state exception during deactivate call");
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
+    /**
+     * Implements {@link Informer#send(Event)}.
+     *
+     * @param event
+     *            event to send
+     * @return sent event with changed meta data
+     * @throws RSBException
+     *             sending error
+     */
     protected Event send(@SuppressWarnings("unused") final Event event)
             throws RSBException {
-        LOG.warning("invalid state exception during call to send");
+        LOG.warning("Method send(Event) no implemented for informer state "
+                + this);
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
+    /**
+     * Implements {@link Informer#send(Object)}.
+     *
+     * @param data
+     *            data to send
+     * @return sent event with set meta data
+     * @throws RSBException
+     *             sending error
+     */
     protected Event send(@SuppressWarnings("unused") final DataType data)
             throws RSBException {
-        LOG.warning("invalid state exception during call to send");
+        LOG.warning("Method send(DataType) no implemented for informer state "
+                + this);
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
 
+    /**
+     * Returns the {@link Informer} instance this state operates in.
+     *
+     * @return informer
+     */
     public Informer<DataType> getInformer() {
         return this.informer;
     }

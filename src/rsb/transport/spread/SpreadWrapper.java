@@ -73,9 +73,19 @@ public class SpreadWrapper implements Activatable {
 
     private boolean connectionLost = false;
 
-    // TODO think about sub-classing SpreadConnection
-    // TODO leave the complex stuff for SpreadPort
-
+    /**
+     * Creates a new instance for the given settings. Connection will be
+     * established during {@link #activate()}.
+     *
+     * @param spreadHost
+     *            host to connect to
+     * @param spreadPort
+     *            port to connect to
+     * @param tcpNoDelay
+     *            use tcp no delay?
+     * @throws UnknownHostException
+     *             host name cannot be resolved
+     */
     public SpreadWrapper(final String spreadHost, final int spreadPort,
             final boolean tcpNoDelay) throws UnknownHostException {
 
@@ -156,6 +166,14 @@ public class SpreadWrapper implements Activatable {
         ACTIVATED, DEACTIVATED
     };
 
+    /**
+     * If connected, joins the specified group. Otherwise, call is ignored.
+     *
+     * @param group
+     *            group to join
+     * @throws SpreadException
+     *             error joining
+     */
     public void join(final String group) throws SpreadException {
         this.checkConnection();
         final SpreadGroup grp = new SpreadGroup();
@@ -164,13 +182,13 @@ public class SpreadWrapper implements Activatable {
         LOG.fine("Joined SpreadGroup with name: " + group);
     }
 
-    protected boolean isConnectionLost() {
+    private boolean isConnectionLost() {
         synchronized (this.conn) {
             return this.connectionLost;
         }
     }
 
-    protected void checkConnection() {
+    private void checkConnection() {
         if (this.conn == null) {
             return; // not initialized yet
         }
@@ -217,6 +235,13 @@ public class SpreadWrapper implements Activatable {
 
     }
 
+    /**
+     * Sends the given message.
+     *
+     * @param msg
+     *            the message to send
+     * @return <code>true</code> if sent correctly, else <code>false</code>
+     */
     public boolean send(final DataMessage msg) {
 
         // check group names for length
@@ -281,19 +306,25 @@ public class SpreadWrapper implements Activatable {
         }
     }
 
-    public void leave(final String type) {
+    /**
+     * If connected and joined, leaves the specified group.
+     *
+     * @param group
+     *            the group to leave
+     */
+    public void leave(final String group) {
         if (this.status == State.ACTIVATED) {
             final Iterator<SpreadGroup> groupIt = this.groups.iterator();
             while (groupIt.hasNext()) {
                 final SpreadGroup grp = groupIt.next();
-                if (grp.toString().equals(type)) {
+                if (grp.toString().equals(group)) {
                     try {
                         grp.leave();
                     } catch (final SpreadException e) {
                         // this should not happen
                         assert false;
                         LOG.log(Level.WARNING, "Error leaving spread group "
-                                + type, e);
+                                + group, e);
                     }
                     groupIt.remove();
                     LOG.info("SpreadGroup '" + grp + "' has been left.");
@@ -301,7 +332,7 @@ public class SpreadWrapper implements Activatable {
                 }
                 if (!groupIt.hasNext()) {
                     LOG.warning("Couldn't leave requested group with id: "
-                            + type);
+                            + group);
                 }
             }
         }
@@ -320,6 +351,11 @@ public class SpreadWrapper implements Activatable {
         return this.status == State.ACTIVATED;
     }
 
+    /**
+     * Returns the name of the private spread group for the wrapped connection.
+     *
+     * @return name of the group or <code>null</code> if not connected so far.
+     */
     public String getPrivateGroup() {
         return this.privGrpId;
     }
@@ -332,15 +368,36 @@ public class SpreadWrapper implements Activatable {
         super.finalize();
     }
 
+    /**
+     * Indicate whether this wrapper is currently successfully connected to a
+     * spread daemon.
+     *
+     * @return <code>true</code> if connected, else <code>false</code>
+     */
     public boolean isConnected() {
         return this.conn.isConnected();
     }
 
+    /**
+     * Receive the next message from the spread connection in groups this
+     * wrapper has joined. Blocks if no message is available.
+     *
+     * @return the next message
+     * @throws InterruptedIOException
+     *             interrupted while waiting for the message
+     * @throws SpreadException
+     *             error while reading the next message
+     */
     public SpreadMessage receive() throws InterruptedIOException,
             SpreadException {
         return this.conn.receive();
     }
 
+    /**
+     * Indicate whether a shutdown was requested.
+     *
+     * @return <code>true</code> if requested.
+     */
     public boolean isShutdown() {
         return this.shutdown;
     }
