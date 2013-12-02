@@ -241,7 +241,6 @@
 		</javac>
 		<javac destdir="${build.dir.spread}" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" includeantruntime="false">
 			<src path="${src.dir.spread}" />
-			<compilerarg value="-Xlint" />
 			<classpath refid="compile.classpath" />
 		</javac>
 		<javac destdir="${build.dir.src}" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" includeantruntime="false">
