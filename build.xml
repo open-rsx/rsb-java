@@ -11,7 +11,7 @@
 	<property environment="env" />
 	<property name="src.dir" location="src" />
 	<property name="src.dir.protocol" location="generated-protocol" />
-	<property name="src.dir.spread" location="spread-4.0.0" />
+	<property name="src.dir.spread" location="spread-src" />
 	<property name="src.dir.test" location="test" />
 	<property name="src.dir.examples" location="examples" />
 	<property name="build.dir" location="build" />
