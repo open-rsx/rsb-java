@@ -18,7 +18,7 @@
  * The Creators of Spread are:
  *  Yair Amir, Michal Miskin-Amir, Jonathan Stanton, John Schultz.
  *
- *  Copyright (C) 1993-2006 Spread Concepts LLC <info@spreadconcepts.com>
+ *  Copyright (C) 1993-2013 Spread Concepts LLC <info@spreadconcepts.com>
  *
  *  All Rights Reserved.
  *
@@ -88,7 +88,7 @@ public class SpreadConnection
 	// The Spread version.
 	//////////////////////
         private static final int SP_MAJOR_VERSION = 4;
-	private static final int SP_MINOR_VERSION = 0;
+	private static final int SP_MINOR_VERSION = 3;
 	private static final int SP_PATCH_VERSION = 0;
 
         // The default authentication method
@@ -140,11 +140,11 @@ public class SpreadConnection
 	
 	// Basic listeners.
 	///////////////////
-	protected Vector<BasicMessageListener> basicListeners;
+	protected Vector basicListeners;
 	
 	// Advanced listeners.
 	//////////////////////
-	protected Vector<AdvancedMessageListener> advancedListeners;
+	protected Vector advancedListeners;
 	
 	// The daemon's address.
 	////////////////////////
@@ -199,7 +199,7 @@ public class SpreadConnection
 	// For commands with an argument (all except
 	// for BUFFER_DISCONNECT), the argument follows in the Vector.
 	//////////////////////////////////////////////////////////////
-	private Vector<Object> listenerBuffer;
+	private Vector listenerBuffer;
 	
 	// Listener buffer commands.
 	// These are Object's because they need to be added to a Vector.
@@ -318,6 +318,49 @@ public class SpreadConnection
 
     }
 
+    // Reads from inputsocket until all bytes read or an exception raised which indicates the read is
+    // failing and the socket will be closed
+    //////////////////////////////////////////////////////////////////
+    private void readBytesFromSocketListener(byte buffer[], String bufferTypeString) throws SpreadException, InterruptedIOException
+    {
+	int byteIndex;
+	int rcode;
+	boolean keep_going = true;
+
+	byteIndex = 0;
+	while( keep_going == true )
+	{
+	    keep_going = false;
+	    try {
+		while( byteIndex < buffer.length) 
+		{
+		    rcode = socketInput.read(buffer, byteIndex, buffer.length - byteIndex);
+		    if(rcode == -1)
+		    {
+			throw new SpreadException("Connection closed while reading " + bufferTypeString);
+		    }
+		    byteIndex += rcode;
+		}
+
+	    } 
+	    catch( InterruptedIOException e) {
+		if ( listener != null && listener.signal == true )
+		{
+		    throw( e );
+		}
+		if ( e.bytesTransferred >= 0 ) {
+		    byteIndex += e.bytesTransferred;
+		}
+		keep_going = true;
+	    }
+	    catch(IOException e)
+	    {
+		throw new SpreadException("readBytesFromSocketListener(): read() " + e);
+	    }
+	}
+
+    }
+
 	
 	// Gets a string from an array of bytes.
 	////////////////////////////////////////
@@ -352,7 +395,6 @@ public class SpreadConnection
 	/////////////////////////////////////////
 	private void setBufferSizes() throws SpreadException
 	{
-		
 /* NOT SUPPORTED IN 1.1			
 		try
 		{
@@ -532,7 +574,7 @@ NOT SUPPORTED IN 1.1	*/
 	/////////////////////////////////////
 	private void instantiateAuthMethod() throws SpreadException
 	{
-		Class<?> authclass;
+		Class authclass;
 
 		//		System.out.println("Authname is " + authName);
 		//		System.out.println("class name is " + authClassName);
@@ -704,12 +746,12 @@ NOT SUPPORTED IN 1.1	*/
 		listenersynchro = new Boolean(false);
 		// Init listeners.
 		//////////////////
-		basicListeners = new Vector<BasicMessageListener>();
-		advancedListeners = new Vector<AdvancedMessageListener>();
+		basicListeners = new Vector();
+		advancedListeners = new Vector();
 		
 		// Init listener command buffer.
 		////////////////////////////////
-		listenerBuffer = new Vector<Object>();
+		listenerBuffer = new Vector();
 
 		// Init default authentication
 		//////////////////////////////
@@ -943,52 +985,54 @@ NOT SUPPORTED IN 1.1	*/
 			//////////////////////////////////
 			return;
 		}
+		try {
+		    // Get a new message.
+		    /////////////////////
+		    SpreadMessage killMessage = new SpreadMessage();
 		
-		// Get a new message.
-		/////////////////////
-		SpreadMessage killMessage = new SpreadMessage();
+		    // Send it to our private group.
+		    ////////////////////////////////
+		    killMessage.addGroup(group);
 		
-		// Send it to our private group.
-		////////////////////////////////
-		killMessage.addGroup(group);
+		    // Set the service type.
+		    ////////////////////////
+		    killMessage.setServiceType(SpreadMessage.KILL_MESS);
 		
-		// Set the service type.
-		////////////////////////
-		killMessage.setServiceType(SpreadMessage.KILL_MESS);
+		    // Send the message.
+		    ////////////////////
+		    multicast(killMessage);
 		
-		// Send the message.
-		////////////////////
-		multicast(killMessage);
-		
-		// Check for a listener thread.
-		///////////////////////////////
-		if(listener != null)
-		{
+		    // Check for a listener thread.
+		    ///////////////////////////////
+		    if(listener != null)
+		    {
 			// Stop it.
 			///////////
 			stopListener();
-		}
+		    }
 		
-		// Close the socket.
-		////////////////////
-		try
-		{
+		    // Close the socket.
+		    ////////////////////
+		    try
+		    {
 			socket.close();
-		}
-		catch(IOException e)
-		{
+		    }
+		    catch(IOException e)
+		    {
 			throw new SpreadException("close(): " + e);
+		    }
+		} 
+		finally {
+		    connected = false;
 		}
-
-		connected = false;
 	}
 	
 	// Enable/disable TCP_NODELAY on the socket used for this connection.
 	/////////////////////////////////
 	/**
-	 * Enable/disable TCP_NODELAY (disable/enable Nagle's algorithm) on the 
-	 * socket used for this connection. 
-	 * 
+	 * Enable/disable TCP_NODELAY (disable/enable Nagle's algorithm) on the
+	 * socket used for this connection.
+	 *
 	 * @param  noDelay  If TCP_NODELAY should be enabled or not.
 	 * @throws  SpreadException  if we could not set the TCP_NODELAY flag.
 	 */
@@ -1005,7 +1049,7 @@ NOT SUPPORTED IN 1.1	*/
 			throw se;
 		}
 	}
-	
+
 	// Gets the user's private group.
 	/////////////////////////////////
 	/**
@@ -1066,23 +1110,15 @@ NOT SUPPORTED IN 1.1	*/
 		///////////////////
 		byte header[] = new byte[MAX_GROUP_NAME+16];
 		int headerIndex;
-		int rcode;
-		try
-		{
-			for(headerIndex = 0 ; headerIndex < header.length ; headerIndex += rcode)
-			{
-				rcode = socketInput.read(header, headerIndex, header.length - headerIndex);
-				if(rcode == -1)
-				{
-					throw new SpreadException("Connection closed while reading header");
-				}
-			}
+
+		try 
+	        {
+		    readBytesFromSocketListener( header, "message header" );
 		}
 		catch(InterruptedIOException e) {
 		    throw e;
-		}
-		catch(IOException e)
-		{
+		} 
+		catch(IOException e) {
 			throw new SpreadException("read(): " + e);
 		}
 		
@@ -1190,25 +1226,17 @@ NOT SUPPORTED IN 1.1	*/
                 {
                         // Read in the old type and or with reject type field.
                         byte oldtypeBuffer[] = new byte[4];
-                        try
-                        {
-                                for(int oldtypeIndex = 0 ; oldtypeIndex < oldtypeBuffer.length ; )
-                                {
-                                        rcode = socketInput.read(oldtypeBuffer, oldtypeIndex, oldtypeBuffer.length - oldtypeIndex);
-                                        if(rcode == -1)
-                                        {
-                                                throw new SpreadException("Connection closed while reading groups");
-                                        }
-                                        oldtypeIndex += rcode;
-                                }
-                        }
-                        catch(InterruptedIOException e) {
-                                throw e;
-                        }
-                        catch(IOException e)
-                        {
-                                throw new SpreadException("read(): " + e);
-                        }
+			try 
+		        {
+			    readBytesFromSocketListener( oldtypeBuffer, "message reject type" );
+			}
+			catch(InterruptedIOException e) {
+			    throw e;
+			} 
+			catch(IOException e) {
+			    throw new SpreadException("read(): " + e);
+			}
+
                         int oldType = toInt(oldtypeBuffer, 0);
                         if ( sameEndian(serviceType) == false )
                             oldType = flip(oldType);
@@ -1219,33 +1247,24 @@ NOT SUPPORTED IN 1.1	*/
 		// Read in the group names.
 		///////////////////////////
 		byte buffer[] = new byte[numGroups * MAX_GROUP_NAME];
-		try
+		try 
 		{
-			for(int bufferIndex = 0 ; bufferIndex < buffer.length ; )
-			{
-				rcode = socketInput.read(buffer, bufferIndex, buffer.length - bufferIndex);
-				if(rcode == -1)
-				{
-					throw new SpreadException("Connection closed while reading groups");
-				}
-				bufferIndex += rcode;
-			}
+		    readBytesFromSocketListener( buffer, "message group name" );
 		}
 		catch(InterruptedIOException e) {
 		    throw e;
+		} 
+		catch(IOException e) {
+		    throw new SpreadException("read(): " + e);
 		}
-		catch(IOException e)
-		{
-			throw new SpreadException("read(): " + e);
-		}
-		
+
 		// Clear the endian type.
 		/////////////////////////
 		serviceType = clearEndian(serviceType);
 
 		// Get the groups from the buffer.
 		//////////////////////////////////
-		Vector<SpreadGroup> groups = new Vector<SpreadGroup>(numGroups);
+		Vector groups = new Vector(numGroups);
 		for(int bufferIndex = 0 ; bufferIndex < buffer.length ; bufferIndex += MAX_GROUP_NAME)
 		{
 			// Translate the name into a group and add it to the vector.
@@ -1256,26 +1275,17 @@ NOT SUPPORTED IN 1.1	*/
 		// Read in the data.
 		////////////////////
 		byte data[] = new byte[dataLen];
-		try
+		try 
 		{
-			for(int dataIndex = 0 ; dataIndex < dataLen ; )
-			{
-				rcode = socketInput.read(data, dataIndex, dataLen - dataIndex);
-				if(rcode == -1)
-				{
-					throw new SpreadException("Connection close while reading data");
-				}
-				dataIndex += rcode;
-			}
+		    readBytesFromSocketListener( data, "message body" );
 		}
 		catch(InterruptedIOException e) {
 		    throw e;
+		} 
+		catch(IOException e) {
+		    throw new SpreadException("read(): " + e);
 		}
-		catch(IOException e)
-		{
-			throw new SpreadException("read():" + e);
-		}
-		
+
 		// Is it a membership message?
 		//////////////////////////////
 		MembershipInfo membershipInfo;
@@ -1501,18 +1511,16 @@ NOT SUPPORTED IN 1.1	*/
 		//////////////////
 		listener.signal = true;
 		
-		// Listener thread must not join itself, else will deadlock
+		// Wait for the thread to die, to avoid inconsistencies.
 		////////////////////////////////////////////////////////
-		if(Thread.currentThread().getId() != listener.getId())
+		if ( listener != null && ! listener.equals(Thread.currentThread()) ) 
 		{
-			// Wait for the thread to die, to avoid inconsistencies.
-			////////////////////////////////////////////////////////
-			try {
-				listener.join();
-			} 
-			catch ( InterruptedException e ) {
-				// Ignore
-			}
+		    try {
+			listener.join();
+		    } 
+		    catch ( InterruptedException e ) {
+			// Ignore
+		    }
 		}
 		// Clear the variable.
 		//////////////////////
@@ -1528,7 +1536,7 @@ NOT SUPPORTED IN 1.1	*/
 	 * @param  listener  the listener to remove
 	 * @see  SpreadConnection#add(BasicMessageListener)
 	 */
-	public void remove(BasicMessageListener listener)
+        public void remove(BasicMessageListener listener)
 	{
 	synchronized (listenersynchro) {
 		// Are we in a listener callback?
@@ -1551,7 +1559,7 @@ NOT SUPPORTED IN 1.1	*/
 		
 		// Check if we're connected.
 		////////////////////////////
-		if(connected == true)
+		if (connected == true)
 		{
 			// Check if there are any more listeners.
 			/////////////////////////////////////////
@@ -1564,7 +1572,7 @@ NOT SUPPORTED IN 1.1	*/
 		}
 	}
 	}
-	
+
 	// Removes an advanced message listener.
 	////////////////////////////////////////
 	/**
@@ -1574,7 +1582,7 @@ NOT SUPPORTED IN 1.1	*/
 	 * @param  listener  the listener to remove
 	 * @see SpreadConnection#add(AdvancedMessageListener)
 	 */
-	public void remove(AdvancedMessageListener listener)
+        public void remove(AdvancedMessageListener listener)
 	{
 	synchronized (listenersynchro) {
 		// Are we in a listener callback?
@@ -1597,7 +1605,7 @@ NOT SUPPORTED IN 1.1	*/
 		
 		// Check if we're connected.
 		////////////////////////////
-		if(connected == true)
+		if (connected == true)
 		{
 			// Check if there are any more listeners.
 			/////////////////////////////////////////
@@ -1621,7 +1629,7 @@ NOT SUPPORTED IN 1.1	*/
 		
 		// If true, the connection wants the thread to stop.
 		////////////////////////////////////////////////////
-		protected boolean signal;
+		protected volatile boolean signal;
 		
 		// The constructor.
 		///////////////////
@@ -1635,6 +1643,7 @@ NOT SUPPORTED IN 1.1	*/
 			// Be a daemon.
 			///////////////
 			this.setDaemon(true);
+
 		}
 		
 		// The thread's entry point.
@@ -1671,35 +1680,51 @@ NOT SUPPORTED IN 1.1	*/
 				}
 				while(true)
 				{
-					// Get a lock on the connection.
-					////////////////////////////////
-					synchronized(connection)
-					{
-						// Do they want us to stop?
-						///////////////////////////
-						if(signal == true)
-						{
-						    // We're done.
-						    //////////////
-						    // System.out.println("LISTENER: told to exit so returning");
-						    try {
-							connection.socket.setSoTimeout(previous_socket_timeout);
-						    }
-						    catch( SocketException e ) {
-							// just ignore for now 
-							System.out.println("socket error setting timeout" + e.toString() );
-						    }
-
-						    return;
-						}
+				    // Do they want us to stop?
+				    ///////////////////////////
+				    if(signal == true)
+				    {
+					// We're done.
+					//////////////
+					System.out.println("LISTENER: told to exit so returning");
+					try {
+					    connection.socket.setSoTimeout(previous_socket_timeout);
+					}
+					catch( SocketException e ) {
+					    // just ignore for now 
+					    System.out.println("socket error setting timeout" + e.toString() );
+					}
+					
+					return;
+				    }
+				    // Get a lock on the connection.
+				    ////////////////////////////////
+				    synchronized(connection)
+				    {
 							
 						// Get a message.
 						// WE WILL BLOCK HERE UNTIL DATA IS AVAILABLE
 						// or 100 MS expires
 						/////////////////
+    					        message = null;
 						try {
+					
 						    synchronized(rsynchro) {
-							message = connection.internal_receive();
+							boolean keep_going = true;
+							while( keep_going == true )
+							{
+							    keep_going = false;
+							    try {
+								message = connection.internal_receive();
+							    } 
+							    catch( InterruptedIOException e) {
+								if ( signal  == true )
+								{
+								    throw( e );
+								}
+								keep_going = true;
+							    }
+							}
 						    }
 						    // Calling listeners.
 						    /////////////////////
@@ -1711,7 +1736,7 @@ NOT SUPPORTED IN 1.1	*/
 						    {
 							    // Get the listener.
 							    ////////////////////
-							    basicListener = basicListeners.elementAt(i);
+							    basicListener = (BasicMessageListener)basicListeners.elementAt(i);
 									
 							    // Tell it.
 							    ///////////
@@ -1724,7 +1749,7 @@ NOT SUPPORTED IN 1.1	*/
 						    {
 							    // Get the listener.
 							    ////////////////////
-							    advancedListener = advancedListeners.elementAt(i);
+							    advancedListener = (AdvancedMessageListener)advancedListeners.elementAt(i);
 									
 							    // What type of message is it?
 							    //////////////////////////////
@@ -1810,10 +1835,10 @@ NOT SUPPORTED IN 1.1	*/
 									
 								// Remove it.
 								/////////////
-								connection.remove(basicListener);
+								basicListeners.removeElement(basicListener);
 
-									// Remove the listener from the Vector.
-									///////////////////////////////////////
+								// Remove the listener from the Vector.
+								///////////////////////////////////////
 								listenerBuffer.removeElementAt(0);
 							}
 							else if(command == BUFFER_REMOVE_ADVANCED)
@@ -1824,14 +1849,34 @@ NOT SUPPORTED IN 1.1	*/
 									
 								// Remove it.
 								/////////////
-								connection.remove(advancedListener);
+								advancedListeners.removeElement(advancedListener);
 								// Remove the listener from the Vector.
 								///////////////////////////////////////
 								listenerBuffer.removeElementAt(0);
 							}
 						}
+						// Check if there are any more listeners, if not, then quit listener thread. 
+						/////////////////////////////////////////
+						if((basicListeners.size() == 0) && (advancedListeners.size() == 0))
+						{
+						    // Terminate and return from this listener thread.
+						    ////////////////////////////
+						    System.out.println("LISTENER: no current listeners registered so terminate Listener thread.");
+						    try {
+							connection.socket.setSoTimeout(previous_socket_timeout);
+						    }
+						    catch( SocketException e ) {
+							// just ignore for now 
+							System.out.println("socket error setting timeout" + e.toString() );
+						    }
+						    
+						    listener = null;
+						    // Exit from running Listener Thread
+						    return;
+						}
+
 					}
-					
+
 					// There are no messages waiting, take a break.
 					///////////////////////////////////////////////
 					yield();
@@ -1841,8 +1886,7 @@ NOT SUPPORTED IN 1.1	*/
 			{
 				// Nothing to do but ignore it.
 				///////////////////////////////
-				// TODO add logging otherwise ignore it
-			    //System.out.println("SpreadException: " + e.toString() );
+			    System.out.println("SpreadException: " + e.toString() );
 			}
 		}
 	}
@@ -1957,7 +2001,14 @@ NOT SUPPORTED IN 1.1	*/
 		}
 	}
 
-	public boolean isConnected() {
+	// Returns the connected state of the connection.
+	/////////////////////////////////////////////////
+	/**
+	  * Returns the current connection state.
+	  */
+
+	public boolean isConnected()
+	{
 		return connected;
 	}
 }

@@ -11,7 +11,7 @@
 	<property environment="env" />
 	<property name="src.dir" location="src" />
 	<property name="src.dir.protocol" location="generated-protocol" />
-	<property name="src.dir.spread" location="spread-4.0.0" />
+	<property name="src.dir.spread" location="spread-src" />
 	<property name="src.dir.test" location="test" />
 	<property name="src.dir.examples" location="examples" />
 	<property name="build.dir" location="build" />
@@ -241,7 +241,6 @@
 		</javac>
 		<javac destdir="${build.dir.spread}" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" includeantruntime="false">
 			<src path="${src.dir.spread}" />
-			<compilerarg value="-Xlint" />
 			<classpath refid="compile.classpath" />
 		</javac>
 		<javac destdir="${build.dir.src}" target="${rsb.java.compatibility}" source="${rsb.java.compatibility}" debug="on" deprecation="on" includeantruntime="false">

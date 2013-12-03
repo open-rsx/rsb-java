@@ -18,7 +18,7 @@
  * The Creators of Spread are:
  *  Yair Amir, Michal Miskin-Amir, Jonathan Stanton, John Schultz.
  *
- *  Copyright (C) 1993-2006 Spread Concepts LLC <info@spreadconcepts.com>
+ *  Copyright (C) 1993-2013 Spread Concepts LLC <info@spreadconcepts.com>
  *
  *  All Rights Reserved.
  *
@@ -110,7 +110,7 @@ public class SpreadMessage
 	
 	// The groups this message is from/to.
 	//////////////////////////////////////
-	protected Vector<SpreadGroup> groups;
+	protected Vector groups;
 	
 	// The sender's group.
 	//////////////////////
@@ -142,7 +142,7 @@ public class SpreadMessage
 	
 	// Creates a new incoming message.
 	//////////////////////////////////
-	protected SpreadMessage(int serviceType, Vector<SpreadGroup> groups, SpreadGroup sender, byte[] data, short type, boolean endianMismatch, MembershipInfo membershipInfo)
+	protected SpreadMessage(int serviceType, Vector groups, SpreadGroup sender, byte[] data, short type, boolean endianMismatch, MembershipInfo membershipInfo)
 	{
 		// Set member variables.
 		////////////////////////
@@ -168,7 +168,7 @@ public class SpreadMessage
 		outgoing = true;
 		content = CONTENT_DATA;
 		serviceType = RELIABLE_MESS;
-		groups = new Vector<SpreadGroup>();
+		groups = new Vector();
 		data = new byte[0];
 	}
 	
@@ -599,11 +599,11 @@ public class SpreadMessage
 	 * @throws  SpreadException  if there is an error reading the objects
 	 * @see  SpreadMessage#digest(Serializable)
 	 */
-	public Vector<Object> getDigest() throws SpreadException
+	public Vector getDigest() throws SpreadException
 	{
 		// Make a vector to hold the objects.
 		/////////////////////////////////////
-		Vector<Object> objects = new Vector<Object>();
+		Vector objects = new Vector();
 			
 		// Setup the byte array stream.
 		///////////////////////////////
@@ -789,7 +789,7 @@ public class SpreadMessage
 		
 		// Copy the data.
 		/////////////////
-		this.data = data.clone();
+		this.data = (byte[])data.clone();
 	}
 	
 	// Sets the message to send the object.
@@ -946,12 +946,11 @@ public class SpreadMessage
 	 * 
 	 * @return  a copy of this message
 	 */
-	@SuppressWarnings("unchecked")
 	public Object clone()
 	{
 		SpreadMessage message = new SpreadMessage();
 		message.setServiceType(serviceType);
-		message.groups = (Vector<SpreadGroup>) groups.clone();
+		message.groups = (Vector)groups.clone();
 		message.setType(type);
 		message.setData(data);
 		message.content = content;

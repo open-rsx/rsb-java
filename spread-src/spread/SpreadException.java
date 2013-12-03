@@ -18,7 +18,7 @@
  * The Creators of Spread are:
  *  Yair Amir, Michal Miskin-Amir, Jonathan Stanton, John Schultz.
  *
- *  Copyright (C) 1993-2006 Spread Concepts LLC <info@spreadconcepts.com>
+ *  Copyright (C) 1993-2013 Spread Concepts LLC <info@spreadconcepts.com>
  *
  *  All Rights Reserved.
  *
@@ -36,23 +36,36 @@
 package spread;
 
 /**
- * Objects of a class that implements the SpreadAuthInterface interface can
- * act as the client side of an authentication protocol to complete a Spread connection.
- * The connect method {@link SpreadConnection#connect(InetAddress, int, String, boolean, boolean)} 
- * will call the {@link SpreadAuthInterface#authenticate()} method during a connection.
- * If the module wants to deny the connection it should raise a SpreadException.
- * If it wants to allow the connection it should return normally.
+ * A SpreadException is thrown whenever a problem occurs in a spread method.
+ * One example is calling a SpreadConnection object's {@link SpreadConnection#receive()} method
+ * before calling {@link SpreadConnection#connect(InetAddress, int, String, boolean, boolean)}
+ * on the object.
+ * <p>
+ * More exceptions will probably be provided in the future, to give more detailed error information.
+ * However, these exceptions will all be extended from SpreadException, so any exception-handling
+ * code written to handle SpreadException's will catch the new exceptions equally well.
  */
-public interface SpreadAuthInterface
+public class SpreadException extends Exception
 {
-	// Authenticate a spread connection
-	////////////////////////////////////////////
+	// Constructor.
+	///////////////
 	/**
-	 * This method will be called during the establishment of a Spread connection.
-	 * It should run whatever protocol is necessary to authenticate the connection
-	 * and return normally to allow the connection, or raise a SpreadException to deny
-	 * the connection.
-	 * 
+	 * Creates a SpreadException with no error message.
 	 */
-    public void authenticate() throws SpreadException;
+	public SpreadException()
+	{
+		super();
+	}
+	
+	// Constructor.
+	///////////////
+	/**
+	 * Creates a SpreadException with an error message.
+	 * 
+	 * @param  errorMessage  a description of the error
+	 */
+	public SpreadException(String errorMessage)
+	{
+		super(errorMessage);
+	}
 }

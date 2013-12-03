@@ -18,7 +18,7 @@
  * The Creators of Spread are:
  *  Yair Amir, Michal Miskin-Amir, Jonathan Stanton, John Schultz.
  *
- *  Copyright (C) 1993-2006 Spread Concepts LLC <info@spreadconcepts.com>
+ *  Copyright (C) 1993-2013 Spread Concepts LLC <info@spreadconcepts.com>
  *
  *  All Rights Reserved.
  *
@@ -68,7 +68,7 @@ public class MembershipInfo
 	
 	// The group's members.
 	///////////////////////
-	private Vector<SpreadGroup> members;
+	private Vector members;
 	
 	// The private groups of members that joined/left/disconected/stayed.
 	// For caused-by join/leave/disconnect, this has 1 element, with 1 member.
@@ -85,7 +85,7 @@ public class MembershipInfo
 	// Constructor.
 	///////////////
 	protected MembershipInfo(SpreadConnection connection, int serviceType,
-													 Vector<SpreadGroup> groups, SpreadGroup sender,
+													 Vector groups, SpreadGroup sender,
 													 byte data[], boolean daemonEndianMismatch)
 	{
 		// Set local variables.
@@ -157,7 +157,7 @@ public class MembershipInfo
 					dataIndex += 4;
 					for( int j = 0 ; j < numMembers ; ++j ) {
 							virtualSynchronySets[i].addMember( connection.toGroup(data, dataIndex) );
-							dataIndex += SpreadConnection.MAX_GROUP_NAME;
+							dataIndex += connection.MAX_GROUP_NAME;
 					}
 			}
 		}
