@@ -146,8 +146,8 @@ public abstract class Method implements Activatable {
         this.name = name;
         // TODO make sure that case doesn't matter (generally!)
         this.requestScope =
-                server.getScope().concat(new Scope("/request/" + name));
-        this.replyScope = server.getScope().concat(new Scope("/reply/" + name));
+                server.getScope().concat(new Scope("/" + name));
+        this.replyScope = server.getScope().concat(new Scope("/" + name));
         this.factory = Factory.getInstance();
         this.state = new MethodStateInactive();
     }
