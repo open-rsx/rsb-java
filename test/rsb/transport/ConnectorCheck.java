@@ -217,6 +217,50 @@ public abstract class ConnectorCheck {
         inPort.deactivate();
     }
 
+    @Test
+    public void noMoreEventsAfterDeactivate() throws Throwable {
+
+        // create an event to send
+        final Scope scope =
+                OUT_BASE_SCOPE.concat(new Scope("/test/deactivate/stuff"));
+        final Event event = new Event(scope, String.class, "a test string");
+        event.setId(new ParticipantId(), 634);
+
+        // create a receiver to wait for event
+        final List<Event> receivedEvents = new ArrayList<Event>();
+        final InPushConnector inPort = createInConnector();
+        inPort.addHandler(new EventHandler() {
+
+            @Override
+            public void handle(final Event event) {
+                synchronized (receivedEvents) {
+                    receivedEvents.add(event);
+                    receivedEvents.notifyAll();
+                }
+            }
+
+        });
+        inPort.setScope(scope);
+        inPort.activate();
+
+        Thread.sleep(500);
+
+        // deactivate the in connector and send an event. It must not be
+        // received
+        inPort.deactivate();
+
+        Thread.sleep(500);
+
+        getOutConnector().push(event);
+
+        Thread.sleep(500);
+
+        synchronized (receivedEvents) {
+            assertTrue(receivedEvents.isEmpty());
+        }
+
+    }
+
     protected OutConnector getOutConnector() {
         return this.outConnector;
     }

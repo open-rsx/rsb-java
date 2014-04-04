@@ -61,4 +61,12 @@ public interface Bus extends Activatable {
      */
     void addNotificationReceiver(NotificationReceiver receiver);
 
+    /**
+     * Removes a local observer for notifications if registered before.
+     *
+     * @param receiver
+     *            the receiver to remove
+     */
+    void removeNotificationReceiver(NotificationReceiver receiver);
+
 }

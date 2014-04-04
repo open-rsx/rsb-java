@@ -94,6 +94,11 @@ public class RefCountingBus implements Bus {
         this.bus.addNotificationReceiver(receiver);
     }
 
+    @Override
+    public void removeNotificationReceiver(final NotificationReceiver receiver) {
+        this.bus.removeNotificationReceiver(receiver);
+    }
+
     /**
      * Returns the underlying bus that is handled with reference counting. Do
      * not call {@link Bus#activate()} or {@link Bus#deactivate()} on this
