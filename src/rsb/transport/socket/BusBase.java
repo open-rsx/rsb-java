@@ -488,4 +488,9 @@ public abstract class BusBase implements Bus {
         this.receivers.add(receiver);
     }
 
+    @Override
+    public void removeNotificationReceiver(final NotificationReceiver receiver) {
+        this.receivers.remove(receiver);
+    }
+
 }
