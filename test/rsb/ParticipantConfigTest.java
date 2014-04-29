@@ -94,4 +94,18 @@ public class ParticipantConfigTest {
 
     }
 
+    @Test
+    public void copy() {
+
+        final ParticipantConfig template = new ParticipantConfig();
+        final TransportConfig transport = template.getOrCreateTransport("fooo");
+        transport.setEnabled(true);
+        transport.setConverters(DefaultConverterRepository
+                .getDefaultConverterRepository());
+        transport.getOptions().setProperty("blaaa", "blubb");
+
+        assertEquals(template, template.copy());
+
+    }
+
 }

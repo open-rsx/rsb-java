@@ -28,8 +28,11 @@
 
 package rsb.config;
 
+import java.util.Map.Entry;
+
 import rsb.converter.ConverterRepository;
 import rsb.util.Properties;
+import rsb.util.Property;
 
 /**
  * Represents the configuration of a single transport.
@@ -202,6 +205,25 @@ public class TransportConfig {
         builder.append(']');
 
         return builder.toString();
+
+    }
+
+    /**
+     * Creates a new instance as a copy of this one in the sense of a deep copy
+     * apart from the converters.
+     *
+     * @return deep copy
+     */
+    public TransportConfig copy() {
+
+        final TransportConfig copy = new TransportConfig(this.name);
+        copy.enabled = this.enabled;
+        copy.converters = this.converters;
+        for (final Entry<String, Property> entry : this.options) {
+            copy.options.setProperty(entry.getKey(), entry.getValue()
+                    .asString());
+        }
+        return copy;
 
     }
 

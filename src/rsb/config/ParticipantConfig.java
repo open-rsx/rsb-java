@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import rsb.eventprocessing.EventReceivingStrategyFactory;
@@ -130,6 +131,25 @@ public class ParticipantConfig {
     public void setReceivingStrategy(
             final EventReceivingStrategyFactory receivingStrategy) {
         this.receivingStrategy = receivingStrategy;
+    }
+
+    /**
+     * Creates a deep copy of this instance. Most attributes are copied deeply.
+     *
+     * @return deep copy
+     */
+    public ParticipantConfig copy() {
+
+        final ParticipantConfig copy = new ParticipantConfig();
+        copy.receivingStrategy = this.receivingStrategy;
+        // CHECKSTYLE.OFF: LineLength - no way to format this
+        for (final Entry<String, TransportConfig> entry : this.transportsByName.entrySet()) {
+            copy.transportsByName.put(entry.getKey(), entry.getValue().copy());
+        }
+        // CHECKSTYLE.ON: LineLength
+
+        return copy;
+
     }
 
     @Override
