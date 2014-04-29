@@ -148,4 +148,26 @@ public class ParticipantConfig {
 
     }
 
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE.OFF: AvoidInlineConditionals - this method is more
+        // readable with the inline conditionals
+        int result = 17 * this.transportsByName.hashCode();
+        result +=
+                31 * (this.receivingStrategy == null ? 0 : this.receivingStrategy
+                        .hashCode());
+        // CHECKSTYLE.ON: AvoidInlineConditionals
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ParticipantConfig)) {
+            return false;
+        }
+        final ParticipantConfig other = (ParticipantConfig) obj;
+        return this.transportsByName.equals(other.transportsByName)
+                && this.receivingStrategy.equals(other.receivingStrategy);
+    }
+
 }

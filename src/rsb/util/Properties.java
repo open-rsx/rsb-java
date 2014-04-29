@@ -235,4 +235,41 @@ public class Properties implements Iterable<Entry<String, Property>> {
 
     }
 
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE.OFF: AvoidInlineConditionals - this method is more
+        // readable with the inline conditionals
+        final int prime = 31;
+        int result = 1;
+        result =
+                prime
+                        * result
+                        + ((this.propertiesByName == null) ? 0
+                                : this.propertiesByName.hashCode());
+        return result;
+        // CHECKSTYLE.ON: AvoidInlineConditionals
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Properties)) {
+            return false;
+        }
+        final Properties other = (Properties) obj;
+        if (this.propertiesByName == null) {
+            if (other.propertiesByName != null) {
+                return false;
+            }
+        } else if (!this.propertiesByName.equals(other.propertiesByName)) {
+            return false;
+        }
+        return true;
+    }
+
 }

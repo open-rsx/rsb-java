@@ -149,4 +149,56 @@ public class TransportConfig {
 
     }
 
+    @SuppressWarnings("PMD.NPathComplexity")
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE.OFF: AvoidInlineConditionals - this method is more
+        // readable with the inline conditionals
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.enabled ? 1231 : 1237);
+        result =
+                prime * result
+                        + ((this.name == null) ? 0 : this.name.hashCode());
+        result =
+                prime
+                        * result
+                        + ((this.options == null) ? 0 : this.options.hashCode());
+        return result;
+        // CHECKSTYLE.ON: AvoidInlineConditionals
+    }
+
+    @SuppressWarnings({ "PMD.NPathComplexity", "PMD.CyclomaticComplexity" })
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof TransportConfig)) {
+            return false;
+        }
+        final TransportConfig other = (TransportConfig) obj;
+        if (this.enabled != other.enabled) {
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.options == null) {
+            if (other.options != null) {
+                return false;
+            }
+        } else if (!this.options.equals(other.options)) {
+            return false;
+        }
+        return true;
+    }
+
 }
