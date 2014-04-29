@@ -29,6 +29,7 @@ package rsb.util;
 
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -47,103 +48,10 @@ import java.util.Set;
  * @author jwienke
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public class Properties {
+public class Properties implements Iterable<Entry<String, Property>> {
 
     private final Map<String, Property> propertiesByName =
             new HashMap<String, Property>();
-
-    /**
-     * Representation of a single value inside {@link Properties} with support
-     * for interpretation of value strings in different formats.
-     *
-     * @author jwienke
-     */
-    public static class Property {
-
-        private final String value;
-
-        /**
-         * Creates a new property with the value given as a string.
-         *
-         * @param value
-         *            value string
-         */
-        Property(final String value) {
-            this.value = value.trim();
-        }
-
-        /**
-         * Returns the string representation of the property value.
-         *
-         * @return string value
-         */
-        public String asString() {
-            return this.value;
-        }
-
-        /**
-         * Interprets the value string as a boolean.
-         *
-         * @return <code>true</code> if the property value contains a string
-         *         indicating <code>true</code>, else <code>false</code>
-         */
-        public boolean asBoolean() {
-            return this.value.equalsIgnoreCase("true")
-                    || this.value.equalsIgnoreCase("yes")
-                    || this.value.equalsIgnoreCase("on")
-                    || this.value.equals("1");
-        }
-
-        /**
-         * Tries to interpret the value as an integer.
-         *
-         * @return integer representation of the property value
-         * @throws NumberFormatException
-         *             property value cannot be interpreted as a number
-         */
-        public int asInteger() {
-            return Integer.parseInt(this.value);
-        }
-
-        /**
-         * Tries to interpret the value as a long integer.
-         *
-         * @return long integer representation of the property value
-         * @throws NumberFormatException
-         *             property value cannot be interpreted as a number
-         */
-        public long asLong() {
-            return Long.parseLong(this.value);
-        }
-
-        /**
-         * Tries to interpret the value as a float.
-         *
-         * @return float representation of the property value
-         * @throws NumberFormatException
-         *             property value cannot be interpreted as a number
-         */
-        public float asFloat() {
-            return Float.parseFloat(this.value);
-        }
-
-        /**
-         * Tries to interpret the value as a double.
-         *
-         * @return double representation of the property value
-         * @throws NumberFormatException
-         *             property value cannot be interpreted as a number
-         */
-        public double asDouble() {
-            return Double.parseDouble(this.value);
-        }
-
-        @Override
-        public String toString() {
-            return getClass().getName() + "[" + this.value + "]";
-        }
-
-    }
 
     /**
      * Creates a new instance without loading anything. The instance will
@@ -304,9 +212,14 @@ public class Properties {
     public void merge(final Properties properties) {
         for (final Entry<String, Property> entry : properties.propertiesByName
                 .entrySet()) {
-            this.propertiesByName.put(entry.getKey(),
-                    new Property(entry.getValue().value));
+            this.propertiesByName.put(entry.getKey(), new Property(entry
+                    .getValue().asString()));
         }
+    }
+
+    @Override
+    public Iterator<Entry<String, Property>> iterator() {
+        return this.propertiesByName.entrySet().iterator();
     }
 
     @Override
