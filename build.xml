@@ -204,7 +204,7 @@
 	<!-- Create test classpath -->
 	<path id="test.classpath">
 		<path refid="compile.classpath" />
-		<pathelement location="${lib.dir}/junit4-4.8.1.jar" />
+		<pathelement location="${lib.dir}/junit-4.11.jar" />
 		<pathelement location="${lib.dir}/hamcrest-core.jar" />
 		<pathelement location="${build.dir.test}" />
 	</path>
