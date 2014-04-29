@@ -95,7 +95,7 @@ public class InformerState<DataType> {
      */
     protected Event send(@SuppressWarnings("unused") final Event event)
             throws RSBException {
-        LOG.warning("Method send(Event) no implemented for informer state "
+        LOG.warning("Method send(Event) not implemented for informer state "
                 + this);
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
@@ -111,7 +111,7 @@ public class InformerState<DataType> {
      */
     protected Event send(@SuppressWarnings("unused") final DataType data)
             throws RSBException {
-        LOG.warning("Method send(DataType) no implemented for informer state "
+        LOG.warning("Method send(DataType) not implemented for informer state "
                 + this);
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }
