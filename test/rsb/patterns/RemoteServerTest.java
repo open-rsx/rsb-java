@@ -37,6 +37,7 @@ import org.junit.Test;
 
 import rsb.Factory;
 import rsb.Scope;
+import rsb.Utilities;
 
 /**
  * @author swrede
@@ -91,7 +92,8 @@ public class RemoteServerTest {
     @Test
     public void addMethod() throws Throwable {
         final RemoteServer remote =
-                this.factory.createRemoteServer(SCOPE.toString());
+                this.factory.createRemoteServer(SCOPE.toString(),
+                        Utilities.createParticipantConfig());
         final String methodName = "callme";
         remote.addMethod(methodName);
         remote.activate();

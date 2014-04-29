@@ -39,6 +39,7 @@ import org.junit.Test;
 import rsb.Factory;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.Utilities;
 
 /**
  * @author swrede
@@ -74,7 +75,8 @@ public class ServerTest {
     private LocalServer getServer() {
         final Factory factory = Factory.getInstance();
         final LocalServer server =
-                factory.createLocalServer(new Scope("/example/server"));
+                factory.createLocalServer(new Scope("/example/server"),
+                        Utilities.createParticipantConfig());
         return server;
     }
 
