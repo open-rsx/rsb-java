@@ -28,6 +28,7 @@
 package rsb.transport.inprocess;
 
 import rsb.InitializeException;
+import rsb.converter.ConverterSelectionStrategy;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
@@ -43,13 +44,15 @@ public class InProcessFactory implements TransportFactory {
     private static Bus defaultBus = new Bus();
 
     @Override
-    public OutConnector createOutConnector(final Properties properties)
+    public OutConnector createOutConnector(final Properties properties,
+            final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
         return new rsb.transport.inprocess.OutConnector(defaultBus);
     }
 
     @Override
-    public InPushConnector createInPushConnector(final Properties properties)
+    public InPushConnector createInPushConnector(final Properties properties,
+            final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
         return new rsb.transport.inprocess.InPushConnector(defaultBus);
     }

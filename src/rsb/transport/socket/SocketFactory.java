@@ -33,7 +33,6 @@ import java.nio.ByteBuffer;
 
 import rsb.InitializeException;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.DefaultConverterRepository;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
@@ -106,29 +105,27 @@ public class SocketFactory implements TransportFactory {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public OutConnector createOutConnector(final Properties properties)
+    public OutConnector createOutConnector(final Properties properties,
+            final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
 
-        final ConverterSelectionStrategy<ByteBuffer> converters =
-                DefaultConverterRepository.getDefaultConverterRepository()
-                        .getConvertersForSerialization();
-
         return new SocketOutConnector(parseSocketOptions(properties),
-                parseServerMode(properties), converters);
+                parseServerMode(properties),
+                (ConverterSelectionStrategy<ByteBuffer>) converters);
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public InPushConnector createInPushConnector(final Properties properties)
+    public InPushConnector createInPushConnector(final Properties properties,
+            final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
 
-        final ConverterSelectionStrategy<ByteBuffer> converters =
-                DefaultConverterRepository.getDefaultConverterRepository()
-                        .getConvertersForDeserialization();
-
         return new SocketInPushConnector(parseSocketOptions(properties),
-                parseServerMode(properties), converters);
+                parseServerMode(properties),
+                (ConverterSelectionStrategy<ByteBuffer>) converters);
 
     }
 

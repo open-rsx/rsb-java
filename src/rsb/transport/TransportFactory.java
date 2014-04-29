@@ -28,6 +28,7 @@
 package rsb.transport;
 
 import rsb.InitializeException;
+import rsb.converter.ConverterSelectionStrategy;
 import rsb.util.Properties;
 
 /**
@@ -44,11 +45,14 @@ public interface TransportFactory {
      *
      * @param properties
      *            specific options for the connector to be created
+     * @param converters
+     *            the converter selection strategy to use in the new connector
      * @return new connector instance
      * @throws InitializeException
      *             error creating a new connector
      */
-    OutConnector createOutConnector(Properties properties)
+    OutConnector createOutConnector(Properties properties,
+            ConverterSelectionStrategy<?> converters)
             throws InitializeException;
 
     /**
@@ -56,11 +60,14 @@ public interface TransportFactory {
      *
      * @param properties
      *            specific options for the connector to be created
+     * @param converters
+     *            the converter selection strategy to use in the new connector
      * @return new connector instance
      * @throws InitializeException
      *             error creating a new connector
      */
-    InPushConnector createInPushConnector(Properties properties)
+    InPushConnector createInPushConnector(Properties properties,
+            ConverterSelectionStrategy<?> converters)
             throws InitializeException;
 
 }

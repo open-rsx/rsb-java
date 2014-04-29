@@ -35,7 +35,6 @@ import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.converter.DefaultConverterRepository;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
@@ -74,24 +73,21 @@ public class SpreadFactory implements TransportFactory {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public InPushConnector createInPushConnector(final Properties properties)
+    public InPushConnector createInPushConnector(final Properties properties,
+            final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
-        final ConverterSelectionStrategy<ByteBuffer> inStrategy =
-                DefaultConverterRepository.getDefaultConverterRepository()
-                        .getConvertersForDeserialization();
         return new SpreadInPushConnector(createSpreadWrapper(properties),
-                inStrategy);
+                (ConverterSelectionStrategy<ByteBuffer>) converters);
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public OutConnector createOutConnector(final Properties properties)
+    public OutConnector createOutConnector(final Properties properties,
+            final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
-
-        final ConverterSelectionStrategy<ByteBuffer> outStrategy =
-                DefaultConverterRepository.getDefaultConverterRepository()
-                        .getConvertersForSerialization();
 
         Ordering ordering = new QualityOfServiceSpec().getOrdering();
         if (properties.hasProperty(QOS_ORDERING_KEY)) {
@@ -107,7 +103,8 @@ public class SpreadFactory implements TransportFactory {
         }
 
         return new SpreadOutConnector(createSpreadWrapper(properties),
-                outStrategy, new QualityOfServiceSpec(ordering, reliability));
+                (ConverterSelectionStrategy<ByteBuffer>) converters,
+                new QualityOfServiceSpec(ordering, reliability));
 
     }
 }

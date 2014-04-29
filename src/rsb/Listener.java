@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.TransportConfig;
+import rsb.converter.DefaultConverterRepository;
 import rsb.eventprocessing.DefaultPushInRouteConfigurator;
 import rsb.eventprocessing.PushInRouteConfigurator;
 import rsb.filter.Filter;
@@ -139,9 +140,15 @@ public class Listener extends Participant {
                 .getReceivingStrategy().create());
         for (final TransportConfig transportConfig : getConfig()
                 .getEnabledTransports()) {
-            this.router.addConnector(TransportRegistry.getDefaultInstance()
+            this.router.addConnector(TransportRegistry
+                    .getDefaultInstance()
                     .getFactory(transportConfig.getName())
-                    .createInPushConnector(transportConfig.getOptions()));
+                    .createInPushConnector(
+                            transportConfig.getOptions(),
+                            transportConfig.getConverters(
+                                    DefaultConverterRepository
+                                            .getDefaultConverterRepository())
+                                    .getConvertersForDeserialization()));
         }
         LOG.fine("New Listener instance: [scope=" + this.getScope() + "]");
 

@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.TransportConfig;
+import rsb.converter.DefaultConverterRepository;
 import rsb.eventprocessing.DefaultOutRouteConfigurator;
 import rsb.eventprocessing.OutRouteConfigurator;
 import rsb.transport.SequenceNumber;
@@ -246,9 +247,15 @@ public class Informer<DataType extends Object> extends Participant {
         this.router = new DefaultOutRouteConfigurator(getScope());
         for (final TransportConfig transportConfig : getConfig()
                 .getEnabledTransports()) {
-            this.router.addConnector(TransportRegistry.getDefaultInstance()
+            this.router.addConnector(TransportRegistry
+                    .getDefaultInstance()
                     .getFactory(transportConfig.getName())
-                    .createOutConnector(transportConfig.getOptions()));
+                    .createOutConnector(
+                            transportConfig.getOptions(),
+                            transportConfig.getConverters(
+                                    DefaultConverterRepository
+                                            .getDefaultConverterRepository())
+                                    .getConvertersForSerialization()));
         }
         this.state = new InformerStateInactive(this);
         LOG.fine("New informer instance created: [Scope:" + this.getScope()

@@ -28,6 +28,7 @@
 
 package rsb.config;
 
+import rsb.converter.ConverterRepository;
 import rsb.util.Properties;
 
 /**
@@ -41,8 +42,8 @@ public class TransportConfig {
     private final String name;
     private boolean enabled;
     private Properties options;
-
-    // TODO converter
+    // TODO how to handle generics here correctly?
+    private ConverterRepository<?> converters;
 
     /**
      * Creates a new instance.
@@ -59,6 +60,28 @@ public class TransportConfig {
         this.name = name;
         this.enabled = enabled;
         this.options = options;
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param name
+     *            name of the transport
+     * @param enabled
+     *            should this transport be enabled in participants or not?
+     * @param options
+     *            transport-specific options
+     * @param converters
+     *            the converter selection strategy to use for the transport.
+     *            <code>null</code> indicates to use the system-wide
+     *            configuration.
+     */
+    public TransportConfig(final String name, final boolean enabled,
+            final Properties options, final ConverterRepository<?> converters) {
+        this.name = name;
+        this.enabled = enabled;
+        this.options = options;
+        this.converters = converters;
     }
 
     /**
@@ -121,21 +144,52 @@ public class TransportConfig {
         this.options = options;
     }
 
-    // TODO handle disambiguation options
-    // TODO use this
-    // public List<ConverterSignature> getConverters() {
-    // final ArrayList<ConverterSignature> result = new
-    // ArrayList<ConverterSignature>();
-    // // TODO add string
-    // // this is for Spread transport only currently
-    // result.add(new ConverterSignature("utf-8-string", String.class));
-    // return result;
-    // }
+    // TODO handle disambiguation options for converters
+
+    /**
+     * Returns the desired converter repository for the transport.
+     *
+     * @return converter repository to use or <code>null</code> in case the
+     *         system-wide default shall be used.
+     */
+    public ConverterRepository<?> getConverters() {
+        return this.converters;
+    }
+
+    /**
+     * Returns the desired converter repository for the transport or the
+     * provided default in case no desired instance is is specified.
+     *
+     * @param defaultInst
+     *            instance to return in case no converter repository was
+     *            specified inside this config
+     * @return converter repository to use or <code>null</code> in case event
+     *         the given default instance was <code>null</code>.
+     */
+    public ConverterRepository<?> getConverters(
+            final ConverterRepository<?> defaultInst) {
+        if (this.converters == null) {
+            return defaultInst;
+        } else {
+            return this.converters;
+        }
+    }
+
+    /**
+     * Sets the converter repository to be used for this transport.
+     *
+     * @param converters
+     *            converters to use or <code>null</code> to indicate use of
+     *            system-wide converters
+     */
+    public void setConverters(final ConverterRepository<?> converters) {
+        this.converters = converters;
+    }
 
     @Override
     public String toString() {
 
-        final StringBuilder builder = new StringBuilder(30);
+        final StringBuilder builder = new StringBuilder(42);
         builder.append(getClass().getName());
         builder.append("[name='");
         builder.append(this.name);
@@ -143,6 +197,8 @@ public class TransportConfig {
         builder.append(this.enabled);
         builder.append(", options=");
         builder.append(this.options);
+        builder.append(", converters=");
+        builder.append(this.converters);
         builder.append(']');
 
         return builder.toString();
@@ -156,6 +212,11 @@ public class TransportConfig {
         // readable with the inline conditionals
         final int prime = 31;
         int result = 1;
+        result =
+                prime
+                        * result
+                        + ((this.converters == null) ? 0 : this.converters
+                                .hashCode());
         result = prime * result + (this.enabled ? 1231 : 1237);
         result =
                 prime * result
@@ -181,6 +242,13 @@ public class TransportConfig {
             return false;
         }
         final TransportConfig other = (TransportConfig) obj;
+        if (this.converters == null) {
+            if (other.converters != null) {
+                return false;
+            }
+        } else if (!this.converters.equals(other.converters)) {
+            return false;
+        }
         if (this.enabled != other.enabled) {
             return false;
         }
