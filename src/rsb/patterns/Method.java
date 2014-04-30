@@ -27,13 +27,14 @@
  */
 package rsb.patterns;
 
-import rsb.Activatable;
 import rsb.Factory;
 import rsb.Informer;
 import rsb.InvalidStateException;
 import rsb.Listener;
+import rsb.Participant;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.config.ParticipantConfig;
 
 /**
  * Objects of this class are methods which are associated to a local or remote
@@ -49,16 +50,13 @@ import rsb.Scope;
  * @author jmoringe
  * @author swrede
  */
-public abstract class Method implements Activatable {
+public abstract class Method extends Participant {
 
     private final Factory factory;
-    private final Server<?> server;
     private final String name;
     private Informer<?> informer;
     private Listener listener;
     private MethodState state;
-    private final Scope requestScope;
-    private final Scope replyScope;
 
     /**
      * Abstract base class for states of a {@link Method} based on the state
@@ -133,21 +131,19 @@ public abstract class Method implements Activatable {
     }
 
     /**
-     * Create a new Method object for the method named @a name provided by @a
-     * server.
+     * Create a new Method object for the method named @a name.
      *
-     * @param server
-     *            The remote or local server to which the method is associated.
      * @param name
      *            The name of the method. Unique within a server.
+     * @param parentScope
+     *            The scope of the parent participant, typically the Server participant.
+     * @param config
+     *            The configuration for this participant.
      */
-    public Method(final Server<?> server, final String name) {
-        this.server = server;
+   // public Method(final Server<?> server, final String name) {
+    public Method(String name, Scope parentScope, ParticipantConfig config){
+        super(parentScope.concat(new Scope("/" + name)),config);
         this.name = name;
-        // TODO make sure that case doesn't matter (generally!)
-        this.requestScope =
-                server.getScope().concat(new Scope("/" + name));
-        this.replyScope = server.getScope().concat(new Scope("/" + name));
         this.factory = Factory.getInstance();
         this.state = new MethodStateInactive();
     }
@@ -160,15 +156,6 @@ public abstract class Method implements Activatable {
      */
     protected Factory getFactory() {
         return this.factory;
-    }
-
-    /**
-     * Return the Server object to which this method is associated.
-     *
-     * @return The Server object.
-     */
-    public Server<?> getServer() {
-        return this.server;
     }
 
     /**
@@ -242,24 +229,6 @@ public abstract class Method implements Activatable {
      */
     protected void setListener(final Listener listener) {
         this.listener = listener;
-    }
-
-    /**
-     * Returns the scope on which this method issues or receives requests.
-     *
-     * @return scope
-     */
-    protected Scope getRequestScope() {
-        return this.requestScope;
-    }
-
-    /**
-     * Returns the scope on which this method issues or receives replies.
-     *
-     * @return scope
-     */
-    protected Scope getReplyScope() {
-        return this.replyScope;
     }
 
 };

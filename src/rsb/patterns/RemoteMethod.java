@@ -37,6 +37,7 @@ import rsb.EventId;
 import rsb.Handler;
 import rsb.InitializeException;
 import rsb.RSBException;
+import rsb.Scope;
 import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
@@ -126,10 +127,10 @@ public class RemoteMethod extends Method implements Handler {
      * Create a new RemoteMethod object that represent the remote method named @a
      * name provided by @a server.
      *
-     * @param server
-     *            The remote server providing the method.
      * @param name
      *            The name of the method.
+     * @param parentScope
+     *            The scope of the parent participant, typically the RemoteServer.
      * @param config
      *            the participant config to use for internal participants
      * @throws InterruptedException
@@ -138,13 +139,13 @@ public class RemoteMethod extends Method implements Handler {
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public RemoteMethod(final Server<RemoteMethod> server, final String name,
+    public RemoteMethod(final String name, Scope parentScope,
             final ParticipantConfig config) throws InterruptedException,
             InitializeException {
-        super(server, name);
-        this.setListener(getFactory().createListener(this.getReplyScope(),
+        super(name,parentScope,config);
+        this.setListener(getFactory().createListener(this.getScope(),
                 config));
-        this.setInformer(getFactory().createInformer(this.getRequestScope(),
+        this.setInformer(getFactory().createInformer(this.getScope(),
                 config));
         this.getListener().addFilter(new MethodFilter("REPLY"));
         this.getListener().addHandler(this, true);
@@ -162,7 +163,7 @@ public class RemoteMethod extends Method implements Handler {
     void call(final Event request, final FuturePreparator<?> resultPreparator)
             throws RSBException {
         // set metadata
-        request.setScope(this.getRequestScope());
+        request.setScope(this.getScope());
         request.setMethod("REQUEST");
         // further metadata is set by informer
 

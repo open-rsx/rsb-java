@@ -91,10 +91,11 @@ public class LocalServer extends Server<LocalMethod> {
             throws RSBException {
         LOG.fine("Registering new data method " + name
                 + " with signature object: " + callback);
+        // TODO hook into introspection mechanism (with parent + child information)
         synchronized (this) {
             try {
                 final LocalMethod method =
-                        new LocalMethod(this, name, callback, getConfig());
+                        new LocalMethod(name, this.getScope(), callback, getConfig());
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
                 throw new InitializeException(e);

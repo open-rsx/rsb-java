@@ -36,6 +36,7 @@ import rsb.Event;
 import rsb.Handler;
 import rsb.InitializeException;
 import rsb.RSBException;
+import rsb.Scope;
 import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
@@ -60,11 +61,10 @@ class LocalMethod extends Method implements Handler {
      * Create a new {@link LocalMethod} object that is exposed under the name @a
      * name by @a server.
      *
-     * @param server
-     *            The local server object to which the method will be
-     *            associated.
      * @param name
      *            The name of the method.
+     * @param parentScope
+     *            The scope of the parent participant, typically the LocalServer.
      * @param callback
      *            The callback implementing the user functionality of the method
      * @param config
@@ -76,15 +76,15 @@ class LocalMethod extends Method implements Handler {
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public LocalMethod(final Server<LocalMethod> server, final String name,
+    public LocalMethod(final String name, final Scope parentScope,
             final Callback callback, final ParticipantConfig config)
             throws InterruptedException, InitializeException {
-        super(server, name);
+        super(name,parentScope,config);
         this.callback = callback;
-        this.setListener(getFactory().createListener(this.getRequestScope(), config));
+        this.setListener(getFactory().createListener(this.getScope(), config));
         this.getListener().addFilter(new MethodFilter("REQUEST"));
         this.getListener().addHandler(this, true);
-        this.setInformer(getFactory().createInformer(this.getReplyScope(), config));
+        this.setInformer(getFactory().createInformer(this.getScope(), config));
     }
 
     @Override
@@ -97,7 +97,7 @@ class LocalMethod extends Method implements Handler {
             LOG.log(Level.WARNING,
                     "Exception during method invocation in participant: {0}. "
                             + "Exception message: {1}", new Object[] {
-                            this.getRequestScope(), exception });
+                            this.getScope(), exception });
             final StringWriter exceptionWriter = new StringWriter();
             final PrintWriter exceptionPrinter =
                     new PrintWriter(exceptionWriter);
@@ -111,7 +111,7 @@ class LocalMethod extends Method implements Handler {
             reply.getMetaData().setUserInfo("rsb:error?", "1");
         }
 
-        reply.setScope(this.getReplyScope());
+        reply.setScope(this.getScope());
         reply.setMethod("REPLY");
         reply.addCause(request.getId());
 
@@ -123,7 +123,7 @@ class LocalMethod extends Method implements Handler {
             LOG.log(Level.WARNING,
                     "Exception while sending reply in server: {0}."
                             + " Exception message: {1}", new Object[] {
-                            this.getRequestScope(), exception });
+                            this.getScope(), exception });
         }
     }
 
