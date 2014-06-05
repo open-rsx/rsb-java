@@ -400,7 +400,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>${pbuf.version}</version>
+            <version>[${pbuf.version}]</version>
         </dependency>
     </dependencies>
 
