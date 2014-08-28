@@ -57,6 +57,8 @@ public final class DefaultConverters {
                 .addConverter(new NullConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new Int64Converter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new DoubleConverter());
     }
 
 }
