@@ -37,3 +37,11 @@ else
   echo "We are not on a release branch, not changing the version. You can build now!"
 fi
 
+# Workaround to detect correct protobuf version on unix systems 
+# as dependency versions cannot be modified with the maven properties plugin
+PROTOC_VERSION="$(protoc --version | sed 's/[[:alpha:]|(|[:space:]]//g' | awk -F- '{print $1}')"
+# FIX-ME: Better regexp to locate pbuf.version property 
+# (currently depends on 2.4.1 as the unique default placeholder)
+sed -i.bak -e 's/2.4.1/'${PROTOC_VERSION}'/' pom.xml
+
+
