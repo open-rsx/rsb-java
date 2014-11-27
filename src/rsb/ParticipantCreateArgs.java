@@ -51,6 +51,7 @@ public abstract class ParticipantCreateArgs<ConcreteClass extends ParticipantCre
 
     private ParticipantConfig config;
     private Scope scope;
+    private Participant parent;
 
     /**
      * Sets the {@link ParticipantConfig} to be used for the {@link Participant}
@@ -98,6 +99,30 @@ public abstract class ParticipantCreateArgs<ConcreteClass extends ParticipantCre
      */
     public Scope getScope() {
         return this.scope;
+    }
+
+    /**
+     * Returns the parent {@link Participant} of the {@link Participant} to
+     * create.
+     *
+     * @return the parent of the {@link Participant} to create or
+     *         <code>null</code> if no parent.
+     */
+    public Participant getParent() {
+        return this.parent;
+    }
+
+    /**
+     * Sets the parent {@link Participant} of the {@link Participant} to create.
+     *
+     * @param parent
+     *            the parent to set or <code>null</code> for no parent
+     * @return this instance for method chaining
+     */
+    @SuppressWarnings("unchecked")
+    public ConcreteClass setParent(final Participant parent) {
+        this.parent = parent;
+        return (ConcreteClass) this;
     }
 
 }

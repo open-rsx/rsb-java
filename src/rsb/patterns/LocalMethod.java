@@ -83,12 +83,12 @@ class LocalMethod extends Method implements Handler {
         this.callback = callback;
         this.setListener(getFactory().createListener(
                 new ListenerCreateArgs().setScope(this.getScope()).setConfig(
-                        config)));
+                        config).setParent(this)));
         this.getListener().addFilter(new MethodFilter("REQUEST"));
         this.getListener().addHandler(this, true);
         this.setInformer(getFactory().createInformer(
                 new InformerCreateArgs().setScope(this.getScope()).setConfig(
-                        config)));
+                        config).setParent(this)));
     }
 
     @Override

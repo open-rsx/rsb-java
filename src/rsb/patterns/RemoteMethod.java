@@ -143,11 +143,11 @@ public class RemoteMethod extends Method implements Handler {
         throws InterruptedException, InitializeException {
         super(scope, config);
         this.setListener(getFactory().createListener(
-                new ListenerCreateArgs().setScope(this.getScope()).setConfig(
-                        config)));
+                new ListenerCreateArgs().setScope(this.getScope())
+                        .setConfig(config).setParent(this)));
         this.setInformer(getFactory().createInformer(
-                new InformerCreateArgs().setScope(this.getScope()).setConfig(
-                        config)));
+                new InformerCreateArgs().setScope(this.getScope())
+                        .setConfig(config).setParent(this)));
         this.getListener().addFilter(new MethodFilter("REPLY"));
         this.getListener().addHandler(this, true);
     }
