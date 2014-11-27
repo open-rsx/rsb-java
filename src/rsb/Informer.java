@@ -274,6 +274,7 @@ public class Informer<DataType extends Object> extends Participant {
     public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
             this.state.deactivate();
+            super.deactivate();
         }
     }
 

@@ -27,6 +27,7 @@
  */
 package rsb;
 
+import rsb.Factory.ParticipantObserverManager;
 import rsb.config.ParticipantConfig;
 
 /**
@@ -42,6 +43,7 @@ public abstract class Participant implements Activatable {
     private final ParticipantId id = new ParticipantId();
     private final Scope scope;
     private final ParticipantConfig config;
+    private ParticipantObserverManager observerManager;
 
     /**
      * Creates a new participant on the specified scope.
@@ -76,6 +78,13 @@ public abstract class Participant implements Activatable {
         this(new Scope(scope), config);
     }
 
+    @Override
+    public void deactivate() throws RSBException, InterruptedException {
+        if (this.observerManager != null) {
+            this.observerManager.notifyParticipantDestroyed(this);
+        }
+    }
+
     /**
      * Returns the unique ID of this participant.
      *
@@ -101,6 +110,28 @@ public abstract class Participant implements Activatable {
      */
     public ParticipantConfig getConfig() {
         return this.config;
+    }
+
+    /**
+     * Returns the observer manager to notify about participant changes.
+     *
+     * @return manager or <code>null</code>
+     */
+    protected ParticipantObserverManager getObserverManager() {
+        return this.observerManager;
+    }
+
+    /**
+     * Sets the observer manager to use for notifying deactivation.
+     *
+     * Internal use only!
+     *
+     * @param observerManager
+     *            the observer manager to use or <code>null</code> if not
+     *            required
+     */
+    public void setObserverManager(final ParticipantObserverManager observerManager) {
+        this.observerManager = observerManager;
     }
 
 }

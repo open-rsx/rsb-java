@@ -34,6 +34,7 @@ import java.util.Map;
 
 import rsb.InvalidStateException;
 import rsb.Participant;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
@@ -268,6 +269,13 @@ public abstract class Server<MethodType extends Method> extends Participant {
             }
             this.methods.put(name, method);
         }
+        method.setObserverManager(getObserverManager());
+        getObserverManager().notifyParticipantCreated(
+                method,
+                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                    // dummy type
+                }.setParent(this).setConfig(method.getConfig())
+                        .setScope(method.getScope()));
     }
 
     @Override
@@ -288,6 +296,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
     public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
             this.state = this.state.deactivate();
+            super.deactivate();
         }
     }
 

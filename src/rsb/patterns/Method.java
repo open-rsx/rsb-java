@@ -114,6 +114,7 @@ public abstract class Method extends Participant {
                 Method.this.getInformer().deactivate();
                 Method.this.setInformer(null);
             }
+            Method.super.deactivate();
             return new MethodStateInactive();
         }
     }

@@ -28,6 +28,10 @@
 
 package rsb;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.converter.DefaultConverters;
@@ -39,6 +43,8 @@ import rsb.util.Properties;
 
 /**
  * A factory for RSB client-level objects. This class is a Singleton.
+ * It implements an observer pattern to notify about the creation and
+ * destruction of participants.
  *
  * @author jwienke
  * @author swrede
@@ -52,6 +58,78 @@ public final class Factory {
 
     private final Properties properties = new Properties();
     private final ParticipantConfig defaultConfig = new ParticipantConfig();
+
+    private final ParticipantObserverManager observerManager =
+            new ParticipantObserverManager();
+
+    /**
+     * A utility class to manage registered {@link ParticipantObserver}
+     * instances.
+     *
+     * @author swrede
+     * @author jwienke
+     * @author jmoringe
+     */
+    public static final class ParticipantObserverManager {
+
+        private final List<ParticipantObserver> observers = Collections
+                .synchronizedList(new LinkedList<ParticipantObserver>());
+
+        /**
+         * Notifies registered {@link ParticipantObserver} instances that a new
+         * {@link Participant} has been created.
+         *
+         * @param participant
+         *            the new participant
+         * @param args
+         *            the arguments used to create this participant
+         */
+        public void notifyParticipantCreated(final Participant participant,
+                final ParticipantCreateArgs<?> args) {
+            synchronized (this.observers) {
+                for (final ParticipantObserver observer : this.observers) {
+                    observer.created(participant, args);
+                }
+            }
+        }
+
+        /**
+         * Notifies registered {@link ParticipantObserver} instances that a
+         * {@link Participant} is about to be destroyed.
+         *
+         * @param participant
+         *            the participant to be destroyed
+         */
+        public void notifyParticipantDestroyed(final Participant participant) {
+            synchronized (this.observers) {
+                for (final ParticipantObserver observer : this.observers) {
+                    observer.destroyed(participant);
+                }
+            }
+        }
+
+        /**
+         * Adds an observer to be notified on participant changes.
+         *
+         * @param observer
+         *            the observer to add, not <code>null</code>
+         */
+        public void addObserver(final ParticipantObserver observer) {
+            assert observer != null;
+            this.observers.add(observer);
+        }
+
+        /**
+         * Removes an observer in case it existed. Otherwise it does nothing.
+         *
+         * @param observer
+         *            the observer to remove
+         */
+        public void removeObserver(final ParticipantObserver observer) {
+            this.observers.remove(observer);
+        }
+
+    }
 
     /**
      * Private constructor to ensure Singleton.
@@ -237,9 +315,15 @@ public final class Factory {
      * @throws InitializeException
      *             error initializing the informer
      */
-    public <DataType> Informer<DataType> createInformer(final InformerCreateArgs args)
-            throws InitializeException {
-        return new Informer<DataType>(args.getScope(), args.getType(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+    public <DataType> Informer<DataType> createInformer(
+            final InformerCreateArgs args) throws InitializeException {
+        final Informer<DataType> informer =
+                new Informer<DataType>(args.getScope(), args.getType(),
+                        (args.getConfig() == null) ? this.defaultConfig
+                                : args.getConfig());
+        informer.setObserverManager(this.observerManager);
+        this.observerManager.notifyParticipantCreated(informer, args);
+        return informer;
     }
 
     /**
@@ -313,7 +397,13 @@ public final class Factory {
      */
     public Listener createListener(final ListenerCreateArgs args)
             throws InitializeException {
-        return new Listener(args.getScope(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+        final Listener listener =
+                new Listener(args.getScope(),
+                        (args.getConfig() == null) ? this.defaultConfig
+                                : args.getConfig());
+        listener.setObserverManager(this.observerManager);
+        this.observerManager.notifyParticipantCreated(listener, args);
+        return listener;
     }
 
     /**
@@ -382,7 +472,13 @@ public final class Factory {
      * @return new LocalServer
      */
     public LocalServer createLocalServer(final LocalServerCreateArgs args) {
-        return new LocalServer(args.getScope(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+        final LocalServer server =
+                new LocalServer(args.getScope(),
+                        (args.getConfig() == null) ? this.defaultConfig
+                                : args.getConfig());
+        server.setObserverManager(this.observerManager);
+        this.observerManager.notifyParticipantCreated(server, args);
+        return server;
     }
 
     /**
@@ -479,11 +575,21 @@ public final class Factory {
      * @return new remote server
      */
     public RemoteServer createRemoteServer(final RemoteServerCreateArgs args) {
+        RemoteServer server;
         if (args.getTimeout() != 0) {
-            return new RemoteServer(args.getScope(), args.getTimeout(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+            server =
+                    new RemoteServer(args.getScope(), args.getTimeout(),
+                            (args.getConfig() == null) ? this.defaultConfig
+                                    : args.getConfig());
         } else {
-            return new RemoteServer(args.getScope(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+            server =
+                    new RemoteServer(args.getScope(),
+                            (args.getConfig() == null) ? this.defaultConfig
+                                    : args.getConfig());
         }
+        server.setObserverManager(this.observerManager);
+        this.observerManager.notifyParticipantCreated(server, args);
+        return server;
     }
 
     /**
@@ -505,6 +611,26 @@ public final class Factory {
      */
     public ParticipantConfig getDefaulParticipantConfig() {
         return this.defaultConfig;
+    }
+
+    /**
+     * Adds an observer to be notified on participant changes.
+     *
+     * @param observer
+     *            the observer to add, not <code>null</code>
+     */
+    public void addObserver(final ParticipantObserver observer) {
+        this.observerManager.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer in case it existed. Otherwise it does nothing.
+     *
+     * @param observer
+     *            the observer to remove
+     */
+    public void removeObserver(final ParticipantObserver observer) {
+        this.observerManager.removeObserver(observer);
     }
 
 }

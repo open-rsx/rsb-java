@@ -186,6 +186,7 @@ public class Listener extends Participant {
     @Override
     public void deactivate() throws RSBException, InterruptedException {
         this.state.deactivate();
+        super.deactivate();
     }
 
     /**
