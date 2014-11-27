@@ -61,10 +61,8 @@ class LocalMethod extends Method implements Handler {
      * Create a new {@link LocalMethod} object that is exposed under the name @a
      * name by @a server.
      *
-     * @param name
-     *            The name of the method.
-     * @param parentScope
-     *            The scope of the parent participant, typically the LocalServer.
+     * @param scope
+     *            The scope this method operates on.
      * @param callback
      *            The callback implementing the user functionality of the method
      * @param config
@@ -76,10 +74,10 @@ class LocalMethod extends Method implements Handler {
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public LocalMethod(final String name, final Scope parentScope,
+    public LocalMethod(final Scope scope,
             final Callback callback, final ParticipantConfig config)
             throws InterruptedException, InitializeException {
-        super(name,parentScope,config);
+        super(scope, config);
         this.callback = callback;
         this.setListener(getFactory().createListener(this.getScope(), config));
         this.getListener().addFilter(new MethodFilter("REQUEST"));

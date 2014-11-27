@@ -95,7 +95,8 @@ public class LocalServer extends Server<LocalMethod> {
         synchronized (this) {
             try {
                 final LocalMethod method =
-                        new LocalMethod(name, this.getScope(), callback, getConfig());
+                        new LocalMethod(this.getScope().concat(
+                                new Scope("/" + name)), callback, getConfig());
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
                 throw new InitializeException(e);

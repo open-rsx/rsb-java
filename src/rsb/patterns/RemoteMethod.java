@@ -127,10 +127,8 @@ public class RemoteMethod extends Method implements Handler {
      * Create a new RemoteMethod object that represent the remote method named @a
      * name provided by @a server.
      *
-     * @param name
-     *            The name of the method.
-     * @param parentScope
-     *            The scope of the parent participant, typically the RemoteServer.
+     * @param scope
+     *            The scope this method operates on.
      * @param config
      *            the participant config to use for internal participants
      * @throws InterruptedException
@@ -139,10 +137,9 @@ public class RemoteMethod extends Method implements Handler {
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public RemoteMethod(final String name, Scope parentScope,
-            final ParticipantConfig config) throws InterruptedException,
-            InitializeException {
-        super(name,parentScope,config);
+    public RemoteMethod(final Scope scope, final ParticipantConfig config)
+        throws InterruptedException, InitializeException {
+        super(scope, config);
         this.setListener(getFactory().createListener(this.getScope(),
                 config));
         this.setInformer(getFactory().createInformer(this.getScope(),

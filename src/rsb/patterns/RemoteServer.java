@@ -458,7 +458,9 @@ public class RemoteServer extends Server<RemoteMethod> {
             InterruptedException {
         LOG.fine("Registering new method " + name);
 
-        final RemoteMethod method = new RemoteMethod(name, this.getScope(), getConfig());
+        final RemoteMethod method =
+                new RemoteMethod(this.getScope().concat(new Scope("/" + name)),
+                        getConfig());
         // it should never be possible that an exception is thrown for a
         // duplicated method because we take care of this
         addMethod(name, method, false);

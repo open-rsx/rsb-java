@@ -27,6 +27,8 @@
  */
 package rsb.patterns;
 
+import java.util.List;
+
 import rsb.Factory;
 import rsb.Informer;
 import rsb.InvalidStateException;
@@ -53,7 +55,6 @@ import rsb.config.ParticipantConfig;
 public abstract class Method extends Participant {
 
     private final Factory factory;
-    private final String name;
     private Informer<?> informer;
     private Listener listener;
     private MethodState state;
@@ -133,17 +134,19 @@ public abstract class Method extends Participant {
     /**
      * Create a new Method object for the method named @a name.
      *
-     * @param name
-     *            The name of the method. Unique within a server.
-     * @param parentScope
-     *            The scope of the parent participant, typically the Server participant.
+     * @param scope
+     *            The scope this method operates on. The last scope fragment is
+     *            assumed to be the method name.
      * @param config
      *            The configuration for this participant.
      */
-   // public Method(final Server<?> server, final String name) {
-    public Method(String name, Scope parentScope, ParticipantConfig config){
-        super(parentScope.concat(new Scope("/" + name)),config);
-        this.name = name;
+    public Method(final Scope scope, final ParticipantConfig config) {
+        super(scope, config);
+        if (scope.getComponents().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Methods must not be on the root scope since "
+                            + "they do not have a name then.");
+        }
         this.factory = Factory.getInstance();
         this.state = new MethodStateInactive();
     }
@@ -164,7 +167,8 @@ public abstract class Method extends Participant {
      * @return The name of this method.
      */
     public String getName() {
-        return this.name;
+        final List<String> scopeComponents = this.getScope().getComponents();
+        return scopeComponents.get(scopeComponents.size() - 1);
     }
 
     /**
