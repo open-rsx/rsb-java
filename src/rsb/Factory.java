@@ -41,6 +41,7 @@ import rsb.util.Properties;
  * A factory for RSB client-level objects. This class is a Singleton.
  *
  * @author jwienke
+ * @author swrede
  */
 public final class Factory {
 
@@ -94,7 +95,7 @@ public final class Factory {
      */
     public <DataType> Informer<DataType> createInformer(final Scope scope,
             final Class<?> type) throws InitializeException {
-        return new Informer<DataType>(scope, type, this.defaultConfig);
+        return this.createInformer(new InformerCreateArgs().setScope(scope).setType(type));
     }
 
     /**
@@ -112,8 +113,7 @@ public final class Factory {
      */
     public <DataType> Informer<DataType> createInformer(final String scope,
             final Class<?> type) throws InitializeException {
-        return new Informer<DataType>(new Scope(scope), type,
-                this.defaultConfig);
+        return this.createInformer(new InformerCreateArgs().setScope(new Scope(scope)).setType(type));
     }
 
     /**
@@ -134,7 +134,7 @@ public final class Factory {
     public <DataType> Informer<DataType> createInformer(final Scope scope,
             final Class<?> type, final ParticipantConfig config)
             throws InitializeException {
-        return new Informer<DataType>(scope, type, config);
+        return this.createInformer(new InformerCreateArgs().setScope(scope).setType(type).setConfig(config));
     }
 
     /**
@@ -155,7 +155,7 @@ public final class Factory {
     public <DataType> Informer<DataType> createInformer(final String scope,
             final Class<?> type, final ParticipantConfig config)
             throws InitializeException {
-        return new Informer<DataType>(new Scope(scope), type, config);
+        return this.createInformer(new InformerCreateArgs().setScope(new Scope(scope)).setType(type).setConfig(config));
     }
 
     /**
@@ -171,7 +171,7 @@ public final class Factory {
      */
     public <DataType> Informer<DataType> createInformer(final Scope scope)
             throws InitializeException {
-        return new Informer<DataType>(scope, this.defaultConfig);
+        return this.createInformer(new InformerCreateArgs().setScope(scope));
     }
 
     /**
@@ -187,7 +187,7 @@ public final class Factory {
      */
     public <DataType> Informer<DataType> createInformer(final String scope)
             throws InitializeException {
-        return new Informer<DataType>(new Scope(scope), this.defaultConfig);
+        return this.createInformer(new InformerCreateArgs().setScope(new Scope(scope)));
     }
 
     /**
@@ -205,7 +205,7 @@ public final class Factory {
      */
     public <DataType> Informer<DataType> createInformer(final Scope scope,
             final ParticipantConfig config) throws InitializeException {
-        return new Informer<DataType>(scope, config);
+        return this.createInformer(new InformerCreateArgs().setScope(scope).setConfig(config));
     }
 
     /**
@@ -223,7 +223,23 @@ public final class Factory {
      */
     public <DataType> Informer<DataType> createInformer(final String scope,
             final ParticipantConfig config) throws InitializeException {
-        return new Informer<DataType>(new Scope(scope), config);
+        return this.createInformer(new InformerCreateArgs().setScope(new Scope(scope)).setConfig(config));
+    }
+
+    /**
+     * Creates a new informer instance.
+     *
+     * @param <DataType>
+     *            type of the data sent by this informer
+     * @param args
+     *            Parameter object with create arguments for participant.
+     * @return new informer
+     * @throws InitializeException
+     *             error initializing the informer
+     */
+    public <DataType> Informer<DataType> createInformer(final InformerCreateArgs args)
+            throws InitializeException {
+        return new Informer<DataType>(args.getScope(), args.getType(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
     }
 
     /**
@@ -237,7 +253,7 @@ public final class Factory {
      */
     public Listener createListener(final Scope scope)
             throws InitializeException {
-        return new Listener(scope, this.defaultConfig);
+        return createListener(new ListenerCreateArgs().setScope(scope));
     }
 
     /**
@@ -251,7 +267,7 @@ public final class Factory {
      */
     public Listener createListener(final String scope)
             throws InitializeException {
-        return new Listener(scope, this.defaultConfig);
+        return createListener(new ListenerCreateArgs().setScope(new Scope(scope)));
     }
 
     /**
@@ -267,7 +283,7 @@ public final class Factory {
      */
     public Listener createListener(final String scope,
             final ParticipantConfig config) throws InitializeException {
-        return new Listener(scope, config);
+        return createListener(new ListenerCreateArgs().setScope(new Scope(scope)).setConfig(config));
     }
 
     /**
@@ -283,7 +299,21 @@ public final class Factory {
      */
     public Listener createListener(final Scope scope,
             final ParticipantConfig config) throws InitializeException {
-        return new Listener(scope, config);
+        return createListener(new ListenerCreateArgs().setScope(scope).setConfig(config));
+    }
+
+    /**
+     * Creates a new listener instance.
+     *
+     * @param args
+     *            Parameter object with create arguments for participant.
+     * @return new listener
+     * @throws InitializeException
+     *             error initializing the listener
+     */
+    public Listener createListener(final ListenerCreateArgs args)
+            throws InitializeException {
+        return new Listener(args.getScope(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
     }
 
     /**
@@ -296,7 +326,7 @@ public final class Factory {
      * @return The new LocalServer object.
      */
     public LocalServer createLocalServer(final Scope scope) {
-        return new LocalServer(scope, this.defaultConfig);
+        return createLocalServer(new LocalServerCreateArgs().setScope(scope));
     }
 
     /**
@@ -312,7 +342,7 @@ public final class Factory {
      */
     public LocalServer createLocalServer(final Scope scope,
             final ParticipantConfig config) {
-        return new LocalServer(scope, config);
+        return createLocalServer(new LocalServerCreateArgs().setScope(scope).setConfig(config));
     }
 
     /**
@@ -328,7 +358,7 @@ public final class Factory {
      */
     public LocalServer createLocalServer(final String scope,
             final ParticipantConfig config) {
-        return new LocalServer(scope, config);
+        return createLocalServer(new LocalServerCreateArgs().setScope(new Scope(scope)).setConfig(config));
     }
 
     /**
@@ -341,7 +371,18 @@ public final class Factory {
      * @return The new LocalServer object.
      */
     public LocalServer createLocalServer(final String scope) {
-        return new LocalServer(scope, this.defaultConfig);
+        return createLocalServer(new LocalServerCreateArgs().setScope(new Scope(scope)));
+    }
+
+    /**
+     * Creates a new LocalServer instance.
+     *
+     * @param args
+     *         Parameter object with create arguments for participant.
+     * @return new LocalServer
+     */
+    public LocalServer createLocalServer(final LocalServerCreateArgs args) {
+        return new LocalServer(args.getScope(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
     }
 
     /**
@@ -353,7 +394,7 @@ public final class Factory {
      * @return The new RemoteServer object.
      */
     public RemoteServer createRemoteServer(final Scope scope) {
-        return new RemoteServer(scope, this.defaultConfig);
+        return createRemoteServer(new RemoteServerCreateArgs().setScope(scope));
     }
 
     /**
@@ -365,7 +406,7 @@ public final class Factory {
      * @return The new RemoteServer object.
      */
     public RemoteServer createRemoteServer(final String scope) {
-        return new RemoteServer(scope, this.defaultConfig);
+        return createRemoteServer(new RemoteServerCreateArgs().setScope(new Scope(scope)));
     }
 
     /**
@@ -380,7 +421,7 @@ public final class Factory {
      */
     public RemoteServer createRemoteServer(final Scope scope,
             final ParticipantConfig config) {
-        return new RemoteServer(scope, config);
+        return createRemoteServer(new RemoteServerCreateArgs().setScope(scope).setConfig(config));
     }
 
     /**
@@ -395,7 +436,7 @@ public final class Factory {
      */
     public RemoteServer createRemoteServer(final String scope,
             final ParticipantConfig config) {
-        return new RemoteServer(scope, config);
+        return createRemoteServer(new RemoteServerCreateArgs().setScope(new Scope(scope)).setConfig(config));
     }
 
     /**
@@ -411,7 +452,7 @@ public final class Factory {
      */
     public RemoteServer createRemoteServer(final Scope scope,
             final double timeout) {
-        return new RemoteServer(scope, timeout, this.defaultConfig);
+        return createRemoteServer(new RemoteServerCreateArgs().setScope(scope).setTimeout(timeout));
     }
 
     /**
@@ -427,7 +468,22 @@ public final class Factory {
      */
     public RemoteServer createRemoteServer(final String scope,
             final double timeout) {
-        return new RemoteServer(scope, timeout, this.defaultConfig);
+        return createRemoteServer(new RemoteServerCreateArgs().setScope(new Scope(scope)).setTimeout(timeout));
+    }
+
+    /**
+     * Creates a new remote server instance.
+     *
+     * @param args
+     *         Parameter object with create arguments for participant.
+     * @return new remote server
+     */
+    public RemoteServer createRemoteServer(final RemoteServerCreateArgs args) {
+        if (args.getTimeout() != 0) {
+            return new RemoteServer(args.getScope(), args.getTimeout(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+        } else {
+            return new RemoteServer(args.getScope(), (args.getConfig()==null) ? this.defaultConfig : args.getConfig());
+        }
     }
 
     /**

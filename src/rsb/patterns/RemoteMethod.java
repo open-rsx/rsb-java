@@ -35,7 +35,9 @@ import java.util.logging.Logger;
 import rsb.Event;
 import rsb.EventId;
 import rsb.Handler;
+import rsb.InformerCreateArgs;
 import rsb.InitializeException;
+import rsb.ListenerCreateArgs;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
@@ -140,10 +142,12 @@ public class RemoteMethod extends Method implements Handler {
     public RemoteMethod(final Scope scope, final ParticipantConfig config)
         throws InterruptedException, InitializeException {
         super(scope, config);
-        this.setListener(getFactory().createListener(this.getScope(),
-                config));
-        this.setInformer(getFactory().createInformer(this.getScope(),
-                config));
+        this.setListener(getFactory().createListener(
+                new ListenerCreateArgs().setScope(this.getScope()).setConfig(
+                        config)));
+        this.setInformer(getFactory().createInformer(
+                new InformerCreateArgs().setScope(this.getScope()).setConfig(
+                        config)));
         this.getListener().addFilter(new MethodFilter("REPLY"));
         this.getListener().addHandler(this, true);
     }
