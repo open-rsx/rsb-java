@@ -319,8 +319,7 @@ public final class Factory {
             final InformerCreateArgs args) throws InitializeException {
         final Informer<DataType> informer =
                 new Informer<DataType>(args.getScope(), args.getType(),
-                        (args.getConfig() == null) ? this.defaultConfig
-                                : args.getConfig());
+                        selectConfig(args));
         informer.setObserverManager(this.observerManager);
         this.observerManager.notifyParticipantCreated(informer, args);
         return informer;
@@ -398,9 +397,7 @@ public final class Factory {
     public Listener createListener(final ListenerCreateArgs args)
             throws InitializeException {
         final Listener listener =
-                new Listener(args.getScope(),
-                        (args.getConfig() == null) ? this.defaultConfig
-                                : args.getConfig());
+                new Listener(args.getScope(), selectConfig(args));
         listener.setObserverManager(this.observerManager);
         this.observerManager.notifyParticipantCreated(listener, args);
         return listener;
@@ -473,9 +470,7 @@ public final class Factory {
      */
     public LocalServer createLocalServer(final LocalServerCreateArgs args) {
         final LocalServer server =
-                new LocalServer(args.getScope(),
-                        (args.getConfig() == null) ? this.defaultConfig
-                                : args.getConfig());
+                new LocalServer(args.getScope(), selectConfig(args));
         server.setObserverManager(this.observerManager);
         this.observerManager.notifyParticipantCreated(server, args);
         return server;
@@ -579,17 +574,21 @@ public final class Factory {
         if (args.getTimeout() != 0) {
             server =
                     new RemoteServer(args.getScope(), args.getTimeout(),
-                            (args.getConfig() == null) ? this.defaultConfig
-                                    : args.getConfig());
+                            selectConfig(args));
         } else {
-            server =
-                    new RemoteServer(args.getScope(),
-                            (args.getConfig() == null) ? this.defaultConfig
-                                    : args.getConfig());
+            server = new RemoteServer(args.getScope(), selectConfig(args));
         }
         server.setObserverManager(this.observerManager);
         this.observerManager.notifyParticipantCreated(server, args);
         return server;
+    }
+
+    private ParticipantConfig selectConfig(final ParticipantCreateArgs<?> args) {
+        if (args.getConfig() != null) {
+            return args.getConfig();
+        } else {
+            return this.defaultConfig;
+        }
     }
 
     /**
