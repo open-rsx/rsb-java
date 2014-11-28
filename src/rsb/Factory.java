@@ -589,12 +589,12 @@ public final class Factory {
      */
     public RemoteServer createRemoteServer(final RemoteServerCreateArgs args) {
         RemoteServer server;
-        if (args.getTimeout() != 0) {
+        if (args.getTimeout() == 0) {
+            server = new RemoteServer(args.getScope(), selectConfig(args));
+        } else {
             server =
                     new RemoteServer(args.getScope(), args.getTimeout(),
                             selectConfig(args));
-        } else {
-            server = new RemoteServer(args.getScope(), selectConfig(args));
         }
         server.setObserverManager(this.observerManager);
         this.observerManager.notifyParticipantCreated(server, args);
@@ -602,10 +602,10 @@ public final class Factory {
     }
 
     private ParticipantConfig selectConfig(final ParticipantCreateArgs<?> args) {
-        if (args.getConfig() != null) {
-            return args.getConfig();
-        } else {
+        if (args.getConfig() == null) {
             return this.defaultConfig;
+        } else {
+            return args.getConfig();
         }
     }
 
