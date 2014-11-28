@@ -444,6 +444,8 @@ public class RemoteServer extends Server<RemoteMethod> {
     /**
      * Creates a new method for this server with the specified name.
      *
+     * Package private for unit testing. Do not use this externally otherwise.
+     *
      * @param name
      *            name of the method
      * @return the method instance for this new method
