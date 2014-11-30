@@ -57,6 +57,9 @@ public final class Factory {
     private static Factory instance = new Factory();
 
     private final Properties properties = new Properties();
+    private static final String DEFAULT_INTROSPECTION = "true";
+    private static final String INTROSPECTION_KEY = "rsb.introspection";
+
     private final ParticipantConfig defaultConfig = new ParticipantConfig();
 
     private final ParticipantObserverManager observerManager =
@@ -146,6 +149,10 @@ public final class Factory {
         new ConfigLoader().load(this.properties);
         new ParticipantConfigCreator().reconfigure(this.defaultConfig,
                 this.properties);
+
+        if (this.properties.getProperty(INTROSPECTION_KEY, DEFAULT_INTROSPECTION).asBoolean()) {
+            // TODO enable introspection here by instantiating the sender object
+        }
 
     }
 
