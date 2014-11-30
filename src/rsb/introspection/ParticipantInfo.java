@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the rsb.git.java project
+ * This file is a part of the rsb-java project
  *
  * Copyright (C) 2014 CoR-Lab, Bielefeld University
  *
