@@ -214,4 +214,9 @@ public class RemoteMethod extends Method implements Handler {
 
     }
 
+    @Override
+    public String getKind() {
+        return "remote-method";
+    }
+
 };

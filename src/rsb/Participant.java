@@ -134,4 +134,6 @@ public abstract class Participant implements Activatable {
         this.observerManager = observerManager;
     }
 
+    public abstract String getKind();
+
 }

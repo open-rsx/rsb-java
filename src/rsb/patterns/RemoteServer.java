@@ -472,4 +472,9 @@ public class RemoteServer extends Server<RemoteMethod> {
         return method;
     }
 
+    @Override
+    public String getKind() {
+        return "remote-server";
+    }
+
 };

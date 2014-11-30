@@ -335,4 +335,9 @@ public class Informer<DataType extends Object> extends Participant {
         return this.state.getClass() == InformerStateActive.class;
     }
 
+    @Override
+    public String getKind() {
+        return "informer";
+    }
+
 }
