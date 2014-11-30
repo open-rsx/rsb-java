@@ -31,10 +31,12 @@ package rsb;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.converter.DefaultConverters;
+import rsb.introspection.IntrospectionParticipantObserver;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 import rsb.transport.DefaultTransports;
@@ -51,12 +53,16 @@ import rsb.util.Properties;
  */
 public final class Factory {
 
+    private static final Logger LOG = Logger.getLogger(Factory.class.getName());
+
     /**
      * The singleton instance.
      */
     private static Factory instance = new Factory();
 
     private final Properties properties = new Properties();
+
+    private IntrospectionParticipantObserver introspection = null;
     private static final String DEFAULT_INTROSPECTION = "true";
     private static final String INTROSPECTION_KEY = "rsb.introspection";
 
@@ -150,8 +156,11 @@ public final class Factory {
         new ParticipantConfigCreator().reconfigure(this.defaultConfig,
                 this.properties);
 
-        if (this.properties.getProperty(INTROSPECTION_KEY, DEFAULT_INTROSPECTION).asBoolean()) {
-            // TODO enable introspection here by instantiating the sender object
+        if (this.properties.getProperty(INTROSPECTION_KEY,
+                DEFAULT_INTROSPECTION).asBoolean()) {
+            this.introspection = new IntrospectionParticipantObserver();
+            // TODO think about when to deactivate the introspection
+            this.observerManager.addObserver(this.introspection);
         }
 
     }
