@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DummyProcessInfo extends ProcessInfo {
+public class PortableProcessInfo extends ProcessInfo {
 
     @Override
     public int getPid() {

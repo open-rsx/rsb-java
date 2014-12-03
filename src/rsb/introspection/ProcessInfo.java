@@ -20,6 +20,7 @@
  */
 package rsb.introspection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,9 +31,28 @@ import java.util.List;
  */
 public abstract class ProcessInfo {
 
-    abstract public int getPid() ;
-    abstract public String getProgramName();
-    abstract public List<String> getArguments();
+    // process id
+    protected int pid;
+    protected String name;
+    protected List<String> arguments = new ArrayList<String>();
 
-    abstract public long getStartTime();
+    // TODO add documentation
+    long startTime;
+
+    public int getPid() {
+        return this.pid;
+    }
+
+    public String getProgramName() {
+        return this.name;
+    }
+
+    public List<String> getArguments() {
+        return this.arguments;
+    }
+
+    public long getStartTime() {
+        return this.startTime;
+    }
+
 }

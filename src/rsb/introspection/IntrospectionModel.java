@@ -47,7 +47,7 @@ public class IntrospectionModel {
 
     public IntrospectionModel() {
         // TODO add switch for OS-specific process model implementations
-        this.processInfo = new DummyProcessInfo();
+        this.processInfo = new LinuxProcessInfo();
         this.hostInfo = new LinuxHostInfo();
     }
 

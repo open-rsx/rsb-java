@@ -25,7 +25,7 @@ package rsb.introspection;
  * @author swrede
  *
  */
-public class DummyHostInfo extends HostInfo {
+public class PortableHostInfo extends HostInfo {
 
     /* (non-Javadoc)
      * @see rsb.introspection.HostInfo#getId()
