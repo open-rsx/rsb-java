@@ -31,7 +31,6 @@ package rsb;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
@@ -52,8 +51,6 @@ import rsb.util.Properties;
  * @author swrede
  */
 public final class Factory {
-
-    private static final Logger LOG = Logger.getLogger(Factory.class.getName());
 
     /**
      * The singleton instance.

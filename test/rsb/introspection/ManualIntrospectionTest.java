@@ -31,7 +31,7 @@ import rsb.RSBException;
  * @author swrede
  *
  */
-public class IntrospectionTest {
+public class ManualIntrospectionTest {
 
     @Test
     public void simpleNonTest() throws RSBException, InterruptedException {
@@ -40,7 +40,7 @@ public class IntrospectionTest {
         // regular RSB API usage, example here: listener creation and destruction
         final Listener listener = factory.createListener("/rsbtest");
         listener.activate();
-        Thread.sleep(10000);
+        Thread.sleep(100000);
         listener.deactivate();
     }
 

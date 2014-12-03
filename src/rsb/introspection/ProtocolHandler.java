@@ -93,11 +93,11 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
         this.infoServer.activate();
         this.infoServer.addMethod("echo", new EchoCallback());
 
-/*        try {
-            this.listener.addHandler(new QueryHandler(this), false);
+        try {
+            this.listener.addHandler(this, false);
         } catch (final InterruptedException e) {
             throw new RSBException(e);
-        }*/
+        }
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
     public void handleEvent(final Event query) {
         LOG.fine("Processing introspection query: " + query);
         // if empty data field, either SURVEY or REQUEST
-        if (query.getData().getClass() != String.class) {
+        if (query.getData()==null) {
             if (query.getMethod().equals("SURVEY")) {
                 handleSurvey(query);
             } else if (query.getMethod().equals("REQUEST")) {

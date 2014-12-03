@@ -13,7 +13,7 @@ public class DummyProcessInfo extends ProcessInfo {
 
     @Override
     public String getProgramName() {
-        return "IntrospectionTest";
+        return "ManualIntrospectionTest";
     }
 
     @Override
