@@ -31,7 +31,7 @@ public class DummyHostInfo extends HostInfo {
      * @see rsb.introspection.HostInfo#getId()
      */
     @Override
-    String getId() {
+    public String getId() {
         // TODO Auto-generated method stub
         return "Trusty-VM-SW";
     }
@@ -40,7 +40,7 @@ public class DummyHostInfo extends HostInfo {
      * @see rsb.introspection.HostInfo#getHostname()
      */
     @Override
-    String getHostname() {
+    public String getHostname() {
         // TODO Auto-generated method stub
         return "macbook-pro-sw";
     }

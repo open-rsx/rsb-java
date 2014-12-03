@@ -46,9 +46,9 @@ public class IntrospectionModel {
     private final HostInfo hostInfo;
 
     public IntrospectionModel() {
-        // TODO add OS-specific process model implementations
+        // TODO add switch for OS-specific process model implementations
         this.processInfo = new DummyProcessInfo();
-        this.hostInfo = new DummyHostInfo();
+        this.hostInfo = new LinuxHostInfo();
     }
 
     public void setProtocolHandler(final ProtocolHandler protocol) {

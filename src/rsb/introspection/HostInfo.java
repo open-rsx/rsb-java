@@ -27,6 +27,15 @@ package rsb.introspection;
  */
 public abstract class HostInfo {
 
-    abstract String getId();
-    abstract String getHostname();
+    protected String id;
+    protected String hostname;
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getHostname() {
+        return this.hostname;
+    }
+
 }
