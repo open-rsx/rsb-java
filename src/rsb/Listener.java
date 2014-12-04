@@ -294,4 +294,10 @@ public class Listener extends Participant {
         return "listener";
     }
 
+    @Override
+    public String getType() {
+        // TODO think about implementation for listeners
+        return "rsb.Event";
+    }
+
 }

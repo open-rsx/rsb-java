@@ -134,6 +134,14 @@ public abstract class Participant implements Activatable {
         this.observerManager = observerManager;
     }
 
+    /**
+     * Returns kind of participant in RSB terminology.
+     *
+     * @return Key describing participant. One of listener, informer,
+     *              local-server, local-method, remote-server, remote-method
+     */
     public abstract String getKind();
+
+    public abstract String getType();
 
 }

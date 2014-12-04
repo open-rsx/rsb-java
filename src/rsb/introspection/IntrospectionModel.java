@@ -100,8 +100,7 @@ public class IntrospectionModel {
         final ParticipantInfo info =
                 new ParticipantInfo(participant.getKind(), participant.getId(),
                         (parent != null ? parent.getId() : null),
-                        participant.getScope(), "N/A"); // TODO Add type support
-                                                        // in participants
+                        participant.getScope(), participant.getType());
         synchronized (this.participants) {
             this.participants.add(info);
         }

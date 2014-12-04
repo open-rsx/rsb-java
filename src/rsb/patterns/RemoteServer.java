@@ -477,4 +477,9 @@ public class RemoteServer extends Server<RemoteMethod> {
         return "remote-server";
     }
 
+    @Override
+    public String getType() {
+        return "N/A";
+    }
+
 };

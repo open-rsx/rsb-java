@@ -148,4 +148,10 @@ public class LocalServer extends Server<LocalMethod> {
         return "local-server";
     }
 
+    @Override
+    public String getType() {
+        // TODO think about meaningful implementation
+        return "N/A";
+    }
+
 };

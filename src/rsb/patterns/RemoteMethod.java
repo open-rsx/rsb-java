@@ -219,4 +219,10 @@ public class RemoteMethod extends Method implements Handler {
         return "remote-method";
     }
 
+    @Override
+    public String getType() {
+        // TODO think about implementation for remote methods
+        return "N/A";
+    }
+
 };

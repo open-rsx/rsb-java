@@ -50,7 +50,7 @@ import com.google.protobuf.ByteString;
  */
 public class ProtocolHandler extends AbstractEventHandler implements Activatable {
 
-    static final Logger LOG = Logger.getLogger(ProtocolHandler.class.getName());
+    private static final Logger LOG = Logger.getLogger(ProtocolHandler.class.getName());
 
     static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
 
@@ -176,6 +176,9 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
                     .getParentId().toByteArray()));
         }
         helloBuilder.setKind(participant.getKind());
+        if (!participant.getType().equalsIgnoreCase("N/A")) {
+            helloBuilder.setType(participant.getType());
+        }
         helloBuilder.setScope(participant.getScope().toString());
 
         // Add process information.

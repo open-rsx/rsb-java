@@ -136,4 +136,10 @@ class LocalMethod extends Method implements Handler {
         return "local-method";
     }
 
+    @Override
+    public String getType() {
+        // TODO think about implementation for remote methods
+        return "N/A";
+    }
+
 };

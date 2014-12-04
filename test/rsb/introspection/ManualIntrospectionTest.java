@@ -23,6 +23,7 @@ package rsb.introspection;
 import org.junit.Test;
 
 import rsb.Factory;
+import rsb.Informer;
 import rsb.Listener;
 import rsb.RSBException;
 
@@ -40,8 +41,11 @@ public class ManualIntrospectionTest {
         // regular RSB API usage, example here: listener creation and destruction
         final Listener listener = factory.createListener("/rsbtest");
         listener.activate();
+        final Informer<String> informer = factory.createInformer("/rsbtest", String.class);
+        informer.activate();
         Thread.sleep(100000);
         listener.deactivate();
+        informer.deactivate();
     }
 
 }
