@@ -27,6 +27,10 @@ package rsb.introspection;
  */
 public class PortableHostInfo extends HostInfo {
 
+    public PortableHostInfo() {
+        super();
+    }
+
     /* (non-Javadoc)
      * @see rsb.introspection.HostInfo#getId()
      */

@@ -31,19 +31,19 @@ public class OSDetector {
 
     public enum OS_FAMILY {
         LINUX,
-        WINDOWS,
-        MACOSX,
+        WIN32,
+        DARWIN,
         UNKNOWN
     }
 
     public static OS_FAMILY getOSFamily() {
         final String identifier = System.getProperty("os.name");
         if (identifier.startsWith("Windows")) {
-            return OS_FAMILY.WINDOWS;
+            return OS_FAMILY.WIN32;
         } else if (identifier.startsWith("Linux")) {
             return OS_FAMILY.LINUX;
         } else if (identifier.startsWith("Mac")) {
-            return OS_FAMILY.MACOSX;
+            return OS_FAMILY.DARWIN;
         } else {
             return OS_FAMILY.UNKNOWN;
         }

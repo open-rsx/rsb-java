@@ -54,7 +54,7 @@ public class IntrospectionModel {
             this.hostInfo = new LinuxHostInfo();
             break;
         default:
-            LOG.fine("Creating PortableProcess and PortabelHostInfo instances.");
+            LOG.fine("Creating PortableProcess and PortableHostInfo instances.");
             this.processInfo = new PortableProcessInfo();
             this.hostInfo = new PortableHostInfo();
             break;

@@ -30,6 +30,7 @@ import rsb.Informer;
 import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.introspection.HostInfo.MACHINE_TYPE;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
@@ -190,7 +191,14 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
         final Host.Builder host = helloBuilder.getHostBuilder();
         host.setId(this.model.getHostInfo().getId());
         host.setHostname(this.model.getHostInfo().getHostname());
-
+        if (!this.model.getHostInfo().getSoftwareType()
+                .equalsIgnoreCase("unkown")) {
+            host.setSoftwareType(this.model.getHostInfo().getSoftwareType());
+        }
+        if (this.model.getHostInfo().getMachineType() != MACHINE_TYPE.UNKNOWN) {
+            host.setMachineType(this.model.getHostInfo().getMachineType()
+                    .name().toLowerCase());
+        }
         // Get build object
         final Hello hello = helloBuilder.build();
 

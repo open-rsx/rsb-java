@@ -56,6 +56,7 @@ public class LinuxHostInfo extends HostInfo {
     }
 
     public LinuxHostInfo(final String machineIdPath1, final String machineIdPath2) {
+        super();
         initialize(machineIdPath1, machineIdPath2);
     }
 
