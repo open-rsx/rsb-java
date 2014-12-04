@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import rsb.Participant;
+import rsb.util.OSDetector;
 
 
 /**
@@ -46,9 +47,18 @@ public class IntrospectionModel {
     private final HostInfo hostInfo;
 
     public IntrospectionModel() {
-        // TODO add switch for OS-specific process model implementations
-        this.processInfo = new LinuxProcessInfo();
-        this.hostInfo = new LinuxHostInfo();
+        switch (OSDetector.getOSFamily()) {
+        case LINUX:
+            LOG.fine("Creating Process and HostInfo instances for Linux OS.");
+            this.processInfo = new LinuxProcessInfo();
+            this.hostInfo = new LinuxHostInfo();
+            break;
+        default:
+            LOG.fine("Creating PortableProcess and PortabelHostInfo instances.");
+            this.processInfo = new PortableProcessInfo();
+            this.hostInfo = new PortableHostInfo();
+            break;
+        }
     }
 
     public void setProtocolHandler(final ProtocolHandler protocol) {
