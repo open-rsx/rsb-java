@@ -35,9 +35,22 @@ public abstract class ProcessInfo {
     protected int pid;
     protected String name;
     protected List<String> arguments = new ArrayList<String>();
+    protected String userName;
 
     // TODO add documentation
     long startTime;
+
+    public ProcessInfo() {
+        this.userName = readUserName();
+    }
+
+    private String readUserName() {
+        String userName = System.getProperty("user.name");
+        if (userName.isEmpty()) {
+            userName = "unknown";
+        }
+        return userName;
+    }
 
     public int getPid() {
         return this.pid;
@@ -53,6 +66,10 @@ public abstract class ProcessInfo {
 
     public long getStartTime() {
         return this.startTime;
+    }
+
+    public String getUserName(){
+        return this.userName;
     }
 
 }

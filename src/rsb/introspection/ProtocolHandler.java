@@ -30,6 +30,7 @@ import rsb.Informer;
 import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.Version;
 import rsb.introspection.HostInfo.MACHINE_TYPE;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
@@ -186,9 +187,9 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
         processBuilder.setId(String.valueOf(this.model.getProcessInfo().getPid()));
         processBuilder.setProgramName(this.model.getProcessInfo().getProgramName());
         processBuilder.setStartTime(this.model.getProcessInfo().getStartTime());
-        // final List<String> list = this.process.getArguments();
-        // processBuilder.setCommandlineArguments(i,list.get(i));
         processBuilder.addAllCommandlineArguments(this.model.getProcessInfo().getArguments());
+        processBuilder.setExecutingUser(this.model.getProcessInfo().getUserName());
+        processBuilder.setRsbVersion(Version.getInstance().getVersionString());
 
         // Add host information.
         final Host.Builder host = helloBuilder.getHostBuilder();

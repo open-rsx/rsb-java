@@ -6,6 +6,10 @@ import java.util.List;
 
 public class PortableProcessInfo extends ProcessInfo {
 
+    public PortableProcessInfo() {
+        super();
+    }
+
     @Override
     public int getPid() {
         return 1;
