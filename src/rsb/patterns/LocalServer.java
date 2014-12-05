@@ -149,9 +149,8 @@ public class LocalServer extends Server<LocalMethod> {
     }
 
     @Override
-    public String getType() {
-        // TODO think about meaningful implementation
-        return "N/A";
+    public Class<?> getType() {
+        return null;
     }
 
 };

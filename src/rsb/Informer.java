@@ -341,8 +341,8 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     @Override
-    public String getType() {
-        return this.type.getName();
+    public Class<?> getType() {
+        return this.type;
     }
 
 }

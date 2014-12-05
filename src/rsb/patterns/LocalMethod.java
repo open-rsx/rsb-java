@@ -137,9 +137,8 @@ class LocalMethod extends Method implements Handler {
     }
 
     @Override
-    public String getType() {
-        // TODO think about implementation for remote methods
-        return "N/A";
+    public Class<?> getType() {
+        return null;
     }
 
 };

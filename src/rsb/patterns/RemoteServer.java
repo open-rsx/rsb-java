@@ -478,8 +478,8 @@ public class RemoteServer extends Server<RemoteMethod> {
     }
 
     @Override
-    public String getType() {
-        return "N/A";
+    public Class<?> getType() {
+        return null;
     }
 
 };

@@ -31,7 +31,7 @@ import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.Version;
-import rsb.introspection.HostInfo.MACHINE_TYPE;
+import rsb.introspection.HostInfo.MachineType;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
@@ -177,8 +177,8 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
                     .getParentId().toByteArray()));
         }
         helloBuilder.setKind(participant.getKind());
-        if (!participant.getType().equalsIgnoreCase("N/A")) {
-            helloBuilder.setType(participant.getType());
+        if (participant.getType()!=null) {
+            helloBuilder.setType(participant.getType().getName());
         }
         helloBuilder.setScope(participant.getScope().toString());
 
@@ -199,7 +199,7 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
                 .equalsIgnoreCase("unkown")) {
             host.setSoftwareType(this.model.getHostInfo().getSoftwareType());
         }
-        if (this.model.getHostInfo().getMachineType() != MACHINE_TYPE.UNKNOWN) {
+        if (this.model.getHostInfo().getMachineType() != MachineType.UNKNOWN) {
             host.setMachineType(this.model.getHostInfo().getMachineType()
                     .name().toLowerCase());
         }

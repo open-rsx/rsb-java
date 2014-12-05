@@ -142,6 +142,6 @@ public abstract class Participant implements Activatable {
      */
     public abstract String getKind();
 
-    public abstract String getType();
+    public abstract Class<?> getType();
 
 }

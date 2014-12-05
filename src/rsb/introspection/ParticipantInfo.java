@@ -38,10 +38,10 @@ public class ParticipantInfo {
     private final ParticipantId id;
     private final ParticipantId parentId;
     private final Scope scope;
-    private final String type;
+    private final Class<?> type;
 
     public ParticipantInfo(final String kind, final ParticipantId id,
-            final ParticipantId parentId, final Scope scope, final String type) {
+            final ParticipantId parentId, final Scope scope, final Class<?> type) {
         this.kind = kind;
         this.id = id;
         this.parentId = parentId;
@@ -65,7 +65,7 @@ public class ParticipantInfo {
         return this.scope;
     }
 
-    public String getType() {
+    public Class<?> getType() {
         return this.type;
     }
 
