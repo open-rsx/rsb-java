@@ -20,9 +20,9 @@
  */
 package rsb.introspection;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import rsb.Participant;
@@ -41,7 +41,7 @@ public class IntrospectionModel {
 
     private static final Logger LOG = Logger.getLogger(IntrospectionModel.class.getName());
 
-    private final List<ParticipantInfo> participants = new LinkedList<ParticipantInfo>();
+    private final List<ParticipantInfo> participants = java.util.Collections.synchronizedList(new LinkedList<ParticipantInfo>());
     private final ProcessInfo processInfo;
     private ProtocolHandler protocol;
     private final HostInfo hostInfo;
@@ -77,7 +77,7 @@ public class IntrospectionModel {
         return this.participants;
     }
 
-    public ParticipantInfo getParticipant(final java.util.UUID id) {
+    public ParticipantInfo getParticipant(final UUID id) {
         ParticipantInfo participant = null;
         synchronized (this.participants) {
             for (final ParticipantInfo it : this.participants) {
@@ -101,19 +101,15 @@ public class IntrospectionModel {
                 new ParticipantInfo(participant.getKind(), participant.getId(),
                         (parent != null ? parent.getId() : null),
                         participant.getScope(), participant.getType());
-        synchronized (this.participants) {
-            this.participants.add(info);
-        }
+        this.participants.add(info);
         this.protocol.sendHello(info);
     }
 
-    public boolean removeParticipant(final Participant participant) {
+    public void removeParticipant(final Participant participant) {
         LOG.info("Removing " + participant.getKind().toUpperCase() + " " + participant.getId() + " at " + participant.getScope());
         ParticipantInfo info = null;
         synchronized (this.participants) {
-            for (final Iterator<ParticipantInfo> it =
-                    this.participants.iterator(); it.hasNext();) {
-                final ParticipantInfo participantInfo = it.next();
+            for (final ParticipantInfo participantInfo : this.participants) {
                 if (participantInfo.getId() == participant.getId()) {
                     info = participantInfo;
                     this.participants.remove(participantInfo);
@@ -130,7 +126,6 @@ public class IntrospectionModel {
 
         LOG.fine(this.participants.size() + " participant(s) remain(s)");
 
-        return !this.participants.isEmpty();
     }
 
 }
