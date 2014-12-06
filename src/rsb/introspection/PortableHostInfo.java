@@ -20,6 +20,11 @@
  */
 package rsb.introspection;
 
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author swrede
@@ -27,26 +32,43 @@ package rsb.introspection;
  */
 public class PortableHostInfo extends CommonHostInfo {
 
+    private static final Logger LOG = Logger.getLogger(PortableHostInfo.class.getName());
+
     public PortableHostInfo() {
         super();
+        this.initialize();
     }
 
-    /* (non-Javadoc)
-     * @see rsb.introspection.CommonHostInfo#getId()
-     */
-    @Override
-    public String getId() {
-        // TODO Auto-generated method stub
-        return "Trusty-VM-SW";
-    }
+    private void initialize() {
+        final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 
-    /* (non-Javadoc)
-     * @see rsb.introspection.CommonHostInfo#getHostname()
-     */
-    @Override
-    public String getHostname() {
-        // TODO Auto-generated method stub
-        return "macbook-pro-sw";
+        // Get name returns something like 6460@AURORA. Where the value
+        // after the @ symbol is the hostname.
+        final String jvmName = runtime.getName();
+        try {
+            this.hostname = jvmName.split("@")[1];
+        } catch (final ArrayIndexOutOfBoundsException e) {
+           LOG.log(Level.INFO, "Exception when parsing hostname (RuntimeMXBean.getName()==" + jvmName + ")", e);
+           this.hostname = "unknown";
+        }
+
+        // try to calculate hostId via the network
+        try {
+            this.id = getHostIdInet();
+            if (this.hostname.equalsIgnoreCase("unknown")) {
+                this.hostname = this.id;
+            }
+            return;
+        } catch (final IOException e) {
+            LOG.warning("Unexpected I/O exception when getting MAC address: " + e.getMessage());
+            e.printStackTrace();
+        }
+        // try to get local hostname via network
+        this.id = getLocalHostName();
+        if (this.id==null) {
+            // last resort: get hostname via ManagementBean
+            this.id = this.getHostname();
+        }
     }
 
 }

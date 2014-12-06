@@ -20,7 +20,15 @@
  */
 package rsb.introspection;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import rsb.util.OSDetector;
+import rsb.util.OSFamily;
 
 /**
  * @author swrede
@@ -28,13 +36,15 @@ import rsb.util.OSDetector;
  */
 public abstract class CommonHostInfo implements HostInfo {
 
+    private static final Logger LOG = Logger.getLogger(CommonHostInfo.class.getName());
+
     protected String id;
     protected String hostname;
-    protected String softwareType;
+    protected OSFamily softwareType;
     protected MachineType machineType;
 
     public CommonHostInfo() {
-        this.softwareType = OSDetector.getOSFamily().name().toLowerCase();
+        this.softwareType = OSDetector.getOSFamily();
         this.machineType = readMachineType();
     }
 
@@ -58,7 +68,7 @@ public abstract class CommonHostInfo implements HostInfo {
      * @see rsb.introspection.HostInfo#getSoftwareType()
      */
     @Override
-    public String getSoftwareType() {
+    public OSFamily getSoftwareType() {
         return this.softwareType;
     }
 
@@ -80,6 +90,36 @@ public abstract class CommonHostInfo implements HostInfo {
             return MachineType.x86_64;
         } else {
             return MachineType.UNKNOWN;
+        }
+    }
+
+    protected String getHostIdInet() throws IOException {
+        final InetAddress ip = InetAddress.getLocalHost();
+        // creates problem when ip address is not resolved
+        final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+
+        final byte[] mac = network.getHardwareAddress();
+
+        if (mac == null) {
+            throw new IOException(
+                    "Could not read MAC adress via NetworkInterface class.");
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < mac.length; i++) {
+            sb.append(String.format("%02X%s", mac[i],
+                    (i < mac.length - 1) ? "-" : ""));
+        }
+
+        return sb.toString();
+    }
+
+    protected String getLocalHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (final UnknownHostException e) {
+            LOG.log(Level.WARNING, "Exception while getting hostName via InetAddress.", e);
+            return null;
         }
     }
 

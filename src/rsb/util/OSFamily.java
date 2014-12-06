@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the rsb-java project
+ * This file is a part of the rsb.git.java project
  *
  * Copyright (C) 2014 CoR-Lab, Bielefeld University
  *
@@ -22,24 +22,12 @@ package rsb.util;
 
 
 /**
- * Utility class to determine type of operating system.
- *
  * @author swrede
  *
  */
-public class OSDetector {
-
-    public static OSFamily getOSFamily() {
-        final String identifier = System.getProperty("os.name");
-        if (identifier.startsWith("Windows")) {
-            return OSFamily.WIN32;
-        } else if (identifier.startsWith("Linux")) {
-            return OSFamily.LINUX;
-        } else if (identifier.startsWith("Mac")) {
-            return OSFamily.DARWIN;
-        } else {
-            return OSFamily.UNKNOWN;
-        }
-    }
-
+public enum OSFamily {
+    LINUX,
+    WIN32,
+    DARWIN,
+    UNKNOWN
 }

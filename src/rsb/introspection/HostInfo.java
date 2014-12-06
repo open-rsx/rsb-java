@@ -1,5 +1,7 @@
 package rsb.introspection;
 
+import rsb.util.OSFamily;
+
 
 /**
  * Interface for host information model classes.
@@ -19,7 +21,7 @@ public interface HostInfo {
 
     public abstract String getHostname();
 
-    public abstract String getSoftwareType();
+    public abstract OSFamily getSoftwareType();
 
     public abstract MachineType getMachineType();
 

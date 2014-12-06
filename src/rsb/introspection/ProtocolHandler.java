@@ -38,6 +38,7 @@ import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
 import rsb.protocol.operatingsystem.HostType.Host;
 import rsb.protocol.operatingsystem.ProcessType.Process;
+import rsb.util.OSFamily;
 
 import com.google.protobuf.ByteString;
 
@@ -197,9 +198,9 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
         final Host.Builder host = helloBuilder.getHostBuilder();
         host.setId(this.model.getHostInfo().getId());
         host.setHostname(this.model.getHostInfo().getHostname());
-        if (!this.model.getHostInfo().getSoftwareType()
-                .equalsIgnoreCase("unkown")) {
-            host.setSoftwareType(this.model.getHostInfo().getSoftwareType());
+        if (this.model.getHostInfo().getSoftwareType() != OSFamily.UNKNOWN) {
+            host.setSoftwareType(this.model.getHostInfo().getSoftwareType()
+                    .name().toLowerCase());
         }
         if (this.model.getHostInfo().getMachineType() != MachineType.UNKNOWN) {
             host.setMachineType(this.model.getHostInfo().getMachineType()

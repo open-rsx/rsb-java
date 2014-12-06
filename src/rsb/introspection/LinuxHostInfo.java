@@ -24,10 +24,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -82,7 +78,7 @@ public class LinuxHostInfo extends CommonHostInfo {
         }
         // otherwise try to calculate hostId via the network
         try {
-            getHostIdInet();
+            return getHostIdInet();
         } catch (final IOException e) {
             LOG.warning("Unexpected I/O exception when getting MAC address: " + e.getMessage());
             e.printStackTrace();
@@ -103,35 +99,5 @@ public class LinuxHostInfo extends CommonHostInfo {
             reader.close();
         }
         return machineId;
-    }
-
-    private String getHostIdInet() throws IOException {
-        final InetAddress ip = InetAddress.getLocalHost();
-        // creates problem when ip address is not resolved
-        final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-
-        final byte[] mac = network.getHardwareAddress();
-
-        if (mac == null) {
-            throw new IOException(
-                    "Could not read MAC adress via NetworkInterface class.");
-        }
-
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < mac.length; i++) {
-            sb.append(String.format("%02X%s", mac[i],
-                    (i < mac.length - 1) ? "-" : ""));
-        }
-
-        return sb.toString();
-    }
-
-    private String getLocalHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (final UnknownHostException e) {
-            LOG.log(Level.WARNING, "Exception while getting hostName via InetAddress.", e);
-            return null;
-        }
     }
 }
