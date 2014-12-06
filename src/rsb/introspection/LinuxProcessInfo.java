@@ -73,7 +73,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             }
             in2.close();
         } catch (final IOException e) {
-            LOG.log(Level.FINE,"Exception while reading program name from /proc/self/cmdline",e);
+            LOG.log(Level.INFO,"Exception while reading program name from /proc/self/cmdline",e);
         }
         final String programName = pname.subSequence(0, pname.indexOf("\0")).toString();
         if (programName.isEmpty()) {
@@ -101,7 +101,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
 
             incmd.close();
         } catch (final IOException e) {
-            LOG.log(Level.FINE,"Exception while reading program arguments from /proc/self/cmdline",e);
+            LOG.log(Level.INFO,"Exception while reading program arguments from /proc/self/cmdline",e);
         }
 
         // TODO review and refactor this parsing code
@@ -140,7 +140,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
 
             in1.close();
         } catch (final IOException e) {
-            LOG.log(Level.FINE,"Exception while reading process start time from /proc/self/stat",e);
+            LOG.log(Level.INFO,"Exception while reading process start time from /proc/self/stat",e);
         }
 
         // TODO check this for possible errors and refactor it
@@ -167,7 +167,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             // Close the input stream
             in2.close();
         } catch (final IOException e) {
-            LOG.log(Level.FINE,"Exception while reading system boot time from /proc/stat",e);
+            LOG.log(Level.INFO,"Exception while reading system boot time from /proc/stat",e);
             bootTimeUNIXSeconds = 0;
         }
 
@@ -190,10 +190,10 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             if (m.matches()) {
                 processId = Integer.parseInt(m.group(1));
             } else {
-                LOG.warning("Could not parse or convert process id from /proc/self/stat entry.");
+                LOG.info("Could not parse or convert process id from /proc/self/stat entry.");
             }
         } catch (final IOException exception) {
-            LOG.log(Level.FINE,"Exception while process entry from /proc/self/stat",exception);
+            LOG.log(Level.INFO,"Exception while process entry from /proc/self/stat",exception);
         } finally {
             if (reader != null) {
                 try {
