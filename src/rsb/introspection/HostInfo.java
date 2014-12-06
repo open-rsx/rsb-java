@@ -26,9 +26,11 @@ import rsb.util.OSDetector;
  * @author swrede
  *
  */
+// TODO rename to Common*
+// TODO extract interface
 public abstract class HostInfo {
 
-    enum MACHINE_TYPE {
+    enum MachineType {
         x86,
         x86_64,
         UNKNOWN
@@ -37,7 +39,7 @@ public abstract class HostInfo {
     protected String id;
     protected String hostname;
     protected String softwareType;
-    protected MACHINE_TYPE machineType;
+    protected MachineType machineType;
 
     public HostInfo() {
         this.softwareType = OSDetector.getOSFamily().name().toLowerCase();
@@ -56,20 +58,20 @@ public abstract class HostInfo {
         return this.softwareType;
     }
 
-    public MACHINE_TYPE getMachineType() {
+    public MachineType getMachineType() {
         return this.machineType;
     }
 
-    protected MACHINE_TYPE readMachineType() {
+    protected MachineType readMachineType() {
         // TODO check better way to get CPU architecture
         //      or at least make sure that these keys are correct
         final String identifier = System.getProperty("os.arch");
-        if (identifier.startsWith("x86") || identifier.startsWith("i386")) {
-            return MACHINE_TYPE.x86;
+        if (identifier.contains("x86") || identifier.contains("i386")) {
+            return MachineType.x86;
         } else if (identifier.startsWith("amd64")) {
-            return MACHINE_TYPE.x86_64;
+            return MachineType.x86_64;
         } else {
-            return MACHINE_TYPE.UNKNOWN;
+            return MachineType.UNKNOWN;
         }
     }
 
