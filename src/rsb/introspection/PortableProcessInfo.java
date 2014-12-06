@@ -1,33 +1,39 @@
 package rsb.introspection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class PortableProcessInfo extends CommonProcessInfo {
 
+    private static final Logger LOG = Logger.getLogger(PortableProcessInfo.class.getName());
+
     public PortableProcessInfo() {
         super();
+        this.initialize();
     }
 
-    @Override
-    public int getPid() {
-        return 1;
-    }
+    private void initialize() {
+        final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 
-    @Override
-    public String getProgramName() {
-        return "ManualIntrospectionTest";
-    }
+        // Get name returns something like 6460@AURORA. Where the value
+        // before the @ symbol is the PID.
+        final String jvmName = runtime.getName();
+        try {
+            this.pid = Integer.valueOf(jvmName.split("@")[0]);
+        } catch (final NumberFormatException e) {
+           LOG.log(Level.INFO, "Exception when parsing pid (RuntimeMXBean.getName()==" + jvmName + ")", e);
+        }
 
-    @Override
-    public List<String> getArguments() {
-        return new ArrayList<String>();
-    }
+        this.startTime = runtime.getStartTime();
 
-    @Override
-    public long getStartTime() {
-        return 10101010101010L;
+        this.name = "java-" + System.getProperty("java.runtime.version");
+        // Returns the input arguments passed to the Java virtual machine which does
+        // not include the arguments to the main method. This method returns an empty
+        // list if there is no input argument to the Java virtual machine.
+        this.arguments = runtime.getInputArguments();
     }
 
 }
