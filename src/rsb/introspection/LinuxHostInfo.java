@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 
 /**
- * Linux-specific implementation of HostInfo class. Tries to compute and cache
+ * Linux-specific implementation of CommonHostInfo class. Tries to compute and cache
  * a unique machine id (and hostname information) from the following locations:
  *   1. /etc/machine-id
  *   2. /var/lib/dbus/machine-id
@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  * @author ssharma
  *
  */
-public class LinuxHostInfo extends HostInfo {
+public class LinuxHostInfo extends CommonHostInfo {
 
     private static final Logger LOG = Logger.getLogger(LinuxHostInfo.class.getName());
 

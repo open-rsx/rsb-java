@@ -25,14 +25,14 @@ package rsb.introspection;
  * @author swrede
  *
  */
-public class PortableHostInfo extends HostInfo {
+public class PortableHostInfo extends CommonHostInfo {
 
     public PortableHostInfo() {
         super();
     }
 
     /* (non-Javadoc)
-     * @see rsb.introspection.HostInfo#getId()
+     * @see rsb.introspection.CommonHostInfo#getId()
      */
     @Override
     public String getId() {
@@ -41,7 +41,7 @@ public class PortableHostInfo extends HostInfo {
     }
 
     /* (non-Javadoc)
-     * @see rsb.introspection.HostInfo#getHostname()
+     * @see rsb.introspection.CommonHostInfo#getHostname()
      */
     @Override
     public String getHostname() {
