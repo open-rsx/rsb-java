@@ -20,13 +20,13 @@
  */
 package rsb.introspection;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.ParticipantObserver;
 import rsb.RSBException;
-
 
 /**
  * Observer instance connecting the creation / deconstruction of participants to
@@ -37,37 +37,43 @@ import rsb.RSBException;
  */
 public class IntrospectionParticipantObserver implements ParticipantObserver {
 
-    private final static Logger LOG = Logger.getLogger(IntrospectionParticipantObserver.class.getName());
+    private final static Logger LOG = Logger
+            .getLogger(IntrospectionParticipantObserver.class.getName());
 
     private final IntrospectionModel model;
-    private final ProtocolHandler protocol;
+    private ProtocolHandler protocol;
 
     public IntrospectionParticipantObserver() {
         this.model = new IntrospectionModel();
         this.protocol = new ProtocolHandler(this.model);
-        this.model.setProtocolHandler(this.protocol);
     }
 
-    public IntrospectionParticipantObserver(final IntrospectionModel model, final ProtocolHandler protocol) {
+    public IntrospectionParticipantObserver(final IntrospectionModel model,
+            final ProtocolHandler protocol) {
+        assert model != null;
+        assert protocol != null;
         this.model = model;
         this.protocol = protocol;
     }
 
     public void activate() throws RSBException {
-        if (this.protocol!=null) {
-            this.protocol.activate();
-            LOG.fine("IntrospectionParticipantObserver activated");
-        }
+        assert this.protocol != null;
+        this.protocol.activate();
+        LOG.fine("IntrospectionParticipantObserver activated");
     }
 
     public void deactivate() {
-        if (this.protocol!=null) {
+        if (this.protocol != null) {
             try {
                 this.protocol.deactivate();
             } catch (final RSBException e) {
-                e.printStackTrace();
+                LOG.log(Level.WARNING,
+                        "Exception upon deactivation of introspection protocol",
+                        e);
             } catch (final InterruptedException e) {
-                e.printStackTrace();
+                LOG.log(Level.WARNING,
+                        "Exception upon deactivation of introspection protocol",
+                        e);
             }
         }
     }
@@ -75,31 +81,40 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
     @Override
     public void created(final Participant participant,
             final ParticipantCreateArgs<?> args) {
-        if (!participant.getScope().isSubScopeOf(ProtocolHandler.BASE_SCOPE)) {
-            synchronized (this) {
-                if (!this.protocol.isActive()) {
-                    // lazy instantiation of protocol handler due to otherwise
-                    // recursive factory calls
-                    try {
-                        this.protocol.activate();
-                    } catch (final RSBException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+        if (participant.getScope().isSubScopeOf(ProtocolHandler.BASE_SCOPE)) {
+            return;
+        }
+        synchronized (this) {
+            if (!this.protocol.isActive()) {
+                // lazy instantiation of protocol handler due to otherwise
+                // recursive factory calls
+                try {
+                    this.protocol.activate();
                     this.model.setProtocolHandler(this.protocol);
+                } catch (final RSBException e) {
+                    LOG.log(Level.WARNING,
+                            "Exception during creation of introspection protocol",
+                            e);
+                    // if introspection participants cannot be created, we
+                    // probably have a serious problem anyway
+                    this.protocol = new ProtocolHandler(this.model);
+                    this.model.setProtocolHandler(this.protocol);
+                    assert false;
                 }
-            }
-            if (this.model != null) {
-                this.model.addParticipant(participant, args.getParent());
             }
         }
 
+        this.model.addParticipant(participant, args.getParent());
     }
 
     @Override
     public void destroyed(final Participant participant) {
-        if ((this.model!=null) && (!participant.getScope().isSubScopeOf(ProtocolHandler.BASE_SCOPE))) {
-            this.model.removeParticipant(participant);
+        synchronized (this) {
+            if ((this.model != null)
+                    && (!participant.getScope().isSubScopeOf(
+                            ProtocolHandler.BASE_SCOPE))) {
+                this.model.removeParticipant(participant);
+            }
         }
     }
 
