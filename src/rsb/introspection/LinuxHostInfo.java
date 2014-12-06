@@ -26,43 +26,43 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-
-
 /**
- * Linux-specific implementation of CommonHostInfo class. Tries to compute and cache
- * a unique machine id (and hostname information) from the following locations:
- *   1. /etc/machine-id
- *   2. /var/lib/dbus/machine-id
- *   3. MAC adress of network interface
- *   4. local hostname
+ * Linux-specific implementation of CommonHostInfo class. Tries to compute and
+ * cache a unique machine id (and hostname information) from the following
+ * locations: 1. /etc/machine-id 2. /var/lib/dbus/machine-id 3. MAC adress of
+ * network interface 4. local hostname
  *
  * @author swrede
  * @author ssharma
- *
  */
 public class LinuxHostInfo extends CommonHostInfo {
 
-    private static final Logger LOG = Logger.getLogger(LinuxHostInfo.class.getName());
+    private static final Logger LOG = Logger.getLogger(LinuxHostInfo.class
+            .getName());
 
     private static final String PATH_ETC_MACHINE_ID = "/etc/machine-id";
-    private static final String PATH_VAR_LIB_DBUS_MACHINE_ID = "/var/lib/dbus/machine-id";
+    private static final String PATH_VAR_LIB_DBUS_MACHINE_ID =
+            "/var/lib/dbus/machine-id";
 
     public LinuxHostInfo() {
         super();
         initialize(PATH_ETC_MACHINE_ID, PATH_VAR_LIB_DBUS_MACHINE_ID);
     }
 
-    public LinuxHostInfo(final String machineIdPath1, final String machineIdPath2) {
+    public LinuxHostInfo(final String machineIdPath1,
+            final String machineIdPath2) {
         super();
         initialize(machineIdPath1, machineIdPath2);
     }
 
-    private void initialize(final String machineIdPath1, final String machineIdPath2) {
-        this.id = readHostId(machineIdPath1,machineIdPath2);
+    private void initialize(final String machineIdPath1,
+            final String machineIdPath2) {
+        this.id = readHostId(machineIdPath1, machineIdPath2);
         this.hostname = getLocalHostName();
     }
 
-    private String readHostId(final String machineIdPath1, final String machineIdPath2) {
+    private String readHostId(final String machineIdPath1,
+            final String machineIdPath2) {
         final File f1 = new File(machineIdPath1);
         final File f2 = new File(machineIdPath2);
         // first option: read machineId files
@@ -73,14 +73,16 @@ public class LinuxHostInfo extends CommonHostInfo {
                 return readMachineId(f2);
             }
         } catch (final IOException e) {
-            LOG.warning("Unexpected I/O exception when accessing machineId file: " + e.getMessage());
+            LOG.warning("Unexpected I/O exception when accessing machineId file: "
+                    + e.getMessage());
             e.printStackTrace();
         }
         // otherwise try to calculate hostId via the network
         try {
             return getHostIdInet();
         } catch (final IOException e) {
-            LOG.warning("Unexpected I/O exception when getting MAC address: " + e.getMessage());
+            LOG.warning("Unexpected I/O exception when getting MAC address: "
+                    + e.getMessage());
             e.printStackTrace();
         }
         // last resort: return local hostname
@@ -93,7 +95,8 @@ public class LinuxHostInfo extends CommonHostInfo {
         try {
             machineId = reader.readLine();
         } catch (final IOException exception) {
-            LOG.warning("Could not read MachineId from path: " + file.toString());
+            LOG.warning("Could not read MachineId from path: "
+                    + file.toString());
             exception.printStackTrace();
         } finally {
             reader.close();

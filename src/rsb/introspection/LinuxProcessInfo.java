@@ -34,14 +34,16 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
- * @author swrede
+ * Linux-optimized implementation of process info
+ * interface.
  *
+ * @author swrede
  */
 public class LinuxProcessInfo extends CommonProcessInfo {
 
-    private final static Logger LOG = Logger.getLogger(LinuxProcessInfo.class.getName());
+    private final static Logger LOG = Logger.getLogger(LinuxProcessInfo.class
+            .getName());
 
     /**
      *
@@ -73,9 +75,12 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             }
             in2.close();
         } catch (final IOException e) {
-            LOG.log(Level.INFO,"Exception while reading program name from /proc/self/cmdline",e);
+            LOG.log(Level.INFO,
+                    "Exception while reading program name from /proc/self/cmdline",
+                    e);
         }
-        final String programName = pname.subSequence(0, pname.indexOf("\0")).toString();
+        final String programName =
+                pname.subSequence(0, pname.indexOf("\0")).toString();
         if (programName.isEmpty()) {
             return "N/A";
         } else {
@@ -101,7 +106,9 @@ public class LinuxProcessInfo extends CommonProcessInfo {
 
             incmd.close();
         } catch (final IOException e) {
-            LOG.log(Level.INFO,"Exception while reading program arguments from /proc/self/cmdline",e);
+            LOG.log(Level.INFO,
+                    "Exception while reading program arguments from /proc/self/cmdline",
+                    e);
         }
 
         // TODO review and refactor this parsing code
@@ -140,7 +147,9 @@ public class LinuxProcessInfo extends CommonProcessInfo {
 
             in1.close();
         } catch (final IOException e) {
-            LOG.log(Level.INFO,"Exception while reading process start time from /proc/self/stat",e);
+            LOG.log(Level.INFO,
+                    "Exception while reading process start time from /proc/self/stat",
+                    e);
         }
 
         // TODO check this for possible errors and refactor it
@@ -167,11 +176,14 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             // Close the input stream
             in2.close();
         } catch (final IOException e) {
-            LOG.log(Level.INFO,"Exception while reading system boot time from /proc/stat",e);
+            LOG.log(Level.INFO,
+                    "Exception while reading system boot time from /proc/stat",
+                    e);
             bootTimeUNIXSeconds = 0;
         }
 
-        final long startTime = (1000000 * bootTimeUNIXSeconds + 10000 * startTimeBootJiffies);
+        final long startTime =
+                (1000000 * bootTimeUNIXSeconds + 10000 * startTimeBootJiffies);
         return startTime;
     }
 
@@ -184,7 +196,8 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             final String entry = reader.readLine();
 
             // TODO still need to check this for simplification
-            //      or whether to write a full parser for the procfs process info format
+            // or whether to write a full parser for the procfs process info
+            // format
             final Pattern p = Pattern.compile("^([\\d]*)[\\s]*.*");
             final Matcher m = p.matcher(entry);
             if (m.matches()) {
@@ -193,18 +206,21 @@ public class LinuxProcessInfo extends CommonProcessInfo {
                 LOG.info("Could not parse or convert process id from /proc/self/stat entry.");
             }
         } catch (final IOException exception) {
-            LOG.log(Level.INFO,"Exception while process entry from /proc/self/stat",exception);
+            LOG.log(Level.INFO,
+                    "Exception while process entry from /proc/self/stat",
+                    exception);
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    LOG.log(Level.FINE,"Exception while closing input stream for /proc/self/stat",e);
+                    LOG.log(Level.FINE,
+                            "Exception while closing input stream for /proc/self/stat",
+                            e);
                 }
             }
         }
         return processId;
     }
-
 
 }

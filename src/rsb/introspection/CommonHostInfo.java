@@ -31,12 +31,15 @@ import rsb.util.OSDetector;
 import rsb.util.OSFamily;
 
 /**
- * @author swrede
+ * Encapsulates common host info functionality shared between
+ * portable and non-portable subclasses.
  *
+ * @author swrede
  */
 public abstract class CommonHostInfo implements HostInfo {
 
-    private static final Logger LOG = Logger.getLogger(CommonHostInfo.class.getName());
+    private static final Logger LOG = Logger.getLogger(CommonHostInfo.class
+            .getName());
 
     protected String id;
     protected String hostname;
@@ -48,7 +51,9 @@ public abstract class CommonHostInfo implements HostInfo {
         this.machineType = readMachineType();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.HostInfo#getId()
      */
     @Override
@@ -56,7 +61,9 @@ public abstract class CommonHostInfo implements HostInfo {
         return this.id;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.HostInfo#getHostname()
      */
     @Override
@@ -64,7 +71,9 @@ public abstract class CommonHostInfo implements HostInfo {
         return this.hostname;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.HostInfo#getSoftwareType()
      */
     @Override
@@ -72,7 +81,9 @@ public abstract class CommonHostInfo implements HostInfo {
         return this.softwareType;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.HostInfo#getMachineType()
      */
     @Override
@@ -82,7 +93,7 @@ public abstract class CommonHostInfo implements HostInfo {
 
     protected MachineType readMachineType() {
         // TODO check better way to get CPU architecture
-        //      or at least make sure that these keys are correct
+        // or at least make sure that these keys are correct
         final String identifier = System.getProperty("os.arch");
         if (identifier.contains("x86") || identifier.contains("i386")) {
             return MachineType.x86;
@@ -118,7 +129,8 @@ public abstract class CommonHostInfo implements HostInfo {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (final UnknownHostException e) {
-            LOG.log(Level.WARNING, "Exception while getting hostName via InetAddress.", e);
+            LOG.log(Level.WARNING,
+                    "Exception while getting hostName via InetAddress.", e);
             return null;
         }
     }

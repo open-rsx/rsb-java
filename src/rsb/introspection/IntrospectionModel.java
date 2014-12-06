@@ -28,20 +28,20 @@ import java.util.logging.Logger;
 import rsb.Participant;
 import rsb.util.OSDetector;
 
-
 /**
- * Implementation of RSB-based introspection protocol.
- * Supports hello, bye and survey messages.
+ * Implementation of RSB-based introspection protocol. Supports hello, bye and
+ * survey messages.
  *
  * @author swrede
  * @author ssharma
- *
  */
 public class IntrospectionModel {
 
-    private static final Logger LOG = Logger.getLogger(IntrospectionModel.class.getName());
+    private static final Logger LOG = Logger.getLogger(IntrospectionModel.class
+            .getName());
 
-    private final List<ParticipantInfo> participants = java.util.Collections.synchronizedList(new LinkedList<ParticipantInfo>());
+    private final List<ParticipantInfo> participants = java.util.Collections
+            .synchronizedList(new LinkedList<ParticipantInfo>());
     private final ProcessInfo processInfo;
     private ProtocolHandler protocol;
     private final HostInfo hostInfo;
@@ -96,7 +96,9 @@ public class IntrospectionModel {
 
     public void addParticipant(final Participant participant,
             final Participant parent) {
-        LOG.info("Adding " + participant.getKind().toUpperCase() + " " + participant.getId() + " at " + participant.getScope() + " with parent: " + parent);
+        LOG.info("Adding " + participant.getKind().toUpperCase() + " "
+                + participant.getId() + " at " + participant.getScope()
+                + " with parent: " + parent);
         final ParticipantInfo info =
                 new ParticipantInfo(participant.getKind(), participant.getId(),
                         (parent != null ? parent.getId() : null),
@@ -106,7 +108,8 @@ public class IntrospectionModel {
     }
 
     public void removeParticipant(final Participant participant) {
-        LOG.info("Removing " + participant.getKind().toUpperCase() + " " + participant.getId() + " at " + participant.getScope());
+        LOG.info("Removing " + participant.getKind().toUpperCase() + " "
+                + participant.getId() + " at " + participant.getScope());
         ParticipantInfo info = null;
         synchronized (this.participants) {
             for (final ParticipantInfo participantInfo : this.participants) {

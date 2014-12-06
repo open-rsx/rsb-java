@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the rsb.git.java project
+ * This file is a part of the rsb-java project
  *
  * Copyright (C) 2014 CoR-Lab, Bielefeld University
  *
@@ -27,12 +27,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author swrede
+ * Cross-platform plain Java implementation of host info interface.
  *
+ * @author swrede
  */
 public class PortableHostInfo extends CommonHostInfo {
 
-    private static final Logger LOG = Logger.getLogger(PortableHostInfo.class.getName());
+    private static final Logger LOG = Logger.getLogger(PortableHostInfo.class
+            .getName());
 
     public PortableHostInfo() {
         super();
@@ -48,8 +50,10 @@ public class PortableHostInfo extends CommonHostInfo {
         try {
             this.hostname = jvmName.split("@")[1];
         } catch (final ArrayIndexOutOfBoundsException e) {
-           LOG.log(Level.INFO, "Exception when parsing hostname (RuntimeMXBean.getName()==" + jvmName + ")", e);
-           this.hostname = "unknown";
+            LOG.log(Level.INFO,
+                    "Exception when parsing hostname (RuntimeMXBean.getName()=="
+                            + jvmName + ")", e);
+            this.hostname = "unknown";
         }
 
         // try to calculate hostId via the network
@@ -60,12 +64,13 @@ public class PortableHostInfo extends CommonHostInfo {
             }
             return;
         } catch (final IOException e) {
-            LOG.warning("Unexpected I/O exception when getting MAC address: " + e.getMessage());
+            LOG.warning("Unexpected I/O exception when getting MAC address: "
+                    + e.getMessage());
             e.printStackTrace();
         }
         // try to get local hostname via network
         this.id = getLocalHostName();
-        if (this.id==null) {
+        if (this.id == null) {
             // last resort: get hostname via ManagementBean
             this.id = this.getHostname();
         }

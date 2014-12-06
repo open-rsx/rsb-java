@@ -1,7 +1,7 @@
 /**
  * ============================================================
  *
- * This file is a part of the rsb.git.java project
+ * This file is a part of the rsb-java project
  *
  * Copyright (C) 2014 CoR-Lab, Bielefeld University
  *
@@ -42,18 +42,18 @@ import rsb.util.OSFamily;
 
 import com.google.protobuf.ByteString;
 
-
 /**
- * Implementation of the introspection protocol
- * using RSB patterns.
+ * Implementation of the introspection protocol using RSB patterns.
+ * Cf. http://docs.cor-lab.de//rsb-manual/trunk/html/specification-introspection.html
  *
  * @author swrede
  * @author ssharma
- *
  */
-public class ProtocolHandler extends AbstractEventHandler implements Activatable {
+public class ProtocolHandler extends AbstractEventHandler implements
+        Activatable {
 
-    private static final Logger LOG = Logger.getLogger(ProtocolHandler.class.getName());
+    private static final Logger LOG = Logger.getLogger(ProtocolHandler.class
+            .getName());
 
     static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
 
@@ -86,13 +86,20 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
     @Override
     public void activate() throws RSBException {
         // set up listener and informer pair for basic introspection protocol
-        this.listener = Factory.getInstance().createListener(BASE_SCOPE.concat(new Scope("/participants/")));
+        this.listener =
+                Factory.getInstance().createListener(
+                        BASE_SCOPE.concat(new Scope("/participants/")));
         this.listener.activate();
-        this.informer = Factory.getInstance().createInformer(BASE_SCOPE.concat(new Scope("/participants/")));
+        this.informer =
+                Factory.getInstance().createInformer(
+                        BASE_SCOPE.concat(new Scope("/participants/")));
         this.informer.activate();
 
         // set up server for echo method
-        final Scope serverScope= BASE_SCOPE.concat(new Scope("/hosts/" + this.model.getHostInfo().getId() + "/" + this.model.getProcessInfo().getPid()));
+        final Scope serverScope =
+                BASE_SCOPE.concat(new Scope("/hosts/"
+                        + this.model.getHostInfo().getId() + "/"
+                        + this.model.getProcessInfo().getPid()));
         this.infoServer = Factory.getInstance().createLocalServer(serverScope);
         this.infoServer.activate();
         this.infoServer.addMethod("echo", new EchoCallback());
@@ -106,23 +113,22 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
-        if (this.listener!=null) {
+        if (this.listener != null) {
             this.listener.deactivate();
         }
-        if (this.informer!=null) {
+        if (this.informer != null) {
             this.informer.deactivate();
         }
-        if (this.infoServer!=null) {
+        if (this.infoServer != null) {
             this.infoServer.deactivate();
         }
     }
-
 
     @Override
     public void handleEvent(final Event query) {
         LOG.fine("Processing introspection query: " + query);
         // if empty data field, either SURVEY or REQUEST
-        if (query.getData()==null) {
+        if (query.getData() == null) {
             if (query.getMethod().equals("SURVEY")) {
                 handleSurvey(query);
             } else if (query.getMethod().equals("REQUEST")) {
@@ -144,13 +150,15 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
     }
 
     private void handleRequest(final Event event) {
-        assert event.getScope().getComponents().size()>=1;
-        final String idString = event.getScope().getComponents().get(event.getScope().getComponents().size() - 1);
+        assert event.getScope().getComponents().size() >= 1;
+        final String idString =
+                event.getScope().getComponents()
+                        .get(event.getScope().getComponents().size() - 1);
         final UUID id = UUID.fromString(idString);
 
         final ParticipantInfo participant = this.model.getParticipant(id);
 
-        if (participant!=null) {
+        if (participant != null) {
             this.sendHello(participant, event);
         }
     }
@@ -180,18 +188,22 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
                     .getParentId().toByteArray()));
         }
         helloBuilder.setKind(participant.getKind());
-        if (participant.getType()!=null) {
+        if (participant.getType() != null) {
             helloBuilder.setType(participant.getType().getName());
         }
         helloBuilder.setScope(participant.getScope().toString());
 
         // Add process information.
         final Process.Builder processBuilder = helloBuilder.getProcessBuilder();
-        processBuilder.setId(String.valueOf(this.model.getProcessInfo().getPid()));
-        processBuilder.setProgramName(this.model.getProcessInfo().getProgramName());
+        processBuilder.setId(String.valueOf(this.model.getProcessInfo()
+                .getPid()));
+        processBuilder.setProgramName(this.model.getProcessInfo()
+                .getProgramName());
         processBuilder.setStartTime(this.model.getProcessInfo().getStartTime());
-        processBuilder.addAllCommandlineArguments(this.model.getProcessInfo().getArguments());
-        processBuilder.setExecutingUser(this.model.getProcessInfo().getUserName());
+        processBuilder.addAllCommandlineArguments(this.model.getProcessInfo()
+                .getArguments());
+        processBuilder.setExecutingUser(this.model.getProcessInfo()
+                .getUserName());
         processBuilder.setRsbVersion(Version.getInstance().getVersionString());
 
         // Add host information.
@@ -247,7 +259,8 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
 
     public void sendPong(final ParticipantInfo participant, final Event query) {
         final rsb.Event pongEvent = query;
-        final Scope participantScope = new Scope("/" + participant.getId().toString());
+        final Scope participantScope =
+                new Scope("/" + participant.getId().toString());
         pongEvent.setScope(this.informer.getScope().concat(participantScope));
         pongEvent.setType(String.class);
         pongEvent.setData(new String("pong"));

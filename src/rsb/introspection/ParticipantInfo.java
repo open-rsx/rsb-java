@@ -23,14 +23,12 @@ package rsb.introspection;
 import rsb.ParticipantId;
 import rsb.Scope;
 
-
 /**
- * Internal data holder for participant information.
- * Used within introspection model.
+ * Internal data holder for participant information. Used within introspection
+ * model.
  *
  * @author swrede
  * @author ssharma
- *
  */
 public class ParticipantInfo {
 

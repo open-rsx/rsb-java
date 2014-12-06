@@ -33,7 +33,6 @@ import rsb.RSBException;
  * the introspection mechanism.
  *
  * @author swrede
- *
  */
 public class IntrospectionParticipantObserver implements ParticipantObserver {
 

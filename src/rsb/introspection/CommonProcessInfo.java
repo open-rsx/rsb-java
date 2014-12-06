@@ -23,11 +23,11 @@ package rsb.introspection;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * @author swrede
- * @author ssharma
+ * Encapsulates common process info functionality shared between
+ * portable and non-portable subclasses.
  *
+ * @author swrede
  */
 public abstract class CommonProcessInfo implements ProcessInfo {
 
@@ -52,7 +52,9 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return userName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.ProcessInfo#getPid()
      */
     @Override
@@ -60,7 +62,9 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return this.pid;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.ProcessInfo#getProgramName()
      */
     @Override
@@ -68,7 +72,9 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return this.name;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.ProcessInfo#getArguments()
      */
     @Override
@@ -76,7 +82,9 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return this.arguments;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.ProcessInfo#getStartTime()
      */
     @Override
@@ -84,11 +92,13 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return this.startTime;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see rsb.introspection.ProcessInfo#getUserName()
      */
     @Override
-    public String getUserName(){
+    public String getUserName() {
         return this.userName;
     }
 
