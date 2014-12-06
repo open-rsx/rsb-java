@@ -60,7 +60,7 @@ public final class Factory {
     private final Properties properties = new Properties();
 
     private IntrospectionParticipantObserver introspection = null;
-    private static final String DEFAULT_INTROSPECTION = "true";
+    private static final Boolean DEFAULT_INTROSPECTION = false;
     private static final String INTROSPECTION_KEY = "rsb.introspection";
 
     private final ParticipantConfig defaultConfig = new ParticipantConfig();
