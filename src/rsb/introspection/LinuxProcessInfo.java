@@ -58,7 +58,7 @@ public class LinuxProcessInfo extends ProcessInfo {
     }
 
     // TODO refactoring
-    protected String readProgramNameFromProcFS() {
+    private String readProgramNameFromProcFS() {
         final StringBuilder pname = new StringBuilder();
         try {
             final FileInputStream fstream2 =
@@ -85,7 +85,7 @@ public class LinuxProcessInfo extends ProcessInfo {
     }
 
     // TODO refactoring
-    public List<String> readArgumentsFromProcFS() {
+    private List<String> readArgumentsFromProcFS() {
         final List<String> parsedArguments = new ArrayList<String>();
         final StringBuilder cmd = new StringBuilder();
         try {
@@ -124,7 +124,7 @@ public class LinuxProcessInfo extends ProcessInfo {
     }
 
     // TODO refactoring
-    public long readStartTimeFromProcFS() {
+    private long readStartTimeFromProcFS() {
 
         long startTimeBootJiffies = 0;
         final StringBuilder s = new StringBuilder();
@@ -181,7 +181,7 @@ public class LinuxProcessInfo extends ProcessInfo {
         return startTime;
     }
 
-    protected int readPIDFromProcFS() {
+    private int readPIDFromProcFS() {
         int processId = 0;
         final File procFSFile = new File("/proc/self/stat");
         BufferedReader reader = null;
