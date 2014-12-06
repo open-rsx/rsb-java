@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PortableProcessInfo extends ProcessInfo {
+public class PortableProcessInfo extends CommonProcessInfo {
 
     public PortableProcessInfo() {
         super();

@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  * @author swrede
  *
  */
-public class LinuxProcessInfo extends ProcessInfo {
+public class LinuxProcessInfo extends CommonProcessInfo {
 
     private final static Logger LOG = Logger.getLogger(LinuxProcessInfo.class.getName());
 
