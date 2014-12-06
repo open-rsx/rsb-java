@@ -49,7 +49,7 @@ public class IntrospectionModel {
     public IntrospectionModel() {
         switch (OSDetector.getOSFamily()) {
         case LINUX:
-            LOG.fine("Creating Process and HostInfo instances for Linux OS.");
+            LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
             this.processInfo = new LinuxProcessInfo();
             this.hostInfo = new LinuxHostInfo();
             break;
