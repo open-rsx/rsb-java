@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -105,10 +106,7 @@ public class LinuxHostInfo extends HostInfo {
     }
 
     private String getHostIdInet() throws IOException {
-        InetAddress ip;
-        final StringBuilder sb;
-
-        ip = InetAddress.getLocalHost();
+        final InetAddress ip = InetAddress.getLocalHost();
         // creates problem when ip address is not resolved
         final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
 
@@ -119,7 +117,7 @@ public class LinuxHostInfo extends HostInfo {
                     "Could not read MAC adress via NetworkInterface class.");
         }
 
-        sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mac.length; i++) {
             sb.append(String.format("%02X%s", mac[i],
                     (i < mac.length - 1) ? "-" : ""));
@@ -129,13 +127,11 @@ public class LinuxHostInfo extends HostInfo {
     }
 
     private String getLocalHostName() {
-        String host = "N/A";
         try {
-            host = InetAddress.getLocalHost().getHostName();
+            return InetAddress.getLocalHost().getHostName();
         } catch (final UnknownHostException e) {
-            LOG.warning("Exception while getting hostName via InetAddress: " + e.getMessage());
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Exception while getting hostName via InetAddress.", e);
+            return null;
         }
-        return host;
     }
 }
