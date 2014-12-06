@@ -1,5 +1,6 @@
 package rsb.introspection;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Level;
@@ -19,12 +20,16 @@ public class ProcessInfoTest {
         switch (OSDetector.getOSFamily()) {
         case LINUX:
             info = new LinuxProcessInfo();
+            LOG.info("Created LinuxProcessInfo");
             break;
         default:
             info = new PortableProcessInfo();
+            LOG.info("Created PortableProcessInfo");
             break;
         }
         // TODO add meaningful tests
+        assertFalse(info.getUserName().isEmpty());
+        LOG.log(Level.INFO, "User is: " + info.getUserName());
         assertTrue(info.getPid()!=0);
         LOG.log(Level.INFO, "PID is: " + info.getPid());
         assertTrue(!info.getProgramName().isEmpty());
