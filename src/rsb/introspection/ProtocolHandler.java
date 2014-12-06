@@ -20,6 +20,7 @@
  */
 package rsb.introspection;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import rsb.AbstractEventHandler;
@@ -55,16 +56,16 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
 
     static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
 
-    protected IntrospectionModel model;
+    private final IntrospectionModel model;
 
     // receives introspection queries about participants
     private Listener listener;
     // broadcasts introspection information to interested RSB participants
-    Informer<?> informer;
+    private Informer<?> informer;
     // server to answer echo requests
-    LocalServer infoServer;
+    private LocalServer infoServer;
 
-    protected class EchoCallback extends rsb.patterns.EventCallback {
+    private static class EchoCallback extends rsb.patterns.EventCallback {
 
         @Override
         public Event invoke(final Event request) throws Throwable {
@@ -142,8 +143,9 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
     }
 
     private void handleRequest(final Event event) {
+        assert event.getScope().getComponents().size()>=1;
         final String idString = event.getScope().getComponents().get(event.getScope().getComponents().size() - 1);
-        final java.util.UUID id = java.util.UUID.fromString(idString);
+        final UUID id = UUID.fromString(idString);
 
         final ParticipantInfo participant = this.model.getParticipant(id);
 
@@ -172,7 +174,7 @@ public class ProtocolHandler extends AbstractEventHandler implements Activatable
         // Add participant information.
         helloBuilder.setId(ByteString.copyFrom(participant.getId()
                 .toByteArray()));
-        if (!(participant.getParentId() == null)) {
+        if (participant.getParentId() != null) {
             helloBuilder.setParent(ByteString.copyFrom(participant
                     .getParentId().toByteArray()));
         }
