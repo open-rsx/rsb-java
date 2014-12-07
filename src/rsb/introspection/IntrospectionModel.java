@@ -96,7 +96,7 @@ public class IntrospectionModel {
 
     public void addParticipant(final Participant participant,
             final Participant parent) {
-        LOG.info("Adding " + participant.getKind().toUpperCase() + " "
+        LOG.fine("Adding " + participant.getKind().toUpperCase() + " "
                 + participant.getId() + " at " + participant.getScope()
                 + " with parent: " + parent);
         final ParticipantInfo info =
@@ -108,7 +108,7 @@ public class IntrospectionModel {
     }
 
     public void removeParticipant(final Participant participant) {
-        LOG.info("Removing " + participant.getKind().toUpperCase() + " "
+        LOG.fine("Removing " + participant.getKind().toUpperCase() + " "
                 + participant.getId() + " at " + participant.getScope());
         ParticipantInfo info = null;
         synchronized (this.participants) {
