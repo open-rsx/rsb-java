@@ -27,7 +27,6 @@ import rsb.Informer;
 import rsb.Listener;
 import rsb.RSBException;
 
-
 /**
  * @author swrede
  *
@@ -38,12 +37,20 @@ public class ManualIntrospectionTest {
     public void simpleNonTest() throws RSBException, InterruptedException {
         final Factory factory = Factory.getInstance();
 
-        // regular RSB API usage, example here: listener creation and destruction
+        if (!Factory.getInstance().getProperties()
+                .getProperty("rsb.introspection", "false").asBoolean()) {
+            Factory.getInstance().addObserver(
+                    new IntrospectionParticipantObserver());
+        }
+
+        // regular RSB API usage, example here: listener creation and
+        // destruction
         final Listener listener = factory.createListener("/rsbtest");
         listener.activate();
-        final Informer<String> informer = factory.createInformer("/rsbtest", String.class);
+        final Informer<String> informer =
+                factory.createInformer("/rsbtest", String.class);
         informer.activate();
-        Thread.sleep(100000);
+        Thread.sleep(1000);
         listener.deactivate();
         informer.deactivate();
     }

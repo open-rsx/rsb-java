@@ -31,12 +31,10 @@ import rsb.ParticipantObserver;
 import rsb.RSBException;
 import rsb.Scope;
 
-
 /**
- * Development test case for preventing recursive calls
- * to a participant observer. The test case should fail
- * with StackOverflowException if the condition to prevent
- * recursive calls is not correct.
+ * Development test case for preventing recursive calls to a participant
+ * observer. The test case should fail with StackOverflowException if the
+ * condition to prevent recursive calls is not correct.
  *
  * @author swrede
  *
@@ -55,8 +53,10 @@ public class NonRecusiveFactoryObserverTest {
                 } catch (final InitializeException e) {
                     e.printStackTrace();
                 }
-            } else if (participant.getScope().isSubScopeOf(new Scope("/recursive"))) {
-                System.out.println("Not creating informer due to recursive notification.");
+            } else if (participant.getScope().isSubScopeOf(
+                    new Scope("/recursive"))) {
+                System.out
+                        .println("Not creating informer due to recursive notification.");
             }
         }
 

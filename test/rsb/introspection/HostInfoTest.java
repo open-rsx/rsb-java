@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import rsb.util.OSDetector;
 
-
 public class HostInfoTest {
 
-    private static final Logger LOG = Logger.getLogger(HostInfoTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(HostInfoTest.class
+            .getName());
 
     @Test
     public void testHostInfo() {
@@ -34,7 +34,8 @@ public class HostInfoTest {
         assertNotNull(info.getMachineType());
         LOG.log(Level.INFO, "Machine type is: " + info.getMachineType().name());
         assertNotNull(info.getSoftwareType());
-        LOG.log(Level.INFO, "Software type is: " + info.getSoftwareType().name());
+        LOG.log(Level.INFO, "Software type is: "
+                + info.getSoftwareType().name());
     }
 
 }
