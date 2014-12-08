@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2014 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010,2011 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,7 +25,15 @@
  *
  * ============================================================
  */
+package rsb.util;
+
 /**
  * @author swrede
+ *
  */
-package rsb.introspection;
+public enum OSFamily {
+    LINUX,
+    WIN32,
+    DARWIN,
+    UNKNOWN
+}

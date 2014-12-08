@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2014 CoR-Lab, Bielefeld University
+ * Copyright (C) 2010,2011 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,7 +25,26 @@
  *
  * ============================================================
  */
+package rsb.util;
+
 /**
+ * Utility class to determine type of operating system.
+ *
  * @author swrede
  */
-package rsb.introspection;
+public class OSDetector {
+
+    public static OSFamily getOSFamily() {
+        final String identifier = System.getProperty("os.name");
+        if (identifier.startsWith("Windows")) {
+            return OSFamily.WIN32;
+        } else if (identifier.startsWith("Linux")) {
+            return OSFamily.LINUX;
+        } else if (identifier.startsWith("Mac")) {
+            return OSFamily.DARWIN;
+        } else {
+            return OSFamily.UNKNOWN;
+        }
+    }
+
+}
