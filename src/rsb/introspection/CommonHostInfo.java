@@ -58,41 +58,21 @@ public abstract class CommonHostInfo implements HostInfo {
         this.machineType = readMachineType();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.HostInfo#getId()
-     */
     @Override
     public String getId() {
         return this.id;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.HostInfo#getHostname()
-     */
     @Override
     public String getHostname() {
         return this.hostname;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.HostInfo#getSoftwareType()
-     */
     @Override
     public OSFamily getSoftwareType() {
         return this.softwareType;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.HostInfo#getMachineType()
-     */
     @Override
     public MachineType getMachineType() {
         return this.machineType;

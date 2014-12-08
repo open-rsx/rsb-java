@@ -59,51 +59,26 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return userName;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.ProcessInfo#getPid()
-     */
     @Override
     public int getPid() {
         return this.pid;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.ProcessInfo#getProgramName()
-     */
     @Override
     public String getProgramName() {
         return this.name;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.ProcessInfo#getArguments()
-     */
     @Override
     public List<String> getArguments() {
         return this.arguments;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.ProcessInfo#getStartTime()
-     */
     @Override
     public long getStartTime() {
         return this.startTime;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see rsb.introspection.ProcessInfo#getUserName()
-     */
     @Override
     public String getUserName() {
         return this.userName;
