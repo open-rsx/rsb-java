@@ -52,6 +52,9 @@ import rsb.util.Properties;
  */
 public final class Factory {
 
+    private static final Boolean DEFAULT_INTROSPECTION = false;
+    private static final String INTROSPECTION_KEY = "rsb.introspection";
+
     /**
      * The singleton instance.
      */
@@ -60,9 +63,6 @@ public final class Factory {
     private final Properties properties = new Properties();
 
     private IntrospectionParticipantObserver introspection = null;
-    // TODO change to Boolean once #2127 is solved
-    private static final String DEFAULT_INTROSPECTION = "false";
-    private static final String INTROSPECTION_KEY = "rsb.introspection";
 
     private final ParticipantConfig defaultConfig = new ParticipantConfig();
 

@@ -34,12 +34,13 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.util.OSDetector;
-import rsb.util.OSFamily;
+import rsb.util.OsDetector;
+import rsb.util.OsFamily;
 
 /**
- * Encapsulates common host info functionality shared between
- * portable and non-portable subclasses.
+ * Encapsulates common host info functionality shared between portable and
+ * non-portable subclasses. This class contains variables and getters and
+ * setters for all required attributes of {@link HostInfo}.
  *
  * @author swrede
  */
@@ -48,29 +49,63 @@ public abstract class CommonHostInfo implements HostInfo {
     private static final Logger LOG = Logger.getLogger(CommonHostInfo.class
             .getName());
 
-    protected String id;
-    protected String hostname;
-    protected OSFamily softwareType;
-    protected MachineType machineType;
+    private String hostId;
+    private String hostName;
+    private OsFamily softwareType;
+    private MachineType machineType;
 
+    /**
+     * Creates a new instance and pre-computes values for
+     * {@link HostInfo#getSoftwareType()} and {@link HostInfo#getMachineType()}.
+     */
     public CommonHostInfo() {
-        this.softwareType = OSDetector.getOSFamily();
-        this.machineType = readMachineType();
+        this.setSoftwareType(OsDetector.getOSFamily());
+        this.setMachineType(readMachineType());
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public String getHostId() {
+        return this.hostId;
+    }
+
+    /**
+     * Sets the unique host id variable.
+     *
+     * @param hostId
+     *            unique id
+     */
+    protected void setId(final String hostId) {
+        this.hostId = hostId;
     }
 
     @Override
-    public String getHostname() {
-        return this.hostname;
+    public String getHostName() {
+        return this.hostName;
+    }
+
+    /**
+     * Sets the host name variable.
+     *
+     * @param hostName
+     *            the host name
+     */
+    protected void setHostName(final String hostName) {
+        this.hostName = hostName;
     }
 
     @Override
-    public OSFamily getSoftwareType() {
+    public OsFamily getSoftwareType() {
         return this.softwareType;
+    }
+
+    /**
+     * Sets the operating system family variable.
+     *
+     * @param softwareType
+     *            the operating system family
+     */
+    protected void setSoftwareType(final OsFamily softwareType) {
+        this.softwareType = softwareType;
     }
 
     @Override
@@ -78,23 +113,34 @@ public abstract class CommonHostInfo implements HostInfo {
         return this.machineType;
     }
 
+    /**
+     * Sets the bit architecture variable.
+     *
+     * @param machineType
+     *            the bit archtiecture
+     */
+    protected void setMachineType(final MachineType machineType) {
+        this.machineType = machineType;
+    }
+
     protected MachineType readMachineType() {
         // TODO check better way to get CPU architecture
         // or at least make sure that these keys are correct
         final String identifier = System.getProperty("os.arch");
         if (identifier.contains("x86") || identifier.contains("i386")) {
-            return MachineType.x86;
+            return MachineType.X86;
         } else if (identifier.startsWith("amd64")) {
-            return MachineType.x86_64;
+            return MachineType.X86_64;
         } else {
             return MachineType.UNKNOWN;
         }
     }
 
     protected String getHostIdInet() throws IOException {
-        final InetAddress ip = InetAddress.getLocalHost();
+        final InetAddress ipAddress = InetAddress.getLocalHost();
         // creates problem when ip address is not resolved
-        final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+        final NetworkInterface network =
+                NetworkInterface.getByInetAddress(ipAddress);
 
         final byte[] mac = network.getHardwareAddress();
 
@@ -103,15 +149,20 @@ public abstract class CommonHostInfo implements HostInfo {
                     "Could not read MAC adress via NetworkInterface class.");
         }
 
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder stringRep = new StringBuilder();
         for (int i = 0; i < mac.length; i++) {
-            sb.append(String.format("%02X%s", mac[i],
+            stringRep.append(String.format("%02X%s", mac[i],
                     (i < mac.length - 1) ? "-" : ""));
         }
 
-        return sb.toString();
+        return stringRep.toString();
     }
 
+    /**
+     * Returns a host name derived from name resolution for localhost.
+     *
+     * @return host name or <code>null</code> if not detectable
+     */
     protected String getLocalHostName() {
         try {
             return InetAddress.getLocalHost().getHostName();

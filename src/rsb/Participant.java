@@ -142,6 +142,12 @@ public abstract class Participant implements Activatable {
      */
     public abstract String getKind();
 
-    public abstract Class<?> getType();
+    /**
+     * Returns the data type transfered by this participant.
+     *
+     * @return type class, <code>null</code> if not applicable for this type of
+     *         participant
+     */
+    public abstract Class<?> getDataType();
 
 }

@@ -31,30 +31,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encapsulates common process info functionality shared between
- * portable and non-portable subclasses.
+ * Encapsulates common process info functionality shared between portable and
+ * non-portable subclasses.
  *
  * @author swrede
  */
 public abstract class CommonProcessInfo implements ProcessInfo {
 
-    // process id
-    protected int pid;
-    protected String name;
-    protected List<String> arguments = new ArrayList<String>();
-    protected String userName;
+    private int pid;
+    private String programName;
+    private List<String> arguments = new ArrayList<String>();
+    private String userName;
+    private long startTime;
 
-    // TODO add documentation
-    long startTime;
-
+    /**
+     * Creates a new instance and sets a common value for
+     * {@link ProcessInfo#getUserName()}.
+     */
     public CommonProcessInfo() {
-        this.userName = readUserName();
+        this.setUserName(readUserName());
     }
 
     private String readUserName() {
-        String userName = System.getProperty("user.name");
+        final String userName = System.getProperty("user.name");
         if (userName.isEmpty()) {
-            userName = "unknown";
+            return "unknown";
         }
         return userName;
     }
@@ -64,14 +65,45 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return this.pid;
     }
 
+    /**
+     * Sets the pid variable.
+     *
+     * @param pid
+     *            the pid
+     */
+    protected void setPid(final int pid) {
+        this.pid = pid;
+    }
+
     @Override
     public String getProgramName() {
-        return this.name;
+        return this.programName;
+    }
+
+    /**
+     * Sets the program name.
+     *
+     * @param programName
+     *            the program name
+     */
+    protected void setProgramName(final String programName) {
+        this.programName = programName;
     }
 
     @Override
     public List<String> getArguments() {
+        assert this.arguments != null;
         return this.arguments;
+    }
+
+    /**
+     * Sets the command line arguments.
+     *
+     * @param arguments
+     *            the arguments
+     */
+    protected void setArguments(final List<String> arguments) {
+        this.arguments = arguments;
     }
 
     @Override
@@ -79,9 +111,29 @@ public abstract class CommonProcessInfo implements ProcessInfo {
         return this.startTime;
     }
 
+    /**
+     * Sets the process start time.
+     *
+     * @param startTime
+     *            the process start time in microseconds
+     */
+    protected void setStartTime(final long startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public String getUserName() {
         return this.userName;
+    }
+
+    /**
+     * Sets the user name variable.
+     *
+     * @param userName
+     *            user name
+     */
+    protected void setUserName(final String userName) {
+        this.userName = userName;
     }
 
 }

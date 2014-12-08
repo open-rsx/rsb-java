@@ -478,7 +478,7 @@ public class RemoteServer extends Server<RemoteMethod> {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<?> getDataType() {
         return null;
     }
 

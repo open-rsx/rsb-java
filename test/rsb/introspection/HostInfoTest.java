@@ -35,8 +35,11 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import rsb.util.OSDetector;
+import rsb.util.OsDetector;
 
+/**
+ * @author swrede
+ */
 public class HostInfoTest {
 
     private static final Logger LOG = Logger.getLogger(HostInfoTest.class
@@ -45,7 +48,7 @@ public class HostInfoTest {
     @Test
     public void testHostInfo() {
         final HostInfo info;
-        switch (OSDetector.getOSFamily()) {
+        switch (OsDetector.getOSFamily()) {
         case LINUX:
             info = new LinuxHostInfo();
             break;
@@ -54,10 +57,10 @@ public class HostInfoTest {
             break;
         }
         // TODO add meaningful tests
-        assertFalse(info.getHostname().isEmpty());
-        LOG.log(Level.INFO, "Hostname is: " + info.getHostname());
-        assertFalse(info.getId().isEmpty());
-        LOG.log(Level.INFO, "Machine ID is: " + info.getId());
+        assertFalse(info.getHostName().isEmpty());
+        LOG.log(Level.INFO, "Hostname is: " + info.getHostName());
+        assertFalse(info.getHostId().isEmpty());
+        LOG.log(Level.INFO, "Machine ID is: " + info.getHostId());
         assertNotNull(info.getMachineType());
         LOG.log(Level.INFO, "Machine type is: " + info.getMachineType().name());
         assertNotNull(info.getSoftwareType());

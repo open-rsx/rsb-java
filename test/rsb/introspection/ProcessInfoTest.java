@@ -35,8 +35,11 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import rsb.util.OSDetector;
+import rsb.util.OsDetector;
 
+/**
+ * @author swrede
+ */
 public class ProcessInfoTest {
 
     private static final Logger LOG = Logger.getLogger(ProcessInfoTest.class
@@ -45,7 +48,7 @@ public class ProcessInfoTest {
     @Test
     public void testProcessInfo() {
         final ProcessInfo info;
-        switch (OSDetector.getOSFamily()) {
+        switch (OsDetector.getOSFamily()) {
         case LINUX:
             info = new LinuxProcessInfo();
             LOG.info("Created LinuxProcessInfo");

@@ -27,6 +27,7 @@
  */
 package rsb.introspection;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.Participant;
@@ -46,14 +47,16 @@ public class LoggingObserver implements ParticipantObserver {
     @Override
     public void created(final Participant participant,
             final ParticipantCreateArgs<?> args) {
-        LOG.info("New participant created: " + participant.getId() + " at "
-                + participant.getScope() + " with parent: " + args.getParent());
+        LOG.log(Level.INFO,
+                "New participant created: {0} at {1} with parent {2}",
+                new Object[] { participant.getId(), participant.getScope(),
+                        args.getParent() });
     }
 
     @Override
     public void destroyed(final Participant participant) {
-        LOG.info("Participant removed: " + participant.getId() + " at "
-                + participant.getScope());
+        LOG.log(Level.INFO, "Participant removed: {0} at {1}", new Object[] {
+                participant.getId(), participant.getScope() });
     }
 
 }

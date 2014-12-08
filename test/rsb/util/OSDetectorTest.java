@@ -31,20 +31,19 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-
 /**
  * @author swrede
- *
  */
 public class OSDetectorTest {
 
-    private static Logger LOG = Logger.getLogger(OSDetectorTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(OSDetectorTest.class
+            .getName());
 
     /**
-     * Test method for {@link rsb.util.OSDetector#getOSFamily()}.
+     * Test method for {@link rsb.util.OsDetector#getOSFamily()}.
      */
     @Test
     public void testGetOSFamily() {
-        LOG.info("Detected " + OSDetector.getOSFamily().name() + " OS family.");
+        LOG.info("Detected " + OsDetector.getOSFamily().name() + " OS family.");
     }
 }

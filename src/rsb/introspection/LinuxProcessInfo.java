@@ -42,18 +42,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Linux-optimized implementation of process info
- * interface.
+ * Linux-optimized implementation of process info interface.
  *
  * @author swrede
  */
 public class LinuxProcessInfo extends CommonProcessInfo {
 
-    private final static Logger LOG = Logger.getLogger(LinuxProcessInfo.class
+    private static final String PROC_STAT_FILE_PATH = "/proc/stat";
+
+    private static final Logger LOG = Logger.getLogger(LinuxProcessInfo.class
             .getName());
 
+    private static final String PROC_CMDLINE_FILE_PATH = "/proc/self/cmdline";
+    private static final String PROC_SELF_STAT_FILE_PATH = "/proc/self/stat";
+
     /**
-     *
+     * Creates a new instance and initializes provided variables.
      */
     public LinuxProcessInfo() {
         super();
@@ -61,10 +65,10 @@ public class LinuxProcessInfo extends CommonProcessInfo {
     }
 
     private void initialize() {
-        this.pid = readPIDFromProcFS();
-        this.name = readProgramNameFromProcFS();
-        this.arguments = readArgumentsFromProcFS();
-        this.startTime = readStartTimeFromProcFS();
+        this.setPid(readPIDFromProcFS());
+        this.setProgramName(readProgramNameFromProcFS());
+        this.setArguments(readArgumentsFromProcFS());
+        this.setStartTime(readStartTimeFromProcFS());
     }
 
     // TODO refactoring
@@ -72,7 +76,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
         final StringBuilder pname = new StringBuilder();
         try {
             final FileInputStream fstream2 =
-                    new FileInputStream("/proc/self/cmdline");
+                    new FileInputStream(PROC_CMDLINE_FILE_PATH);
             final DataInputStream in2 = new DataInputStream(fstream2);
             final BufferedReader br2 =
                     new BufferedReader(new InputStreamReader(in2));
@@ -82,9 +86,8 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             }
             in2.close();
         } catch (final IOException e) {
-            LOG.log(Level.INFO,
-                    "Exception while reading program name from /proc/self/cmdline",
-                    e);
+            LOG.log(Level.INFO, "Exception while reading program name from "
+                    + PROC_CMDLINE_FILE_PATH, e);
         }
         final String programName =
                 pname.subSequence(0, pname.indexOf("\0")).toString();
@@ -101,7 +104,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
         final StringBuilder cmd = new StringBuilder();
         try {
             final FileInputStream fstreamcmd =
-                    new FileInputStream("/proc/self/cmdline");
+                    new FileInputStream(PROC_CMDLINE_FILE_PATH);
             final DataInputStream incmd = new DataInputStream(fstreamcmd);
             final BufferedReader brcmd =
                     new BufferedReader(new InputStreamReader(incmd));
@@ -114,8 +117,8 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             incmd.close();
         } catch (final IOException e) {
             LOG.log(Level.INFO,
-                    "Exception while reading program arguments from /proc/self/cmdline",
-                    e);
+                    "Exception while reading program arguments from "
+                            + PROC_CMDLINE_FILE_PATH, e);
         }
 
         // TODO review and refactor this parsing code
@@ -142,7 +145,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
         final StringBuilder s = new StringBuilder();
         try {
             final FileInputStream fstream1 =
-                    new FileInputStream("/proc/self/stat");
+                    new FileInputStream(PROC_SELF_STAT_FILE_PATH);
             final DataInputStream in1 = new DataInputStream(fstream1);
             final BufferedReader br1 =
                     new BufferedReader(new InputStreamReader(in1));
@@ -155,8 +158,8 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             in1.close();
         } catch (final IOException e) {
             LOG.log(Level.INFO,
-                    "Exception while reading process start time from /proc/self/stat",
-                    e);
+                    "Exception while reading process start time from "
+                            + PROC_SELF_STAT_FILE_PATH, e);
         }
 
         // TODO check this for possible errors and refactor it
@@ -168,7 +171,8 @@ public class LinuxProcessInfo extends CommonProcessInfo {
         }
         long bootTimeUNIXSeconds = 0;
         try {
-            final FileInputStream fstream2 = new FileInputStream("/proc/stat");
+            final FileInputStream fstream2 =
+                    new FileInputStream(PROC_STAT_FILE_PATH);
             final DataInputStream in2 = new DataInputStream(fstream2);
             final BufferedReader br2 =
                     new BufferedReader(new InputStreamReader(in2));
@@ -184,8 +188,8 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             in2.close();
         } catch (final IOException e) {
             LOG.log(Level.INFO,
-                    "Exception while reading system boot time from /proc/stat",
-                    e);
+                    "Exception while reading system boot time from "
+                            + PROC_STAT_FILE_PATH, e);
             bootTimeUNIXSeconds = 0;
         }
 
@@ -196,7 +200,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
 
     private int readPIDFromProcFS() {
         int processId = 0;
-        final File procFSFile = new File("/proc/self/stat");
+        final File procFSFile = new File(PROC_SELF_STAT_FILE_PATH);
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(procFSFile));
@@ -210,20 +214,20 @@ public class LinuxProcessInfo extends CommonProcessInfo {
             if (m.matches()) {
                 processId = Integer.parseInt(m.group(1));
             } else {
-                LOG.info("Could not parse or convert process id from /proc/self/stat entry.");
+                LOG.info("Could not parse or convert process id from "
+                        + PROC_SELF_STAT_FILE_PATH + " entry.");
             }
         } catch (final IOException exception) {
-            LOG.log(Level.INFO,
-                    "Exception while process entry from /proc/self/stat",
-                    exception);
+            LOG.log(Level.INFO, "Exception while process entry from "
+                    + PROC_SELF_STAT_FILE_PATH, exception);
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (final IOException e) {
                     LOG.log(Level.FINE,
-                            "Exception while closing input stream for /proc/self/stat",
-                            e);
+                            "Exception while closing input stream for "
+                                    + PROC_SELF_STAT_FILE_PATH, e);
                 }
             }
         }

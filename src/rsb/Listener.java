@@ -295,8 +295,8 @@ public class Listener extends Participant {
     }
 
     @Override
-    public Class<?> getType() {
-        return Event.class;
+    public Class<?> getDataType() {
+        return Object.class;
     }
 
 }

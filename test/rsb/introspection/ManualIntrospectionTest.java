@@ -44,17 +44,18 @@ public class ManualIntrospectionTest {
         final Factory factory = Factory.getInstance();
 
         if (!Factory.getInstance().getProperties()
-                .getProperty("rsb.introspection", "false").asBoolean()) {
+                .getProperty("rsb.introspection", false).asBoolean()) {
             Factory.getInstance().addObserver(
                     new IntrospectionParticipantObserver());
         }
 
         // regular RSB API usage, example here: listener creation and
         // destruction
-        final Listener listener = factory.createListener("/rsbtest");
+        final String testScope = "/rsbtest";
+        final Listener listener = factory.createListener(testScope);
         listener.activate();
         final Informer<String> informer =
-                factory.createInformer("/rsbtest", String.class);
+                factory.createInformer(testScope, String.class);
         informer.activate();
         Thread.sleep(1000);
         listener.deactivate();

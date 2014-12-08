@@ -32,18 +32,27 @@ package rsb.util;
  *
  * @author swrede
  */
-public class OSDetector {
+public final class OsDetector {
 
-    public static OSFamily getOSFamily() {
+    private OsDetector() {
+        // prevent utility class instantiation
+    }
+
+    /**
+     * Tries to determine the operating system family.
+     *
+     * @return identified operating system family.
+     */
+    public static OsFamily getOSFamily() {
         final String identifier = System.getProperty("os.name");
         if (identifier.startsWith("Windows")) {
-            return OSFamily.WIN32;
+            return OsFamily.WINDOWS;
         } else if (identifier.startsWith("Linux")) {
-            return OSFamily.LINUX;
+            return OsFamily.LINUX;
         } else if (identifier.startsWith("Mac")) {
-            return OSFamily.DARWIN;
+            return OsFamily.DARWIN;
         } else {
-            return OSFamily.UNKNOWN;
+            return OsFamily.UNKNOWN;
         }
     }
 

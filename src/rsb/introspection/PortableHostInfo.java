@@ -43,9 +43,12 @@ public class PortableHostInfo extends CommonHostInfo {
     private static final Logger LOG = Logger.getLogger(PortableHostInfo.class
             .getName());
 
+    /**
+     * Creates a new instance and initializes provided variables.
+     */
     public PortableHostInfo() {
         super();
-        this.initialize();
+        initialize();
     }
 
     private void initialize() {
@@ -55,31 +58,30 @@ public class PortableHostInfo extends CommonHostInfo {
         // after the @ symbol is the hostname.
         final String jvmName = runtime.getName();
         try {
-            this.hostname = jvmName.split("@")[1];
+            this.setHostName(jvmName.split("@")[1]);
         } catch (final ArrayIndexOutOfBoundsException e) {
             LOG.log(Level.INFO,
                     "Exception when parsing hostname (RuntimeMXBean.getName()=="
                             + jvmName + ")", e);
-            this.hostname = "unknown";
+            this.setHostName("unknown");
         }
 
         // try to calculate hostId via the network
         try {
-            this.id = getHostIdInet();
-            if (this.hostname.equalsIgnoreCase("unknown")) {
-                this.hostname = this.id;
+            this.setId(getHostIdInet());
+            if (this.getHostName().equalsIgnoreCase("unknown")) {
+                this.setHostName(this.getHostId());
             }
             return;
         } catch (final IOException e) {
-            LOG.warning("Unexpected I/O exception when getting MAC address: "
-                    + e.getMessage());
-            e.printStackTrace();
+            LOG.log(Level.WARNING,
+                    "Unexpected I/O exception when getting MAC address", e);
         }
         // try to get local hostname via network
-        this.id = getLocalHostName();
-        if (this.id == null) {
+        this.setId(getLocalHostName());
+        if (this.getHostId() == null) {
             // last resort: get hostname via ManagementBean
-            this.id = this.getHostname();
+            this.setId(this.getHostName());
         }
     }
 

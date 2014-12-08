@@ -30,10 +30,12 @@ package rsb.introspection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.Participant;
-import rsb.util.OSDetector;
+import rsb.ParticipantId;
+import rsb.util.OsDetector;
 
 /**
  * Implementation of RSB-based introspection protocol. Supports hello, bye and
@@ -53,8 +55,9 @@ public class IntrospectionModel {
     private ProtocolHandler protocol;
     private final HostInfo hostInfo;
 
+    @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
     public IntrospectionModel() {
-        switch (OSDetector.getOSFamily()) {
+        switch (OsDetector.getOSFamily()) {
         case LINUX:
             LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
             this.processInfo = new LinuxProcessInfo();
@@ -84,39 +87,57 @@ public class IntrospectionModel {
         return this.participants;
     }
 
-    public ParticipantInfo getParticipant(final UUID id) {
+    /**
+     * Queries the database of known participants for the participant with the
+     * given uuid and returns the associated {@link ParticipantInfo} instance.
+     *
+     * @param participantId
+     *            the UUID of the participant, not <code>null</code>
+     * @return the associated participant info or <code>null</code> in case
+     *         there is no participant with the given id
+     */
+    public ParticipantInfo getParticipant(final UUID participantId) {
+        assert participantId != null;
+
         ParticipantInfo participant = null;
         synchronized (this.participants) {
-            for (final ParticipantInfo it : this.participants) {
-                if (it.getId().toString().equals(id.toString())) {
-                    participant = it;
+            for (final ParticipantInfo info : this.participants) {
+                if (info.getId().toString().equals(participantId.toString())) {
+                    participant = info;
                     break;
                 }
             }
         }
 
         if (participant == null) {
-            LOG.warning("Couldn't find participant with ID: " + id);
+            LOG.log(Level.WARNING, "Couldn't find participant with ID: {0}",
+                    new Object[] { participantId });
         }
         return participant;
     }
 
     public void addParticipant(final Participant participant,
             final Participant parent) {
-        LOG.fine("Adding " + participant.getKind().toUpperCase() + " "
-                + participant.getId() + " at " + participant.getScope()
-                + " with parent: " + parent);
+        LOG.log(Level.FINE,
+                "Adding {0} {1} at {2} with parent {2}",
+                new Object[] { participant.getKind().toUpperCase(),
+                        participant.getId(), participant.getScope(), parent });
+        ParticipantId parentId = null;
+        if (parent != null) {
+            parentId = parent.getId();
+        }
         final ParticipantInfo info =
                 new ParticipantInfo(participant.getKind(), participant.getId(),
-                        (parent != null ? parent.getId() : null),
-                        participant.getScope(), participant.getType());
+                        parentId, participant.getScope(),
+                        participant.getDataType());
         this.participants.add(info);
         this.protocol.sendHello(info);
     }
 
     public void removeParticipant(final Participant participant) {
-        LOG.fine("Removing " + participant.getKind().toUpperCase() + " "
-                + participant.getId() + " at " + participant.getScope());
+        LOG.log(Level.FINE, "Removing {0} {1} at {2}", new Object[] {
+                participant.getKind().toUpperCase(), participant.getId(),
+                participant.getScope() });
         ParticipantInfo info = null;
         synchronized (this.participants) {
             for (final ParticipantInfo participantInfo : this.participants) {
@@ -128,13 +149,16 @@ public class IntrospectionModel {
             }
         }
 
-        if (info != null) {
-            this.protocol.sendBye(info);
-        } else {
-            LOG.fine("Trying to remove unknown participant " + participant);
+        if (info == null) {
+            LOG.log(Level.FINE, "Trying to remove unknown participant {0}",
+                    new Object[] { participant });
+            return;
         }
 
-        LOG.fine(this.participants.size() + " participant(s) remain(s)");
+        this.protocol.sendBye(info);
+
+        LOG.log(Level.FINE, "{0} participant(s) remain(s)",
+                new Object[] { this.participants.size() });
 
     }
 

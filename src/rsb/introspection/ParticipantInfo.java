@@ -40,37 +40,88 @@ import rsb.Scope;
 public class ParticipantInfo {
 
     private final String kind;
+    @SuppressWarnings("PMD.ShortVariable")
     private final ParticipantId id;
     private final ParticipantId parentId;
     private final Scope scope;
     private final Class<?> type;
 
-    public ParticipantInfo(final String kind, final ParticipantId id,
-            final ParticipantId parentId, final Scope scope, final Class<?> type) {
+    /**
+     * Creates a new instance.
+     *
+     * @param kind
+     *            string representation of the type of participant being
+     *            represented, not <code>null</code>
+     * @param id
+     *            id of the participant, not <code>null</code>
+     * @param parentId
+     *            id of the parent participant or <code>null</code> if there is
+     *            no parent
+     * @param scope
+     *            scope of the participant, not <code>null</code>
+     * @param dataType
+     *            data type of the participant or <code>null</code> if not
+     *            applicable
+     */
+    public ParticipantInfo(final String kind,
+            @SuppressWarnings("PMD.ShortVariable") final ParticipantId id,
+            final ParticipantId parentId, final Scope scope,
+            final Class<?> dataType) {
+        assert kind != null;
+        assert id != null;
+        assert scope != null;
+
         this.kind = kind;
         this.id = id;
         this.parentId = parentId;
         this.scope = scope;
-        this.type = type;
+        this.type = dataType;
     }
 
+    /**
+     * Returns a string representing the type of participant.
+     *
+     * @return string representation
+     */
     public String getKind() {
         return this.kind;
     }
 
+    /**
+     * Returns the unique ID of the participant.
+     *
+     * @return participant id
+     */
     public ParticipantId getId() {
         return this.id;
     }
 
+    /**
+     * Returns the id of the parent participant or <code>null</code> in case
+     * there is no parent.
+     *
+     * @return participant id or <code>null</code>
+     */
     public ParticipantId getParentId() {
         return this.parentId;
     }
 
+    /**
+     * Returns the scope the participant operates on.
+     *
+     * @return scope
+     */
     public Scope getScope() {
         return this.scope;
     }
 
-    public Class<?> getType() {
+    /**
+     * Returns the participant's data type or <code>null</code> if a single data
+     * type is not applicable for the type of participant.
+     *
+     * @return data type class or <code>null</code>
+     */
+    public Class<?> getDataType() {
         return this.type;
     }
 

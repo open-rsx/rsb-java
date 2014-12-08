@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -48,24 +49,40 @@ public class LinuxHostInfo extends CommonHostInfo {
             .getName());
 
     private static final String PATH_ETC_MACHINE_ID = "/etc/machine-id";
-    private static final String PATH_VAR_LIB_DBUS_MACHINE_ID =
+    private static final String PATH_DBUS_MACHINE_ID =
             "/var/lib/dbus/machine-id";
 
+    /**
+     * Creates a new instance and initializes all provided variables using
+     * default paths for machine ids.
+     */
     public LinuxHostInfo() {
         super();
-        initialize(PATH_ETC_MACHINE_ID, PATH_VAR_LIB_DBUS_MACHINE_ID);
+        initialize(PATH_ETC_MACHINE_ID, PATH_DBUS_MACHINE_ID);
     }
 
+    /**
+     * Creates a new instance for the specified paths to machine ids.
+     *
+     * @param machineIdPath1
+     *            path to a potential candidate file containing a unique machine
+     *            id, not <code>null</code>
+     * @param machineIdPath2
+     *            path to a potential candidate file containing a unique machine
+     *            id, not <code>null</code>
+     */
     public LinuxHostInfo(final String machineIdPath1,
             final String machineIdPath2) {
         super();
+        assert machineIdPath1 != null;
+        assert machineIdPath2 != null;
         initialize(machineIdPath1, machineIdPath2);
     }
 
     private void initialize(final String machineIdPath1,
             final String machineIdPath2) {
-        this.id = readHostId(machineIdPath1, machineIdPath2);
-        this.hostname = getLocalHostName();
+        this.setId(readHostId(machineIdPath1, machineIdPath2));
+        this.setHostName(getLocalHostName());
     }
 
     private String readHostId(final String machineIdPath1,
@@ -80,17 +97,15 @@ public class LinuxHostInfo extends CommonHostInfo {
                 return readMachineId(f2);
             }
         } catch (final IOException e) {
-            LOG.warning("Unexpected I/O exception when accessing machineId file: "
-                    + e.getMessage());
-            e.printStackTrace();
+            LOG.log(Level.WARNING,
+                    "Unexpected I/O exception when accessing machineId file", e);
         }
         // otherwise try to calculate hostId via the network
         try {
             return getHostIdInet();
         } catch (final IOException e) {
-            LOG.warning("Unexpected I/O exception when getting MAC address: "
-                    + e.getMessage());
-            e.printStackTrace();
+            LOG.log(Level.WARNING,
+                    "Unexpected I/O exception when getting MAC address", e);
         }
         // last resort: return local hostname
         return getLocalHostName();
@@ -101,10 +116,10 @@ public class LinuxHostInfo extends CommonHostInfo {
         final BufferedReader reader = new BufferedReader(new FileReader(file));
         try {
             machineId = reader.readLine();
-        } catch (final IOException exception) {
-            LOG.warning("Could not read MachineId from path: "
-                    + file.toString());
-            exception.printStackTrace();
+        } catch (final IOException e) {
+            LOG.log(Level.WARNING, "Could not read MachineId from path: {0}",
+                    new Object[] { file });
+            LOG.log(Level.WARNING, "Reason", e);
         } finally {
             reader.close();
         }

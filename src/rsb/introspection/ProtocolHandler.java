@@ -28,6 +28,7 @@
 package rsb.introspection;
 
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.AbstractEventHandler;
@@ -45,13 +46,14 @@ import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
 import rsb.protocol.operatingsystem.HostType.Host;
 import rsb.protocol.operatingsystem.ProcessType.Process;
-import rsb.util.OSFamily;
+import rsb.util.OsFamily;
 
 import com.google.protobuf.ByteString;
 
 /**
- * Implementation of the introspection protocol using RSB patterns.
- * Cf. http://docs.cor-lab.de//rsb-manual/trunk/html/specification-introspection.html
+ * Implementation of the introspection protocol using RSB patterns. Cf.
+ * http://docs
+ * .cor-lab.de//rsb-manual/trunk/html/specification-introspection.html
  *
  * @author swrede
  * @author ssharma
@@ -59,18 +61,29 @@ import com.google.protobuf.ByteString;
 public class ProtocolHandler extends AbstractEventHandler implements
         Activatable {
 
+    static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
+
     private static final Logger LOG = Logger.getLogger(ProtocolHandler.class
             .getName());
 
-    static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
+    private static final Scope PARTICIPANT_SCOPE = BASE_SCOPE.concat(new Scope(
+            "/participants/"));
 
     private final IntrospectionModel model;
 
-    // receives introspection queries about participants
-    private Listener listener;
-    // broadcasts introspection information to interested RSB participants
+    /**
+     * Receives introspection queries about participants.
+     */
+    private Listener queryListener;
+
+    /**
+     * Broadcasts introspection information to interested RSB participants.
+     */
     private Informer<?> informer;
-    // server to answer echo requests
+
+    /**
+     * Server to answer echo requests.
+     */
     private LocalServer infoServer;
 
     private static class EchoCallback extends rsb.patterns.EventCallback {
@@ -86,33 +99,37 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     }
 
+    /**
+     * Creates a new instance operating on the provided introspection model.
+     *
+     * @param model
+     *            the mode, not <code>null</code>
+     */
     public ProtocolHandler(final IntrospectionModel model) {
+        assert model != null;
         this.model = model;
     }
 
     @Override
     public void activate() throws RSBException {
         // set up listener and informer pair for basic introspection protocol
-        this.listener =
-                Factory.getInstance().createListener(
-                        BASE_SCOPE.concat(new Scope("/participants/")));
-        this.listener.activate();
-        this.informer =
-                Factory.getInstance().createInformer(
-                        BASE_SCOPE.concat(new Scope("/participants/")));
+        this.queryListener =
+                Factory.getInstance().createListener(PARTICIPANT_SCOPE);
+        this.queryListener.activate();
+        this.informer = Factory.getInstance().createInformer(PARTICIPANT_SCOPE);
         this.informer.activate();
 
         // set up server for echo method
         final Scope serverScope =
                 BASE_SCOPE.concat(new Scope("/hosts/"
-                        + this.model.getHostInfo().getId() + "/"
+                        + this.model.getHostInfo().getHostId() + "/"
                         + this.model.getProcessInfo().getPid()));
         this.infoServer = Factory.getInstance().createLocalServer(serverScope);
         this.infoServer.activate();
         this.infoServer.addMethod("echo", new EchoCallback());
 
         try {
-            this.listener.addHandler(this, false);
+            this.queryListener.addHandler(this, false);
         } catch (final InterruptedException e) {
             throw new RSBException(e);
         }
@@ -120,8 +137,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
-        if (this.listener != null) {
-            this.listener.deactivate();
+        if (this.queryListener != null) {
+            this.queryListener.deactivate();
         }
         if (this.informer != null) {
             this.informer.deactivate();
@@ -133,7 +150,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     @Override
     public void handleEvent(final Event query) {
-        LOG.fine("Processing introspection query: " + query);
+        LOG.log(Level.FINE, "Processing introspection query: {0}",
+                new Object[] { query });
         // if empty data field, either SURVEY or REQUEST
         if (query.getData() == null) {
             if (query.getMethod().equals("SURVEY")) {
@@ -142,15 +160,16 @@ public class ProtocolHandler extends AbstractEventHandler implements
                 handleRequest(query);
             } else {
                 // Protocol error
-                LOG.warning("Introspection query not understood, must be either SURVEY or REQUEST: "
-                        + query);
+                LOG.log(Level.WARNING, "Introspection query not understood, "
+                        + "must be either SURVEY or REQUEST: {0}",
+                        new Object[] { query });
             }
         } else if (query.getData().toString().equalsIgnoreCase("ping")) {
             // Process Ping
             // TODO check thread safety
             synchronized (this.model.getParticipants()) {
-                for (final ParticipantInfo it : this.model.getParticipants()) {
-                    this.sendPong(it, query);
+                for (final ParticipantInfo info : this.model.getParticipants()) {
+                    this.sendPong(info, query);
                 }
             }
         }
@@ -161,9 +180,10 @@ public class ProtocolHandler extends AbstractEventHandler implements
         final String idString =
                 event.getScope().getComponents()
                         .get(event.getScope().getComponents().size() - 1);
-        final UUID id = UUID.fromString(idString);
+        final UUID participantId = UUID.fromString(idString);
 
-        final ParticipantInfo participant = this.model.getParticipant(id);
+        final ParticipantInfo participant =
+                this.model.getParticipant(participantId);
 
         if (participant != null) {
             this.sendHello(participant, event);
@@ -173,8 +193,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
     private void handleSurvey(final Event event) {
         // TODO check thread safety
         synchronized (this.model.getParticipants()) {
-            for (final ParticipantInfo it : this.model.getParticipants()) {
-                this.sendHello(it, event);
+            for (final ParticipantInfo info : this.model.getParticipants()) {
+                this.sendHello(info, event);
             }
         }
     }
@@ -183,7 +203,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         sendHello(participant, null);
     }
 
-    void sendHello(final ParticipantInfo participant, final rsb.Event query) {
+    void sendHello(final ParticipantInfo participant, final Event query) {
 
         final Hello.Builder helloBuilder = Hello.newBuilder();
 
@@ -195,8 +215,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
                     .getParentId().toByteArray()));
         }
         helloBuilder.setKind(participant.getKind());
-        if (participant.getType() != null) {
-            helloBuilder.setType(participant.getType().getName());
+        if (participant.getDataType() != null) {
+            helloBuilder.setType(participant.getDataType().getName());
         }
         helloBuilder.setScope(participant.getScope().toString());
 
@@ -215,9 +235,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         // Add host information.
         final Host.Builder host = helloBuilder.getHostBuilder();
-        host.setId(this.model.getHostInfo().getId());
-        host.setHostname(this.model.getHostInfo().getHostname());
-        if (this.model.getHostInfo().getSoftwareType() != OSFamily.UNKNOWN) {
+        host.setId(this.model.getHostInfo().getHostId());
+        host.setHostname(this.model.getHostInfo().getHostName());
+        if (this.model.getHostInfo().getSoftwareType() != OsFamily.UNKNOWN) {
             host.setSoftwareType(this.model.getHostInfo().getSoftwareType()
                     .name().toLowerCase());
         }
@@ -235,59 +255,55 @@ public class ProtocolHandler extends AbstractEventHandler implements
         helloEvent.setScope(this.informer.getScope().concat(partcipantScope));
         helloEvent.setData(hello);
         helloEvent.setType(hello.getClass());
-        if (!(query == null)) {
+        if (query != null) {
             helloEvent.addCause(query.getId());
         }
         try {
             this.informer.send(helloEvent);
         } catch (final RSBException e) {
-            LOG.warning("HELLO event could not be sent: " + helloEvent);
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "HELLO event could not be sent.", e);
         }
     }
 
     public void sendBye(final ParticipantInfo participant) {
 
         final Bye.Builder byeBuilder = Bye.newBuilder();
-        // byeBuilder.setId(ByteString.copyFromUtf8(participant.getId().toString()));
         byeBuilder
                 .setId(ByteString.copyFrom(participant.getId().toByteArray()));
         final Bye bye = byeBuilder.build();
-        final Event e = new Event(bye.getClass(), bye);
-        e.setScope(new Scope("/__rsb/introspection/participants/"
+        final Event event = new Event(bye.getClass(), bye);
+        event.setScope(new Scope("/__rsb/introspection/participants/"
                 + participant.getId()));
         try {
-            this.informer.send(e);
-        } catch (final RSBException exception) {
-            LOG.warning("BYE event could not be send: " + e);
-            exception.printStackTrace();
+            this.informer.send(event);
+        } catch (final RSBException e) {
+            LOG.log(Level.WARNING, "BYE event could not be sent.", e);
         }
     }
 
     public void sendPong(final ParticipantInfo participant, final Event query) {
-        final rsb.Event pongEvent = query;
+        final Event pongEvent = query;
         final Scope participantScope =
                 new Scope("/" + participant.getId().toString());
         pongEvent.setScope(this.informer.getScope().concat(participantScope));
         pongEvent.setType(String.class);
-        pongEvent.setData(new String("pong"));
+        pongEvent.setData("pong");
 
         try {
             this.informer.send(pongEvent);
         } catch (final RSBException e) {
-            LOG.warning("Pong event could not be sent" + pongEvent);
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Pong event could not be sent", e);
         }
     }
 
     @Override
     public boolean isActive() {
         if ((this.informer == null) || (this.infoServer == null)
-                || (this.listener == null)) {
+                || (this.queryListener == null)) {
             return false;
         }
         return this.informer.isActive() && this.infoServer.isActive()
-                && this.listener.isActive();
+                && this.queryListener.isActive();
     }
 
 }

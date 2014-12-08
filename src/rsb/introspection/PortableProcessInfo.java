@@ -42,34 +42,51 @@ public class PortableProcessInfo extends CommonProcessInfo {
     private static final Logger LOG = Logger
             .getLogger(PortableProcessInfo.class.getName());
 
+    private static final String PID_HOST_SEPARATOR = "@";
+
+    /**
+     * Creates a new instance and initializes all provided values in
+     * {@link CommonProcessInfo}.
+     */
     public PortableProcessInfo() {
         super();
-        this.initialize();
+
+        final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+        determinePid(runtime);
+        determineStartTime(runtime);
+        determineProgramName();
+        determineArguments(runtime);
     }
 
-    private void initialize() {
-        final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+    private void determineArguments(final RuntimeMXBean runtime) {
+        // Returns the input arguments passed to the Java virtual machine which
+        // does not include the arguments to the main method. This method
+        // returns an empty list if there is no input argument to the Java
+        // virtual machine.
+        this.setArguments(runtime.getInputArguments());
+    }
 
-        // Get name returns something like 6460@AURORA. Where the value
+    private void determineProgramName() {
+        this.setProgramName("java-"
+                + System.getProperty("java.runtime.version"));
+    }
+
+    private void determineStartTime(final RuntimeMXBean runtime) {
+        this.setStartTime(runtime.getStartTime());
+    }
+
+    private void determinePid(final RuntimeMXBean runtime) {
+        // getName returns something like 6460@AURORA. Where the value
         // before the @ symbol is the PID.
         final String jvmName = runtime.getName();
+        assert jvmName.contains(PID_HOST_SEPARATOR);
         try {
-            this.pid = Integer.valueOf(jvmName.split("@")[0]);
+            this.setPid(Integer.valueOf(jvmName.split(PID_HOST_SEPARATOR)[0]));
         } catch (final NumberFormatException e) {
             LOG.log(Level.INFO,
                     "Exception when parsing pid (RuntimeMXBean.getName()=="
                             + jvmName + ")", e);
         }
-
-        this.startTime = runtime.getStartTime();
-
-        this.name = "java-" + System.getProperty("java.runtime.version");
-        // Returns the input arguments passed to the Java virtual machine which
-        // does
-        // not include the arguments to the main method. This method returns an
-        // empty
-        // list if there is no input argument to the Java virtual machine.
-        this.arguments = runtime.getInputArguments();
     }
 
 }

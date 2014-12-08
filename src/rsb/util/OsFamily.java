@@ -28,12 +28,31 @@
 package rsb.util;
 
 /**
- * @author swrede
+ * Enumeration describing different operating system families.
  *
+ * @author swrede
  */
-public enum OSFamily {
+public enum OsFamily {
+
+    /**
+     * Operating system family for linux-based systems.
+     */
     LINUX,
-    WIN32,
+
+    /**
+     * Operating system family for windows-based systems (including 64 bit
+     * windows).
+     */
+    WINDOWS,
+
+    /**
+     * Operating system family for Mac (OS X) systems.
+     */
     DARWIN,
+
+    /**
+     * Any other unknown operating system.
+     */
     UNKNOWN
+
 }

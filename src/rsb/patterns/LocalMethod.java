@@ -137,7 +137,7 @@ class LocalMethod extends Method implements Handler {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<?> getDataType() {
         return null;
     }
 

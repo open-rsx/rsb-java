@@ -149,7 +149,7 @@ public class LocalServer extends Server<LocalMethod> {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<?> getDataType() {
         return null;
     }
 

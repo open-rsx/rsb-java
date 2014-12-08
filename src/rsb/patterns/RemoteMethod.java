@@ -220,7 +220,7 @@ public class RemoteMethod extends Method implements Handler {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<?> getDataType() {
         return null;
     }
 

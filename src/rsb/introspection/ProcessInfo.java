@@ -36,14 +36,39 @@ import java.util.List;
  */
 public interface ProcessInfo {
 
-    public abstract int getPid();
+    /**
+     * Returns the pid of a process.
+     *
+     * @return the pid or <= 0 if not know
+     */
+    int getPid();
 
-    public abstract String getProgramName();
+    /**
+     * Returns a string name describing the program.
+     *
+     * @return string name or <code>null</code> if not determined
+     */
+    String getProgramName();
 
-    public abstract List<String> getArguments();
+    /**
+     * Returns the program's command line arguments.
+     *
+     * @return list of arguments, not <code>null</code>
+     */
+    List<String> getArguments();
 
-    public abstract long getStartTime();
+    /**
+     * Returns the process start time in microseconds.
+     *
+     * @return process start time or <= 0 if not determined
+     */
+    long getStartTime();
 
-    public abstract String getUserName();
+    /**
+     * Returns the name of the user executing the process.
+     *
+     * @return user name or <code>null</code> if not determined
+     */
+    String getUserName();
 
 }

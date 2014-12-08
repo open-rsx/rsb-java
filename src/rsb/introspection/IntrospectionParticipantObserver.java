@@ -30,6 +30,7 @@ package rsb.introspection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.Activatable;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.ParticipantObserver;
@@ -41,19 +42,33 @@ import rsb.RSBException;
  *
  * @author swrede
  */
-public class IntrospectionParticipantObserver implements ParticipantObserver {
+public class IntrospectionParticipantObserver implements ParticipantObserver,
+        Activatable {
 
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(IntrospectionParticipantObserver.class.getName());
 
     private final IntrospectionModel model;
     private ProtocolHandler protocol;
 
+    /**
+     * Creates a new instance with containing new instances of
+     * {@link IntrospectionModel} and {@link ProtocolHandler}.
+     */
     public IntrospectionParticipantObserver() {
         this.model = new IntrospectionModel();
         this.protocol = new ProtocolHandler(this.model);
     }
 
+    /**
+     * Creates a new instance with the specified introspection backend and
+     * handler.
+     *
+     * @param model
+     *            the model to use, not <code>null</code>
+     * @param protocol
+     *            the protocol handler to use, not <code>null</code>
+     */
     public IntrospectionParticipantObserver(final IntrospectionModel model,
             final ProtocolHandler protocol) {
         assert model != null;
@@ -62,25 +77,28 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
         this.protocol = protocol;
     }
 
+    @Override
     public void activate() throws RSBException {
         assert this.protocol != null;
         this.protocol.activate();
-        LOG.fine("IntrospectionParticipantObserver activated");
+        LOG.fine("activated");
     }
 
+    @Override
     public void deactivate() {
-        if (this.protocol != null) {
-            try {
-                this.protocol.deactivate();
-            } catch (final RSBException e) {
-                LOG.log(Level.WARNING,
-                        "Exception upon deactivation of introspection protocol",
-                        e);
-            } catch (final InterruptedException e) {
-                LOG.log(Level.WARNING,
-                        "Exception upon deactivation of introspection protocol",
-                        e);
-            }
+        if (!this.protocol.isActive()) {
+            return;
+        }
+
+        try {
+            this.protocol.deactivate();
+        } catch (final RSBException e) {
+            LOG.log(Level.WARNING,
+                    "RSBException upon deactivation of introspection protocol",
+                    e);
+        } catch (final InterruptedException e) {
+            LOG.log(Level.WARNING, "InterruptedException upon deactivation "
+                    + "of introspection protocol", e);
         }
     }
 
@@ -122,6 +140,11 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
                 this.model.removeParticipant(participant);
             }
         }
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.protocol.isActive();
     }
 
 }
