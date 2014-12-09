@@ -45,6 +45,7 @@ import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
 import rsb.protocol.operatingsystem.HostType.Host;
 import rsb.protocol.operatingsystem.ProcessType.Process;
+import rsb.util.OsUtilities;
 
 import com.google.protobuf.ByteString;
 
@@ -68,6 +69,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
             "/participants/"));
 
     private final IntrospectionModel model;
+    private final ProcessInfo processInfo;
+    private final HostInfo hostInfo;
 
     /**
      * Receives introspection queries about participants.
@@ -105,8 +108,22 @@ public class ProtocolHandler extends AbstractEventHandler implements
      */
     public ProtocolHandler(final IntrospectionModel model) {
         assert model != null;
-        assert model.getHostInfo() != null;
         this.model = model;
+
+        final HostInfo info;
+        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
+        case LINUX:
+            LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
+            this.processInfo = new LinuxProcessInfo();
+            info = new LinuxHostInfo();
+            break;
+        default:
+            LOG.fine("Creating PortableProcess and PortableHostInfo instances.");
+            this.processInfo = new PortableProcessInfo();
+            info = new PortableHostInfo();
+            break;
+        }
+        this.hostInfo = new HostIdEnsuringHostInfo(info);
     }
 
     @Override
@@ -118,14 +135,14 @@ public class ProtocolHandler extends AbstractEventHandler implements
         this.informer = Factory.getInstance().createInformer(PARTICIPANT_SCOPE);
         this.informer.activate();
 
-        assert this.model.getHostInfo().getHostId() != null;
-        assert this.model.getProcessInfo().getPid() != null;
+        assert this.hostInfo.getHostId() != null;
+        assert this.processInfo.getPid() != null;
 
         // set up server for echo method
         final Scope serverScope =
                 BASE_SCOPE.concat(new Scope("/hosts/"
-                        + this.model.getHostInfo().getHostId() + "/"
-                        + this.model.getProcessInfo().getPid()));
+                        + this.hostInfo.getHostId() + "/"
+                        + this.processInfo.getPid()));
         this.infoServer = Factory.getInstance().createLocalServer(serverScope);
         this.infoServer.activate();
         this.infoServer.addMethod("echo", new EchoCallback());
@@ -224,48 +241,45 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         // Add process information.
         final Process.Builder processBuilder = helloBuilder.getProcessBuilder();
-        assert this.model.getProcessInfo().getPid() != null;
-        processBuilder.setId(String.valueOf(this.model.getProcessInfo()
-                .getPid()));
-        assert this.model.getProcessInfo().getProgramName() != null;
-        processBuilder.setProgramName(this.model.getProcessInfo()
-                .getProgramName());
-        assert this.model.getProcessInfo().getStartTime() != null;
-        processBuilder.setStartTime(this.model.getProcessInfo().getStartTime());
-        if (this.model.getProcessInfo().getArguments() != null) {
-            processBuilder.addAllCommandlineArguments(this.model
-                    .getProcessInfo().getArguments());
+        assert this.processInfo.getPid() != null;
+        processBuilder.setId(String.valueOf(this.processInfo.getPid()));
+        assert this.processInfo.getProgramName() != null;
+        processBuilder.setProgramName(this.processInfo.getProgramName());
+        assert this.processInfo.getStartTime() != null;
+        processBuilder.setStartTime(this.processInfo.getStartTime());
+        if (this.processInfo.getArguments() != null) {
+            processBuilder.addAllCommandlineArguments(this.processInfo
+                    .getArguments());
         }
-        if (this.model.getProcessInfo().getUserName() != null) {
-            processBuilder.setExecutingUser(this.model.getProcessInfo()
-                    .getUserName());
+        if (this.processInfo.getUserName() != null) {
+            processBuilder.setExecutingUser(this.processInfo.getUserName());
         }
         processBuilder.setRsbVersion(Version.getInstance().getVersionString());
 
         // Add host information.
         final Host.Builder host = helloBuilder.getHostBuilder();
-        assert this.model.getHostInfo().getHostId() != null;
-        host.setId(this.model.getHostInfo().getHostId());
-        if (this.model.getHostInfo().getHostName() != null) {
-            host.setHostname(this.model.getHostInfo().getHostName());
+        assert this.hostInfo.getHostId() != null;
+        host.setId(this.hostInfo.getHostId());
+        if (this.hostInfo.getHostName() != null) {
+            host.setHostname(this.hostInfo.getHostName());
         } else {
             // since host name is required, we need to do something about this
             // case
-            if (this.model.getHostInfo().getHostId() != null) {
+            if (this.hostInfo.getHostId() != null) {
                 LOG.warning("Replacing host name with host ID "
                         + "since the host name is not known.");
-                host.setHostname(this.model.getHostInfo().getHostId());
+                host.setHostname(this.hostInfo.getHostId());
             } else {
                 LOG.warning("No host name available to insert into Hello message. "
                         + "Using a random one.");
                 host.setHostname("<unknown>");
             }
         }
-        if (this.model.getHostInfo().getSoftwareType() != null) {
-            host.setSoftwareType(this.model.getHostInfo().getSoftwareType());
+        if (this.hostInfo.getSoftwareType() != null) {
+            host.setSoftwareType(this.hostInfo.getSoftwareType());
         }
-        if (this.model.getHostInfo().getMachineType() != null) {
-            host.setMachineType(this.model.getHostInfo().getMachineType());
+        if (this.hostInfo.getMachineType() != null) {
+            host.setMachineType(this.hostInfo.getMachineType());
         }
         // Get build object
         final Hello hello = helloBuilder.build();

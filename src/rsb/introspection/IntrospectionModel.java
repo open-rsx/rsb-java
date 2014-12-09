@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 
 import rsb.Participant;
 import rsb.ParticipantId;
-import rsb.util.OsUtilities;
 
 /**
  * Implementation of RSB-based introspection protocol. Supports hello, bye and
@@ -51,38 +50,10 @@ public class IntrospectionModel {
 
     private final List<ParticipantInfo> participants = java.util.Collections
             .synchronizedList(new LinkedList<ParticipantInfo>());
-    private final ProcessInfo processInfo;
-    private final HostInfo hostInfo;
     private ProtocolHandler protocol;
-
-    @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
-    public IntrospectionModel() {
-        final HostInfo info;
-        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
-        case LINUX:
-            LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
-            this.processInfo = new LinuxProcessInfo();
-            info = new LinuxHostInfo();
-            break;
-        default:
-            LOG.fine("Creating PortableProcess and PortableHostInfo instances.");
-            this.processInfo = new PortableProcessInfo();
-            info = new PortableHostInfo();
-            break;
-        }
-        this.hostInfo = new HostIdEnsuringHostInfo(info);
-    }
 
     public void setProtocolHandler(final ProtocolHandler protocol) {
         this.protocol = protocol;
-    }
-
-    public ProcessInfo getProcessInfo() {
-        return this.processInfo;
-    }
-
-    public HostInfo getHostInfo() {
-        return this.hostInfo;
     }
 
     public List<ParticipantInfo> getParticipants() {
