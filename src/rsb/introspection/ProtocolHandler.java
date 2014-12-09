@@ -40,6 +40,7 @@ import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.Version;
+import rsb.introspection.IntrospectionModel.IntrospectionModelObserver;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
@@ -58,7 +59,7 @@ import com.google.protobuf.ByteString;
  * @author ssharma
  */
 public class ProtocolHandler extends AbstractEventHandler implements
-        Activatable {
+        Activatable, IntrospectionModelObserver {
 
     static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
 
@@ -185,8 +186,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
             }
         } else if (query.getData().toString().equalsIgnoreCase("ping")) {
             // Process Ping
-            // TODO check thread safety
-            synchronized (this.model.getParticipants()) {
+            synchronized (this.model) {
                 for (final ParticipantInfo info : this.model.getParticipants()) {
                     this.sendPong(info, query);
                 }
@@ -210,19 +210,19 @@ public class ProtocolHandler extends AbstractEventHandler implements
     }
 
     private void handleSurvey(final Event event) {
-        // TODO check thread safety
-        synchronized (this.model.getParticipants()) {
+        synchronized (this.model) {
             for (final ParticipantInfo info : this.model.getParticipants()) {
                 this.sendHello(info, event);
             }
         }
     }
 
-    void sendHello(final ParticipantInfo participant) {
+    private void sendHello(final ParticipantInfo participant) {
         sendHello(participant, null);
     }
 
-    void sendHello(final ParticipantInfo participant, final Event query) {
+    private void
+            sendHello(final ParticipantInfo participant, final Event query) {
 
         final Hello.Builder helloBuilder = Hello.newBuilder();
 
@@ -300,7 +300,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         }
     }
 
-    public void sendBye(final ParticipantInfo participant) {
+    private void sendBye(final ParticipantInfo participant) {
 
         final Bye.Builder byeBuilder = Bye.newBuilder();
         byeBuilder
@@ -316,7 +316,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         }
     }
 
-    public void sendPong(final ParticipantInfo participant, final Event query) {
+    private void sendPong(final ParticipantInfo participant, final Event query) {
         final Event pongEvent = query;
         pongEvent.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
                 + participant.getId())));
@@ -338,6 +338,16 @@ public class ProtocolHandler extends AbstractEventHandler implements
         }
         return this.informer.isActive() && this.infoServer.isActive()
                 && this.queryListener.isActive();
+    }
+
+    @Override
+    public void participantAdded(final ParticipantInfo info) {
+        sendHello(info);
+    }
+
+    @Override
+    public void participantRemoved(final ParticipantInfo info) {
+        sendBye(info);
     }
 
 }

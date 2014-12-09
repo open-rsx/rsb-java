@@ -114,15 +114,16 @@ public class IntrospectionParticipantObserver implements ParticipantObserver,
                 // recursive factory calls
                 try {
                     this.protocol.activate();
-                    this.model.setProtocolHandler(this.protocol);
+                    this.model.addObserver(this.protocol);
                 } catch (final RSBException e) {
                     LOG.log(Level.WARNING,
                             "Exception during creation of introspection protocol",
                             e);
                     // if introspection participants cannot be created, we
                     // probably have a serious problem anyway
+                    this.model.removeObserver(this.protocol);
                     this.protocol = new ProtocolHandler(this.model);
-                    this.model.setProtocolHandler(this.protocol);
+                    this.model.addObserver(this.protocol);
                     assert false;
                 }
             }
