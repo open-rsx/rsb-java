@@ -27,15 +27,57 @@
  */
 package rsb.util;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- * Utility class to determine type of operating system.
+ * Utility class to perform various tasks related to details about the
+ * underlying operating system of a process.
  *
  * @author swrede
+ * @author jwienke
  */
-public final class OsDetector {
+public final class OsUtilities {
 
-    private OsDetector() {
+    private static final Logger LOG = Logger.getLogger(OsUtilities.class
+            .getName());
+
+    private OsUtilities() {
         // prevent utility class instantiation
+    }
+
+    /**
+     * Enumeration describing different operating system families.
+     *
+     * @author swrede
+     */
+    public static enum OsFamily {
+
+        /**
+         * Operating system family for linux-based systems.
+         */
+        LINUX,
+
+        /**
+         * Operating system family for windows-based systems (including 64 bit
+         * windows).
+         */
+        WINDOWS,
+
+        /**
+         * Operating system family for Mac (OS X) systems.
+         */
+        DARWIN,
+
+        /**
+         * Any other unknown operating system.
+         */
+        UNKNOWN
+
     }
 
     /**
@@ -43,7 +85,7 @@ public final class OsDetector {
      *
      * @return identified operating system family.
      */
-    public static OsFamily getOSFamily() {
+    public static OsFamily getOsFamily() {
         final String identifier = System.getProperty("os.name");
         if (identifier.startsWith("Windows")) {
             return OsFamily.WINDOWS;
@@ -53,6 +95,80 @@ public final class OsDetector {
             return OsFamily.DARWIN;
         } else {
             return OsFamily.UNKNOWN;
+        }
+    }
+
+    /**
+     * Enum to describe the bit architecture of a computer.
+     *
+     * @author swrede
+     */
+    public static enum MachineType {
+
+        /**
+         * Any 32 bit computer.
+         */
+        X86,
+
+        /**
+         * 64 bit computers.
+         */
+        X86_64,
+
+        /**
+         * Any other bit architecture.
+         */
+        UNKNOWN
+
+    }
+
+    public static MachineType getMachineType() {
+        // TODO check better way to get CPU architecture
+        // or at least make sure that these keys are correct
+        final String identifier = System.getProperty("os.arch");
+        if (identifier.contains("x86") || identifier.contains("i386")) {
+            return MachineType.X86;
+        } else if (identifier.startsWith("amd64")) {
+            return MachineType.X86_64;
+        } else {
+            return MachineType.UNKNOWN;
+        }
+    }
+
+    public static String getHostIdInet() throws IOException {
+        final InetAddress ipAddress = InetAddress.getLocalHost();
+        // creates problem when ip address is not resolved
+        final NetworkInterface network =
+                NetworkInterface.getByInetAddress(ipAddress);
+
+        final byte[] mac = network.getHardwareAddress();
+
+        if (mac == null) {
+            throw new IOException(
+                    "Could not read MAC adress via NetworkInterface class.");
+        }
+
+        final StringBuilder stringRep = new StringBuilder();
+        for (int i = 0; i < mac.length; i++) {
+            stringRep.append(String.format("%02X%s", mac[i],
+                    (i < mac.length - 1) ? "-" : ""));
+        }
+
+        return stringRep.toString();
+    }
+
+    /**
+     * Returns a host name derived from name resolution for localhost.
+     *
+     * @return host name or <code>null</code> if not detectable
+     */
+    public static String getLocalHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (final UnknownHostException e) {
+            LOG.log(Level.WARNING,
+                    "Exception while getting hostName via InetAddress.", e);
+            return null;
         }
     }
 

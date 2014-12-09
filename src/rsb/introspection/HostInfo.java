@@ -27,7 +27,8 @@
  */
 package rsb.introspection;
 
-import rsb.util.OsFamily;
+import rsb.util.OsUtilities.MachineType;
+import rsb.util.OsUtilities.OsFamily;
 
 /**
  * Interface for host information model classes.
@@ -35,30 +36,6 @@ import rsb.util.OsFamily;
  * @author swrede
  */
 public interface HostInfo {
-
-    /**
-     * Enum to describe the bit architecture of a computer.
-     *
-     * @author swrede
-     */
-    public enum MachineType {
-
-        /**
-         * Any 32 bit computer.
-         */
-        X86,
-
-        /**
-         * 64 bit computers.
-         */
-        X86_64,
-
-        /**
-         * Any other bit architecture.
-         */
-        UNKNOWN
-
-    }
 
     /**
      * Returns a unique id describing a host. This ID should be as persistent as
@@ -88,7 +65,7 @@ public interface HostInfo {
     /**
      * Returns the bit architecture of the host.
      *
-     * @return bit archtiecture, never <code>null</code>
+     * @return bit architecture, never <code>null</code>
      */
     MachineType getMachineType();
 

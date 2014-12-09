@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import rsb.util.OsDetector;
+import rsb.util.OsUtilities;
 
 /**
  * @author swrede
@@ -48,7 +48,7 @@ public class HostInfoTest {
     @Test
     public void testHostInfo() {
         final HostInfo info;
-        switch (OsDetector.getOSFamily()) {
+        switch (OsUtilities.getOsFamily()) {
         case LINUX:
             info = new LinuxHostInfo();
             break;

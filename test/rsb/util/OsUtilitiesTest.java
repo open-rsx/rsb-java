@@ -34,16 +34,17 @@ import org.junit.Test;
 /**
  * @author swrede
  */
-public class OSDetectorTest {
+public class OsUtilitiesTest {
 
-    private static final Logger LOG = Logger.getLogger(OSDetectorTest.class
+    private static final Logger LOG = Logger.getLogger(OsUtilitiesTest.class
             .getName());
 
     /**
-     * Test method for {@link rsb.util.OsDetector#getOSFamily()}.
+     * Test method for {@link rsb.util.OsUtilities#getOsFamily()}.
      */
     @Test
-    public void testGetOSFamily() {
-        LOG.info("Detected " + OsDetector.getOSFamily().name() + " OS family.");
+    public void getOsFamily() {
+        LOG.info("Detected " + OsUtilities.getOsFamily().name() + " OS family.");
     }
+
 }

@@ -40,13 +40,13 @@ import rsb.Listener;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.Version;
-import rsb.introspection.HostInfo.MachineType;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
 import rsb.protocol.operatingsystem.HostType.Host;
 import rsb.protocol.operatingsystem.ProcessType.Process;
-import rsb.util.OsFamily;
+import rsb.util.OsUtilities.MachineType;
+import rsb.util.OsUtilities.OsFamily;
 
 import com.google.protobuf.ByteString;
 

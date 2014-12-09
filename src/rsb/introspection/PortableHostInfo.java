@@ -33,6 +33,8 @@ import java.lang.management.RuntimeMXBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.util.OsUtilities;
+
 /**
  * Cross-platform plain Java implementation of host info interface.
  *
@@ -68,7 +70,7 @@ public class PortableHostInfo extends CommonHostInfo {
 
         // try to calculate hostId via the network
         try {
-            this.setId(getHostIdInet());
+            this.setId(OsUtilities.getHostIdInet());
             if (this.getHostName().equalsIgnoreCase("unknown")) {
                 this.setHostName(this.getHostId());
             }
@@ -78,7 +80,7 @@ public class PortableHostInfo extends CommonHostInfo {
                     "Unexpected I/O exception when getting MAC address", e);
         }
         // try to get local hostname via network
-        this.setId(getLocalHostName());
+        this.setId(OsUtilities.getLocalHostName());
         if (this.getHostId() == null) {
             // last resort: get hostname via ManagementBean
             this.setId(this.getHostName());

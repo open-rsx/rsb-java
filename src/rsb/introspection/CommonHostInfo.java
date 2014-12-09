@@ -27,15 +27,9 @@
  */
 package rsb.introspection;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import rsb.util.OsDetector;
-import rsb.util.OsFamily;
+import rsb.util.OsUtilities;
+import rsb.util.OsUtilities.MachineType;
+import rsb.util.OsUtilities.OsFamily;
 
 /**
  * Encapsulates common host info functionality shared between portable and
@@ -45,9 +39,6 @@ import rsb.util.OsFamily;
  * @author swrede
  */
 public abstract class CommonHostInfo implements HostInfo {
-
-    private static final Logger LOG = Logger.getLogger(CommonHostInfo.class
-            .getName());
 
     private String hostId;
     private String hostName;
@@ -59,8 +50,8 @@ public abstract class CommonHostInfo implements HostInfo {
      * {@link HostInfo#getSoftwareType()} and {@link HostInfo#getMachineType()}.
      */
     public CommonHostInfo() {
-        this.setSoftwareType(OsDetector.getOSFamily());
-        this.setMachineType(readMachineType());
+        this.setSoftwareType(OsUtilities.getOsFamily());
+        this.setMachineType(OsUtilities.getMachineType());
     }
 
     @Override
@@ -117,60 +108,10 @@ public abstract class CommonHostInfo implements HostInfo {
      * Sets the bit architecture variable.
      *
      * @param machineType
-     *            the bit archtiecture
+     *            the bit architecture
      */
     protected void setMachineType(final MachineType machineType) {
         this.machineType = machineType;
-    }
-
-    protected MachineType readMachineType() {
-        // TODO check better way to get CPU architecture
-        // or at least make sure that these keys are correct
-        final String identifier = System.getProperty("os.arch");
-        if (identifier.contains("x86") || identifier.contains("i386")) {
-            return MachineType.X86;
-        } else if (identifier.startsWith("amd64")) {
-            return MachineType.X86_64;
-        } else {
-            return MachineType.UNKNOWN;
-        }
-    }
-
-    protected String getHostIdInet() throws IOException {
-        final InetAddress ipAddress = InetAddress.getLocalHost();
-        // creates problem when ip address is not resolved
-        final NetworkInterface network =
-                NetworkInterface.getByInetAddress(ipAddress);
-
-        final byte[] mac = network.getHardwareAddress();
-
-        if (mac == null) {
-            throw new IOException(
-                    "Could not read MAC adress via NetworkInterface class.");
-        }
-
-        final StringBuilder stringRep = new StringBuilder();
-        for (int i = 0; i < mac.length; i++) {
-            stringRep.append(String.format("%02X%s", mac[i],
-                    (i < mac.length - 1) ? "-" : ""));
-        }
-
-        return stringRep.toString();
-    }
-
-    /**
-     * Returns a host name derived from name resolution for localhost.
-     *
-     * @return host name or <code>null</code> if not detectable
-     */
-    protected String getLocalHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (final UnknownHostException e) {
-            LOG.log(Level.WARNING,
-                    "Exception while getting hostName via InetAddress.", e);
-            return null;
-        }
     }
 
 }

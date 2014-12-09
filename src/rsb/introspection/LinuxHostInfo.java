@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.util.OsUtilities;
+
 /**
  * Linux-specific implementation of CommonHostInfo class. Tries to compute and
  * cache a unique machine id (and hostname information) from the following
@@ -82,7 +84,7 @@ public class LinuxHostInfo extends CommonHostInfo {
     private void initialize(final String machineIdPath1,
             final String machineIdPath2) {
         this.setId(readHostId(machineIdPath1, machineIdPath2));
-        this.setHostName(getLocalHostName());
+        this.setHostName(OsUtilities.getLocalHostName());
     }
 
     private String readHostId(final String machineIdPath1,
@@ -102,13 +104,13 @@ public class LinuxHostInfo extends CommonHostInfo {
         }
         // otherwise try to calculate hostId via the network
         try {
-            return getHostIdInet();
+            return OsUtilities.getHostIdInet();
         } catch (final IOException e) {
             LOG.log(Level.WARNING,
                     "Unexpected I/O exception when getting MAC address", e);
         }
         // last resort: return local hostname
-        return getLocalHostName();
+        return OsUtilities.getLocalHostName();
     }
 
     private String readMachineId(final File file) throws IOException {
