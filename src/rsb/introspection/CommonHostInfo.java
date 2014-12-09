@@ -28,8 +28,6 @@
 package rsb.introspection;
 
 import rsb.util.OsUtilities;
-import rsb.util.OsUtilities.MachineType;
-import rsb.util.OsUtilities.OsFamily;
 
 /**
  * Encapsulates common host info functionality shared between portable and
@@ -42,17 +40,16 @@ public abstract class CommonHostInfo implements HostInfo {
 
     private String hostId;
     private String hostName;
-    private OsFamily softwareType;
-    private MachineType machineType;
+    private String softwareType;
+    private String machineType;
 
     /**
      * Creates a new instance and pre-computes values for
      * {@link HostInfo#getSoftwareType()} and {@link HostInfo#getMachineType()}.
      */
     public CommonHostInfo() {
-        this.setSoftwareType(OsUtilities.deriveOsFamily(OsUtilities.getOsName()));
-        this.setMachineType(OsUtilities.deriveMachineType(OsUtilities
-                .getOsArchitecture()));
+        this.setSoftwareType(OsUtilities.getOsName());
+        this.setMachineType(OsUtilities.getOsArchitecture());
     }
 
     @Override
@@ -86,7 +83,7 @@ public abstract class CommonHostInfo implements HostInfo {
     }
 
     @Override
-    public OsFamily getSoftwareType() {
+    public String getSoftwareType() {
         return this.softwareType;
     }
 
@@ -96,12 +93,12 @@ public abstract class CommonHostInfo implements HostInfo {
      * @param softwareType
      *            the operating system family
      */
-    protected void setSoftwareType(final OsFamily softwareType) {
+    protected void setSoftwareType(final String softwareType) {
         this.softwareType = softwareType;
     }
 
     @Override
-    public MachineType getMachineType() {
+    public String getMachineType() {
         return this.machineType;
     }
 
@@ -111,7 +108,7 @@ public abstract class CommonHostInfo implements HostInfo {
      * @param machineType
      *            the bit architecture
      */
-    protected void setMachineType(final MachineType machineType) {
+    protected void setMachineType(final String machineType) {
         this.machineType = machineType;
     }
 

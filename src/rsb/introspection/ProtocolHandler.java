@@ -45,8 +45,6 @@ import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
 import rsb.protocol.operatingsystem.HostType.Host;
 import rsb.protocol.operatingsystem.ProcessType.Process;
-import rsb.util.OsUtilities.MachineType;
-import rsb.util.OsUtilities.OsFamily;
 
 import com.google.protobuf.ByteString;
 
@@ -118,6 +116,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
         this.queryListener.activate();
         this.informer = Factory.getInstance().createInformer(PARTICIPANT_SCOPE);
         this.informer.activate();
+
+        assert this.model.getHostInfo().getHostId() != null;
+        assert this.model.getProcessInfo().getPid() != null;
 
         // set up server for echo method
         final Scope serverScope =
@@ -222,28 +223,43 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         // Add process information.
         final Process.Builder processBuilder = helloBuilder.getProcessBuilder();
+        assert this.model.getProcessInfo().getPid() != null;
         processBuilder.setId(String.valueOf(this.model.getProcessInfo()
                 .getPid()));
+        assert this.model.getProcessInfo().getProgramName() != null;
         processBuilder.setProgramName(this.model.getProcessInfo()
                 .getProgramName());
+        assert this.model.getProcessInfo().getStartTime() != null;
         processBuilder.setStartTime(this.model.getProcessInfo().getStartTime());
-        processBuilder.addAllCommandlineArguments(this.model.getProcessInfo()
-                .getArguments());
-        processBuilder.setExecutingUser(this.model.getProcessInfo()
-                .getUserName());
+        if (this.model.getProcessInfo().getArguments() != null) {
+            processBuilder.addAllCommandlineArguments(this.model
+                    .getProcessInfo().getArguments());
+        }
+        if (this.model.getProcessInfo().getUserName() != null) {
+            processBuilder.setExecutingUser(this.model.getProcessInfo()
+                    .getUserName());
+        }
         processBuilder.setRsbVersion(Version.getInstance().getVersionString());
 
         // Add host information.
         final Host.Builder host = helloBuilder.getHostBuilder();
-        host.setId(this.model.getHostInfo().getHostId());
-        host.setHostname(this.model.getHostInfo().getHostName());
-        if (this.model.getHostInfo().getSoftwareType() != OsFamily.UNKNOWN) {
-            host.setSoftwareType(this.model.getHostInfo().getSoftwareType()
-                    .name().toLowerCase());
+        if (this.model.getHostInfo().getHostId() != null) {
+            host.setId(this.model.getHostInfo().getHostId());
         }
-        if (this.model.getHostInfo().getMachineType() != MachineType.UNKNOWN) {
-            host.setMachineType(this.model.getHostInfo().getMachineType()
-                    .name().toLowerCase());
+        if (this.model.getHostInfo().getHostName() != null) {
+            host.setHostname(this.model.getHostInfo().getHostName());
+        } else {
+            // since host name is required, we need to do something about this
+            // case
+            LOG.warning("No host name available to insert into Hello message. "
+                    + "Using a random one.");
+            host.setHostname("<unknown>");
+        }
+        if (this.model.getHostInfo() != null) {
+            host.setSoftwareType(this.model.getHostInfo().getSoftwareType());
+        }
+        if (this.model.getHostInfo().getMachineType() != null) {
+            host.setMachineType(this.model.getHostInfo().getMachineType());
         }
         // Get build object
         final Hello hello = helloBuilder.build();

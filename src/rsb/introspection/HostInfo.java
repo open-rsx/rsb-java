@@ -27,8 +27,6 @@
  */
 package rsb.introspection;
 
-import rsb.util.OsUtilities.MachineType;
-import rsb.util.OsUtilities.OsFamily;
 
 /**
  * Interface for host information model classes.
@@ -56,17 +54,19 @@ public interface HostInfo {
     String getHostName();
 
     /**
-     * Returns the operating system family of a host.
+     * Returns the name of the underlying software host system (OS).
      *
-     * @return the respective OS family. Will never be <code>null</code>.
+     * @return the name, might be <code>null</code> in case it could not be
+     *         determined
      */
-    OsFamily getSoftwareType();
+    String getSoftwareType();
 
     /**
-     * Returns the bit architecture of the host.
+     * Returns the computer architecture underlying to processes on this host.
      *
-     * @return bit architecture, never <code>null</code>
+     * @return bit architecture, might be <code>null</code> in case it could not
+     *         be determined
      */
-    MachineType getMachineType();
+    String getMachineType();
 
 }

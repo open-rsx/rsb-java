@@ -39,9 +39,9 @@ public interface ProcessInfo {
     /**
      * Returns the pid of a process.
      *
-     * @return the pid or <= 0 if not know
+     * @return the pid of the process, <code>null</code> if not determined
      */
-    int getPid();
+    Integer getPid();
 
     /**
      * Returns a string name describing the program.
@@ -53,16 +53,16 @@ public interface ProcessInfo {
     /**
      * Returns the program's command line arguments.
      *
-     * @return list of arguments, not <code>null</code>
+     * @return list of arguments, <code>null</code> if not determined
      */
     List<String> getArguments();
 
     /**
      * Returns the process start time in microseconds.
      *
-     * @return process start time or <= 0 if not determined
+     * @return process start time, <code>null</code> if not determined
      */
-    long getStartTime();
+    Long getStartTime();
 
     /**
      * Returns the name of the user executing the process.

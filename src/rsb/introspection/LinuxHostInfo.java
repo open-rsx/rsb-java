@@ -114,7 +114,7 @@ public class LinuxHostInfo extends CommonHostInfo {
     }
 
     private String readMachineId(final File file) throws IOException {
-        String machineId = "N/A";
+        String machineId = null;
         final BufferedReader reader = new BufferedReader(new FileReader(file));
         try {
             machineId = reader.readLine();

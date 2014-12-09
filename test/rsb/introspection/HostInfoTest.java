@@ -30,9 +30,6 @@ package rsb.introspection;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.junit.Test;
 
 import rsb.util.OsUtilities;
@@ -41,9 +38,6 @@ import rsb.util.OsUtilities;
  * @author swrede
  */
 public class HostInfoTest {
-
-    private static final Logger LOG = Logger.getLogger(HostInfoTest.class
-            .getName());
 
     @Test
     public void testHostInfo() {
@@ -56,16 +50,12 @@ public class HostInfoTest {
             info = new PortableHostInfo();
             break;
         }
-        // TODO add meaningful tests
+        assertNotNull(info.getHostName());
         assertFalse(info.getHostName().isEmpty());
-        LOG.log(Level.INFO, "Hostname is: " + info.getHostName());
+        assertNotNull(info.getHostId());
         assertFalse(info.getHostId().isEmpty());
-        LOG.log(Level.INFO, "Machine ID is: " + info.getHostId());
         assertNotNull(info.getMachineType());
-        LOG.log(Level.INFO, "Machine type is: " + info.getMachineType().name());
         assertNotNull(info.getSoftwareType());
-        LOG.log(Level.INFO, "Software type is: "
-                + info.getSoftwareType().name());
     }
 
 }

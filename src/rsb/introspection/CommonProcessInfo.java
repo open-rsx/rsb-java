@@ -27,7 +27,6 @@
  */
 package rsb.introspection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,9 +37,9 @@ import java.util.List;
  */
 public abstract class CommonProcessInfo implements ProcessInfo {
 
-    private int pid;
+    private Integer pid;
     private String programName;
-    private List<String> arguments = new ArrayList<String>();
+    private List<String> arguments;
     private String userName;
     private long startTime;
 
@@ -61,7 +60,7 @@ public abstract class CommonProcessInfo implements ProcessInfo {
     }
 
     @Override
-    public int getPid() {
+    public Integer getPid() {
         return this.pid;
     }
 
@@ -71,7 +70,7 @@ public abstract class CommonProcessInfo implements ProcessInfo {
      * @param pid
      *            the pid
      */
-    protected void setPid(final int pid) {
+    protected void setPid(final Integer pid) {
         this.pid = pid;
     }
 
@@ -107,7 +106,7 @@ public abstract class CommonProcessInfo implements ProcessInfo {
     }
 
     @Override
-    public long getStartTime() {
+    public Long getStartTime() {
         return this.startTime;
     }
 
@@ -117,7 +116,7 @@ public abstract class CommonProcessInfo implements ProcessInfo {
      * @param startTime
      *            the process start time in microseconds
      */
-    protected void setStartTime(final long startTime) {
+    protected void setStartTime(final Long startTime) {
         this.startTime = startTime;
     }
 

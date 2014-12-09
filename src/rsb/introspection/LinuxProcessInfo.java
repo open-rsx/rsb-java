@@ -92,7 +92,7 @@ public class LinuxProcessInfo extends CommonProcessInfo {
         final String programName =
                 pname.subSequence(0, pname.indexOf("\0")).toString();
         if (programName.isEmpty()) {
-            return "N/A";
+            return null;
         } else {
             return programName;
         }

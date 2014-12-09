@@ -62,16 +62,16 @@ public class PortableHostInfo extends CommonHostInfo {
         try {
             this.setHostName(jvmName.split("@")[1]);
         } catch (final ArrayIndexOutOfBoundsException e) {
-            LOG.log(Level.INFO,
+            LOG.log(Level.WARNING,
                     "Exception when parsing hostname (RuntimeMXBean.getName()=="
                             + jvmName + ")", e);
-            this.setHostName("unknown");
+            this.setHostName(null);
         }
 
         // try to calculate hostId via the network
         try {
             this.setId(OsUtilities.getHostIdInet());
-            if (this.getHostName().equalsIgnoreCase("unknown")) {
+            if (this.getHostName() == null) {
                 this.setHostName(this.getHostId());
             }
             return;
