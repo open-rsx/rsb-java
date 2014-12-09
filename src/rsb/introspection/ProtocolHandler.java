@@ -250,9 +250,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         // Construct event.
         final Event helloEvent = new Event();
-        final Scope partcipantScope =
-                new Scope("/" + participant.getId().toString());
-        helloEvent.setScope(this.informer.getScope().concat(partcipantScope));
+        helloEvent.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
+                + participant.getId())));
         helloEvent.setData(hello);
         helloEvent.setType(hello.getClass());
         if (query != null) {
@@ -272,8 +271,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
                 .setId(ByteString.copyFrom(participant.getId().toByteArray()));
         final Bye bye = byeBuilder.build();
         final Event event = new Event(bye.getClass(), bye);
-        event.setScope(new Scope("/__rsb/introspection/participants/"
-                + participant.getId()));
+        event.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
+                + participant.getId())));
         try {
             this.informer.send(event);
         } catch (final RSBException e) {
@@ -283,9 +282,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     public void sendPong(final ParticipantInfo participant, final Event query) {
         final Event pongEvent = query;
-        final Scope participantScope =
-                new Scope("/" + participant.getId().toString());
-        pongEvent.setScope(this.informer.getScope().concat(participantScope));
+        pongEvent.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
+                + participant.getId())));
         pongEvent.setType(String.class);
         pongEvent.setData("pong");
 
