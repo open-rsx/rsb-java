@@ -57,18 +57,20 @@ public class IntrospectionModel {
 
     @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
     public IntrospectionModel() {
+        final HostInfo info;
         switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
         case LINUX:
             LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
             this.processInfo = new LinuxProcessInfo();
-            this.hostInfo = new LinuxHostInfo();
+            info = new LinuxHostInfo();
             break;
         default:
             LOG.fine("Creating PortableProcess and PortableHostInfo instances.");
             this.processInfo = new PortableProcessInfo();
-            this.hostInfo = new PortableHostInfo();
+            info = new PortableHostInfo();
             break;
         }
+        this.hostInfo = new HostIdEnsuringHostInfo(info);
     }
 
     public void setProtocolHandler(final ProtocolHandler protocol) {

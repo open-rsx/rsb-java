@@ -170,6 +170,8 @@ public final class OsUtilities {
         final NetworkInterface network =
                 NetworkInterface.getByInetAddress(ipAddress);
 
+        // might throw SocketException, which is a subclass of IOException and
+        // hence ok
         final byte[] mac = network.getHardwareAddress();
 
         if (mac == null) {

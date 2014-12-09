@@ -105,6 +105,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
      */
     public ProtocolHandler(final IntrospectionModel model) {
         assert model != null;
+        assert model.getHostInfo() != null;
         this.model = model;
     }
 
@@ -243,19 +244,24 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         // Add host information.
         final Host.Builder host = helloBuilder.getHostBuilder();
-        if (this.model.getHostInfo().getHostId() != null) {
-            host.setId(this.model.getHostInfo().getHostId());
-        }
+        assert this.model.getHostInfo().getHostId() != null;
+        host.setId(this.model.getHostInfo().getHostId());
         if (this.model.getHostInfo().getHostName() != null) {
             host.setHostname(this.model.getHostInfo().getHostName());
         } else {
             // since host name is required, we need to do something about this
             // case
-            LOG.warning("No host name available to insert into Hello message. "
-                    + "Using a random one.");
-            host.setHostname("<unknown>");
+            if (this.model.getHostInfo().getHostId() != null) {
+                LOG.warning("Replacing host name with host ID "
+                        + "since the host name is not known.");
+                host.setHostname(this.model.getHostInfo().getHostId());
+            } else {
+                LOG.warning("No host name available to insert into Hello message. "
+                        + "Using a random one.");
+                host.setHostname("<unknown>");
+            }
         }
-        if (this.model.getHostInfo() != null) {
+        if (this.model.getHostInfo().getSoftwareType() != null) {
             host.setSoftwareType(this.model.getHostInfo().getSoftwareType());
         }
         if (this.model.getHostInfo().getMachineType() != null) {

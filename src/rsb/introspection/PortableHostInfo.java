@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.util.OsUtilities;
+import rsb.util.RuntimeOsUtilities;
 
 /**
  * Cross-platform plain Java implementation of host info interface.
@@ -56,35 +57,26 @@ public class PortableHostInfo extends CommonHostInfo {
     private void initialize() {
         final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 
-        // Get name returns something like 6460@AURORA. Where the value
-        // after the @ symbol is the hostname.
-        final String jvmName = runtime.getName();
+        // host name
         try {
-            this.setHostName(jvmName.split("@")[1]);
-        } catch (final ArrayIndexOutOfBoundsException e) {
+            this.setHostName(RuntimeOsUtilities.determineHostName(runtime));
+        } catch (final RuntimeException e) {
             LOG.log(Level.WARNING,
-                    "Exception when parsing hostname (RuntimeMXBean.getName()=="
-                            + jvmName + ")", e);
-            this.setHostName(null);
+                    "Unable to determine host name from runtime."
+                            + "Falling back to network resolution.", e);
+            this.setHostName(OsUtilities.getLocalHostName());
+            if (this.getHostId() == null) {
+                LOG.warning("Host name could not be determined at all.");
+            }
         }
 
-        // try to calculate hostId via the network
+        // host id
         try {
-            this.setId(OsUtilities.getHostIdInet());
-            if (this.getHostName() == null) {
-                this.setHostName(this.getHostId());
-            }
-            return;
+            this.setHostId(OsUtilities.getHostIdInet());
         } catch (final IOException e) {
-            LOG.log(Level.WARNING,
-                    "Unexpected I/O exception when getting MAC address", e);
+            LOG.log(Level.WARNING, "I/O exception when getting host id", e);
         }
-        // try to get local hostname via network
-        this.setId(OsUtilities.getLocalHostName());
-        if (this.getHostId() == null) {
-            // last resort: get hostname via ManagementBean
-            this.setId(this.getHostName());
-        }
+
     }
 
 }

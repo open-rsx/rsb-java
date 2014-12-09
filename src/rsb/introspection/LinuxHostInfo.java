@@ -83,7 +83,7 @@ public class LinuxHostInfo extends CommonHostInfo {
 
     private void initialize(final String machineIdPath1,
             final String machineIdPath2) {
-        this.setId(readHostId(machineIdPath1, machineIdPath2));
+        this.setHostId(readHostId(machineIdPath1, machineIdPath2));
         this.setHostName(OsUtilities.getLocalHostName());
     }
 

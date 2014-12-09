@@ -63,7 +63,7 @@ public abstract class CommonHostInfo implements HostInfo {
      * @param hostId
      *            unique id
      */
-    protected void setId(final String hostId) {
+    protected void setHostId(final String hostId) {
         this.hostId = hostId;
     }
 
