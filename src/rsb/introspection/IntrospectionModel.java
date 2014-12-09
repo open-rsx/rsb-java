@@ -123,6 +123,15 @@ public class IntrospectionModel {
     }
 
     /**
+     * Indicates whether any participants are known.
+     *
+     * @return <code>true</code> if the model contains participants
+     */
+    public boolean isEmpty() {
+        return this.participants.isEmpty();
+    }
+
+    /**
      * Queries the database of known participants for the participant with the
      * given uuid and returns the associated {@link ParticipantInfo} instance.
      * Remember to synchronize on this instance in case you want to ensure that
@@ -186,7 +195,11 @@ public class IntrospectionModel {
             this.participants.add(info);
 
             synchronized (this.observers) {
-                for (final IntrospectionModelObserver observer : this.observers) {
+                // use a copy of the observers set so that clients can register
+                // or unregister during notification
+                final HashSet<IntrospectionModelObserver> observersCopy =
+                        new HashSet<IntrospectionModelObserver>(this.observers);
+                for (final IntrospectionModelObserver observer : observersCopy) {
                     observer.participantAdded(info);
                 }
             }
@@ -225,7 +238,11 @@ public class IntrospectionModel {
             }
 
             synchronized (this.observers) {
-                for (final IntrospectionModelObserver observer : this.observers) {
+                // use a copy of the observers set so that clients can register
+                // or unregister during notification
+                final HashSet<IntrospectionModelObserver> observersCopy =
+                        new HashSet<IntrospectionModelObserver>(this.observers);
+                for (final IntrospectionModelObserver observer : observersCopy) {
                     observer.participantRemoved(info);
                 }
             }

@@ -30,7 +30,6 @@ package rsb.introspection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.Activatable;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.ParticipantObserver;
@@ -41,92 +40,49 @@ import rsb.RSBException;
  * the introspection mechanism.
  *
  * @author swrede
+ * @author jwienke
  */
-public class IntrospectionParticipantObserver implements ParticipantObserver,
-        Activatable {
+public class IntrospectionParticipantObserver implements ParticipantObserver {
 
     private static final Logger LOG = Logger
             .getLogger(IntrospectionParticipantObserver.class.getName());
 
-    private final IntrospectionModel model;
-    private ProtocolHandler protocol;
-
-    /**
-     * Creates a new instance with containing new instances of
-     * {@link IntrospectionModel} and {@link ProtocolHandler}.
-     */
-    public IntrospectionParticipantObserver() {
-        this.model = new IntrospectionModel();
-        this.protocol = new ProtocolHandler(this.model);
-    }
-
-    /**
-     * Creates a new instance with the specified introspection backend and
-     * handler.
-     *
-     * @param model
-     *            the model to use, not <code>null</code>
-     * @param protocol
-     *            the protocol handler to use, not <code>null</code>
-     */
-    public IntrospectionParticipantObserver(final IntrospectionModel model,
-            final ProtocolHandler protocol) {
-        assert model != null;
-        assert protocol != null;
-        this.model = model;
-        this.protocol = protocol;
-    }
-
-    @Override
-    public void activate() throws RSBException {
-        assert this.protocol != null;
-        this.protocol.activate();
-        LOG.fine("activated");
-    }
-
-    @Override
-    public void deactivate() {
-        if (!this.protocol.isActive()) {
-            return;
-        }
-
-        try {
-            this.protocol.deactivate();
-        } catch (final RSBException e) {
-            LOG.log(Level.WARNING,
-                    "RSBException upon deactivation of introspection protocol",
-                    e);
-        } catch (final InterruptedException e) {
-            LOG.log(Level.WARNING, "InterruptedException upon deactivation "
-                    + "of introspection protocol", e);
-        }
-    }
+    private final IntrospectionModel model = new IntrospectionModel();
+    private final ProtocolHandler protocol = new ProtocolHandler(this.model);
 
     @Override
     public void created(final Participant participant,
             final ParticipantCreateArgs<?> args) {
-        if (participant.getScope().isSubScopeOf(ProtocolHandler.BASE_SCOPE)) {
+
+        // only handle participants that want to have introspection enabled
+        if (!participant.getConfig().isIntrospectionEnabled()) {
+            LOG.log(Level.FINE,
+                    "Skipping created processing for participant {0} since"
+                            + "introspection is disabled for this participant",
+                    participant);
             return;
         }
-        synchronized (this) {
+
+        synchronized (this.model) {
+
+            // start the introspection protocol with the first new participant
+            // so that the internal participants are not active without any need
             if (!this.protocol.isActive()) {
-                // lazy instantiation of protocol handler due to otherwise
-                // recursive factory calls
+
                 try {
                     this.protocol.activate();
                     this.model.addObserver(this.protocol);
                 } catch (final RSBException e) {
-                    LOG.log(Level.WARNING,
+                    LOG.log(Level.SEVERE,
                             "Exception during creation of introspection protocol",
                             e);
-                    // if introspection participants cannot be created, we
-                    // probably have a serious problem anyway
-                    this.model.removeObserver(this.protocol);
-                    this.protocol = new ProtocolHandler(this.model);
-                    this.model.addObserver(this.protocol);
                     assert false;
+                    // the protocol handler will have reset its state
+                    // automatically and can be reused for the next try
                 }
+
             }
+
         }
 
         this.model.addParticipant(participant, args.getParent());
@@ -134,18 +90,48 @@ public class IntrospectionParticipantObserver implements ParticipantObserver,
 
     @Override
     public void destroyed(final Participant participant) {
-        synchronized (this) {
-            if ((this.model != null)
-                    && (!participant.getScope().isSubScopeOf(
-                            ProtocolHandler.BASE_SCOPE))) {
-                this.model.removeParticipant(participant);
-            }
-        }
-    }
 
-    @Override
-    public boolean isActive() {
-        return this.protocol.isActive();
+        // only handle participants that want to have introspection enabled
+        if (!participant.getConfig().isIntrospectionEnabled()) {
+            LOG.log(Level.FINE, "Skipping processing for participant {0} "
+                    + "since introspection is disabled for this participant",
+                    participant);
+            return;
+        }
+
+        synchronized (this.model) {
+
+            this.model.removeParticipant(participant);
+
+            // deactivate the introspection participants with the last client
+            // participant so that java programs will terminate correctly
+            if (this.model.isEmpty() && this.protocol.isActive()) {
+
+                LOG.info("Deactivating introspection protocol handler "
+                        + "since no more participants exist");
+
+                this.model.removeObserver(this.protocol);
+                try {
+                    this.protocol.deactivate();
+                } catch (final RSBException e) {
+                    LOG.log(Level.SEVERE, "Introspection protocol handler"
+                            + "could not be deactivated correctly.", e);
+                    // the handler will have reset its state correctly, so we
+                    // don't need to do anything
+                    assert false;
+                } catch (final InterruptedException e) {
+                    LOG.log(Level.SEVERE,
+                            "Introspection protocol handler could"
+                                    + " not be deactivated correctly.", e);
+                    // the handler will have reset its state correctly, so we
+                    // don't need to do anything
+                    assert false;
+                }
+
+            }
+
+        }
+
     }
 
 }

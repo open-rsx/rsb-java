@@ -37,9 +37,11 @@ import rsb.Event;
 import rsb.Factory;
 import rsb.Informer;
 import rsb.Listener;
+import rsb.Participant;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.Version;
+import rsb.config.ParticipantConfig;
 import rsb.introspection.IntrospectionModel.IntrospectionModelObserver;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
@@ -55,8 +57,13 @@ import com.google.protobuf.ByteString;
  * http://docs
  * .cor-lab.de//rsb-manual/trunk/html/specification-introspection.html
  *
+ * Activation and deactivation needs to be single-threaded and if not activated,
+ * this class must not be actively registered as an
+ * {@link IntrospectionModelObserver}.
+ *
  * @author swrede
  * @author ssharma
+ * @author jwienke
  */
 public class ProtocolHandler extends AbstractEventHandler implements
         Activatable, IntrospectionModelObserver {
@@ -127,44 +134,103 @@ public class ProtocolHandler extends AbstractEventHandler implements
         this.hostInfo = new HostIdEnsuringHostInfo(info);
     }
 
+    private void safeParticipantCleanup(final Participant participant) {
+        if (participant != null) {
+            try {
+                participant.deactivate();
+            } catch (final RSBException e) {
+                // ignore this since we can't do anything
+            } catch (final InterruptedException e) {
+                // ignore this since we can't do anything
+            }
+        }
+    }
+
+    private void safeCleanup() {
+
+        safeParticipantCleanup(this.queryListener);
+        this.queryListener = null;
+        safeParticipantCleanup(this.informer);
+        this.informer = null;
+        safeParticipantCleanup(this.infoServer);
+        this.infoServer = null;
+
+    }
+
     @Override
     public void activate() throws RSBException {
-        // set up listener and informer pair for basic introspection protocol
-        this.queryListener =
-                Factory.getInstance().createListener(PARTICIPANT_SCOPE);
-        this.queryListener.activate();
-        this.informer = Factory.getInstance().createInformer(PARTICIPANT_SCOPE);
-        this.informer.activate();
-
-        assert this.hostInfo.getHostId() != null;
-        assert this.processInfo.getPid() != null;
-
-        // set up server for echo method
-        final Scope serverScope =
-                BASE_SCOPE.concat(new Scope("/hosts/"
-                        + this.hostInfo.getHostId() + "/"
-                        + this.processInfo.getPid()));
-        this.infoServer = Factory.getInstance().createLocalServer(serverScope);
-        this.infoServer.activate();
-        this.infoServer.addMethod("echo", new EchoCallback());
 
         try {
-            this.queryListener.addHandler(this, false);
-        } catch (final InterruptedException e) {
-            throw new RSBException(e);
+
+            // ensure that introspection participants do not end up in the
+            // introspection as well, which would be a recursion
+            final ParticipantConfig config =
+                    Factory.getInstance().getDefaulParticipantConfig().copy();
+            config.setIntrospectionEnabled(false);
+
+            // set up listener and informer pair for basic introspection
+            // protocol
+            this.queryListener =
+                    Factory.getInstance().createListener(PARTICIPANT_SCOPE,
+                            config);
+            this.queryListener.activate();
+            this.informer =
+                    Factory.getInstance().createInformer(PARTICIPANT_SCOPE,
+                            config);
+            this.informer.activate();
+
+            assert this.hostInfo.getHostId() != null;
+            assert this.processInfo.getPid() != null;
+
+            // set up server for echo method
+            final Scope serverScope =
+                    BASE_SCOPE.concat(new Scope("/hosts/"
+                            + this.hostInfo.getHostId() + "/"
+                            + this.processInfo.getPid()));
+            this.infoServer =
+                    Factory.getInstance()
+                            .createLocalServer(serverScope, config);
+            this.infoServer.activate();
+            this.infoServer.addMethod("echo", new EchoCallback());
+
+            try {
+                this.queryListener.addHandler(this, true);
+            } catch (final InterruptedException e) {
+                throw new RSBException(e);
+            }
+
+        } catch (final RSBException e) {
+            // reset state so we can retry activation again later
+            safeCleanup();
+            throw e;
         }
+
     }
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
-        if (this.queryListener != null) {
-            this.queryListener.deactivate();
-        }
-        if (this.informer != null) {
-            this.informer.deactivate();
-        }
-        if (this.infoServer != null) {
-            this.infoServer.deactivate();
+        try {
+            // ordered correctly so that server and listener actions will still
+            // have the informer available for processing
+            if (this.infoServer != null) {
+                this.infoServer.deactivate();
+                this.infoServer.waitForShutdown();
+                this.infoServer = null;
+            }
+            if (this.queryListener != null) {
+                this.queryListener.deactivate();
+                this.queryListener = null;
+            }
+            if (this.informer != null) {
+                this.informer.deactivate();
+                this.informer = null;
+            }
+        } catch (final RSBException e) {
+            safeCleanup();
+            throw e;
+        } catch (final InterruptedException e) {
+            safeCleanup();
+            throw e;
         }
     }
 

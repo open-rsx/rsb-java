@@ -52,17 +52,12 @@ import rsb.util.Properties;
  */
 public final class Factory {
 
-    private static final Boolean DEFAULT_INTROSPECTION = false;
-    private static final String INTROSPECTION_KEY = "rsb.introspection";
-
     /**
      * The singleton instance.
      */
     private static Factory instance = new Factory();
 
     private final Properties properties = new Properties();
-
-    private IntrospectionParticipantObserver introspection = null;
 
     private final ParticipantConfig defaultConfig = new ParticipantConfig();
 
@@ -154,12 +149,9 @@ public final class Factory {
         new ParticipantConfigCreator().reconfigure(this.defaultConfig,
                 this.properties);
 
-        if (this.properties.getProperty(INTROSPECTION_KEY,
-                DEFAULT_INTROSPECTION).asBoolean()) {
-            this.introspection = new IntrospectionParticipantObserver();
-            // TODO think about when to deactivate the introspection
-            this.observerManager.addObserver(this.introspection);
-        }
+        // add support for introspection
+        this.observerManager
+                .addObserver(new IntrospectionParticipantObserver());
 
     }
 
