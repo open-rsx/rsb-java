@@ -57,7 +57,7 @@ public class IntrospectionModel {
 
     @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
     public IntrospectionModel() {
-        switch (OsUtilities.getOsFamily()) {
+        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
         case LINUX:
             LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
             this.processInfo = new LinuxProcessInfo();

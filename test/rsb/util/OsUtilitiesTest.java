@@ -27,24 +27,62 @@
  */
 package rsb.util;
 
-import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+
+import rsb.util.OsUtilities.MachineType;
+import rsb.util.OsUtilities.OsFamily;
 
 /**
  * @author swrede
  */
 public class OsUtilitiesTest {
 
-    private static final Logger LOG = Logger.getLogger(OsUtilitiesTest.class
-            .getName());
-
-    /**
-     * Test method for {@link rsb.util.OsUtilities#getOsFamily()}.
-     */
     @Test
-    public void getOsFamily() {
-        LOG.info("Detected " + OsUtilities.getOsFamily().name() + " OS family.");
+    public void getOsName() {
+        final String name = OsUtilities.getOsName();
+        assertNotNull(name);
+        assertFalse(name.isEmpty());
+    }
+
+    @Test
+    public void deriveOsFamily() {
+        // some random values from
+        // http://www.java-gaming.org/index.php/topic,14110
+        assertEquals(OsFamily.WINDOWS, OsUtilities.deriveOsFamily("Windows XP"));
+        assertEquals(OsFamily.WINDOWS, OsUtilities.deriveOsFamily("Windows 98"));
+        assertEquals(OsFamily.WINDOWS,
+                OsUtilities.deriveOsFamily("Windows 2003"));
+        assertEquals(OsFamily.WINDOWS,
+                OsUtilities.deriveOsFamily("Windows 2000"));
+        assertEquals(OsFamily.LINUX, OsUtilities.deriveOsFamily("Linux"));
+        assertEquals(OsFamily.DARWIN, OsUtilities.deriveOsFamily("Mac OS X"));
+        assertEquals(OsFamily.UNKNOWN, OsUtilities.deriveOsFamily("FreeBSD"));
+        assertEquals(OsFamily.UNKNOWN, OsUtilities.deriveOsFamily(""));
+        assertEquals(OsFamily.UNKNOWN, OsUtilities.deriveOsFamily("Not Linux"));
+    }
+
+    @Test
+    public void getOsArchitecture() {
+        final String name = OsUtilities.getOsArchitecture();
+        assertNotNull(name);
+        assertFalse(name.isEmpty());
+    }
+
+    @Test
+    public void deriveMachineType() {
+        // some random values from
+        // http://www.java-gaming.org/index.php/topic,14110
+        assertEquals(MachineType.X86, OsUtilities.deriveMachineType("x86"));
+        assertEquals(MachineType.X86, OsUtilities.deriveMachineType("i386"));
+        assertEquals(MachineType.X86_64, OsUtilities.deriveMachineType("amd64"));
+        assertEquals(MachineType.UNKNOWN, OsUtilities.deriveMachineType("ppc"));
+        assertEquals(MachineType.UNKNOWN,
+                OsUtilities.deriveMachineType("blubb"));
+        assertEquals(MachineType.UNKNOWN, OsUtilities.deriveMachineType(""));
     }
 
 }

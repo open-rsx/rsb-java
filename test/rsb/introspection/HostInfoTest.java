@@ -48,7 +48,7 @@ public class HostInfoTest {
     @Test
     public void testHostInfo() {
         final HostInfo info;
-        switch (OsUtilities.getOsFamily()) {
+        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
         case LINUX:
             info = new LinuxHostInfo();
             break;

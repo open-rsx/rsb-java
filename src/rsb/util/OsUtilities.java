@@ -81,12 +81,25 @@ public final class OsUtilities {
     }
 
     /**
-     * Tries to determine the operating system family.
+     * Returns the name of the operating system a process is currently being
+     * operated on.
      *
+     * @return a non-empty string
+     */
+    public static String getOsName() {
+        return System.getProperty("os.name");
+    }
+
+    /**
+     * Tries to determine the operating system family from a concrete operating
+     * system name returned by {@link #getOsName()}.
+     *
+     * @param identifier
+     *            the concrete operating system name, not <code>null</code>
      * @return identified operating system family.
      */
-    public static OsFamily getOsFamily() {
-        final String identifier = System.getProperty("os.name");
+    public static OsFamily deriveOsFamily(final String identifier) {
+        assert identifier != null;
         if (identifier.startsWith("Windows")) {
             return OsFamily.WINDOWS;
         } else if (identifier.startsWith("Linux")) {
@@ -122,10 +135,26 @@ public final class OsUtilities {
 
     }
 
-    public static MachineType getMachineType() {
-        // TODO check better way to get CPU architecture
-        // or at least make sure that these keys are correct
-        final String identifier = System.getProperty("os.arch");
+    /**
+     * Returns the architecture of the operating system a process is being
+     * operated on.
+     *
+     * @return non-empty name string, not <code>null</code>
+     */
+    public static String getOsArchitecture() {
+        return System.getProperty("os.arch");
+    }
+
+    /**
+     * Tries to guess a class of os architectures from a name given from
+     * {@link #getOsArchitecture()}.
+     *
+     * @param identifier
+     *            name of os architecture, not <code>null</code>
+     * @return guessed architecture class, not <code>null</code>
+     */
+    public static MachineType deriveMachineType(final String identifier) {
+        assert identifier != null;
         if (identifier.contains("x86") || identifier.contains("i386")) {
             return MachineType.X86;
         } else if (identifier.startsWith("amd64")) {

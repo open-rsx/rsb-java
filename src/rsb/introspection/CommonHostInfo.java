@@ -50,8 +50,9 @@ public abstract class CommonHostInfo implements HostInfo {
      * {@link HostInfo#getSoftwareType()} and {@link HostInfo#getMachineType()}.
      */
     public CommonHostInfo() {
-        this.setSoftwareType(OsUtilities.getOsFamily());
-        this.setMachineType(OsUtilities.getMachineType());
+        this.setSoftwareType(OsUtilities.deriveOsFamily(OsUtilities.getOsName()));
+        this.setMachineType(OsUtilities.deriveMachineType(OsUtilities
+                .getOsArchitecture()));
     }
 
     @Override

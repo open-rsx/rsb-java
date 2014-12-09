@@ -48,7 +48,7 @@ public class ProcessInfoTest {
     @Test
     public void testProcessInfo() {
         final ProcessInfo info;
-        switch (OsUtilities.getOsFamily()) {
+        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
         case LINUX:
             info = new LinuxProcessInfo();
             LOG.info("Created LinuxProcessInfo");
