@@ -27,7 +27,6 @@
  */
 package rsb.introspection;
 
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +37,7 @@ import rsb.Factory;
 import rsb.Informer;
 import rsb.Listener;
 import rsb.Participant;
+import rsb.ParticipantId;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.Version;
@@ -265,7 +265,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         final String idString =
                 event.getScope().getComponents()
                         .get(event.getScope().getComponents().size() - 1);
-        final UUID participantId = UUID.fromString(idString);
+        final ParticipantId participantId = new ParticipantId(idString);
 
         final ParticipantInfo participant =
                 this.model.getParticipant(participantId);

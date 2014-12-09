@@ -167,4 +167,32 @@ public class IntrospectionModelTest {
         assertEquals(observedParticipant.getId(), removeCall.getInfo().getId());
 
     }
+
+    @Test
+    public void addRemove() {
+        final IntrospectionModel model = new IntrospectionModel();
+        assertTrue(model.isEmpty());
+
+        final Participant participant = new TestParticipant(new Scope("/bla"));
+        model.addParticipant(participant, null);
+        assertFalse(model.isEmpty());
+        assertEquals(1, model.getParticipants().size());
+        assertEquals(participant.getId(), model.getParticipants().iterator()
+                .next().getId());
+
+        model.addParticipant(participant, null);
+        assertEquals("Adding the same participant twice "
+                + "must be handled by the model.", 1, model.getParticipants()
+                .size());
+
+        model.removeParticipant(new TestParticipant(new Scope("/blbbbasdasd")));
+        assertEquals("Removing a participant that never was in the model "
+                + "must not change the model.", 1, model.getParticipants()
+                .size());
+
+        model.removeParticipant(participant);
+        assertTrue(model.isEmpty());
+
+    }
+
 }

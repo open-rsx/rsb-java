@@ -27,11 +27,10 @@
  */
 package rsb.introspection;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,8 +78,8 @@ public class IntrospectionModel {
     private static final Logger LOG = Logger.getLogger(IntrospectionModel.class
             .getName());
 
-    private final List<ParticipantInfo> participants =
-            new LinkedList<ParticipantInfo>();
+    private final Map<ParticipantId, ParticipantInfo> participants =
+            new HashMap<ParticipantId, ParticipantInfo>();
 
     private final Set<IntrospectionModelObserver> observers =
             new HashSet<IntrospectionModelObserver>();
@@ -113,13 +112,13 @@ public class IntrospectionModel {
     }
 
     /**
-     * Returns the raw collection of participants. Clients need to ensure
+     * Returns the collection of participants. Clients need to ensure
      * synchronization on this instance when using the returned collection.
      *
-     * @return list of participants
+     * @return set of participants
      */
-    public List<ParticipantInfo> getParticipants() {
-        return this.participants;
+    public Set<ParticipantInfo> getParticipants() {
+        return new HashSet<ParticipantInfo>(this.participants.values());
     }
 
     /**
@@ -138,21 +137,16 @@ public class IntrospectionModel {
      * the participant still exists in the model when you operate with it.
      *
      * @param participantId
-     *            the UUID of the participant, not <code>null</code>
+     *            the id of participant, not <code>null</code>
      * @return the associated participant info or <code>null</code> in case
      *         there is no participant with the given id
      */
-    public ParticipantInfo getParticipant(final UUID participantId) {
+    public ParticipantInfo getParticipant(final ParticipantId participantId) {
         assert participantId != null;
 
         ParticipantInfo participant = null;
         synchronized (this) {
-            for (final ParticipantInfo info : this.participants) {
-                if (info.getId().toString().equals(participantId.toString())) {
-                    participant = info;
-                    break;
-                }
-            }
+            participant = this.participants.get(participantId);
         }
 
         if (participant == null) {
@@ -192,7 +186,13 @@ public class IntrospectionModel {
 
         synchronized (this) {
 
-            this.participants.add(info);
+            if (this.participants.containsKey(participant.getId())) {
+                LOG.log(Level.WARNING, "Skipping participant with id {0} "
+                        + "that is already contained in the model",
+                        new Object[] { participant.getId() });
+                return;
+            }
+            this.participants.put(participant.getId(), info);
 
             synchronized (this.observers) {
                 // use a copy of the observers set so that clients can register
@@ -222,14 +222,8 @@ public class IntrospectionModel {
 
         synchronized (this) {
 
-            ParticipantInfo info = null;
-            for (final ParticipantInfo participantInfo : this.participants) {
-                if (participantInfo.getId() == participant.getId()) {
-                    info = participantInfo;
-                    this.participants.remove(participantInfo);
-                    break;
-                }
-            }
+            final ParticipantInfo info =
+                    this.participants.remove(participant.getId());
 
             if (info == null) {
                 LOG.log(Level.FINE, "Trying to remove unknown participant {0}",
