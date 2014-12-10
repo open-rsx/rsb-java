@@ -49,6 +49,15 @@ import rsb.ParticipantId;
  */
 public class IntrospectionModel {
 
+    private static final Logger LOG = Logger.getLogger(IntrospectionModel.class
+            .getName());
+
+    private final Map<ParticipantId, ParticipantInfo> participants =
+            new HashMap<ParticipantId, ParticipantInfo>();
+
+    private final Set<IntrospectionModelObserver> observers =
+            new HashSet<IntrospectionModelObserver>();
+
     /**
      * Interface to implement when observing an instance of
      * {@link IntrospectionModel}. Clients will only be called single-threaded.
@@ -74,15 +83,6 @@ public class IntrospectionModel {
         void participantRemoved(final ParticipantInfo info);
 
     }
-
-    private static final Logger LOG = Logger.getLogger(IntrospectionModel.class
-            .getName());
-
-    private final Map<ParticipantId, ParticipantInfo> participants =
-            new HashMap<ParticipantId, ParticipantInfo>();
-
-    private final Set<IntrospectionModelObserver> observers =
-            new HashSet<IntrospectionModelObserver>();
 
     /**
      * Adds an observer to this model.

@@ -57,10 +57,10 @@ public class HostIdEnsuringHostInfo implements HostInfo {
 
     @Override
     public String getHostId() {
-        if (this.info.getHostId() != null) {
-            return this.info.getHostId();
-        } else {
+        if (this.info.getHostId() == null) {
             return this.info.getHostName();
+        } else {
+            return this.info.getHostId();
         }
     }
 

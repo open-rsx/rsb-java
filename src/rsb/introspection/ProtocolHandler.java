@@ -27,6 +27,8 @@
  */
 package rsb.introspection;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,45 +68,14 @@ import com.google.protobuf.ByteString;
  * @author ssharma
  * @author jwienke
  */
+// the protocol is quite complex and it is hard to factor out details into
+// specific classes
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.GodClass" })
 public class ProtocolHandler extends AbstractEventHandler implements
         Activatable, IntrospectionModelObserver {
 
     private static final Logger LOG = Logger.getLogger(ProtocolHandler.class
             .getName());
-
-    private static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
-    private static final Scope PARTICIPANT_SCOPE = BASE_SCOPE.concat(new Scope(
-            "/participants/"));
-    private static final Scope HOST_SCOPE = BASE_SCOPE.concat(new Scope(
-            "/hosts/"));
-
-    /**
-     * Data to send or expect in a ping event.
-     */
-    private static final String PING_EVENT_DATA = "ping";
-
-    /**
-     * Data to send or expect in a pong event.
-     */
-    private static final String PONG_EVENT_DATA = "pong";
-
-    /**
-     * {@link Event#getMethod()} entry to expect on a request for a specific
-     * participant.
-     */
-    private static final String REQUEST_METHOD_NAME = "REQUEST";
-
-    /**
-     * {@link Event#getMethod()} entry to expect on a participant survey
-     * request.
-     */
-    private static final String SURVEY_METHOD_NAME = "SURVEY";
-
-    /**
-     * Name of the RPC server method for echoing back timing information to a
-     * caller.
-     */
-    private static final String ECHO_RPC_METHOD_NAME = "echo";
 
     private final IntrospectionModel model;
     private final ProcessInfo processInfo;
@@ -125,15 +96,176 @@ public class ProtocolHandler extends AbstractEventHandler implements
      */
     private LocalServer infoServer;
 
+    /**
+     * Set of actions to check when a new event is received on the introspection
+     * scope.
+     */
+    private final Set<EventAction> eventActions = new HashSet<EventAction>();
+
     private static class EchoCallback extends EventCallback {
 
         @Override
         public Event invoke(final Event request) throws Throwable {
-            request.getMetaData().setUserTime("request.send",
+            request.getMetaData().setUserTime(
+                    ProtocolUtilities.REQUEST_SEND_USER_TIME,
                     request.getMetaData().getSendTime());
-            request.getMetaData().setUserTime("request.receive",
+            request.getMetaData().setUserTime(
+                    ProtocolUtilities.REQUEST_RECEIVE_USER_TIME,
                     request.getMetaData().getReceiveTime());
             return request;
+        }
+
+    }
+
+    /**
+     * Implementations encapsulate individual reactions to events received from
+     * the introspection listener.
+     *
+     * @author jwienke
+     */
+    private interface EventAction {
+
+        /**
+         * Predicate function to determine whether a certain action applies.
+         *
+         * @param event
+         *            introspection event to test against
+         * @return <code>true</code> if this action shall be executed for the
+         *         specified event
+         */
+        boolean matches(Event event);
+
+        /**
+         * Actually perform the action.
+         *
+         * @param event
+         *            the event to perform the action for
+         */
+        void perform(Event event);
+
+    }
+
+    /**
+     * Reply to a survey request.
+     *
+     * @author jwienke
+     */
+    private class ReplyToSurveyAction implements EventAction {
+
+        @Override
+        public boolean matches(final Event event) {
+            return event.getScope().equals(ProtocolUtilities.PARTICIPANT_SCOPE)
+                    && event.getData() == null
+                    && event.getMethod() != null
+                    && event.getMethod().equals(
+                            ProtocolUtilities.SURVEY_METHOD_NAME);
+        }
+
+        @Override
+        public void perform(final Event event) {
+            handleSurvey(event);
+        }
+
+    }
+
+    /**
+     * Reply to a request for a specific participant.
+     *
+     * @author jwienke
+     */
+    private class ReplyToParticipantRequestAction implements EventAction {
+
+        @Override
+        public boolean matches(final Event event) {
+            return ProtocolUtilities.isSpecificParticipantScope(event
+                    .getScope())
+                    && event.getData() == null
+                    && event.getMethod() != null
+                    && event.getMethod().equals(
+                            ProtocolUtilities.REQUEST_METHOD_NAME);
+        }
+
+        @Override
+        public void perform(final Event event) {
+            handleRequest(event);
+        }
+
+    }
+
+    /**
+     * Sends a pong for all participants in case of a global ping request.
+     *
+     * @author jwienke
+     */
+    private class GlobalPongAction implements EventAction {
+
+        @Override
+        public boolean matches(final Event event) {
+            return event.getScope().equals(ProtocolUtilities.PARTICIPANT_SCOPE)
+                    && event.getData() != null
+                    && event.getData()
+                            .getClass()
+                            .equals(ProtocolUtilities.PING_EVENT_DATA
+                                    .getClass())
+                    && event.getData()
+                            .toString()
+                            .equalsIgnoreCase(ProtocolUtilities.PING_EVENT_DATA);
+        }
+
+        @Override
+        public void perform(final Event event) {
+            synchronized (ProtocolHandler.this.model) {
+                for (final ParticipantInfo info : ProtocolHandler.this.model
+                        .getParticipants()) {
+                    sendPong(info, event);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Action to intentionally ignore Hello events as we do not monitor external
+     * participants.
+     *
+     * @author jwienke
+     */
+    private class IgnoreHelloEventAction implements EventAction {
+
+        @Override
+        public boolean matches(final Event event) {
+            return ProtocolUtilities.isSpecificParticipantScope(event
+                    .getScope())
+                    && event.getData() != null
+                    && event.getData().getClass().equals(Hello.class);
+        }
+
+        @Override
+        public void perform(final Event event) {
+            // do nothing
+        }
+
+    }
+
+    /**
+     * Action to intentionally ignore Bye events as we do not monitor external
+     * participants.
+     *
+     * @author jwienke
+     */
+    private class IgnoreByeEventAction implements EventAction {
+
+        @Override
+        public boolean matches(final Event event) {
+            return ProtocolUtilities.isSpecificParticipantScope(event
+                    .getScope())
+                    && event.getData() != null
+                    && event.getData().getClass().equals(Bye.class);
+        }
+
+        @Override
+        public void perform(final Event event) {
+            // do nothing
         }
 
     }
@@ -144,10 +276,13 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param model
      *            the mode, not <code>null</code>
      */
+    // for later extension with other OSes
+    @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
     public ProtocolHandler(final IntrospectionModel model) {
         assert model != null;
         this.model = model;
 
+        // select the host and process information providers
         final HostInfo info;
         switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
         case LINUX:
@@ -162,6 +297,14 @@ public class ProtocolHandler extends AbstractEventHandler implements
             break;
         }
         this.hostInfo = new HostIdEnsuringHostInfo(info);
+
+        // register known actions to perform for introspection events
+        this.eventActions.add(new ReplyToSurveyAction());
+        this.eventActions.add(new ReplyToParticipantRequestAction());
+        this.eventActions.add(new GlobalPongAction());
+        this.eventActions.add(new IgnoreHelloEventAction());
+        this.eventActions.add(new IgnoreByeEventAction());
+
     }
 
     /**
@@ -213,12 +356,12 @@ public class ProtocolHandler extends AbstractEventHandler implements
             // set up listener and informer pair for basic introspection
             // protocol
             this.queryListener =
-                    Factory.getInstance().createListener(PARTICIPANT_SCOPE,
-                            config);
+                    Factory.getInstance().createListener(
+                            ProtocolUtilities.PARTICIPANT_SCOPE, config);
             this.queryListener.activate();
             this.informer =
-                    Factory.getInstance().createInformer(PARTICIPANT_SCOPE,
-                            config);
+                    Factory.getInstance().createInformer(
+                            ProtocolUtilities.PARTICIPANT_SCOPE, config);
             this.informer.activate();
 
             assert this.hostInfo.getHostId() != null;
@@ -226,22 +369,24 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
             // set up server for echo method
             final Scope serverScope =
-                    HOST_SCOPE.concat(new Scope(Scope.COMPONENT_SEPARATOR
-                            + this.hostInfo.getHostId()
-                            + Scope.COMPONENT_SEPARATOR
-                            + this.processInfo.getPid()));
+                    ProtocolUtilities.HOST_SCOPE.concat(new Scope(
+                            Scope.COMPONENT_SEPARATOR
+                                    + this.hostInfo.getHostId()
+                                    + Scope.COMPONENT_SEPARATOR
+                                    + this.processInfo.getPid()));
             this.infoServer =
                     Factory.getInstance()
                             .createLocalServer(serverScope, config);
             this.infoServer.activate();
-            this.infoServer.addMethod(ECHO_RPC_METHOD_NAME, new EchoCallback());
+            this.infoServer.addMethod(ProtocolUtilities.ECHO_RPC_METHOD_NAME,
+                    new EchoCallback());
 
-            try {
-                this.queryListener.addHandler(this, true);
-            } catch (final InterruptedException e) {
-                throw new RSBException(e);
-            }
+            this.queryListener.addHandler(this, true);
 
+        } catch (final InterruptedException e) {
+            // reset state so we can retry activation again later
+            safeCleanup();
+            throw new RSBException(e);
         } catch (final RSBException e) {
             // reset state so we can retry activation again later
             safeCleanup();
@@ -279,73 +424,32 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     }
 
-    private boolean isSpecificParticipantScope(final Scope scope) {
-        return scope != null
-                && scope.isSubScopeOf(PARTICIPANT_SCOPE)
-                && scope.getComponents().size() == PARTICIPANT_SCOPE
-                        .getComponents().size() + 1;
-    }
-
     @Override
     public void handleEvent(final Event query) {
         LOG.log(Level.FINE, "Processing introspection query: {0}",
                 new Object[] { query });
 
-        if (query.getScope().equals(PARTICIPANT_SCOPE)
-                && query.getData() == null && query.getMethod() != null
-                && query.getMethod().equals(SURVEY_METHOD_NAME)) {
-            // survey if: on general participant scope & no data & method
-            // matches
-            handleSurvey(query);
-        } else if (isSpecificParticipantScope(query.getScope())
-                && query.getData() == null && query.getMethod() != null
-                && query.getMethod().equals(REQUEST_METHOD_NAME)) {
-            // request if: on specific participant scope & no data & method
-            // matches
-            handleRequest(query);
-        } else if (query.getData() != null
-                && query.getData().getClass()
-                        .equals(PING_EVENT_DATA.getClass())
-                && query.getData().toString().equalsIgnoreCase(PING_EVENT_DATA)) {
-            // ping if: data exists & data matches ping data
-            // TODO include expected scope
-            synchronized (this.model) {
-                for (final ParticipantInfo info : this.model.getParticipants()) {
-                    this.sendPong(info, query);
-                }
+        for (final EventAction action : this.eventActions) {
+            if (action.matches(query)) {
+                action.perform(query);
+                break;
             }
-        } else if (isSpecificParticipantScope(query.getScope())
-                && query.getData() != null
-                && query.getData().getClass().equals(Hello.class)) {
-            // intentionally ignoring hello and bye events which we do not
-            // monitor
-            assert true;
-        } else if (isSpecificParticipantScope(query.getScope())
-                && query.getData() != null
-                && query.getData().getClass().equals(Bye.class)) {
-            // intentionally ignoring hello and bye events which we do not
-            // monitor
-            assert true;
-        } else {
-            // Protocol error
-            LOG.log(Level.WARNING, "Introspection event not understood: {0}",
-                    new Object[] { query, });
         }
+
+        LOG.log(Level.WARNING, "Introspection event not understood: {0}",
+                new Object[] { query });
 
     }
 
     private void handleRequest(final Event event) {
         assert event != null;
-        assert event.getScope().isSubScopeOf(PARTICIPANT_SCOPE);
+        assert event.getScope().isSubScopeOf(
+                ProtocolUtilities.PARTICIPANT_SCOPE);
 
         try {
 
-            // we expect the last scope component to be the id of the
-            // participant this request is targeted at
-            final String idString =
-                    event.getScope().getComponents()
-                            .get(event.getScope().getComponents().size() - 1);
-            final ParticipantId participantId = new ParticipantId(idString);
+            final ParticipantId participantId =
+                    ProtocolUtilities.participantIdFromScope(event.getScope());
 
             final ParticipantInfo participant =
                     this.model.getParticipant(participantId);
@@ -395,7 +499,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         // Construct event.
         final Event helloEvent = new Event();
-        helloEvent.setScope(participantScope(participant));
+        helloEvent.setScope(ProtocolUtilities.participantScope(participant));
         helloEvent.setData(hello);
         helloEvent.setType(hello.getClass());
         if (query != null) {
@@ -411,21 +515,6 @@ public class ProtocolHandler extends AbstractEventHandler implements
     }
 
     /**
-     * Creates a scope to send data messages on that regard a specific
-     * participant.
-     *
-     * @param participant
-     *            the participant to create the scope for
-     * @return a scope related to the participant, subscope of
-     *         {@link #PARTICIPANT_SCOPE}.
-     */
-    private Scope participantScope(final ParticipantInfo participant) {
-        assert participant != null;
-        return PARTICIPANT_SCOPE.concat(new Scope(Scope.COMPONENT_SEPARATOR
-                + participant.getId()));
-    }
-
-    /**
      * Adds host-related information to a hello message.
      *
      * @param hostInfo
@@ -433,7 +522,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param helloBuilder
      *            the hello message builder to fill
      */
-    private void helloAddHostInformation(final HostInfo hostInfo,
+    private static void helloAddHostInformation(final HostInfo hostInfo,
             final Hello.Builder helloBuilder) {
         assert hostInfo != null;
         assert helloBuilder != null;
@@ -442,15 +531,14 @@ public class ProtocolHandler extends AbstractEventHandler implements
         assert hostInfo.getHostId() != null : "We must have a host id "
                 + "since we enforced this with a facade class";
         host.setId(hostInfo.getHostId());
-        if (hostInfo.getHostName() != null) {
-            host.setHostname(hostInfo.getHostName());
-        } else {
+        if (hostInfo.getHostName() == null) {
             // since host name is required, we need to do something about this
             // case
             LOG.warning("Replacing host name with host ID "
                     + "since the host name is not known.");
             host.setHostname(hostInfo.getHostId());
-
+        } else {
+            host.setHostname(hostInfo.getHostName());
         }
         if (hostInfo.getSoftwareType() != null) {
             host.setSoftwareType(hostInfo.getSoftwareType());
@@ -469,8 +557,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param helloBuilder
      *            the builder for the hello message to use
      */
-    private void helloAddProcessInformation(final ProcessInfo processInfo,
-            final Hello.Builder helloBuilder) {
+    private static void helloAddProcessInformation(
+            final ProcessInfo processInfo, final Hello.Builder helloBuilder) {
         assert processInfo != null;
         assert helloBuilder != null;
 
@@ -500,8 +588,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param helloBuilder
      *            the message builder to use for the new message
      */
-    private void helloAddParticipantData(final ParticipantInfo participant,
-            final Hello.Builder helloBuilder) {
+    private static void
+            helloAddParticipantData(final ParticipantInfo participant,
+                    final Hello.Builder helloBuilder) {
         assert participant != null;
         assert helloBuilder != null;
 
@@ -518,7 +607,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     }
 
-    private ByteString participantIdAsByteString(
+    private static ByteString participantIdAsByteString(
             final ParticipantInfo participant) {
         return ByteString.copyFrom(participant.getId().toByteArray());
     }
@@ -529,7 +618,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         byeBuilder.setId(participantIdAsByteString(participant));
         final Bye bye = byeBuilder.build();
         final Event event = new Event(bye.getClass(), bye);
-        event.setScope(participantScope(participant));
+        event.setScope(ProtocolUtilities.participantScope(participant));
         try {
             this.informer.send(event);
         } catch (final RSBException e) {
@@ -541,9 +630,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
         assert query != null;
 
         final Event pongEvent = new Event();
-        pongEvent.setScope(participantScope(participant));
+        pongEvent.setScope(ProtocolUtilities.participantScope(participant));
         pongEvent.setType(String.class);
-        pongEvent.setData(PONG_EVENT_DATA);
+        pongEvent.setData(ProtocolUtilities.PONG_EVENT_DATA);
         pongEvent.addCause(query.getId());
 
         try {

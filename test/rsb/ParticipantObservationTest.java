@@ -199,7 +199,9 @@ public class ParticipantObservationTest {
         // CHECKSTYLE.ON: MagicNumber
     }
 
+    // false positive due to asserts in called method
     @Test
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void localMethodNotifies() throws Throwable {
 
         final FactoryObserver observer = new FactoryObserver();
@@ -228,7 +230,9 @@ public class ParticipantObservationTest {
 
     }
 
+    // false positive due to asserts in called method
     @Test
+    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void remoteMethodNotifies() throws Throwable {
 
         final FactoryObserver observer = new FactoryObserver();

@@ -50,11 +50,13 @@ public class IntrospectionModelTest {
     private static class TestIntrospectionModelObserver implements
             IntrospectionModelObserver {
 
+        private final List<ObserverCall> calls = new LinkedList<ObserverCall>();
+
         public static enum CallType {
             ADDED, REMOVED
         }
 
-        public static class Call {
+        public static class ObserverCall {
 
             private CallType type;
             private ParticipantInfo info;
@@ -77,11 +79,9 @@ public class IntrospectionModelTest {
 
         }
 
-        private final List<Call> calls = new LinkedList<Call>();
-
         @Override
         public void participantAdded(final ParticipantInfo info) {
-            final Call call = new Call();
+            final ObserverCall call = new ObserverCall();
             call.setType(CallType.ADDED);
             call.setInfo(info);
             this.calls.add(call);
@@ -89,13 +89,13 @@ public class IntrospectionModelTest {
 
         @Override
         public void participantRemoved(final ParticipantInfo info) {
-            final Call call = new Call();
+            final ObserverCall call = new ObserverCall();
             call.setType(CallType.REMOVED);
             call.setInfo(info);
             this.calls.add(call);
         }
 
-        public List<Call> getCalls() {
+        public List<ObserverCall> getObserverCalls() {
             return this.calls;
         }
 
@@ -129,7 +129,9 @@ public class IntrospectionModelTest {
 
     }
 
+    // hard to express this in multiple tests without a lot of repetition
     @Test
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     public void observer() {
 
         final IntrospectionModel model = new IntrospectionModel();
@@ -154,21 +156,23 @@ public class IntrospectionModelTest {
         model.removeParticipant(unobservedParticipant);
 
         // ensure expected call sequence
-        assertEquals(2, observer.getCalls().size());
-        final TestIntrospectionModelObserver.Call addCall =
-                observer.getCalls().get(0);
+        assertEquals(2, observer.getObserverCalls().size());
+        final TestIntrospectionModelObserver.ObserverCall addCall =
+                observer.getObserverCalls().get(0);
         assertEquals(TestIntrospectionModelObserver.CallType.ADDED,
                 addCall.getType());
         assertEquals(observedParticipant.getId(), addCall.getInfo().getId());
-        final TestIntrospectionModelObserver.Call removeCall =
-                observer.getCalls().get(1);
+        final TestIntrospectionModelObserver.ObserverCall removeCall =
+                observer.getObserverCalls().get(1);
         assertEquals(TestIntrospectionModelObserver.CallType.REMOVED,
                 removeCall.getType());
         assertEquals(observedParticipant.getId(), removeCall.getInfo().getId());
 
     }
 
+    // hard to express this in multiple tests without a lot of repetition
     @Test
+    @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")
     public void addRemove() {
         final IntrospectionModel model = new IntrospectionModel();
         assertTrue(model.isEmpty());
