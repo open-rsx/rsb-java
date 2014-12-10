@@ -43,6 +43,7 @@ import rsb.Scope;
 import rsb.Version;
 import rsb.config.ParticipantConfig;
 import rsb.introspection.IntrospectionModel.IntrospectionModelObserver;
+import rsb.patterns.EventCallback;
 import rsb.patterns.LocalServer;
 import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
@@ -68,13 +69,42 @@ import com.google.protobuf.ByteString;
 public class ProtocolHandler extends AbstractEventHandler implements
         Activatable, IntrospectionModelObserver {
 
-    static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
-
     private static final Logger LOG = Logger.getLogger(ProtocolHandler.class
             .getName());
 
+    private static final Scope BASE_SCOPE = new Scope("/__rsb/introspection");
     private static final Scope PARTICIPANT_SCOPE = BASE_SCOPE.concat(new Scope(
             "/participants/"));
+    private static final Scope HOST_SCOPE = BASE_SCOPE.concat(new Scope(
+            "/hosts/"));
+
+    /**
+     * Data to send or expect in a ping event.
+     */
+    private static final String PING_EVENT_DATA = "ping";
+
+    /**
+     * Data to send or expect in a pong event.
+     */
+    private static final String PONG_EVENT_DATA = "pong";
+
+    /**
+     * {@link Event#getMethod()} entry to expect on a request for a specific
+     * participant.
+     */
+    private static final String REQUEST_METHOD_NAME = "REQUEST";
+
+    /**
+     * {@link Event#getMethod()} entry to expect on a participant survey
+     * request.
+     */
+    private static final String SURVEY_METHOD_NAME = "SURVEY";
+
+    /**
+     * Name of the RPC server method for echoing back timing information to a
+     * caller.
+     */
+    private static final String ECHO_RPC_METHOD_NAME = "echo";
 
     private final IntrospectionModel model;
     private final ProcessInfo processInfo;
@@ -95,7 +125,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
      */
     private LocalServer infoServer;
 
-    private static class EchoCallback extends rsb.patterns.EventCallback {
+    private static class EchoCallback extends EventCallback {
 
         @Override
         public Event invoke(final Event request) throws Throwable {
@@ -134,6 +164,13 @@ public class ProtocolHandler extends AbstractEventHandler implements
         this.hostInfo = new HostIdEnsuringHostInfo(info);
     }
 
+    /**
+     * Cleans up a participant, if it is not <code>null</code>, while ignoring
+     * all possible exceptions.
+     *
+     * @param participant
+     *            the participant to clean up
+     */
     private void safeParticipantCleanup(final Participant participant) {
         if (participant != null) {
             try {
@@ -146,14 +183,19 @@ public class ProtocolHandler extends AbstractEventHandler implements
         }
     }
 
+    /**
+     * Tries to recover the internal state to "not being active" as best as
+     * possible after an error while creating or deactivating internal RSB
+     * participants.
+     */
     private void safeCleanup() {
 
+        safeParticipantCleanup(this.infoServer);
+        this.infoServer = null;
         safeParticipantCleanup(this.queryListener);
         this.queryListener = null;
         safeParticipantCleanup(this.informer);
         this.informer = null;
-        safeParticipantCleanup(this.infoServer);
-        this.infoServer = null;
 
     }
 
@@ -184,14 +226,15 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
             // set up server for echo method
             final Scope serverScope =
-                    BASE_SCOPE.concat(new Scope("/hosts/"
-                            + this.hostInfo.getHostId() + "/"
+                    HOST_SCOPE.concat(new Scope(Scope.COMPONENT_SEPARATOR
+                            + this.hostInfo.getHostId()
+                            + Scope.COMPONENT_SEPARATOR
                             + this.processInfo.getPid()));
             this.infoServer =
                     Factory.getInstance()
                             .createLocalServer(serverScope, config);
             this.infoServer.activate();
-            this.infoServer.addMethod("echo", new EchoCallback());
+            this.infoServer.addMethod(ECHO_RPC_METHOD_NAME, new EchoCallback());
 
             try {
                 this.queryListener.addHandler(this, true);
@@ -209,6 +252,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
+
         try {
             // ordered correctly so that server and listener actions will still
             // have the informer available for processing
@@ -232,47 +276,99 @@ public class ProtocolHandler extends AbstractEventHandler implements
             safeCleanup();
             throw e;
         }
+
+    }
+
+    private boolean isSpecificParticipantScope(final Scope scope) {
+        return scope != null
+                && scope.isSubScopeOf(PARTICIPANT_SCOPE)
+                && scope.getComponents().size() == PARTICIPANT_SCOPE
+                        .getComponents().size() + 1;
     }
 
     @Override
     public void handleEvent(final Event query) {
         LOG.log(Level.FINE, "Processing introspection query: {0}",
                 new Object[] { query });
-        // if empty data field, either SURVEY or REQUEST
-        if (query.getData() == null) {
-            if (query.getMethod().equals("SURVEY")) {
-                handleSurvey(query);
-            } else if (query.getMethod().equals("REQUEST")) {
-                handleRequest(query);
-            } else {
-                // Protocol error
-                LOG.log(Level.WARNING, "Introspection query not understood, "
-                        + "must be either SURVEY or REQUEST: {0}",
-                        new Object[] { query });
-            }
-        } else if (query.getData().toString().equalsIgnoreCase("ping")) {
-            // Process Ping
+
+        if (query.getScope().equals(PARTICIPANT_SCOPE)
+                && query.getData() == null && query.getMethod() != null
+                && query.getMethod().equals(SURVEY_METHOD_NAME)) {
+            // survey if: on general participant scope & no data & method
+            // matches
+            handleSurvey(query);
+        } else if (isSpecificParticipantScope(query.getScope())
+                && query.getData() == null && query.getMethod() != null
+                && query.getMethod().equals(REQUEST_METHOD_NAME)) {
+            // request if: on specific participant scope & no data & method
+            // matches
+            handleRequest(query);
+        } else if (query.getData() != null
+                && query.getData().getClass()
+                        .equals(PING_EVENT_DATA.getClass())
+                && query.getData().toString().equalsIgnoreCase(PING_EVENT_DATA)) {
+            // ping if: data exists & data matches ping data
+            // TODO include expected scope
             synchronized (this.model) {
                 for (final ParticipantInfo info : this.model.getParticipants()) {
                     this.sendPong(info, query);
                 }
             }
+        } else if (isSpecificParticipantScope(query.getScope())
+                && query.getData() != null
+                && query.getData().getClass().equals(Hello.class)) {
+            // intentionally ignoring hello and bye events which we do not
+            // monitor
+            assert true;
+        } else if (isSpecificParticipantScope(query.getScope())
+                && query.getData() != null
+                && query.getData().getClass().equals(Bye.class)) {
+            // intentionally ignoring hello and bye events which we do not
+            // monitor
+            assert true;
+        } else {
+            // Protocol error
+            LOG.log(Level.WARNING, "Introspection event not understood: {0}",
+                    new Object[] { query, });
         }
+
     }
 
     private void handleRequest(final Event event) {
-        assert event.getScope().getComponents().size() >= 1;
-        final String idString =
-                event.getScope().getComponents()
-                        .get(event.getScope().getComponents().size() - 1);
-        final ParticipantId participantId = new ParticipantId(idString);
+        assert event != null;
+        assert event.getScope().isSubScopeOf(PARTICIPANT_SCOPE);
 
-        final ParticipantInfo participant =
-                this.model.getParticipant(participantId);
+        try {
 
-        if (participant != null) {
-            this.sendHello(participant, event);
+            // we expect the last scope component to be the id of the
+            // participant this request is targeted at
+            final String idString =
+                    event.getScope().getComponents()
+                            .get(event.getScope().getComponents().size() - 1);
+            final ParticipantId participantId = new ParticipantId(idString);
+
+            final ParticipantInfo participant =
+                    this.model.getParticipant(participantId);
+
+            if (participant == null) {
+                // might be a legal case because requests might come in for
+                // participants that have just been removed from the model
+                LOG.log(Level.FINE,
+                        "Not answering a request for a participant with {0} "
+                                + "because it is not known in the model.",
+                        new Object[] { participantId });
+            } else {
+                this.sendHello(participant, event);
+            }
+
+        } catch (final IllegalArgumentException e) {
+            // participant ID was not parsable
+            LOG.log(Level.WARNING, "Cannot handle the request {0} "
+                    + "because the last component of the event scope "
+                    + "cannot be parsed as a participant id. "
+                    + "Ignoring this request.", new Object[] { event });
         }
+
     }
 
     private void handleSurvey(final Event event) {
@@ -291,10 +387,125 @@ public class ProtocolHandler extends AbstractEventHandler implements
             sendHello(final ParticipantInfo participant, final Event query) {
 
         final Hello.Builder helloBuilder = Hello.newBuilder();
+        helloAddParticipantData(participant, helloBuilder);
+        helloAddProcessInformation(this.processInfo, helloBuilder);
+        helloAddHostInformation(this.hostInfo, helloBuilder);
 
-        // Add participant information.
-        helloBuilder.setId(ByteString.copyFrom(participant.getId()
-                .toByteArray()));
+        final Hello hello = helloBuilder.build();
+
+        // Construct event.
+        final Event helloEvent = new Event();
+        helloEvent.setScope(participantScope(participant));
+        helloEvent.setData(hello);
+        helloEvent.setType(hello.getClass());
+        if (query != null) {
+            helloEvent.addCause(query.getId());
+        }
+
+        try {
+            this.informer.send(helloEvent);
+        } catch (final RSBException e) {
+            LOG.log(Level.WARNING, "HELLO event could not be sent.", e);
+        }
+
+    }
+
+    /**
+     * Creates a scope to send data messages on that regard a specific
+     * participant.
+     *
+     * @param participant
+     *            the participant to create the scope for
+     * @return a scope related to the participant, subscope of
+     *         {@link #PARTICIPANT_SCOPE}.
+     */
+    private Scope participantScope(final ParticipantInfo participant) {
+        assert participant != null;
+        return PARTICIPANT_SCOPE.concat(new Scope(Scope.COMPONENT_SEPARATOR
+                + participant.getId()));
+    }
+
+    /**
+     * Adds host-related information to a hello message.
+     *
+     * @param hostInfo
+     *            host information provider
+     * @param helloBuilder
+     *            the hello message builder to fill
+     */
+    private void helloAddHostInformation(final HostInfo hostInfo,
+            final Hello.Builder helloBuilder) {
+        assert hostInfo != null;
+        assert helloBuilder != null;
+
+        final Host.Builder host = helloBuilder.getHostBuilder();
+        assert hostInfo.getHostId() != null : "We must have a host id "
+                + "since we enforced this with a facade class";
+        host.setId(hostInfo.getHostId());
+        if (hostInfo.getHostName() != null) {
+            host.setHostname(hostInfo.getHostName());
+        } else {
+            // since host name is required, we need to do something about this
+            // case
+            LOG.warning("Replacing host name with host ID "
+                    + "since the host name is not known.");
+            host.setHostname(hostInfo.getHostId());
+
+        }
+        if (hostInfo.getSoftwareType() != null) {
+            host.setSoftwareType(hostInfo.getSoftwareType());
+        }
+        if (hostInfo.getMachineType() != null) {
+            host.setMachineType(hostInfo.getMachineType());
+        }
+
+    }
+
+    /**
+     * Adds process-related information to a hello message.
+     *
+     * @param processInfo
+     *            the process information source
+     * @param helloBuilder
+     *            the builder for the hello message to use
+     */
+    private void helloAddProcessInformation(final ProcessInfo processInfo,
+            final Hello.Builder helloBuilder) {
+        assert processInfo != null;
+        assert helloBuilder != null;
+
+        final Process.Builder processBuilder = helloBuilder.getProcessBuilder();
+        assert processInfo.getPid() != null;
+        processBuilder.setId(String.valueOf(processInfo.getPid()));
+        assert processInfo.getProgramName() != null;
+        processBuilder.setProgramName(processInfo.getProgramName());
+        assert processInfo.getStartTime() != null;
+        processBuilder.setStartTime(processInfo.getStartTime());
+        if (processInfo.getArguments() != null) {
+            processBuilder.addAllCommandlineArguments(processInfo
+                    .getArguments());
+        }
+        if (processInfo.getUserName() != null) {
+            processBuilder.setExecutingUser(processInfo.getUserName());
+        }
+        processBuilder.setRsbVersion(Version.getInstance().getVersionString());
+
+    }
+
+    /**
+     * Adds participant-related information to a hello message.
+     *
+     * @param participant
+     *            the participant to represent
+     * @param helloBuilder
+     *            the message builder to use for the new message
+     */
+    private void helloAddParticipantData(final ParticipantInfo participant,
+            final Hello.Builder helloBuilder) {
+        assert participant != null;
+        assert helloBuilder != null;
+
+        helloBuilder.setId(participantIdAsByteString(participant));
         if (participant.getParentId() != null) {
             helloBuilder.setParent(ByteString.copyFrom(participant
                     .getParentId().toByteArray()));
@@ -305,76 +516,20 @@ public class ProtocolHandler extends AbstractEventHandler implements
         }
         helloBuilder.setScope(participant.getScope().toString());
 
-        // Add process information.
-        final Process.Builder processBuilder = helloBuilder.getProcessBuilder();
-        assert this.processInfo.getPid() != null;
-        processBuilder.setId(String.valueOf(this.processInfo.getPid()));
-        assert this.processInfo.getProgramName() != null;
-        processBuilder.setProgramName(this.processInfo.getProgramName());
-        assert this.processInfo.getStartTime() != null;
-        processBuilder.setStartTime(this.processInfo.getStartTime());
-        if (this.processInfo.getArguments() != null) {
-            processBuilder.addAllCommandlineArguments(this.processInfo
-                    .getArguments());
-        }
-        if (this.processInfo.getUserName() != null) {
-            processBuilder.setExecutingUser(this.processInfo.getUserName());
-        }
-        processBuilder.setRsbVersion(Version.getInstance().getVersionString());
+    }
 
-        // Add host information.
-        final Host.Builder host = helloBuilder.getHostBuilder();
-        assert this.hostInfo.getHostId() != null;
-        host.setId(this.hostInfo.getHostId());
-        if (this.hostInfo.getHostName() != null) {
-            host.setHostname(this.hostInfo.getHostName());
-        } else {
-            // since host name is required, we need to do something about this
-            // case
-            if (this.hostInfo.getHostId() != null) {
-                LOG.warning("Replacing host name with host ID "
-                        + "since the host name is not known.");
-                host.setHostname(this.hostInfo.getHostId());
-            } else {
-                LOG.warning("No host name available to insert into Hello message. "
-                        + "Using a random one.");
-                host.setHostname("<unknown>");
-            }
-        }
-        if (this.hostInfo.getSoftwareType() != null) {
-            host.setSoftwareType(this.hostInfo.getSoftwareType());
-        }
-        if (this.hostInfo.getMachineType() != null) {
-            host.setMachineType(this.hostInfo.getMachineType());
-        }
-        // Get build object
-        final Hello hello = helloBuilder.build();
-
-        // Construct event.
-        final Event helloEvent = new Event();
-        helloEvent.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
-                + participant.getId())));
-        helloEvent.setData(hello);
-        helloEvent.setType(hello.getClass());
-        if (query != null) {
-            helloEvent.addCause(query.getId());
-        }
-        try {
-            this.informer.send(helloEvent);
-        } catch (final RSBException e) {
-            LOG.log(Level.WARNING, "HELLO event could not be sent.", e);
-        }
+    private ByteString participantIdAsByteString(
+            final ParticipantInfo participant) {
+        return ByteString.copyFrom(participant.getId().toByteArray());
     }
 
     private void sendBye(final ParticipantInfo participant) {
 
         final Bye.Builder byeBuilder = Bye.newBuilder();
-        byeBuilder
-                .setId(ByteString.copyFrom(participant.getId().toByteArray()));
+        byeBuilder.setId(participantIdAsByteString(participant));
         final Bye bye = byeBuilder.build();
         final Event event = new Event(bye.getClass(), bye);
-        event.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
-                + participant.getId())));
+        event.setScope(participantScope(participant));
         try {
             this.informer.send(event);
         } catch (final RSBException e) {
@@ -383,17 +538,20 @@ public class ProtocolHandler extends AbstractEventHandler implements
     }
 
     private void sendPong(final ParticipantInfo participant, final Event query) {
-        final Event pongEvent = query;
-        pongEvent.setScope(PARTICIPANT_SCOPE.concat(new Scope("/"
-                + participant.getId())));
+        assert query != null;
+
+        final Event pongEvent = new Event();
+        pongEvent.setScope(participantScope(participant));
         pongEvent.setType(String.class);
-        pongEvent.setData("pong");
+        pongEvent.setData(PONG_EVENT_DATA);
+        pongEvent.addCause(query.getId());
 
         try {
             this.informer.send(pongEvent);
         } catch (final RSBException e) {
             LOG.log(Level.WARNING, "Pong event could not be sent", e);
         }
+
     }
 
     @Override
