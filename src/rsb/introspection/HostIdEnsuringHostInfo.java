@@ -27,6 +27,8 @@
  */
 package rsb.introspection;
 
+import rsb.util.os.HostInfo;
+
 /**
  * Facade class around a {@link HostInfo} instance that ensures that there is
  * always a host id by replacing it with the host name, if required.

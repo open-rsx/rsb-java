@@ -25,16 +25,12 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.util.os;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import rsb.util.OsUtilities;
-import rsb.util.RuntimeOsUtilities;
 
 /**
  * Cross-platform plain Java implementation of host info interface.
@@ -60,7 +56,7 @@ public class PortableHostInfo extends CommonHostInfo {
         // host name
         try {
             this.setHostName(RuntimeOsUtilities.determineHostName(runtime));
-        } catch (final RuntimeException e) {
+        } catch (final IllegalArgumentException e) {
             LOG.log(Level.WARNING,
                     "Unable to determine host name from runtime."
                             + "Falling back to network resolution.", e);
@@ -68,13 +64,6 @@ public class PortableHostInfo extends CommonHostInfo {
             if (this.getHostId() == null) {
                 LOG.warning("Host name could not be determined at all.");
             }
-        }
-
-        // host id
-        try {
-            this.setHostId(OsUtilities.getHostIdInet());
-        } catch (final IOException e) {
-            LOG.log(Level.WARNING, "I/O exception when getting host id", e);
         }
 
     }

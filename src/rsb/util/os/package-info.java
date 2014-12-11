@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2014 CoR-Lab, Bielefeld University
+ * Copyright (C) 2013 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,38 +25,12 @@
  *
  * ============================================================
  */
-package rsb.introspection;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-
-import rsb.util.OsUtilities;
 
 /**
- * @author swrede
+ * Package with classes to get information about processes and hosts on an
+ * operating system level.
+ *
+ * @author jwienke
  */
-public class HostInfoTest {
+package rsb.util.os;
 
-    @Test
-    public void testHostInfo() {
-        final HostInfo info;
-        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
-        case LINUX:
-            info = new LinuxHostInfo();
-            break;
-        default:
-            info = new PortableHostInfo();
-            break;
-        }
-        assertNotNull(info.getHostName());
-        assertFalse(info.getHostName().isEmpty());
-        // currently null on mac
-        // assertNotNull(info.getHostId());
-        // assertFalse(info.getHostId().isEmpty());
-        assertNotNull(info.getMachineType());
-        assertNotNull(info.getSoftwareType());
-    }
-
-}

@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.util;
+package rsb.util.os;
 
 import java.lang.management.RuntimeMXBean;
 import java.util.List;
@@ -74,7 +74,7 @@ public final class RuntimeOsUtilities {
         final String jvmName = runtime.getName();
 
         if (!jvmName.contains(PID_HOST_SEPARATOR)) {
-            throw new RuntimeException(String.format(
+            throw new IllegalArgumentException(String.format(
                     "Unable to find separator character %s in jvm name '%s'",
                     PID_HOST_SEPARATOR, jvmName));
         }
@@ -82,7 +82,7 @@ public final class RuntimeOsUtilities {
         final String[] jvmNameParts = jvmName.split(PID_HOST_SEPARATOR);
         if (jvmNameParts.length != 2 || jvmNameParts[0].isEmpty()
                 || jvmNameParts[1].isEmpty()) {
-            throw new RuntimeException(String.format(
+            throw new IllegalArgumentException(String.format(
                     "jvm name '%s' does not have the expected format pid@host",
                     jvmName));
         }
@@ -96,7 +96,7 @@ public final class RuntimeOsUtilities {
      * @param runtime
      *            runtime to use as information provider
      * @return pid of the process
-     * @throws RuntimeException
+     * @throws IllegalArgumentException
      *             in case the PID could not be parsed from the runtime
      *             environment
      */
@@ -114,7 +114,7 @@ public final class RuntimeOsUtilities {
      * @param runtime
      *            runtime to use as information provider
      * @return host name, not <code>null</code>
-     * @throws RuntimeException
+     * @throws IllegalArgumentException
      *             in case the host name could not be parsed from the runtime
      *             environment
      */

@@ -25,14 +25,12 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.util.os;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import rsb.util.RuntimeOsUtilities;
 
 /**
  * Cross-platform plain Java implementation of process info interface.
@@ -55,7 +53,7 @@ public class PortableProcessInfo extends CommonProcessInfo {
         final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
         try {
             this.setPid(RuntimeOsUtilities.determinePid(runtime));
-        } catch (final RuntimeException e) {
+        } catch (final IllegalArgumentException e) {
             LOG.log(Level.WARNING, "Unable to determine PID", e);
         }
         this.setStartTime(RuntimeOsUtilities.determineStartTime(runtime));

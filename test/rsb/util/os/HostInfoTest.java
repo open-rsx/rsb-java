@@ -25,41 +25,28 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.util.os;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import rsb.util.OsUtilities;
-
 /**
  * @author swrede
  */
-public class ProcessInfoTest {
+public class HostInfoTest {
 
     @Test
-    public void testProcessInfo() {
-        final ProcessInfo info;
-        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
-        case LINUX:
-            info = new LinuxProcessInfo();
-            break;
-        default:
-            info = new PortableProcessInfo();
-            break;
-        }
-        assertNotNull(info.getUserName());
-        assertFalse(info.getUserName().isEmpty());
-        assertNotNull(info.getPid());
-        assertNotNull(info.getProgramName());
-        assertFalse(info.getProgramName().isEmpty());
-        assertNotNull(info.getArguments());
-        assertFalse(info.getArguments().isEmpty());
-        assertNotNull(info.getStartTime());
-        assertNotEquals(0, info.getStartTime().longValue());
+    public void testHostInfo() {
+        final HostInfo info = HostInfoSelector.getHostInfo();
+        assertNotNull(info.getHostName());
+        assertFalse(info.getHostName().isEmpty());
+        // currently null on mac
+        // assertNotNull(info.getHostId());
+        // assertFalse(info.getHostId().isEmpty());
+        assertNotNull(info.getMachineType());
+        assertNotNull(info.getSoftwareType());
     }
 
 }

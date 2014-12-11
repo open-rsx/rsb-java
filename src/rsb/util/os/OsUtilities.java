@@ -25,11 +25,9 @@
  *
  * ============================================================
  */
-package rsb.util;
+package rsb.util.os;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -162,30 +160,6 @@ public final class OsUtilities {
         } else {
             return MachineType.UNKNOWN;
         }
-    }
-
-    public static String getHostIdInet() throws IOException {
-        final InetAddress ipAddress = InetAddress.getLocalHost();
-        // creates problem when ip address is not resolved
-        final NetworkInterface network =
-                NetworkInterface.getByInetAddress(ipAddress);
-
-        // might throw SocketException, which is a subclass of IOException and
-        // hence ok
-        final byte[] mac = network.getHardwareAddress();
-
-        if (mac == null) {
-            throw new IOException(
-                    "Could not read MAC adress via NetworkInterface class.");
-        }
-
-        final StringBuilder stringRep = new StringBuilder();
-        for (int i = 0; i < mac.length; i++) {
-            stringRep.append(String.format("%02X%s", mac[i],
-                    (i < mac.length - 1) ? "-" : ""));
-        }
-
-        return stringRep.toString();
     }
 
     /**

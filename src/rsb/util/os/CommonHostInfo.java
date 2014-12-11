@@ -25,9 +25,8 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.util.os;
 
-import rsb.util.OsUtilities;
 
 /**
  * Encapsulates common host info functionality shared between portable and
@@ -63,7 +62,7 @@ public abstract class CommonHostInfo implements HostInfo {
      * @param hostId
      *            unique id
      */
-    protected void setHostId(final String hostId) {
+    protected void setMachineId(final String hostId) {
         this.hostId = hostId;
     }
 

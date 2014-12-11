@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.util;
+package rsb.util.os;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,8 +33,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import rsb.util.OsUtilities.MachineType;
-import rsb.util.OsUtilities.OsFamily;
+import rsb.util.os.OsUtilities.MachineType;
+import rsb.util.os.OsUtilities.OsFamily;
 
 /**
  * @author swrede

@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.util.os;
 
 
 /**

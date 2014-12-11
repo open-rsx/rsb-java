@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.util.os;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public abstract class CommonProcessInfo implements ProcessInfo {
     private String programName;
     private List<String> arguments;
     private String userName;
-    private long startTime;
+    private Long startTime;
 
     /**
      * Creates a new instance and sets a common value for
@@ -54,7 +54,7 @@ public abstract class CommonProcessInfo implements ProcessInfo {
     private String readUserName() {
         final String userName = System.getProperty("user.name");
         if (userName.isEmpty()) {
-            return "unknown";
+            return null;
         }
         return userName;
     }
@@ -91,7 +91,6 @@ public abstract class CommonProcessInfo implements ProcessInfo {
 
     @Override
     public List<String> getArguments() {
-        assert this.arguments != null;
         return this.arguments;
     }
 

@@ -51,7 +51,10 @@ import rsb.protocol.introspection.ByeType.Bye;
 import rsb.protocol.introspection.HelloType.Hello;
 import rsb.protocol.operatingsystem.HostType.Host;
 import rsb.protocol.operatingsystem.ProcessType.Process;
-import rsb.util.OsUtilities;
+import rsb.util.os.HostInfo;
+import rsb.util.os.HostInfoSelector;
+import rsb.util.os.ProcessInfo;
+import rsb.util.os.ProcessInfoSelector;
 
 import com.google.protobuf.ByteString;
 
@@ -276,27 +279,14 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param model
      *            the mode, not <code>null</code>
      */
-    // for later extension with other OSes
-    @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
     public ProtocolHandler(final IntrospectionModel model) {
         assert model != null;
         this.model = model;
 
         // select the host and process information providers
-        final HostInfo info;
-        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
-        case LINUX:
-            LOG.fine("Creating Process and CommonHostInfo instances for Linux OS.");
-            this.processInfo = new LinuxProcessInfo();
-            info = new LinuxHostInfo();
-            break;
-        default:
-            LOG.fine("Creating PortableProcess and PortableHostInfo instances.");
-            this.processInfo = new PortableProcessInfo();
-            info = new PortableHostInfo();
-            break;
-        }
-        this.hostInfo = new HostIdEnsuringHostInfo(info);
+        this.processInfo = ProcessInfoSelector.getProcessInfo();
+        this.hostInfo =
+                new HostIdEnsuringHostInfo(HostInfoSelector.getHostInfo());
 
         // register known actions to perform for introspection events
         this.eventActions.add(new ReplyToSurveyAction());
@@ -314,6 +304,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param participant
      *            the participant to clean up
      */
+    // we don't want to let out anything here
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private void safeParticipantCleanup(final Participant participant) {
         if (participant != null) {
             try {
@@ -321,6 +313,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
             } catch (final RSBException e) {
                 // ignore this since we can't do anything
             } catch (final InterruptedException e) {
+                // ignore this since we can't do anything
+            } catch (final RuntimeException e) {
                 // ignore this since we can't do anything
             }
         }
@@ -432,7 +426,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         for (final EventAction action : this.eventActions) {
             if (action.matches(query)) {
                 action.perform(query);
-                break;
+                return;
             }
         }
 

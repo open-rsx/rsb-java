@@ -25,50 +25,35 @@
  *
  * ============================================================
  */
-package rsb.introspection;
-
-import java.util.List;
+package rsb.util.os;
 
 /**
- * Interface for process information model classes.
+ * Utility class to select a {@link HostInfo} instance for the operating system
+ * a process is currently being executed on.
  *
- * @author swrede
+ * @author jwienke
  */
-public interface ProcessInfo {
+public final class HostInfoSelector {
+
+    private HostInfoSelector() {
+        // prevent instantiation of utility class
+    }
 
     /**
-     * Returns the pid of a process.
+     * Returns the "best" matching {@link HostInfo} implementation for the
+     * current operating system.
      *
-     * @return the pid of the process, <code>null</code> if not determined
+     * @return host info instance, not <code>null</code>
      */
-    Integer getPid();
-
-    /**
-     * Returns a string name describing the program.
-     *
-     * @return string name or <code>null</code> if not determined
-     */
-    String getProgramName();
-
-    /**
-     * Returns the program's command line arguments.
-     *
-     * @return list of arguments, <code>null</code> if not determined
-     */
-    List<String> getArguments();
-
-    /**
-     * Returns the process start time in microseconds.
-     *
-     * @return process start time, <code>null</code> if not determined
-     */
-    Long getStartTime();
-
-    /**
-     * Returns the name of the user executing the process.
-     *
-     * @return user name or <code>null</code> if not determined
-     */
-    String getUserName();
+    // for later extension with other OSes
+    @SuppressWarnings("PMD.TooFewBranchesForASwitchStatement")
+    public static HostInfo getHostInfo() {
+        switch (OsUtilities.deriveOsFamily(OsUtilities.getOsName())) {
+        case LINUX:
+            return new LinuxHostInfo();
+        default:
+            return new PortableHostInfo();
+        }
+    }
 
 }

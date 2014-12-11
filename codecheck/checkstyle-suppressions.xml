@@ -9,4 +9,5 @@
   <suppress files=".*Test\.java" checks="JavadocMethod"/>
   <suppress files=".*Test\.java" checks="JavadocPackage"/>
   <suppress files=".*Test\.java" checks="JavadocVariable"/>
+  <suppress files=".*\.txt" checks=".*"/>
 </suppressions>
