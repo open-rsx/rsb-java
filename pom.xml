@@ -48,6 +48,15 @@
                 </excludes>
             </resource>
         </resources>
+        <!-- Use the test dir also for test resources. -->
+        <testResources>
+            <testResource>
+                <directory>test</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
 
         <plugins>
             <!-- Check the availability of different external dependencies. -->
