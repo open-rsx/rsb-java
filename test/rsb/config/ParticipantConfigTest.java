@@ -68,4 +68,11 @@ public class ParticipantConfigTest {
 
     }
 
+    @Test
+    public void introspectionEnabled() {
+        final ParticipantConfig config = new ParticipantConfig();
+        assertFalse(config.isIntrospectionEnabled());
+        config.setIntrospectionEnabled(true);
+        assertTrue(config.isIntrospectionEnabled());
+    }
 }

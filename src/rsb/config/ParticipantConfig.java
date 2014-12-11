@@ -55,6 +55,8 @@ public class ParticipantConfig {
     private EventReceivingStrategyFactory receivingStrategy =
             new SingleThreadFactory();
 
+    private boolean introspectionEnabled = false;
+
     /**
      * Returns the internal map of available transport configurations by their
      * names.
@@ -131,6 +133,27 @@ public class ParticipantConfig {
     public void setReceivingStrategy(
             final EventReceivingStrategyFactory receivingStrategy) {
         this.receivingStrategy = receivingStrategy;
+    }
+
+    /**
+     * Indicates whether introspection should be enabled for participants with
+     * this config or not.
+     *
+     * @return <code>true</code> if participants shall be included in the
+     *         introspection
+     */
+    public boolean isIntrospectionEnabled() {
+        return this.introspectionEnabled;
+    }
+
+    /**
+     * Sets whether introspection shall be enabled or not.
+     *
+     * @param introspectionEnabled
+     *            <code>true</code> for enabling
+     */
+    public void setIntrospectionEnabled(final boolean introspectionEnabled) {
+        this.introspectionEnabled = introspectionEnabled;
     }
 
     /**

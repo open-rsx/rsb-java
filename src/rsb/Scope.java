@@ -39,8 +39,13 @@ import java.util.regex.Pattern;
  */
 public class Scope {
 
+    /**
+     * The separator character used between different components of a scope, aka
+     * "/".
+     */
     @SuppressWarnings("PMD.LongVariable")
-    private static final String COMPONENT_SEPARATOR = "/";
+    public static final String COMPONENT_SEPARATOR = "/";
+
     private static final Pattern COMPONENT_REGEX = Pattern
             .compile("^[-_a-zA-Z0-9]+$");
 

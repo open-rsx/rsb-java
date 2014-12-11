@@ -35,6 +35,7 @@ import java.util.List;
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.converter.DefaultConverters;
+import rsb.introspection.IntrospectionParticipantObserver;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 import rsb.transport.DefaultTransports;
@@ -57,6 +58,7 @@ public final class Factory {
     private static Factory instance = new Factory();
 
     private final Properties properties = new Properties();
+
     private final ParticipantConfig defaultConfig = new ParticipantConfig();
 
     private final ParticipantObserverManager observerManager =
@@ -146,6 +148,10 @@ public final class Factory {
         new ConfigLoader().load(this.properties);
         new ParticipantConfigCreator().reconfigure(this.defaultConfig,
                 this.properties);
+
+        // add support for introspection
+        this.observerManager
+                .addObserver(new IntrospectionParticipantObserver());
 
     }
 

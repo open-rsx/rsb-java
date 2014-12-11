@@ -131,4 +131,14 @@ class LocalMethod extends Method implements Handler {
         }
     }
 
+    @Override
+    public String getKind() {
+        return "local-method";
+    }
+
+    @Override
+    public Class<?> getDataType() {
+        return null;
+    }
+
 };

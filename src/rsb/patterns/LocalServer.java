@@ -143,4 +143,14 @@ public class LocalServer extends Server<LocalMethod> {
         }
     }
 
+    @Override
+    public String getKind() {
+        return "local-server";
+    }
+
+    @Override
+    public Class<?> getDataType() {
+        return null;
+    }
+
 };

@@ -8,6 +8,7 @@
     <!-- Files we want to scan -->
     <exclude-pattern>.*/generated-protocol/.*</exclude-pattern> 
     <exclude-pattern>.*/spread-4.0.0/.*</exclude-pattern>   
+    <exclude-pattern>.*\.txt</exclude-pattern>   
     
     <rule ref="rulesets/java/basic.xml" />
     <rule ref="rulesets/java/braces.xml" />

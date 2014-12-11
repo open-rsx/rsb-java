@@ -289,4 +289,14 @@ public class Listener extends Participant {
         return this.state.getClass() == ListenerStateActive.class;
     }
 
+    @Override
+    public String getKind() {
+        return "listener";
+    }
+
+    @Override
+    public Class<?> getDataType() {
+        return Object.class;
+    }
+
 }

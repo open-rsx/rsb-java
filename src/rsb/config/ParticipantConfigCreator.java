@@ -71,6 +71,11 @@ public class ParticipantConfigCreator {
     public void reconfigure(final ParticipantConfig config,
             final Properties properties) {
 
+        // introspection
+        config.setIntrospectionEnabled(properties.getProperty(
+                "introspection.enabled", false).asBoolean());
+
+        // transports
         for (final String transportName : TransportRegistry
                 .getDefaultInstance().transportNames()) {
 

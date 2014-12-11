@@ -28,6 +28,11 @@
 
 package rsb.converter;
 
+import rsb.protocol.introspection.ByeType.Bye;
+import rsb.protocol.introspection.HelloType.Hello;
+import rsb.protocol.operatingsystem.HostType.Host;
+import rsb.protocol.operatingsystem.ProcessType.Process;
+
 /**
  * @author swrede
  */
@@ -59,6 +64,16 @@ public final class DefaultConverters {
                 .addConverter(new Int64Converter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new DoubleConverter());
+
+        // Converter instances required for introspection subsystem
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new ProtocolBufferConverter<Hello>(Hello.getDefaultInstance()));
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new ProtocolBufferConverter<Bye>(Bye.getDefaultInstance()));
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new ProtocolBufferConverter<Host>(Host.getDefaultInstance()));
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new ProtocolBufferConverter<Process>(Process.getDefaultInstance()));
     }
 
 }
