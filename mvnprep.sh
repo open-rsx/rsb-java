@@ -3,7 +3,7 @@
 # This script implements the RSB specific versioning scheme on top of Maven.
 # Since the project.version can't be changed inside a Maven build, this has
 # to be done externally.
-# 
+#
 # Just run this before you use Maven to build.
 
 GITVERSION=`git describe --tags --long --match release-*.* 2>/dev/null`
@@ -37,11 +37,11 @@ else
   echo "We are not on a release branch, not changing the version. You can build now!"
 fi
 
-# Workaround to detect correct protobuf version on unix systems 
+# Workaround to detect correct protobuf version on unix systems
 # as dependency versions cannot be modified with the maven properties plugin
 PROTOC_VERSION="$(protoc --version | sed 's/[[:alpha:]|(|[:space:]]//g' | awk -F- '{print $1}')"
-# FIX-ME: Better regexp to locate pbuf.version property 
+echo "Changing required protobuf version to ${PROTOC_VERSION}"
+# FIX-ME: Better regexp to locate pbuf.version property
 # (currently depends on 2.4.1 as the unique default placeholder)
 sed -i.bak -e 's/2.4.1/'${PROTOC_VERSION}'/' pom.xml
-
 
