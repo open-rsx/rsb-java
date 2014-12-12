@@ -177,7 +177,7 @@ public class CustomConverterSelection extends AbstractDataHandler<Object> {
         // create a new participant config by using the default one as a
         // template
         final ParticipantConfig config =
-                factory.getDefaulParticipantConfig().copy();
+                factory.getDefaultParticipantConfig().copy();
         for (final Entry<String, TransportConfig> entry : config
                 .getTransports().entrySet()) {
             // for each transport, configure our own converter repository

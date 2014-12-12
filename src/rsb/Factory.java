@@ -632,7 +632,7 @@ public final class Factory {
      *
      * @return default participant config
      */
-    public ParticipantConfig getDefaulParticipantConfig() {
+    public ParticipantConfig getDefaultParticipantConfig() {
         return this.defaultConfig;
     }
 

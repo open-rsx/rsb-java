@@ -344,7 +344,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
             // ensure that introspection participants do not end up in the
             // introspection as well, which would be a recursion
             final ParticipantConfig config =
-                    Factory.getInstance().getDefaulParticipantConfig().copy();
+                    Factory.getInstance().getDefaultParticipantConfig().copy();
             config.setIntrospectionEnabled(false);
 
             // set up listener and informer pair for basic introspection
