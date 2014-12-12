@@ -35,8 +35,8 @@ package rsb;
  *
  * If not stated otherwise, activation and deactivation are not thread-safe.
  *
- * If not stated otherwise, object may only survive one activation -
- * deactivation cycle and may not be reactivatable in a n ordered way.
+ * If not stated otherwise, objects may only survive one activation -
+ * deactivation cycle and may not be reactivatable in an ordered way.
  *
  * @author swrede
  * @author jwienke
