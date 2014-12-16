@@ -117,12 +117,15 @@ public final class OsUtilities {
     public static enum MachineType {
 
         /**
-         * Any 32 bit computer.
+         * A 32-bit system in the x86 family (sometimes called "i386",
+         * "i686" or less commonly "i586" depending on the specific
+         * model).
          */
         X86,
 
         /**
-         * 64 bit computers.
+         * A 64-bit system in the x86 family (sometimes called
+         * "amd64").
          */
         X86_64,
 
@@ -144,12 +147,12 @@ public final class OsUtilities {
     }
 
     /**
-     * Tries to guess a class of os architectures from a name given from
+     * Tries to guess a machine type from a name returned by
      * {@link #getOsArchitecture()}.
      *
      * @param identifier
-     *            name of os architecture, not <code>null</code>
-     * @return guessed architecture class, not <code>null</code>
+     *            name of machine type, not <code>null</code>
+     * @return guessed machine type, not <code>null</code>
      */
     public static MachineType deriveMachineType(final String identifier) {
         assert identifier != null;
