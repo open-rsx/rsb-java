@@ -29,6 +29,7 @@ package rsb.util.os;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,23 +59,44 @@ public final class OsUtilities {
         /**
          * Operating system family for linux-based systems.
          */
-        LINUX,
+        LINUX("linux"),
 
         /**
          * Operating system family for windows-based systems (including 64 bit
          * windows).
          */
-        WINDOWS,
+        WINDOWS("win32"),
 
         /**
          * Operating system family for Mac (OS X) systems.
          */
-        DARWIN,
+        DARWIN("darwin"),
 
         /**
          * Any other unknown operating system.
          */
-        UNKNOWN
+        UNKNOWN(null);
+
+        private final String name;
+
+        /**
+         * Constructor.
+         *
+         * @param name
+         *            string name representing this class of operating system.
+         */
+        private OsFamily(final String name) {
+            this.name = name;
+        }
+
+        /**
+         * Returns a string representation of the operating system family.
+         *
+         * @return string name or <code>null</code> in case of unknown families.
+         */
+        public String getName() {
+            return this.name;
+        }
 
     }
 
@@ -89,6 +111,26 @@ public final class OsUtilities {
     }
 
     /**
+     * Tries to determine a normalized operating system family from a concrete
+     * operating system name returned by {@link #getOsName()}.
+     *
+     * @param identifier
+     *            the concrete operating system name, not <code>null</code>
+     * @return identified operating system family.
+     */
+    public static String deriveOsFamilyName(final String identifier) {
+        final String lowerCase = identifier.toLowerCase(Locale.ROOT);
+        if (lowerCase.startsWith("win")) {
+            return OsFamily.WINDOWS.getName();
+        } else if (lowerCase.startsWith("mac")
+                || lowerCase.equals(OsFamily.DARWIN.getName())) {
+            return OsFamily.DARWIN.getName();
+        } else {
+            return lowerCase;
+        }
+    }
+
+    /**
      * Tries to determine the operating system family from a concrete operating
      * system name returned by {@link #getOsName()}.
      *
@@ -98,11 +140,12 @@ public final class OsUtilities {
      */
     public static OsFamily deriveOsFamily(final String identifier) {
         assert identifier != null;
-        if (identifier.startsWith("Windows")) {
+        final String normalized = deriveOsFamilyName(identifier);
+        if (normalized.equals(OsFamily.WINDOWS.getName())) {
             return OsFamily.WINDOWS;
-        } else if (identifier.startsWith("Linux")) {
+        } else if (normalized.equals(OsFamily.LINUX.getName())) {
             return OsFamily.LINUX;
-        } else if (identifier.startsWith("Mac")) {
+        } else if (normalized.equals(OsFamily.DARWIN.getName())) {
             return OsFamily.DARWIN;
         } else {
             return OsFamily.UNKNOWN;
