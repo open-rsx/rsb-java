@@ -62,10 +62,10 @@ public interface HostInfo {
     String getSoftwareType();
 
     /**
-     * Returns the computer architecture underlying to processes on this host.
+     * Returns the computer architecture of this host.
      *
-     * @return bit architecture, might be <code>null</code> in case it could not
-     *         be determined
+     * @return system architecture, might be <code>null</code> in case
+     *         it could not be determined
      */
     String getMachineType();
 
