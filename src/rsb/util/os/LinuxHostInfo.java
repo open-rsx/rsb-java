@@ -37,10 +37,14 @@ import java.util.logging.Logger;
 import rsb.util.FileReadingUtilities;
 
 /**
- * Linux-specific implementation of CommonHostInfo class. Tries to compute and
- * cache a unique machine id (and hostname information) from the following
- * locations: 1. /etc/machine-id 2. /var/lib/dbus/machine-id 3. MAC adress of
- * network interface 4. local hostname
+ * Linux-specific implementation of {@link CommonHostInfo}
+ * class. Tries to compute and cache a unique machine id (and hostname
+ * information) based on the following information:
+ * <ol>
+ * <li>contents of /etc/machine-id</li>
+ * <li>contents of /var/lib/dbus/machine-id</li>
+ * <li>local hostname</li>
+ * </ol>
  *
  * @author swrede
  * @author ssharma
