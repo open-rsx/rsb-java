@@ -164,18 +164,39 @@ public final class OsUtilities {
          * "i686" or less commonly "i586" depending on the specific
          * model).
          */
-        X86,
+        X86("x86"),
 
         /**
          * A 64-bit system in the x86 family (sometimes called
          * "amd64").
          */
-        X86_64,
+        X86_64("x86_64"),
 
         /**
          * Any other bit architecture.
          */
-        UNKNOWN
+        UNKNOWN(null);
+
+        private final String name;
+
+        /**
+         * Constructor.
+         *
+         * @param name
+         *            string name representing this class of machines.
+         */
+        private MachineType(final String name) {
+            this.name = name;
+        }
+
+        /**
+         * Returns a string representation of the represented machine type.
+         *
+         * @return string name or <code>null</code> in case of unknown types.
+         */
+        public String getName() {
+            return this.name;
+        }
 
     }
 
@@ -190,6 +211,28 @@ public final class OsUtilities {
     }
 
     /**
+     * Tries to determine a normalized machine type from a name returned by
+     * {@link #getOsArchitecture()}.
+     *
+     * @param identifier
+     *            name of machine type, not <code>null</code>
+     * @return guessed machine type, not <code>null</code>
+     */
+    public static String deriveMachineTypeName(final String identifier) {
+        final String lowerCase = identifier.toLowerCase(Locale.ROOT);
+        if (lowerCase.equals(MachineType.X86.getName())
+                || lowerCase.contains("i386") || lowerCase.contains("i586")
+                || lowerCase.contains("i686")) {
+            return MachineType.X86.getName();
+        } else if (lowerCase.equals(MachineType.X86_64.getName())
+                || (lowerCase.startsWith("amd64"))) {
+            return MachineType.X86_64.getName();
+        } else {
+            return lowerCase;
+        }
+    }
+
+    /**
      * Tries to guess a machine type from a name returned by
      * {@link #getOsArchitecture()}.
      *
@@ -199,9 +242,10 @@ public final class OsUtilities {
      */
     public static MachineType deriveMachineType(final String identifier) {
         assert identifier != null;
-        if (identifier.contains("x86") || identifier.contains("i386")) {
+        final String normalized = deriveMachineTypeName(identifier);
+        if (normalized.equals(MachineType.X86.getName())) {
             return MachineType.X86;
-        } else if (identifier.startsWith("amd64")) {
+        } else if (normalized.equals(MachineType.X86_64.getName())) {
             return MachineType.X86_64;
         } else {
             return MachineType.UNKNOWN;
