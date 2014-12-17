@@ -108,7 +108,24 @@ public final class RuntimeOsUtilities {
     }
 
     /**
-     * Returns the host name of the computer the jvm designated by the
+     * Optionally, removes the domains parts from a fully qualified domain name.
+     * If no fully qualified name is given, nothing happens.
+     *
+     * @param hostName
+     *            host name to work with, not <code>null</code>, not empty or
+     *            dot character
+     * @return host name without domain parts.
+     */
+    private static String removeDomainFromHostName(final String hostName) {
+        final String[] parts = hostName.split("\\.");
+        if (parts.length < 1) {
+            throw new IllegalArgumentException("The given host name is empty.");
+        }
+        return parts[0];
+    }
+
+    /**
+     * Returns the host name of the computer the JVM designated by the
      * {@link RuntimeMXBean} lives on.
      *
      * @param runtime
@@ -120,6 +137,6 @@ public final class RuntimeOsUtilities {
      */
     public static String determineHostName(final RuntimeMXBean runtime) {
         final String[] pidAndHost = getPidAndHost(runtime);
-        return pidAndHost[1];
+        return removeDomainFromHostName(pidAndHost[1]);
     }
 }
