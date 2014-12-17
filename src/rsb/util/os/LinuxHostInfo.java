@@ -114,9 +114,9 @@ public class LinuxHostInfo extends PortableHostInfo {
             }
 
         } catch (final IOException e) {
-            LOG.log(Level.WARNING, "Could not read MachineId from path: {0}",
+            LOG.log(Level.FINE, "Could not read MachineId from path: {0}",
                     new Object[] { candidate });
-            LOG.log(Level.WARNING, "Reason", e);
+            LOG.log(Level.FINE, "Reason", e);
             return null;
         }
 
