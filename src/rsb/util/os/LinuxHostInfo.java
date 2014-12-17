@@ -86,7 +86,7 @@ public class LinuxHostInfo extends PortableHostInfo {
 
     private void initialize(final List<File> machineIdCascade) {
         for (final File candidate : machineIdCascade) {
-            this.setMachineId(readHostId(candidate));
+            this.setHostId(readHostId(candidate));
             if (this.getHostId() != null) {
                 break;
             }
