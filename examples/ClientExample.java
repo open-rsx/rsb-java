@@ -29,6 +29,7 @@
 // mark-start::body
 import rsb.Factory;
 import rsb.patterns.RemoteServer;
+import rsb.patterns.Future;
 
 public class ClientExample {
 
@@ -39,10 +40,15 @@ public class ClientExample {
                 "/example/server");
         server.activate();
 
-        // Call remote method and deactivate the server.
+        // Call remote method in blocking and non-blocking fashion and
+        // deactivate the server.
         try {
 
             System.out.println("Server replied: " + server.call("echo", "bla"));
+
+            Future<String> future = server.callAsync("echo", "bla");
+            System.out.println("Server replied: " + future.get(10000));
+
         } finally {
             server.deactivate();
         }
