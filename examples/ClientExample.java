@@ -48,6 +48,8 @@ public class ClientExample {
 
             Future<String> future = server.callAsync("echo", "bla");
             System.out.println("Server replied: " + future.get(10000));
+            // Note: timeout is in milliseconds here, but the get()
+            // Method has signatures for other time units.
 
         } finally {
             server.deactivate();
