@@ -119,11 +119,11 @@ public class ParticipantConfigCreatorTest {
         final ParticipantConfig config = new ParticipantConfig();
         final Properties props = new Properties();
         new ParticipantConfigCreator().reconfigure(config, props);
-        assertFalse(config.isIntrospectionEnabled());
-
-        props.setProperty("introspection.enabled", "true");
-        new ParticipantConfigCreator().reconfigure(config, props);
         assertTrue(config.isIntrospectionEnabled());
+
+        props.setProperty("introspection.enabled", "false");
+        new ParticipantConfigCreator().reconfigure(config, props);
+        assertFalse(config.isIntrospectionEnabled());
 
     }
 

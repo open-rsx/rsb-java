@@ -55,7 +55,7 @@ public class ParticipantConfig {
     private EventReceivingStrategyFactory receivingStrategy =
             new SingleThreadFactory();
 
-    private boolean introspectionEnabled = false;
+    private boolean introspectionEnabled = true;
 
     /**
      * Returns the internal map of available transport configurations by their

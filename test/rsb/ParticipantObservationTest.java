@@ -41,6 +41,7 @@ import rsb.ParticipantObservationTest.FactoryObserver.ObserverCall.CallType;
 import rsb.patterns.Callback;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
+import rsb.config.ParticipantConfig;
 
 /**
  * Tests if {@link ParticipantObserver} are notified about participant creation
@@ -56,10 +57,13 @@ public class ParticipantObservationTest {
     private static final Scope TEST_SCOPE = new Scope("/factorytest");
 
     private Factory factory;
+    private ParticipantConfig config;
 
     @Before
     public void setUp() {
         this.factory = Factory.getInstance();
+        this.config = this.factory.getDefaultParticipantConfig().copy();
+        this.config.setIntrospectionEnabled(false);
     }
 
     public static class FactoryObserver implements ParticipantObserver {
@@ -116,7 +120,8 @@ public class ParticipantObservationTest {
 
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
-        final Listener listener = this.factory.createListener(TEST_SCOPE);
+        final Listener listener
+            = this.factory.createListener(TEST_SCOPE, this.config);
         listener.activate();
         listener.deactivate();
         this.factory.removeObserver(observer);
@@ -134,8 +139,8 @@ public class ParticipantObservationTest {
 
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
-        final Informer<String> informer =
-                this.factory.createInformer(TEST_SCOPE, String.class);
+        final Informer<String> informer
+            = this.factory.createInformer(TEST_SCOPE, String.class, this.config);
         informer.activate();
         informer.deactivate();
         this.factory.removeObserver(observer);
@@ -153,7 +158,8 @@ public class ParticipantObservationTest {
 
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
-        final RemoteServer remote = this.factory.createRemoteServer(TEST_SCOPE);
+        final RemoteServer remote
+            = this.factory.createRemoteServer(TEST_SCOPE, this.config);
         remote.activate();
         remote.deactivate();
         this.factory.removeObserver(observer);
@@ -171,7 +177,8 @@ public class ParticipantObservationTest {
 
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
-        final LocalServer server = this.factory.createLocalServer(TEST_SCOPE);
+        final LocalServer server
+            = this.factory.createLocalServer(TEST_SCOPE, this.config);
         server.activate();
         server.deactivate();
         this.factory.removeObserver(observer);
@@ -207,7 +214,8 @@ public class ParticipantObservationTest {
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
 
-        final LocalServer server = this.factory.createLocalServer(TEST_SCOPE);
+        final LocalServer server
+            = this.factory.createLocalServer(TEST_SCOPE, this.config);
         server.activate();
 
         final String methodName = "test";
@@ -238,7 +246,8 @@ public class ParticipantObservationTest {
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
 
-        final RemoteServer server = this.factory.createRemoteServer(TEST_SCOPE);
+        final RemoteServer server
+            = this.factory.createRemoteServer(TEST_SCOPE, this.config);
         server.activate();
 
         final String methodName = "testXXXX";
