@@ -34,9 +34,10 @@ import java.util.logging.Logger;
 
 import rsb.Event;
 import rsb.InitializeException;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
+import rsb.RemoteServerCreateArgs;
 import rsb.Scope;
-import rsb.config.ParticipantConfig;
 import rsb.patterns.RemoteMethod.FuturePreparator;
 
 /**
@@ -66,68 +67,20 @@ public class RemoteServer extends Server<RemoteMethod> {
      * Create a new RemoteServer object that provides its methods under the
      * scope @a scope.
      *
-     * @param scope
-     *            The common super-scope under which the methods of the remote
+     * @param args
+     *            The arguments to use for this new instance. The scope is the
+     *            common super-scope under which the methods of the remote
      *            created server are provided.
-     * @param timeout
-     *            The amount of seconds methods calls should wait for their
-     *            replies to arrive before failing.
-     * @param config
-     *            participant config to use
      */
-    public RemoteServer(final Scope scope, final double timeout,
-            final ParticipantConfig config) {
-        super(scope, config);
-        this.timeout = timeout;
-    }
-
-    /**
-     * Create a new RemoteServer object that provides its methods under the
-     * scope @a scope.
-     *
-     * @param scope
-     *            The common super-scope under which the methods of the remote
-     *            created server are provided.
-     * @param timeout
-     *            The amount of seconds methods calls should wait for their
-     *            replies to arrive before failing.
-     * @param config
-     *            participant config to use
-     */
-    public RemoteServer(final String scope, final double timeout,
-            final ParticipantConfig config) {
-        super(scope, config);
-        this.timeout = timeout;
-    }
-
-    /**
-     * Create a new RemoteServer object that provides its methods under the
-     * scope @a scope.
-     *
-     * @param scope
-     *            The common super-scope under which the methods of the remote
-     *            created server are provided.
-     * @param config
-     *            participant config to use
-     */
-    public RemoteServer(final Scope scope, final ParticipantConfig config) {
-        super(scope, config);
-        this.timeout = DEFAULT_TIMEOUT;
-    }
-
-    /**
-     * Create a new RemoteServer object that provides its methods under the
-     * scope @a scope.
-     *
-     * @param scope
-     *            The common super-scope under which the methods of the remote
-     *            created server are provided.
-     * @param config
-     *            participant config to use
-     */
-    public RemoteServer(final String scope, final ParticipantConfig config) {
-        super(scope, config);
-        this.timeout = DEFAULT_TIMEOUT;
+    public RemoteServer(final RemoteServerCreateArgs args) {
+        super(args);
+        if (args.getTimeout() == null) {
+            this.timeout = DEFAULT_TIMEOUT;
+        } else if (args.getTimeout() >= 0.0) {
+            this.timeout = args.getTimeout();
+        } else {
+            throw new IllegalArgumentException("Timout < 0 specified.");
+        }
     }
 
     /**
@@ -459,8 +412,11 @@ public class RemoteServer extends Server<RemoteMethod> {
         LOG.fine("Registering new method " + name);
 
         final RemoteMethod method =
-                new RemoteMethod(this.getScope().concat(new Scope("/" + name)),
-                        getConfig());
+                new RemoteMethod(
+                        new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                            // dummy type
+                        }.setScope(getScope().concat(new Scope("/" + name)))
+                                .setConfig(getConfig()).setParent(this));
         // it should never be possible that an exception is thrown for a
         // duplicated method because we take care of this
         addMethod(name, method, false);

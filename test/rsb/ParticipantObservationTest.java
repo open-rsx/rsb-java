@@ -38,10 +38,10 @@ import org.junit.Test;
 
 import rsb.ParticipantObservationTest.FactoryObserver.ObserverCall;
 import rsb.ParticipantObservationTest.FactoryObserver.ObserverCall.CallType;
+import rsb.config.ParticipantConfig;
 import rsb.patterns.Callback;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
-import rsb.config.ParticipantConfig;
 
 /**
  * Tests if {@link ParticipantObserver} are notified about participant creation
@@ -78,6 +78,12 @@ public class ParticipantObservationTest {
 
             public enum CallType {
                 CREATE, DESTROY
+            }
+
+            @Override
+            public String toString() {
+                return "ObserverCall [type=" + this.type + ", participant="
+                        + this.participant + "]";
             }
 
         }
@@ -201,7 +207,7 @@ public class ParticipantObservationTest {
         // string names required due to visibility of the class
         checkCall(calls.get(3), CallType.CREATE, methodClassName,
                 TEST_SCOPE.concat(scopeFromName(methodName)));
-        checkCall(calls.get(6), CallType.DESTROY, methodClassName,
+        checkCall(calls.get(5), CallType.DESTROY, methodClassName,
                 TEST_SCOPE.concat(scopeFromName(methodName)));
         // CHECKSTYLE.ON: MagicNumber
     }

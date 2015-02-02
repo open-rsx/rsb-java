@@ -36,8 +36,6 @@ import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
-import rsb.Scope;
-import rsb.config.ParticipantConfig;
 
 /**
  * Objects of this class represent local or remote serves. A server is basically
@@ -132,6 +130,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
         @Override
         public ServerState deactivate() throws RSBException,
                 InterruptedException {
+            Server.super.deactivate();
             for (final Method method : Server.this.methods.values()) {
                 method.deactivate();
             }
@@ -170,6 +169,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
             for (final Method method : Server.this.methods.values()) {
                 method.activate();
             }
+            Server.super.activate();
             return new ServerStateActive(this.getServer());
         }
 
@@ -182,27 +182,13 @@ public abstract class Server<MethodType extends Method> extends Participant {
     /**
      * Constructs a new server.
      *
-     * @param scope
-     *            base scope of the server
-     * @param config
-     *            participant config to use for internal participants
+     * @param args
+     *            arguments used for this server
      */
-    protected Server(final Scope scope, final ParticipantConfig config) {
-        super(scope, config);
+    protected Server(final ParticipantCreateArgs<?> args) {
+        super(args);
         this.methods = new HashMap<String, MethodType>();
         this.state = new ServerStateInactive(this);
-    }
-
-    /**
-     * Constructs a new server.
-     *
-     * @param scope
-     *            base scope of the server
-     * @param config
-     *            participant config to use for internal participants
-     */
-    protected Server(final String scope, final ParticipantConfig config) {
-        this(new Scope(scope), config);
     }
 
     /**
@@ -267,15 +253,9 @@ public abstract class Server<MethodType extends Method> extends Participant {
                 throw new IllegalArgumentException("A method with name " + name
                         + " already exists.");
             }
+            method.setObserverManager(getObserverManager());
             this.methods.put(name, method);
         }
-        method.setObserverManager(getObserverManager());
-        getObserverManager().notifyParticipantCreated(
-                method,
-                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
-                    // dummy type
-                }.setParent(this).setConfig(method.getConfig())
-                        .setScope(method.getScope()));
     }
 
     @Override
@@ -296,7 +276,6 @@ public abstract class Server<MethodType extends Method> extends Participant {
     public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
             this.state = this.state.deactivate();
-            super.deactivate();
         }
     }
 

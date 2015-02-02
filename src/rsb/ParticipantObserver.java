@@ -30,6 +30,10 @@ package rsb;
 /**
  * Interface for observing {@link Participant} creation and destruction.
  *
+ * Since methods of this interface are called during state switching of
+ * {@link Participant} instances, the {@link Participant#isActive()} method
+ * might still return an old state during calls to methods in this interface.
+ *
  * @author swrede
  * @author jwienke
  * @author jmoringe

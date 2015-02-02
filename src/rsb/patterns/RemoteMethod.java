@@ -38,9 +38,8 @@ import rsb.Handler;
 import rsb.InformerCreateArgs;
 import rsb.InitializeException;
 import rsb.ListenerCreateArgs;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
-import rsb.Scope;
-import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
 /**
@@ -129,25 +128,22 @@ public class RemoteMethod extends Method implements Handler {
      * Create a new RemoteMethod object that represent the remote method named @a
      * name provided by @a server.
      *
-     * @param scope
-     *            The scope this method operates on.
-     * @param config
-     *            the participant config to use for internal participants
+     * @param args the arguments used to create this method
      * @throws InterruptedException
      *             error while installing method
      * @throws InitializeException
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public RemoteMethod(final Scope scope, final ParticipantConfig config)
+    public RemoteMethod(final ParticipantCreateArgs<?> args)
         throws InterruptedException, InitializeException {
-        super(scope, config);
+        super(args);
         this.setListener(getFactory().createListener(
                 new ListenerCreateArgs().setScope(this.getScope())
-                        .setConfig(config).setParent(this)));
+                        .setConfig(this.getConfig()).setParent(this)));
         this.setInformer(getFactory().createInformer(
                 new InformerCreateArgs().setScope(this.getScope())
-                        .setConfig(config).setParent(this)));
+                        .setConfig(this.getConfig()).setParent(this)));
         this.getListener().addFilter(new MethodFilter("REPLY"));
         this.getListener().addHandler(this, true);
     }

@@ -37,6 +37,7 @@ import java.util.List;
 import org.junit.Test;
 
 import rsb.Participant;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
@@ -104,7 +105,9 @@ public class IntrospectionModelTest {
     private static class TestParticipant extends Participant {
 
         public TestParticipant(final Scope scope) {
-            super(scope, new ParticipantConfig());
+            super(new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                // dummy type
+            }.setScope(scope).setConfig(new ParticipantConfig()));
         }
 
         @Override

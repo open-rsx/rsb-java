@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import rsb.config.ParticipantConfig;
 import rsb.config.TransportConfig;
 import rsb.converter.DefaultConverterRepository;
 import rsb.eventprocessing.DefaultPushInRouteConfigurator;
@@ -87,6 +86,7 @@ public class Listener extends Participant {
 
         @Override
         protected void deactivate() throws RSBException, InterruptedException {
+            Listener.super.deactivate();
             Listener.this.getRouter().deactivate();
             this.getListener().state = new ListenerStateInactive(
                     this.getListener());
@@ -115,6 +115,7 @@ public class Listener extends Participant {
         protected void activate() throws RSBException {
             Listener.this.getRouter().activate();
             this.getListener().state = new ListenerStateActive(this.getListener());
+            Listener.super.activate();
         }
 
     }
@@ -122,16 +123,13 @@ public class Listener extends Participant {
     /**
      * Creates a listener for a given scope and participant config.
      *
-     * @param scope
-     *            the scope to listen on
-     * @param config
-     *            the config to use
+     * @param args arguments used to create this instance.
      * @throws InitializeException
      *             error initializing the listener
      */
-    Listener(final Scope scope, final ParticipantConfig config)
+    Listener(final ListenerCreateArgs args)
             throws InitializeException {
-        super(scope, config);
+        super(args);
 
         this.state = new ListenerStateInactive(this);
         this.errorHandler = new DefaultErrorHandler(LOG);
@@ -155,21 +153,6 @@ public class Listener extends Participant {
     }
 
     /**
-     * Creates a listener for a given scope and participant config.
-     *
-     * @param scope
-     *            the scope to listen on
-     * @param config
-     *            the config to use
-     * @throws InitializeException
-     *             error initializing the listener
-     */
-    Listener(final String scope, final ParticipantConfig config)
-            throws InitializeException {
-        this(new Scope(scope), config);
-    }
-
-    /**
      * Returns the router used for this participant.
      *
      * @return router used for this participant, not <code>null</code>
@@ -186,7 +169,6 @@ public class Listener extends Participant {
     @Override
     public void deactivate() throws RSBException, InterruptedException {
         this.state.deactivate();
-        super.deactivate();
     }
 
     /**

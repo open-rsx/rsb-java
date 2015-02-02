@@ -37,9 +37,8 @@ import rsb.Handler;
 import rsb.InformerCreateArgs;
 import rsb.InitializeException;
 import rsb.ListenerCreateArgs;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
-import rsb.Scope;
-import rsb.config.ParticipantConfig;
 import rsb.filter.MethodFilter;
 
 /**
@@ -63,32 +62,29 @@ class LocalMethod extends Method implements Handler {
      * Create a new {@link LocalMethod} object that is exposed under the name @a
      * name by @a server.
      *
-     * @param scope
-     *            The scope this method operates on.
+     * @param args
+     *            arguments used to create this method
      * @param callback
      *            The callback implementing the user functionality of the method
-     * @param config
-     *            participant configuration to use for internal informers and
-     *            listeners
      * @throws InterruptedException
      *             error while installing method
      * @throws InitializeException
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public LocalMethod(final Scope scope,
-            final Callback callback, final ParticipantConfig config)
+    public LocalMethod(final ParticipantCreateArgs<?> args,
+            final Callback callback)
             throws InterruptedException, InitializeException {
-        super(scope, config);
+        super(args);
         this.callback = callback;
         this.setListener(getFactory().createListener(
                 new ListenerCreateArgs().setScope(this.getScope()).setConfig(
-                        config).setParent(this)));
+                        this.getConfig()).setParent(this)));
         this.getListener().addFilter(new MethodFilter("REQUEST"));
         this.getListener().addHandler(this, true);
         this.setInformer(getFactory().createInformer(
                 new InformerCreateArgs().setScope(this.getScope()).setConfig(
-                        config).setParent(this)));
+                        this.getConfig()).setParent(this)));
     }
 
     @Override

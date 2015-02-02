@@ -30,7 +30,6 @@ package rsb;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.config.ParticipantConfig;
 import rsb.config.TransportConfig;
 import rsb.converter.DefaultConverterRepository;
 import rsb.eventprocessing.DefaultOutRouteConfigurator;
@@ -64,7 +63,7 @@ public class Informer<DataType extends Object> extends Participant {
     /** The default data type for this informer. */
     private Class<?> type;
 
-    private OutRouteConfigurator router;
+    private final OutRouteConfigurator router;
 
     /**
      * {@link InformerState} in case the informer is inactive.
@@ -84,7 +83,7 @@ public class Informer<DataType extends Object> extends Participant {
         }
 
         @Override
-        protected void activate() throws InitializeException {
+        protected void activate() throws RSBException {
             this.getInformer().state = new InformerStateActive(
                     this.getInformer());
             LOG.log(Level.FINE,
@@ -96,6 +95,7 @@ public class Informer<DataType extends Object> extends Participant {
             } catch (final RSBException e) {
                 throw new InitializeException(e);
             }
+            Informer.super.activate();
         }
 
     }
@@ -119,6 +119,7 @@ public class Informer<DataType extends Object> extends Participant {
 
         @Override
         protected void deactivate() throws RSBException, InterruptedException {
+            Informer.super.deactivate();
             Informer.this.router.deactivate();
             this.getInformer().state = new InformerStateInactive(
                     this.getInformer());
@@ -170,78 +171,23 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     /**
-     * Creates an informer for any data type with a given scope and with a
-     * specified config.
-     *
-     * @param scope
-     *            the scope
-     * @param config
-     *            the config
-     * @throws InitializeException
-     *             error initializing the informer
-     */
-    Informer(final String scope, final ParticipantConfig config)
-            throws InitializeException {
-        this(new Scope(scope), config);
-    }
-
-    /**
-     * Creates an informer for any data type with a given scope and with a
-     * specified config.
-     *
-     * @param scope
-     *            the scope
-     * @param config
-     *            the config
-     * @throws InitializeException
-     *             error initializing the informer
-     */
-    Informer(final Scope scope, final ParticipantConfig config)
-            throws InitializeException {
-        this(scope, Object.class, config);
-    }
-
-    /**
      * Creates an informer for a specific data type with a given scope and with
      * a specified config.
      *
-     * @param scope
-     *            the scope
-     * @param type
-     *            the data type to send by this informer
-     * @param config
-     *            the config
+     * @param args
+     *            arguments used to create the new instance
      * @throws InitializeException
      *             error initializing the informer
      */
-    Informer(final String scope, final Class<?> type,
-            final ParticipantConfig config) throws InitializeException {
-        this(new Scope(scope), type, config);
-    }
+    Informer(final InformerCreateArgs args) throws InitializeException {
+        super(args);
 
-    /**
-     * Creates an informer for a specific data type with a given scope and with
-     * a specified config.
-     *
-     * @param scope
-     *            the scope
-     * @param type
-     *            the data type to send by this informer
-     * @param config
-     *            the config
-     * @throws InitializeException
-     *             error initializing the informer
-     */
-    Informer(final Scope scope, final Class<?> type,
-            final ParticipantConfig config) throws InitializeException {
-        super(scope, config);
-
-        if (type == null) {
+        if (args.getType() == null) {
             throw new IllegalArgumentException(
                     "Informer type must not be null.");
         }
 
-        this.type = type;
+        this.type = args.getType();
 
         // TODO this should be passed in from the outside?
         this.router = new DefaultOutRouteConfigurator(getScope());
@@ -259,12 +205,12 @@ public class Informer<DataType extends Object> extends Participant {
         }
         this.state = new InformerStateInactive(this);
         LOG.fine("New informer instance created: [Scope:" + this.getScope()
-                + ",State:Inactive,Type:" + type.getName() + "]");
+                + ",State:Inactive,Type:" + this.type.getName() + "]");
 
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         synchronized (this) {
             this.state.activate();
         }
@@ -274,7 +220,6 @@ public class Informer<DataType extends Object> extends Participant {
     public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
             this.state.deactivate();
-            super.deactivate();
         }
     }
 

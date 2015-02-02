@@ -34,9 +34,8 @@ import rsb.Informer;
 import rsb.InvalidStateException;
 import rsb.Listener;
 import rsb.Participant;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
-import rsb.Scope;
-import rsb.config.ParticipantConfig;
 
 /**
  * Objects of this class are methods which are associated to a local or remote
@@ -105,6 +104,7 @@ public abstract class Method extends Participant {
         @Override
         public MethodState deactivate() throws RSBException,
                 InterruptedException {
+            Method.super.deactivate();
             // Deactivate informer and listener if necessary.
             if (Method.this.getListener() != null) {
                 Method.this.getListener().deactivate();
@@ -114,7 +114,6 @@ public abstract class Method extends Participant {
                 Method.this.getInformer().deactivate();
                 Method.this.setInformer(null);
             }
-            Method.super.deactivate();
             return new MethodStateInactive();
         }
     }
@@ -128,6 +127,7 @@ public abstract class Method extends Participant {
         public MethodState activate() throws RSBException {
             Method.this.getListener().activate();
             Method.this.getInformer().activate();
+            Method.super.activate();
             return new MethodStateActive();
         }
     }
@@ -135,15 +135,13 @@ public abstract class Method extends Participant {
     /**
      * Create a new Method object for the method named @a name.
      *
-     * @param scope
-     *            The scope this method operates on. The last scope fragment is
-     *            assumed to be the method name.
-     * @param config
-     *            The configuration for this participant.
+     * @param args
+     *            Arguments used to create a method instances. The last scope
+     *            fragment is assumed to be the method name.
      */
-    public Method(final Scope scope, final ParticipantConfig config) {
-        super(scope, config);
-        if (scope.getComponents().isEmpty()) {
+    public Method(final ParticipantCreateArgs<?> args) {
+        super(args);
+        if (args.getScope().getComponents().isEmpty()) {
             throw new IllegalArgumentException(
                     "Methods must not be on the root scope since "
                             + "they do not have a name then.");

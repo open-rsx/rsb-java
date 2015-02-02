@@ -72,9 +72,13 @@ public class InformerTest {
         this.config = Utilities.createParticipantConfig();
 
         this.stringInformer =
-                new Informer<String>(DEFAULT_SCOPE, String.class, this.config);
+                new Informer<String>(new InformerCreateArgs()
+                        .setScope(DEFAULT_SCOPE).setType(String.class)
+                        .setConfig(this.config));
         this.stringInformer.activate();
-        this.genericInformer = new Informer<Object>(DEFAULT_SCOPE, this.config);
+        this.genericInformer =
+                new Informer<Object>(new InformerCreateArgs().setScope(
+                        DEFAULT_SCOPE).setConfig(this.config));
         this.genericInformer.activate();
 
     }
@@ -98,15 +102,17 @@ public class InformerTest {
     @Test
     public void informerStringConfig() throws Throwable {
         final Informer<String> informer =
-                new Informer<String>(DEFAULT_SCOPE, this.config);
+                new Informer<String>(new InformerCreateArgs().setScope(
+                        DEFAULT_SCOPE).setConfig(this.config));
         assertEquals("Wrong scope", informer.getScope(), DEFAULT_SCOPE);
     }
 
     @Test
     public void informerScopeTypeConfig() throws Throwable {
         final Informer<String> informer =
-                new Informer<String>(DEFAULT_SCOPE, XML_TYPE.getClass(),
-                        this.config);
+                new Informer<String>(new InformerCreateArgs()
+                        .setScope(DEFAULT_SCOPE).setType(XML_TYPE.getClass())
+                        .setConfig(this.config));
         assertNotNull("Informer object is null", informer);
         assertEquals(informer.getScope(), DEFAULT_SCOPE);
         assertEquals(informer.getTypeInfo(), XML_TYPE.getClass());
@@ -116,7 +122,8 @@ public class InformerTest {
     public void informerScopeConfig() throws Throwable {
         final Scope scope = new Scope("/x");
         final Informer<String> informer =
-                new Informer<String>(scope, XML_TYPE.getClass(), this.config);
+                new Informer<String>(new InformerCreateArgs().setScope(scope)
+                        .setType(XML_TYPE.getClass()).setConfig(this.config));
         assertNotNull(informer);
         assertEquals(informer.getScope(), scope);
         assertEquals(informer.getTypeInfo(), XML_TYPE.getClass());

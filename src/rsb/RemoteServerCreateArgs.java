@@ -28,7 +28,8 @@
 package rsb;
 
 /**
- * {@link ParticipantCreateArgs} for {@link rsb.patterns.RemoteServer} instances.
+ * {@link ParticipantCreateArgs} for {@link rsb.patterns.RemoteServer}
+ * instances.
  *
  * @author jwienke
  * @author jmoringe
@@ -40,16 +41,17 @@ public class RemoteServerCreateArgs extends
      * The timeout used when waiting for RPC replies. Initialized with 0 which
      * indicates to wait forever.
      */
-    private double timeout = 0;
+    private Double timeout = null;
 
     /**
      * Sets the timeout used when waiting for method replies.
      *
      * @param timeout
-     *            a timeout in seconds or 0 to wait forever.
+     *            a timeout in seconds or 0 to wait forever. <code>null</code>
+     *            means that the implementation shall choose a timeout.
      * @return this instance
      */
-    public RemoteServerCreateArgs setTimeout(final double timeout) {
+    public RemoteServerCreateArgs setTimeout(final Double timeout) {
         this.timeout = timeout;
         return this;
     }
@@ -57,9 +59,11 @@ public class RemoteServerCreateArgs extends
     /**
      * Returns the timeout to wait for method replies.
      *
-     * @return timeout in seconds, 0 indicating to wait forever
+     * @return timeout in seconds, 0 indicating to wait forever,
+     *         <code>null</code> indicating that implementations may decide on a
+     *         reasonable timeout.
      */
-    public double getTimeout() {
+    public Double getTimeout() {
         return this.timeout;
     }
 

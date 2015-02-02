@@ -63,10 +63,10 @@ public class InformerState<DataType> {
     /**
      * Implements {@link Informer#activate()}.
      *
-     * @throws InitializeException
-     *             initialization error
+     * @throws RSBException
+     *             rsb error activating the informer
      */
-    protected void activate() throws InitializeException {
+    protected void activate() throws RSBException {
         LOG.warning("invalid state exception during activate call");
         throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
     }

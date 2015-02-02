@@ -57,7 +57,8 @@ public class UserLevelTest {
         // set up a receiver for events
         final Set<String> receivedMessages = new HashSet<String>();
         final Listener listener =
-                new Listener(scope, Utilities.createParticipantConfig());
+                new Listener(new ListenerCreateArgs().setScope(scope)
+                        .setConfig(Utilities.createParticipantConfig()));
         listener.activate();
         listener.addHandler(new AbstractEventHandler() {
 
@@ -73,7 +74,8 @@ public class UserLevelTest {
         // send events
         final Set<String> sentMessages = new HashSet<String>();
         final Informer<String> informer =
-                new Informer<String>(scope, Utilities.createParticipantConfig());
+                new Informer<String>(new InformerCreateArgs().setScope(scope)
+                        .setConfig(Utilities.createParticipantConfig()));
         informer.activate();
         for (int i = 0; i < EVENTS_TO_SEND; ++i) {
             final String message =

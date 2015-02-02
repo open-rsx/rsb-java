@@ -30,9 +30,10 @@ package rsb.patterns;
 import java.util.logging.Logger;
 
 import rsb.InitializeException;
+import rsb.LocalServerCreateArgs;
+import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.config.ParticipantConfig;
 
 /**
  * Objects of this class associate a collection of method objects which are
@@ -50,28 +51,13 @@ public class LocalServer extends Server<LocalMethod> {
      * Create a new LocalServer object that exposes its methods under the
      * provided scope.
      *
-     * @param scope
-     *            The common super-scope under which the methods of the newly
+     * @param args
+     *            Arguments used to create the local server. the scope specified
+     *            the common super-scope under which the methods of the newly
      *            created server should be provided.
-     * @param config
-     *            participant config for this server
      */
-    public LocalServer(final Scope scope, final ParticipantConfig config) {
-        super(scope, config);
-    }
-
-    /**
-     * Create a new LocalServer object that exposes its methods under the scope @a
-     * scope.
-     *
-     * @param scope
-     *            The common super-scope under which the methods of the newly
-     *            created server should be provided.
-     * @param config
-     *            participant config for this server
-     */
-    public LocalServer(final String scope, final ParticipantConfig config) {
-        super(scope, config);
+    public LocalServer(final LocalServerCreateArgs args) {
+        super(args);
     }
 
     /**
@@ -91,12 +77,17 @@ public class LocalServer extends Server<LocalMethod> {
             throws RSBException {
         LOG.fine("Registering new data method " + name
                 + " with signature object: " + callback);
-        // TODO hook into introspection mechanism (with parent + child information)
         synchronized (this) {
             try {
                 final LocalMethod method =
-                        new LocalMethod(this.getScope().concat(
-                                new Scope("/" + name)), callback, getConfig());
+                        new LocalMethod(
+                                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                                    // dummy type
+                                }.setScope(
+                                        getScope()
+                                                .concat(new Scope("/" + name)))
+                                        .setConfig(getConfig()).setParent(this),
+                                callback);
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
                 throw new InitializeException(e);

@@ -34,6 +34,12 @@ import rsb.config.ParticipantConfig;
  * Base class for all bus participants with an associated scope. Mainly holds
  * references to the router and configuration-level objects.
  *
+ * Implementing classes need to ensure that {@link #activate()} and
+ * {@link #deactivate()} are called in case these methods are overridden. Method
+ * {@link #activate()} needs to be called once all required internal details are
+ * set up and processing is possible now and {@link #deactivate()} needs to be
+ * called before functionality is teared down.
+ *
  * @author jwienke
  * @author swrede
  */
@@ -44,38 +50,35 @@ public abstract class Participant implements Activatable {
     private final Scope scope;
     private final ParticipantConfig config;
     private ParticipantObserverManager observerManager;
+    private ParticipantCreateArgs<?> createArgs;
 
     /**
      * Creates a new participant on the specified scope.
      *
-     * @param scope
-     *            scope of the participant
-     * @param config
-     *            configuration of the participant
+     * @param args
+     *            arguments used to create this participant
      */
-    protected Participant(final Scope scope, final ParticipantConfig config) {
-        if (scope == null) {
+    protected Participant(final ParticipantCreateArgs<?> args) {
+        if (args.getScope() == null) {
             throw new IllegalArgumentException(
                     "Scope of a participant must not be null.");
         }
-        if (config == null) {
+        if (args.getConfig() == null) {
             throw new IllegalArgumentException(
                     "ParticipantConfig of a participant must not be null.");
         }
-        this.scope = scope;
-        this.config = config;
+        this.scope = args.getScope();
+        this.config = args.getConfig();
+        // cache the create args until activate is called to notify observers
+        this.createArgs = args;
     }
 
-    /**
-     * Creates a new participant on the specified scope.
-     *
-     * @param scope
-     *            scope of the participant
-     * @param config
-     *            configuration of the participant
-     */
-    protected Participant(final String scope, final ParticipantConfig config) {
-        this(new Scope(scope), config);
+    @Override
+    public void activate() throws RSBException {
+        if (this.observerManager != null) {
+            this.observerManager.notifyParticipantCreated(this, this.createArgs);
+        }
+        this.createArgs = null;
     }
 
     @Override
@@ -130,7 +133,8 @@ public abstract class Participant implements Activatable {
      *            the observer manager to use or <code>null</code> if not
      *            required
      */
-    public void setObserverManager(final ParticipantObserverManager observerManager) {
+    public void setObserverManager(
+            final ParticipantObserverManager observerManager) {
         this.observerManager = observerManager;
     }
 
@@ -138,7 +142,7 @@ public abstract class Participant implements Activatable {
      * Returns kind of participant in RSB terminology.
      *
      * @return Key describing participant. One of listener, informer,
-     *              local-server, local-method, remote-server, remote-method
+     *         local-server, local-method, remote-server, remote-method
      */
     public abstract String getKind();
 

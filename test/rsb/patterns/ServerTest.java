@@ -118,9 +118,16 @@ public class ServerTest {
         assertTrue(server.isActive());
         server.deactivate();
         assertFalse(server.isActive());
+    }
+
+    @Test
+    public void activateWithPreRegisteredMethod() throws Throwable {
+        final LocalServer server = this.getServer();
         server.addMethod(CALL_METHOD_NAME, new ReplyDataCallback());
         server.activate();
+        assertTrue(server.isActive());
         server.deactivate();
+        assertFalse(server.isActive());
     }
 
     /**
