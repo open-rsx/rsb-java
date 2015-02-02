@@ -59,6 +59,11 @@
         </testResources>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+            </plugin>
             <!-- Check the availability of different external dependencies. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
