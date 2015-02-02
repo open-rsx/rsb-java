@@ -56,6 +56,7 @@ public class SpreadNotRunningTest {
 
     private ParticipantConfig createParticipantConfig() throws Throwable {
         final ParticipantConfig config = new ParticipantConfig();
+        config.setIntrospectionEnabled(false);
         final TransportConfig spreadConfig =
                 config.getOrCreateTransport("spread");
         spreadConfig.setEnabled(true);
@@ -104,7 +105,17 @@ public class SpreadNotRunningTest {
         final RemoteServer server =
                 factory.createRemoteServer(SCOPE, createParticipantConfig());
         server.activate();
-        server.call("foo");
+        try {
+            // this method fails and not activate since the real participants
+            // are only created on the first use of a method
+            server.call("foo");
+        } finally {
+            try {
+                server.deactivate();
+            } catch (final Exception e) {
+                // ignore since we are most likely in an invalid state
+            }
+        }
     }
 
 }
