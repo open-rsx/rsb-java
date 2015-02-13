@@ -38,14 +38,11 @@ import java.nio.ByteBuffer;
  */
 public class BoolConverter implements Converter<ByteBuffer> {
 
-    private final ConverterSignature signature;
-
     /**
-     * Constructor.
+     * Signature of {@link BoolConverter} instances.
      */
-    public BoolConverter() {
-        this.signature = new ConverterSignature("bool", Boolean.class);
-    }
+    public static final ConverterSignature SIGNATURE = new ConverterSignature(
+            "bool", Boolean.class);
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
@@ -61,7 +58,7 @@ public class BoolConverter implements Converter<ByteBuffer> {
             }
             final ByteBuffer serialized = ByteBuffer.wrap(backing);
             return new WireContents<ByteBuffer>(serialized,
-                    this.signature.getSchema());
+                    SIGNATURE.getSchema());
         } catch (final ClassCastException e) {
             throw new ConversionException(
                     "Input data for serializing must be boolean values.", e);
@@ -72,9 +69,9 @@ public class BoolConverter implements Converter<ByteBuffer> {
     public UserData<ByteBuffer> deserialize(final String wireSchema,
             final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(this.signature.getSchema())) {
+        if (!wireSchema.equals(SIGNATURE.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + wireSchema + "', expected '" + SIGNATURE.getSchema()
                     + "'.");
         }
 
@@ -84,6 +81,6 @@ public class BoolConverter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return this.signature;
+        return SIGNATURE;
     }
 }

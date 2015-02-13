@@ -38,8 +38,11 @@ import java.nio.ByteBuffer;
  */
 public class NullConverter implements Converter<ByteBuffer> {
 
-    private final ConverterSignature signature = new ConverterSignature("void",
-            Void.class);
+    /**
+     * Signature of {@link NullConverter} instances.
+     */
+    public static final ConverterSignature SIGNATURE = new ConverterSignature(
+            "void", Void.class);
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
@@ -54,17 +57,16 @@ public class NullConverter implements Converter<ByteBuffer> {
 
         final byte[] backing = new byte[0];
         final ByteBuffer serialized = ByteBuffer.wrap(backing);
-        return new WireContents<ByteBuffer>(serialized,
-                this.signature.getSchema());
+        return new WireContents<ByteBuffer>(serialized, SIGNATURE.getSchema());
     }
 
     @Override
     public UserData<ByteBuffer> deserialize(final String wireSchema,
             final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(this.signature.getSchema())) {
+        if (!wireSchema.equals(SIGNATURE.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + wireSchema + "', expected '" + SIGNATURE.getSchema()
                     + "'.");
         }
 
@@ -73,7 +75,7 @@ public class NullConverter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return this.signature;
+        return SIGNATURE;
     }
 
 }

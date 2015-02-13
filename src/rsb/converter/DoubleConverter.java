@@ -38,10 +38,13 @@ import java.nio.ByteBuffer;
  */
 public class DoubleConverter implements Converter<ByteBuffer> {
 
-    private static final int MEMORY_WIDTH_IN_BYTES = 8;
-
-    private final ConverterSignature signature = new ConverterSignature(
+    /**
+     * Signature for {@link DoubleConverter} instances.
+     */
+    public static final ConverterSignature SIGNATURE = new ConverterSignature(
             "double", Double.class);
+
+    private static final int MEMORY_WIDTH_IN_BYTES = 8;
 
     private static byte[] flip(final byte[] input) {
         final byte[] reversed = new byte[input.length];
@@ -61,7 +64,7 @@ public class DoubleConverter implements Converter<ByteBuffer> {
             ByteBuffer.wrap(backing).putDouble(value);
 
             return new WireContents<ByteBuffer>(ByteBuffer.wrap(flip(backing)),
-                    this.signature.getSchema());
+                    SIGNATURE.getSchema());
 
         } catch (final ClassCastException e) {
             throw new ConversionException(
@@ -73,9 +76,9 @@ public class DoubleConverter implements Converter<ByteBuffer> {
     public UserData<ByteBuffer> deserialize(final String wireSchema,
             final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(this.signature.getSchema())) {
+        if (!wireSchema.equals(SIGNATURE.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + wireSchema + "', expected '" + SIGNATURE.getSchema()
                     + "'.");
         }
 
@@ -85,7 +88,7 @@ public class DoubleConverter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return this.signature;
+        return SIGNATURE;
     }
 
 }

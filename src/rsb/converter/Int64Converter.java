@@ -38,12 +38,15 @@ import java.nio.ByteBuffer;
  */
 public class Int64Converter implements Converter<ByteBuffer> {
 
+    /**
+     * Signature of {@link Int64Converter} instances.
+     */
+    public static final ConverterSignature SIGNATURE = new ConverterSignature(
+            "int64", Long.class);
+
     private static final int BYTES_PER_INT = 8;
     private static final int BYTE_LENGTH = 8;
     private static final int MASK = 0xff;
-
-    private final ConverterSignature signature = new ConverterSignature(
-            "int64", Long.class);
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
@@ -61,7 +64,7 @@ public class Int64Converter implements Converter<ByteBuffer> {
             }
             final ByteBuffer serialized = ByteBuffer.wrap(backing);
             return new WireContents<ByteBuffer>(serialized,
-                    this.signature.getSchema());
+                    SIGNATURE.getSchema());
 
         } catch (final ClassCastException e) {
             throw new ConversionException(
@@ -74,9 +77,9 @@ public class Int64Converter implements Converter<ByteBuffer> {
     public UserData<ByteBuffer> deserialize(final String wireSchema,
             final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(this.signature.getSchema())) {
+        if (!wireSchema.equals(SIGNATURE.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                    + wireSchema + "', expected '" + this.signature.getSchema()
+                    + wireSchema + "', expected '" + SIGNATURE.getSchema()
                     + "'.");
         }
 
@@ -93,6 +96,6 @@ public class Int64Converter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return this.signature;
+        return SIGNATURE;
     }
 }
