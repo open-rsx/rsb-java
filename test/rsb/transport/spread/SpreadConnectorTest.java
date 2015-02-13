@@ -27,10 +27,13 @@
  */
 package rsb.transport.spread;
 
+import java.nio.ByteBuffer;
+
 import rsb.QualityOfServiceSpec;
 import rsb.QualityOfServiceSpec.Ordering;
 import rsb.QualityOfServiceSpec.Reliability;
 import rsb.Utilities;
+import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.ConnectorCheck;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
@@ -44,20 +47,24 @@ import rsb.transport.OutConnector;
 public class SpreadConnectorTest extends ConnectorCheck {
 
     @Override
-    protected InPushConnector createInConnector() throws Throwable {
+    protected InPushConnector createInConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         final SpreadWrapper inWrapper = Utilities.createSpreadWrapper();
-        final SpreadInPushConnector inPort = new SpreadInPushConnector(
-                inWrapper, this.getConverterStrategy("utf-8-string"));
+        final SpreadInPushConnector inPort =
+                new SpreadInPushConnector(inWrapper, converters);
         return inPort;
     }
 
     @Override
-    protected OutConnector createOutConnector() throws Throwable {
+    protected OutConnector createOutConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         final SpreadWrapper outWrapper = Utilities.createSpreadWrapper();
-        final SpreadOutConnector outConnector = new SpreadOutConnector(
-                outWrapper,
-                this.getConverterStrategy(String.class.getName()),
-                new QualityOfServiceSpec(Ordering.ORDERED, Reliability.RELIABLE));
+        final SpreadOutConnector outConnector =
+                new SpreadOutConnector(outWrapper, converters,
+                        new QualityOfServiceSpec(Ordering.ORDERED,
+                                Reliability.RELIABLE));
         return outConnector;
     }
 

@@ -57,13 +57,16 @@ import rsb.converter.UnambiguousConverterMap;
  */
 public abstract class ConnectorCheck {
 
+    private static final String UTF8_WIRE_SCHEMA = "utf-8-string";
     private static final Scope OUT_BASE_SCOPE = new Scope("/this");
     private OutConnector outConnector;
 
     @Before
     public void setUp() throws Throwable {
 
-        final OutConnector outConnector = createOutConnector();
+        final OutConnector outConnector =
+                createOutConnector(getStringConverterStrategy(String.class
+                        .getName()));
         outConnector.setScope(OUT_BASE_SCOPE);
         outConnector.activate();
         this.setOutConnector(outConnector);
@@ -84,7 +87,7 @@ public abstract class ConnectorCheck {
         this.getOutConnector().push(event);
     }
 
-    protected UnambiguousConverterMap<ByteBuffer> getConverterStrategy(
+    private UnambiguousConverterMap<ByteBuffer> getStringConverterStrategy(
             final String key) {
         final UnambiguousConverterMap<ByteBuffer> strategy =
                 new UnambiguousConverterMap<ByteBuffer>();
@@ -109,7 +112,8 @@ public abstract class ConnectorCheck {
 
             final List<Event> receivedEvents = new ArrayList<Event>();
             receivedEventsByScope.put(scope, receivedEvents);
-            final InPushConnector inPort = createInConnector();
+            final InPushConnector inPort =
+                    createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
             inPort.addHandler(new EventHandler() {
 
                 @Override
@@ -165,9 +169,13 @@ public abstract class ConnectorCheck {
 
     }
 
-    protected abstract InPushConnector createInConnector() throws Throwable;
+    protected abstract InPushConnector createInConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable;
 
-    protected abstract OutConnector createOutConnector() throws Throwable;
+    protected abstract OutConnector createOutConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable;
 
     @Test
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
@@ -194,7 +202,8 @@ public abstract class ConnectorCheck {
 
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final InPushConnector inPort = createInConnector();
+        final InPushConnector inPort =
+                createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
         inPort.addHandler(new EventHandler() {
 
             @Override
@@ -258,7 +267,8 @@ public abstract class ConnectorCheck {
 
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final InPushConnector inPort = createInConnector();
+        final InPushConnector inPort =
+                createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
         inPort.addHandler(new EventHandler() {
 
             @Override

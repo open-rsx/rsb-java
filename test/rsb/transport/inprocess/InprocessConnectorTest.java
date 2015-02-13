@@ -27,8 +27,11 @@
  */
 package rsb.transport.inprocess;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Test;
 
+import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.ConnectorCheck;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
@@ -45,12 +48,16 @@ public class InprocessConnectorTest extends ConnectorCheck {
             new rsb.transport.inprocess.Bus();
 
     @Override
-    protected InPushConnector createInConnector() throws Throwable {
+    protected InPushConnector createInConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         return new rsb.transport.inprocess.InPushConnector(this.bus);
     }
 
     @Override
-    protected OutConnector createOutConnector() throws Throwable {
+    protected OutConnector createOutConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         return new rsb.transport.inprocess.OutConnector(this.bus);
     }
 

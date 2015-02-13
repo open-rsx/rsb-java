@@ -27,6 +27,9 @@
  */
 package rsb.transport.socket;
 
+import java.nio.ByteBuffer;
+
+import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.ConnectorCheck;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
@@ -40,17 +43,20 @@ import rsb.transport.OutConnector;
 public class SocketConnectorTest extends ConnectorCheck {
 
     @Override
-    protected InPushConnector createInConnector() throws Throwable {
+    protected InPushConnector createInConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         return new SocketInPushConnector(
                 rsb.transport.socket.Utilities.getSocketOptions(),
-                ServerMode.AUTO, this.getConverterStrategy("utf-8-string"));
+                ServerMode.AUTO, converters);
     }
 
     @Override
-    protected OutConnector createOutConnector() throws Throwable {
+    protected OutConnector createOutConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         return new SocketOutConnector(Utilities.getSocketOptions(),
-                ServerMode.AUTO, this.getConverterStrategy(String.class
-                        .getName()));
+                ServerMode.AUTO, converters);
     }
 
 }
