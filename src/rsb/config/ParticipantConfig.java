@@ -195,10 +195,13 @@ public class ParticipantConfig {
     public int hashCode() {
         // CHECKSTYLE.OFF: AvoidInlineConditionals - this method is more
         // readable with the inline conditionals
+        final int prime = 31;
         int result = 17 * this.transportsByName.hashCode();
         result +=
-                31 * (this.receivingStrategy == null ? 0 : this.receivingStrategy
-                        .hashCode());
+                prime
+                        * (this.receivingStrategy == null ? 0
+                                : this.receivingStrategy.hashCode());
+        result = prime * result + (this.introspectionEnabled ? 1231 : 1237);
         // CHECKSTYLE.ON: AvoidInlineConditionals
         return result;
     }
@@ -210,7 +213,8 @@ public class ParticipantConfig {
         }
         final ParticipantConfig other = (ParticipantConfig) obj;
         return this.transportsByName.equals(other.transportsByName)
-                && this.receivingStrategy.equals(other.receivingStrategy);
+                && this.receivingStrategy.equals(other.receivingStrategy)
+                && this.introspectionEnabled == other.introspectionEnabled;
     }
 
 }
