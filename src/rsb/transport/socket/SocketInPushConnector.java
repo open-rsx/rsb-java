@@ -141,8 +141,9 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
 
             final Event resultEvent =
                     ProtocolConversion.fromNotification(notification,
-                            notification.getData().asReadOnlyByteBuffer(),
-                            this.utility.getConverters());
+                            ByteBuffer.wrap(notification.getData()
+                                    .toByteArray()), this.utility
+                                    .getConverters());
 
             // make a copy to avoid lengthy locking
             final Set<EventHandler> handlers =

@@ -44,6 +44,7 @@ import rsb.Event;
 import rsb.ParticipantId;
 import rsb.Scope;
 import rsb.converter.ConversionException;
+import rsb.converter.DoubleConverter;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 
@@ -93,6 +94,75 @@ public abstract class ConnectorCheck {
                 new UnambiguousConverterMap<ByteBuffer>();
         strategy.addConverter(key, new StringConverter());
         return strategy;
+    }
+
+    private UnambiguousConverterMap<ByteBuffer> getDoubleConverterStrategy(
+            final String key) {
+        final UnambiguousConverterMap<ByteBuffer> strategy =
+                new UnambiguousConverterMap<ByteBuffer>();
+        strategy.addConverter(key, new DoubleConverter());
+        return strategy;
+    }
+
+    @Test(timeout = 10000)
+    public void primitiveTypeSending() throws Throwable {
+        final OutConnector outConnector =
+                createOutConnector(getDoubleConverterStrategy(DoubleConverter.SIGNATURE
+                        .getDataType().getName()));
+        final InPushConnector inConnector =
+                createInConnector(getDoubleConverterStrategy(DoubleConverter.SIGNATURE
+                        .getSchema()));
+        try {
+            final Scope scope = new Scope("/connectorCheck/primitiveTypeSending");
+
+            final Object synchronizer = new Object();
+            final List<Event> receivedEvents = new ArrayList<Event>();
+            inConnector.addHandler(new EventHandler() {
+
+                @Override
+                public void handle(final Event event) {
+                    synchronized (synchronizer) {
+                        receivedEvents.add(event);
+                        synchronizer.notify();
+                    }
+                }
+
+            });
+
+            outConnector.setScope(scope);
+            outConnector.activate();
+            inConnector.setScope(scope);
+            inConnector.activate();
+
+            final double data = 45;
+            final Event event =
+                    new Event(scope, Double.class, data);
+            event.setId(new ParticipantId(), 23423);
+            outConnector.push(event);
+
+            synchronized (synchronizer) {
+                while (receivedEvents.isEmpty()) {
+                    synchronizer.wait();
+                }
+            }
+
+            assertEquals(1, receivedEvents.size());
+            assertEquals(data, receivedEvents.get(0).getData());
+
+        } finally {
+            try {
+                outConnector.deactivate();
+            } catch (final Exception e) {
+                // ignore possible errors during attempts to recover as good as
+                // possible
+            }
+            try {
+                inConnector.deactivate();
+            } catch (final Exception e) {
+                // ignore possible errors during attempts to recover as good as
+                // possible
+            }
+        }
     }
 
     @Test(timeout = 10000)
