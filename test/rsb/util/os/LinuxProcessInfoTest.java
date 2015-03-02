@@ -29,6 +29,7 @@ package rsb.util.os;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class LinuxProcessInfoTest {
                         "cmdline-correct.txt").getPath()), new File(getClass()
                         .getResource("proc-stat.txt").getPath()), new File(
                         getClass().getResource("proc-self-stat.txt").getPath()));
-        assertEquals("my cp with spaces", info.getProgramName());
+        assertTrue(info.getProgramName().startsWith("my cp with spaces"));
         assertEquals(
                 Arrays.asList(new String[] { "/proc/self/cmdline",
                         "test/rsb/util/cmdline-correct.txt" }),
@@ -67,7 +68,7 @@ public class LinuxProcessInfoTest {
         final LinuxProcessInfo info =
                 new LinuxProcessInfo(new File("fhadjkfahsd"), new File(
                         "afa34fsdafsdf"), new File("6wbjdrgq45ag"));
-        assertEquals(null, info.getProgramName());
+        assertNotNull(info.getProgramName());
         assertEquals(null, info.getArguments());
         assertEquals(null, info.getStartTime());
     }

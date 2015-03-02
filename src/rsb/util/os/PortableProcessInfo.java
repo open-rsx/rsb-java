@@ -29,6 +29,8 @@ package rsb.util.os;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,7 +64,38 @@ public class PortableProcessInfo extends CommonProcessInfo {
     }
 
     private String determineProgramName() {
-        return "java-" + System.getProperty("java.runtime.version");
+        final String javaBinary =
+                "java-" + System.getProperty("java.runtime.version");
+        try {
+            return javaBinary + " " + determineMainClassName();
+        } catch (final NoSuchElementException e) {
+            return javaBinary;
+        }
+    }
+
+    /**
+     * Tries to determine the fully-qualified main class name for the process
+     * this class is used in.
+     *
+     * @return fully qualified name, not <code>null</code>
+     * @throws NoSuchElementException
+     *             name cannot be determined
+     */
+    public static String determineMainClassName() {
+        for (final Entry<Thread, StackTraceElement[]> entry : Thread
+                .getAllStackTraces().entrySet()) {
+            if (entry.getKey().getId() == 1) {
+                final StackTraceElement[] trace = entry.getValue();
+                if (trace.length < 1) {
+                    break;
+                }
+                return trace[trace.length - 1].getClassName();
+            }
+        }
+        throw new NoSuchElementException(
+                "Main class name cannot be determined "
+                        + "because the main thread cannot be found or "
+                        + "its stack trace is empty.");
     }
 
 }
