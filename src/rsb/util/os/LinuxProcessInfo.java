@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -85,7 +86,15 @@ public class LinuxProcessInfo extends PortableProcessInfo {
     public LinuxProcessInfo(final File cmdLineFile, final File globalStatFile,
             final File procStatFile) {
         super();
-        this.setProgramName(readProgramNameFromProcFS(cmdLineFile));
+        final String processName = readProgramNameFromProcFS(cmdLineFile);
+        if (processName != null) {
+            try {
+                this.setProgramName(processName + " "
+                        + PortableProcessInfo.determineMainClassName());
+            } catch (final NoSuchElementException e) {
+                this.setProgramName(processName);
+            }
+        }
         this.setArguments(readArgumentsFromProcFS(cmdLineFile));
         this.setStartTime(readStartTimeFromProcFS(globalStatFile, procStatFile));
     }
