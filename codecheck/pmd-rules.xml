@@ -25,7 +25,9 @@
     <rule ref="rulesets/java/junit.xml">
         <exclude name="JUnitAssertionsShouldIncludeMessage" />
     </rule>
-    <rule ref="rulesets/java/logging-java.xml" />
+    <rule ref="rulesets/java/logging-java.xml">
+        <exclude name="GuardLogStatementJavaUtil" />
+    </rule>
     <rule ref="rulesets/java/migrating_to_15.xml" />
     <rule ref="rulesets/java/migrating_to_junit4.xml" />
     <rule ref="rulesets/java/naming.xml">
@@ -37,7 +39,9 @@
         <exclude name="AvoidInstantiatingObjectsInLoops" />
     </rule>
     <rule ref="rulesets/java/strictexception.xml" />
-    <rule ref="rulesets/java/strings.xml" />
+    <rule ref="rulesets/java/strings.xml">
+        <exclude name="ConsecutiveAppendsShouldReuse" />
+    </rule>
     <rule ref="rulesets/java/typeresolution.xml" />
     <rule ref="rulesets/java/unnecessary.xml">
         <exclude name="UselessParentheses" />
