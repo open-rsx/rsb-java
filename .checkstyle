@@ -9,7 +9,7 @@
   </fileset>
   <filter name="FilesFromPackage" enabled="true">
     <filter-data value="spread-src"/>
-    <filter-data value="target/generated-protocol/rsb/protocol"/>
-    <filter-data value="target/generated-protocol/tutorial"/>
+    <filter-data value="target/generated-protocol"/>
+    <filter-data value="examples"/>
   </filter>
 </fileset-config>

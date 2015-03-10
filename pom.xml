@@ -175,6 +175,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
+                    <!-- exclude examples from the jar file -->
+                    <excludes>
+                        <include>*.class</include>
+                        <include>tutorial/**/*.*</include>
+                    </excludes>
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -292,6 +297,7 @@
                         <configuration>
                             <sources>
                                 <source>spread-src</source>
+                                <source>examples</source>
                                 <source>${pbuf.outpath}</source>
                             </sources>
                         </configuration>
