@@ -8,8 +8,8 @@
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
   <filter name="FilesFromPackage" enabled="true">
-    <filter-data value="generated-protocol"/>
-    <filter-data value="spread-4.0.0"/>
-    <filter-data value="examples"/>
+    <filter-data value="spread-src"/>
+    <filter-data value="target/generated-protocol/rsb/protocol"/>
+    <filter-data value="target/generated-protocol/tutorial"/>
   </filter>
 </fileset-config>
