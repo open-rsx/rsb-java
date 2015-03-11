@@ -77,33 +77,17 @@ public class SpreadWrapper implements Activatable {
      * Creates a new instance for the given settings. Connection will be
      * established during {@link #activate()}.
      *
-     * @param spreadHost
-     *            host to connect to
-     * @param spreadPort
-     *            port to connect to
-     * @param tcpNoDelay
-     *            use tcp no delay?
+     * @param options the options to use for connecting
      * @throws UnknownHostException
      *             host name cannot be resolved
      */
-    public SpreadWrapper(final String spreadHost, final int spreadPort,
-            final boolean tcpNoDelay) throws UnknownHostException {
-
-        if (spreadHost == null || spreadHost.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Spread host must not be null or empty string. "
-                            + "Instead a valid host name or ip address is required.");
-        }
-        if (spreadPort <= 0) {
-            throw new IllegalArgumentException(
-                    "Spread port must be a number > 0.");
-        }
-
-        this.port = spreadPort;
+    public SpreadWrapper(final SpreadOptions options)
+            throws UnknownHostException {
+        this.port = options.getPort();
         // TODO handle this in a way that in this constructor no exceptions
         // may occur
-        this.setSpreadhost(spreadHost);
-        this.useTcpNoDelay = tcpNoDelay;
+        this.setSpreadhost(options.getHost());
+        this.useTcpNoDelay = options.isTcpNoDelay();
     }
 
     /**

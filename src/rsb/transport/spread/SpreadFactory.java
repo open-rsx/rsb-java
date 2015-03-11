@@ -58,19 +58,23 @@ public class SpreadFactory implements TransportFactory {
     private static final String NODELAY_KEY = "transport.spread.tcpnodelay";
     private static final String DEFAULT_NODELAY = "true";
 
-    private SpreadWrapper createSpreadWrapper(final Properties properties)
+    private SpreadOptions optionsFromProperties(final Properties properties) {
+        return new SpreadOptions(properties.getProperty(HOST_KEY, DEFAULT_HOST)
+                .asString(), properties.getProperty(PORT_KEY, DEFAULT_PORT)
+                .asInteger(), properties.getProperty(NODELAY_KEY,
+                DEFAULT_NODELAY).asBoolean());
+    }
+
+    private SpreadWrapper createSpreadWrapper(final SpreadOptions options)
             throws InitializeException {
         try {
-            return new SpreadWrapper(properties.getProperty(HOST_KEY,
-                    DEFAULT_HOST).asString(), properties.getProperty(PORT_KEY,
-                    DEFAULT_PORT).asInteger(), properties.getProperty(
-                    NODELAY_KEY, DEFAULT_NODELAY).asBoolean());
+            return new SpreadWrapper(options);
         } catch (final NumberFormatException e) {
             throw new InitializeException(
                     "Unable to parse spread port from properties.", e);
         } catch (final UnknownHostException e) {
             throw new InitializeException("Unable to resolve host name "
-                    + properties.getProperty(HOST_KEY, DEFAULT_HOST), e);
+                    + options.getHost(), e);
         }
     }
 
@@ -79,7 +83,8 @@ public class SpreadFactory implements TransportFactory {
     public InPushConnector createInPushConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
-        return new SpreadInPushConnector(createSpreadWrapper(properties),
+        return new SpreadInPushConnector(
+                createSpreadWrapper(optionsFromProperties(properties)),
                 (ConverterSelectionStrategy<ByteBuffer>) converters);
 
     }
@@ -103,7 +108,8 @@ public class SpreadFactory implements TransportFactory {
                             QOS_RELIABILITY_KEY).asString());
         }
 
-        return new SpreadOutConnector(createSpreadWrapper(properties),
+        return new SpreadOutConnector(
+                createSpreadWrapper(optionsFromProperties(properties)),
                 (ConverterSelectionStrategy<ByteBuffer>) converters,
                 new QualityOfServiceSpec(ordering, reliability));
 
