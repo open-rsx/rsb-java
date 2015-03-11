@@ -48,7 +48,7 @@ public interface InPushConnector extends InConnector {
     /**
      * Removes a registered handler so that it won't be notified anymore.
      *
-     * This method must not be called after calling {@link #activate()}.
+     * This method must not be called after calling {@link #deactivate()}.
      *
      * @param handler
      *            the handler to remove

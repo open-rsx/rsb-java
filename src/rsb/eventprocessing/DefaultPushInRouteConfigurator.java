@@ -69,14 +69,14 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
     @Override
     public void deactivate() throws RSBException {
         synchronized (this.utility) {
-            for (final InPushConnector connector : this.utility.getConnectors()) {
-                connector.removeHandler(this.receivingStrategy);
-            }
             try {
                 this.receivingStrategy.deactivate();
                 this.utility.deactivate();
             } catch (final InterruptedException e) {
                 throw new RSBException(e);
+            }
+            for (final InPushConnector connector : this.utility.getConnectors()) {
+                connector.removeHandler(this.receivingStrategy);
             }
         }
     }
