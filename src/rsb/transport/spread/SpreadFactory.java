@@ -68,7 +68,7 @@ public class SpreadFactory implements TransportFactory {
     private SpreadWrapper createSpreadWrapper(final SpreadOptions options)
             throws InitializeException {
         try {
-            return new SpreadWrapper(options);
+            return new SpreadWrapperImpl(options);
         } catch (final NumberFormatException e) {
             throw new InitializeException(
                     "Unable to parse spread port from properties.", e);

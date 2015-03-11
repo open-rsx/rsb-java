@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import rsb.Event;
-import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
@@ -167,7 +166,7 @@ public class SpreadOutConnector implements OutConnector {
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         // activate spread connection
         if (this.spread.isActive()) {
             throw new IllegalStateException("Connector is already active.");
@@ -347,7 +346,7 @@ public class SpreadOutConnector implements OutConnector {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         if (!this.spread.isActive()) {
             throw new IllegalStateException("Connector is not active.");
         }

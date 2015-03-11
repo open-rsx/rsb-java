@@ -33,6 +33,7 @@ import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.transport.spread.SpreadOptions;
 import rsb.transport.spread.SpreadWrapper;
+import rsb.transport.spread.SpreadWrapperImpl;
 import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
@@ -58,7 +59,7 @@ public final class Utilities {
      */
     public static SpreadWrapper createSpreadWrapper() throws Throwable {
         final ConfigLoader loader = new ConfigLoader();
-        return new SpreadWrapper(
+        return new SpreadWrapperImpl(
                 new SpreadOptions("localhost", loader.load(new Properties())
                         .getProperty("transport.spread.port", "4803")
                         .asInteger(), true));

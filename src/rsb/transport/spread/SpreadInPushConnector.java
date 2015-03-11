@@ -79,7 +79,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         assert this.scope != null;
 
         this.receiver = new ReceiverTask(this.spread, this, this.inStrategy);
@@ -105,7 +105,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         if (this.spread.isActive()) {
             LOG.fine("deactivating SpreadPort");
             this.spread.deactivate();
