@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class DefaultErrorHandler implements ErrorHandler {
 
     @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
-    Logger log = Logger.getLogger(DefaultErrorHandler.class.getName());
+    private final Logger log;
 
     public DefaultErrorHandler(final Logger logger) {
         this.log = logger;

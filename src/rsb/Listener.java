@@ -58,6 +58,8 @@ public class Listener extends Participant {
             .getLogger(Listener.class.getName());
 
     /** The class state currently being active. */
+    // false positive due to use in private state classes
+    @SuppressWarnings("PMD.ImmutableField")
     private ListenerState state;
 
     @SuppressWarnings({ "deprecation", "unused" })

@@ -51,6 +51,8 @@ import rsb.RSBException;
  * @author jmoringe
  * @author swrede
  */
+// false positive, lacks methods from Participant
+@SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
 public abstract class Method extends Participant {
 
     private final Factory factory;
@@ -139,7 +141,7 @@ public abstract class Method extends Participant {
      *            Arguments used to create a method instances. The last scope
      *            fragment is assumed to be the method name.
      */
-    public Method(final ParticipantCreateArgs<?> args) {
+    protected Method(final ParticipantCreateArgs<?> args) {
         super(args);
         if (args.getScope().getComponents().isEmpty()) {
             throw new IllegalArgumentException(

@@ -67,13 +67,21 @@ public final class DefaultConverters {
 
         // Converter instances required for introspection subsystem
         DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new ProtocolBufferConverter<Hello>(Hello.getDefaultInstance()));
+                .addConverter(
+                        new ProtocolBufferConverter<Hello>(Hello
+                                .getDefaultInstance()));
         DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new ProtocolBufferConverter<Bye>(Bye.getDefaultInstance()));
+                .addConverter(
+                        new ProtocolBufferConverter<Bye>(Bye
+                                .getDefaultInstance()));
         DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new ProtocolBufferConverter<Host>(Host.getDefaultInstance()));
+                .addConverter(
+                        new ProtocolBufferConverter<Host>(Host
+                                .getDefaultInstance()));
         DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new ProtocolBufferConverter<Process>(Process.getDefaultInstance()));
+                .addConverter(
+                        new ProtocolBufferConverter<Process>(Process
+                                .getDefaultInstance()));
     }
 
 }

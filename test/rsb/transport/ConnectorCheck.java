@@ -332,7 +332,7 @@ public abstract class ConnectorCheck {
         // create an event to send
         final Scope scope =
                 OUT_BASE_SCOPE.concat(new Scope("/test/deactivate/stuff"));
-        final Event event = new Event(scope, String.class, "a test string");
+        final Event event = new Event(scope, String.class, "a test string 2");
         event.setId(new ParticipantId(), 634);
 
         // create a receiver to wait for event

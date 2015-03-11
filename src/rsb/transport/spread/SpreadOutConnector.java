@@ -152,7 +152,7 @@ public class SpreadOutConnector implements OutConnector {
      * @param outStrategy
      *            converters to use for sending data
      * @param qos
-     *            quality of serice requirements to address
+     *            quality of service requirements to address
      */
     public SpreadOutConnector(final SpreadWrapper spread,
             final ConverterSelectionStrategy<ByteBuffer> outStrategy,

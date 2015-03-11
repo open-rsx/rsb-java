@@ -48,7 +48,8 @@ import rsb.util.Properties;
  */
 public class SpreadFactory implements TransportFactory {
 
-    private static final String QOS_RELIABILITY_KEY = "qualityofservice.reliability";
+    private static final String QOS_RELIABILITY_KEY =
+            "qualityofservice.reliability";
     private static final String QOS_ORDERING_KEY = "qualityofservice.ordering";
     private static final String HOST_KEY = "transport.spread.host";
     private static final String DEFAULT_HOST = "localhost";
@@ -92,8 +93,8 @@ public class SpreadFactory implements TransportFactory {
         Ordering ordering = new QualityOfServiceSpec().getOrdering();
         if (properties.hasProperty(QOS_ORDERING_KEY)) {
             ordering =
-                    Ordering.valueOf(properties.getProperty(
-                            QOS_ORDERING_KEY).asString());
+                    Ordering.valueOf(properties.getProperty(QOS_ORDERING_KEY)
+                            .asString());
         }
         Reliability reliability = new QualityOfServiceSpec().getReliability();
         if (properties.hasProperty(QOS_RELIABILITY_KEY)) {

@@ -44,6 +44,7 @@ import rsb.util.Properties;
  */
 public class ParticipantConfigCreatorTest {
 
+    private static final String FALSE_STRING = "false";
     private static final String SPREAD_TRANSPORT = "spread";
 
     @BeforeClass
@@ -78,7 +79,7 @@ public class ParticipantConfigCreatorTest {
     public void enable() {
 
         final Properties props = new Properties();
-        props.setProperty("transport.spread.enabled", "false");
+        props.setProperty("transport.spread.enabled", FALSE_STRING);
 
         final ParticipantConfig config = new ParticipantConfig();
         config.getOrCreateTransport(SPREAD_TRANSPORT).setEnabled(true);
@@ -121,7 +122,7 @@ public class ParticipantConfigCreatorTest {
         new ParticipantConfigCreator().reconfigure(config, props);
         assertTrue(config.isIntrospectionEnabled());
 
-        props.setProperty("introspection.enabled", "false");
+        props.setProperty("introspection.enabled", FALSE_STRING);
         new ParticipantConfigCreator().reconfigure(config, props);
         assertFalse(config.isIntrospectionEnabled());
 

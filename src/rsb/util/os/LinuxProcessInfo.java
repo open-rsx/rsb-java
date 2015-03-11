@@ -135,7 +135,7 @@ public class LinuxProcessInfo extends PortableProcessInfo {
             final String[] args = cmdLine.split("\0");
             final List<String> argList =
                     new LinkedList<String>(Arrays.asList(args));
-            if (argList.size() >= 1) {
+            if (!argList.isEmpty()) {
                 argList.remove(0);
             }
             return argList;

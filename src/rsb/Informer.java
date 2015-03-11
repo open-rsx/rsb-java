@@ -55,6 +55,8 @@ public class Informer<DataType extends Object> extends Participant {
             .getLogger(Informer.class.getName());
 
     /** Contains the state instance currently being active. */
+    // false positive due to use in private state classes
+    @SuppressWarnings("PMD.ImmutableField")
     private InformerState<DataType> state;
 
     /** An atomic uint32 counter object for event sequence numbers. */
