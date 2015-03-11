@@ -29,6 +29,8 @@ package rsb.transport.spread;
 
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
@@ -58,6 +60,9 @@ public class SpreadFactory implements TransportFactory {
     private static final String NODELAY_KEY = "transport.spread.tcpnodelay";
     private static final String DEFAULT_NODELAY = "true";
 
+    private final Map<SpreadOptions, SpreadWrapper> spreadWrappers =
+            new HashMap<SpreadOptions, SpreadWrapper>();
+
     private SpreadOptions optionsFromProperties(final Properties properties) {
         return new SpreadOptions(properties.getProperty(HOST_KEY, DEFAULT_HOST)
                 .asString(), properties.getProperty(PORT_KEY, DEFAULT_PORT)
@@ -75,6 +80,20 @@ public class SpreadFactory implements TransportFactory {
         } catch (final UnknownHostException e) {
             throw new InitializeException("Unable to resolve host name "
                     + options.getHost(), e);
+        }
+    }
+
+    private SpreadWrapper
+            createUniqueSpreadWrapper(final SpreadOptions options)
+                    throws InitializeException {
+        synchronized (this.spreadWrappers) {
+            // this always leaves the SpreadWrapper instances in the map since
+            // we know that reactivation is possible for these instances
+            if (!this.spreadWrappers.containsKey(options)) {
+                this.spreadWrappers.put(options, new RefCountingSpreadWrapper(
+                        createSpreadWrapper(options)));
+            }
+            return this.spreadWrappers.get(options);
         }
     }
 
@@ -109,7 +128,7 @@ public class SpreadFactory implements TransportFactory {
         }
 
         return new SpreadOutConnector(
-                createSpreadWrapper(optionsFromProperties(properties)),
+                createUniqueSpreadWrapper(optionsFromProperties(properties)),
                 (ConverterSelectionStrategy<ByteBuffer>) converters,
                 new QualityOfServiceSpec(ordering, reliability));
 
