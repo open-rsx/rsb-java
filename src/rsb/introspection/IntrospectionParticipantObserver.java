@@ -48,7 +48,19 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
             .getLogger(IntrospectionParticipantObserver.class.getName());
 
     private final IntrospectionModel model = new IntrospectionModel();
-    private final ProtocolHandler protocol = new ProtocolHandler(this.model);
+    private final ProtocolHandler protocol;
+
+    /**
+     * Constructs a new instance and accepts a display name to describe the
+     * process this instance is operating in.
+     *
+     * @param processDisplayName
+     *            human-readable name of the process this instance operates in,
+     *            may be <code>null</code> if not provided
+     */
+    public IntrospectionParticipantObserver(final String processDisplayName) {
+        this.protocol = new ProtocolHandler(this.model, processDisplayName);
+    }
 
     @Override
     public void created(final Participant participant,

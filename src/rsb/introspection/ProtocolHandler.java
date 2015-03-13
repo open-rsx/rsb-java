@@ -83,6 +83,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
     private final IntrospectionModel model;
     private final ProcessInfo processInfo;
     private final HostInfo hostInfo;
+    private final String processDisplayName;
 
     /**
      * Receives introspection queries about participants.
@@ -278,10 +279,16 @@ public class ProtocolHandler extends AbstractEventHandler implements
      *
      * @param model
      *            the mode, not <code>null</code>
+     * @param processDisplayName
+     *            human-readable name of the process this instance operates in,
+     *            may be <code>null</code> if not provided
      */
-    public ProtocolHandler(final IntrospectionModel model) {
+    public ProtocolHandler(final IntrospectionModel model,
+            final String processDisplayName) {
         assert model != null;
         this.model = model;
+
+        this.processDisplayName = processDisplayName;
 
         // select the host and process information providers
         this.processInfo = ProcessInfoSelector.getProcessInfo();
@@ -486,7 +493,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
 
         final Hello.Builder helloBuilder = Hello.newBuilder();
         helloAddParticipantData(participant, helloBuilder);
-        helloAddProcessInformation(this.processInfo, helloBuilder);
+        helloAddProcessInformation(this.processInfo, this.processDisplayName,
+                helloBuilder);
         helloAddHostInformation(this.hostInfo, helloBuilder);
 
         final Hello hello = helloBuilder.build();
@@ -548,11 +556,15 @@ public class ProtocolHandler extends AbstractEventHandler implements
      *
      * @param processInfo
      *            the process information source
+     * @param processDisplayName
+     *            human-readable name of the process this instance operates in,
+     *            may be <code>null</code> if not provided
      * @param helloBuilder
      *            the builder for the hello message to use
      */
     private static void helloAddProcessInformation(
-            final ProcessInfo processInfo, final Hello.Builder helloBuilder) {
+            final ProcessInfo processInfo, final String processDisplayName,
+            final Hello.Builder helloBuilder) {
         assert processInfo != null;
         assert helloBuilder != null;
 
@@ -571,6 +583,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
             processBuilder.setExecutingUser(processInfo.getUserName());
         }
         processBuilder.setRsbVersion(Version.getInstance().getVersionString());
+        if (processDisplayName != null) {
+            processBuilder.setDisplayName(processDisplayName);
+        }
 
     }
 
