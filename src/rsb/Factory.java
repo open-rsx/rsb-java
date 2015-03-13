@@ -53,6 +53,12 @@ import rsb.util.Properties;
 public final class Factory {
 
     /**
+     * Configuration key for the introspection dusplay name.
+     */
+    private static final String INTROSPECTION_DISPLAYNAME_KEY =
+            "introspection.displayname";
+
+    /**
      * The singleton instance.
      */
     private static Factory instance = new Factory();
@@ -150,8 +156,14 @@ public final class Factory {
                 this.properties);
 
         // add support for introspection
-        this.observerManager
-                .addObserver(new IntrospectionParticipantObserver());
+        String introspectionDisplayName = null;
+        if (this.properties.hasProperty(INTROSPECTION_DISPLAYNAME_KEY)) {
+            introspectionDisplayName =
+                    this.properties.getProperty(INTROSPECTION_DISPLAYNAME_KEY)
+                            .asString();
+        }
+        this.observerManager.addObserver(new IntrospectionParticipantObserver(
+                introspectionDisplayName));
 
     }
 
