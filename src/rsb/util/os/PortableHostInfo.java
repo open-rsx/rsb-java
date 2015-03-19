@@ -27,10 +27,10 @@
  */
 package rsb.util.os;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import rsb.util.os.RuntimeOsUtilities.RuntimeNotAvailableException;
 
 /**
  * Cross-platform plain Java implementation of host info interface.
@@ -51,21 +51,30 @@ public class PortableHostInfo extends CommonHostInfo {
     }
 
     private void initialize() {
-        final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
-
         // host name
         try {
-            this.setHostName(RuntimeOsUtilities.determineHostName(runtime));
-        } catch (final IllegalArgumentException e) {
+            final RuntimeOsUtilities runtimeUtilities =
+                    new RuntimeOsUtilities();
+            this.setHostName(runtimeUtilities.determineHostName());
+        } catch (final RuntimeNotAvailableException e) {
             LOG.log(Level.WARNING,
-                    "Unable to determine host name from runtime."
-                            + "Falling back to network resolution.", e);
-            this.setHostName(OsUtilities.getLocalHostName());
-            if (this.getHostId() == null) {
-                LOG.warning("Host name could not be determined at all.");
-            }
+                    "Unable to determine host name from runtime. "
+                            + "Falling back to network resolution.");
+        }
+        // runtimeUtilities.determineHostName can also return null, so we need
+        // to check this after the exception handler and not only exclusively
+        // inside it
+        if (getHostName() == null) {
+            fallbackHostNameResolution();
         }
 
+    }
+
+    private void fallbackHostNameResolution() {
+        this.setHostName(OsUtilities.getLocalHostName());
+        if (this.getHostName() == null) {
+            LOG.warning("Host name could not be determined at all.");
+        }
     }
 
 }

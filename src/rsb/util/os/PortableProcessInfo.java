@@ -27,12 +27,12 @@
  */
 package rsb.util.os;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import rsb.util.os.RuntimeOsUtilities.RuntimeNotAvailableException;
 
 /**
  * Cross-platform plain Java implementation of process info interface.
@@ -45,6 +45,8 @@ public class PortableProcessInfo extends CommonProcessInfo {
     private static final Logger LOG = Logger
             .getLogger(PortableProcessInfo.class.getName());
 
+    private static final int MILLIS_TO_MICROS = 1000;
+
     /**
      * Creates a new instance and initializes all provided values in
      * {@link CommonProcessInfo}.
@@ -52,14 +54,20 @@ public class PortableProcessInfo extends CommonProcessInfo {
     public PortableProcessInfo() {
         super();
 
-        final RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
         try {
-            this.setPid(RuntimeOsUtilities.determinePid(runtime));
-        } catch (final IllegalArgumentException e) {
-            LOG.log(Level.WARNING, "Unable to determine PID", e);
+            final RuntimeOsUtilities runtimeUtilities =
+                    new RuntimeOsUtilities();
+            this.setPid(runtimeUtilities.determinePid());
+            this.setStartTime(runtimeUtilities.determineStartTime());
+            this.setArguments(runtimeUtilities.determineArguments());
+        } catch (final RuntimeNotAvailableException e) {
+            LOG.log(Level.WARNING,
+                    "Unable to determine PID, process start time "
+                            + "and arguments.", e);
+            // fallback to current time
+            setStartTime(System.currentTimeMillis() * MILLIS_TO_MICROS);
         }
-        this.setStartTime(RuntimeOsUtilities.determineStartTime(runtime));
-        this.setArguments(RuntimeOsUtilities.determineArguments(runtime));
+
         this.setProgramName(determineProgramName());
     }
 

@@ -31,11 +31,14 @@ package rsb;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.converter.DefaultConverters;
 import rsb.introspection.IntrospectionParticipantObserver;
+import rsb.introspection.LacksOsInformationException;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 import rsb.transport.DefaultTransports;
@@ -51,6 +54,8 @@ import rsb.util.Properties;
  * @author swrede
  */
 public final class Factory {
+
+    private static final Logger LOG = Logger.getLogger(Factory.class.getName());
 
     /**
      * Configuration key for the introspection dusplay name.
@@ -162,8 +167,17 @@ public final class Factory {
                     this.properties.getProperty(INTROSPECTION_DISPLAYNAME_KEY)
                             .asString();
         }
-        this.observerManager.addObserver(new IntrospectionParticipantObserver(
-                introspectionDisplayName));
+        try {
+            this.observerManager
+                    .addObserver(new IntrospectionParticipantObserver(
+                            introspectionDisplayName));
+        } catch (final LacksOsInformationException e) {
+            LOG.log(Level.WARNING,
+                    "Cannot activate the introspection mechanism "
+                            + "since required information could not be "
+                            + "retrieved from the operating system. "
+                            + "Continuing without introspection.", e);
+        }
 
     }
 

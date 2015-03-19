@@ -27,21 +27,120 @@
  */
 package rsb.util.os;
 
-import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class to retrieve OS and process information from a
- * {@link RuntimeMXBean} instance.
+ * {@link java.lang.management.RuntimeMXBean} instance. The dependency to this
+ * class is explicitly hidden via reflection to support Android devices, where
+ * the management package does not exist.
  *
  * @author jwienke
  */
 public final class RuntimeOsUtilities {
 
+    private static final Logger LOG = Logger.getLogger(RuntimeOsUtilities.class
+            .getName());
+
     private static final String PID_HOST_SEPARATOR = "@";
 
-    private RuntimeOsUtilities() {
-        // prevent utility class instantiation
+    private final Object runtime;
+
+    private Method getInputArguments;
+    private Method getStartTime;
+    private Method getName;
+
+    /**
+     * Indicates that a {@link java.lang.management.RuntimeMXBean} instance is
+     * not available on this system.
+     *
+     * @author jwienke
+     */
+    public static class RuntimeNotAvailableException extends RuntimeException {
+
+        private static final long serialVersionUID = 8231745636666959997L;
+
+        /**
+         * Constructor.
+         */
+        public RuntimeNotAvailableException() {
+            super();
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param message
+         *            explanation
+         * @param cause
+         *            cause
+         */
+        public RuntimeNotAvailableException(final String message,
+                final Throwable cause) {
+            super(message, cause);
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param message
+         *            explanation
+         */
+        public RuntimeNotAvailableException(final String message) {
+            super(message);
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param cause
+         *            cause
+         */
+        public RuntimeNotAvailableException(final Throwable cause) {
+            super(cause);
+        }
+    }
+
+    /**
+     * Creates a new instance.
+     */
+    public RuntimeOsUtilities() {
+        try {
+            final Class<?> factoryClass =
+                    Class.forName("java.lang.management.ManagementFactory");
+            final Class<?> runtimeInterface =
+                    Class.forName("java.lang.management.RuntimeMXBean");
+            final Method getRuntimeMxBean =
+                    factoryClass.getMethod("getRuntimeMXBean");
+            this.runtime = getRuntimeMxBean.invoke(null);
+            this.getInputArguments =
+                    runtimeInterface.getMethod("getInputArguments");
+            this.getStartTime = runtimeInterface.getMethod("getStartTime");
+            this.getName = runtimeInterface.getMethod("getName");
+        } catch (final ClassNotFoundException e) {
+            throw new RuntimeNotAvailableException(e);
+        } catch (final SecurityException e) {
+            throw new RuntimeNotAvailableException(e);
+        } catch (final NoSuchMethodException e) {
+            throw new RuntimeNotAvailableException(e);
+        } catch (final IllegalArgumentException e) {
+            throw new RuntimeNotAvailableException(e);
+        } catch (final IllegalAccessException e) {
+            throw new RuntimeNotAvailableException(e);
+        } catch (final InvocationTargetException e) {
+            throw new RuntimeNotAvailableException(e);
+        }
+    }
+
+    private static void logReflectionError(final String methodName,
+            final Exception exception) {
+        LOG.log(Level.WARNING,
+                "Error during reflection-based method call in method "
+                        + methodName, exception);
     }
 
     /**
@@ -49,62 +148,98 @@ public final class RuntimeOsUtilities {
      * not include the arguments to the main method. This method returns an
      * empty list if there is no input argument to the Java virtual machine.
      *
-     * @param runtime
-     *            runtime to use as information provider
-     * @return list of arguments, not <code>null</code>
+     * @return list of arguments, <code>null</code> if no determinable on
+     *         current system
      */
-    public static List<String> determineArguments(final RuntimeMXBean runtime) {
-        return runtime.getInputArguments();
+    @SuppressWarnings("unchecked")
+    public List<String> determineArguments() {
+        Exception error = null;
+        try {
+            return (List<String>) this.getInputArguments.invoke(this.runtime);
+        } catch (final IllegalArgumentException e) {
+            error = e;
+        } catch (final IllegalAccessException e) {
+            error = e;
+        } catch (final InvocationTargetException e) {
+            error = e;
+        }
+        logReflectionError("determineArguments", error);
+        return null;
     }
 
     /**
      * Returns the start time of the process in milliseconds.
      *
-     * @param runtime
-     *            runtime to use as information provider
-     * @return start time in milliseconds unix epoch
+     * @return start time in milliseconds unix epoch, <code>null</code> if no
+     *         determinable on current system
      */
-    public static long determineStartTime(final RuntimeMXBean runtime) {
-        return runtime.getStartTime();
+    public Long determineStartTime() {
+        Exception error = null;
+        try {
+            return (Long) this.getStartTime.invoke(this.runtime);
+        } catch (final IllegalArgumentException e) {
+            error = e;
+        } catch (final IllegalAccessException e) {
+            error = e;
+        } catch (final InvocationTargetException e) {
+            error = e;
+        }
+        logReflectionError("determineStartTime", error);
+        return null;
     }
 
-    private static String[] getPidAndHost(final RuntimeMXBean runtime) {
-        // getName returns something like 6460@AURORA. Where the value
-        // before the @ symbol is the PID.
-        final String jvmName = runtime.getName();
+    @SuppressWarnings("PMD.ReturnEmptyArrayRatherThanNull")
+    private String[] getPidAndHost() {
+        Exception error = null;
+        try {
+            // getName returns something like 6460@AURORA. Where the value
+            // before the @ symbol is the PID.
+            final String jvmName = (String) this.getName.invoke(this.runtime);
 
-        if (!jvmName.contains(PID_HOST_SEPARATOR)) {
-            throw new IllegalArgumentException(String.format(
-                    "Unable to find separator character %s in jvm name '%s'",
-                    PID_HOST_SEPARATOR, jvmName));
+            if (!jvmName.contains(PID_HOST_SEPARATOR)) {
+                throw new IllegalArgumentException(String.format(
+                        "Unable to find separator character %s "
+                                + "in jvm name '%s'", PID_HOST_SEPARATOR,
+                        jvmName));
+            }
+
+            final String[] jvmNameParts = jvmName.split(PID_HOST_SEPARATOR);
+            if (jvmNameParts.length != 2 || jvmNameParts[0].isEmpty()
+                    || jvmNameParts[1].isEmpty()) {
+                throw new IllegalArgumentException(String.format(
+                        "jvm name '%s' does not have the "
+                                + "expected format pid@host", jvmName));
+            }
+
+            return jvmNameParts;
+
+        } catch (final IllegalArgumentException e) {
+            error = e;
+        } catch (final IllegalAccessException e) {
+            error = e;
+        } catch (final InvocationTargetException e) {
+            error = e;
         }
-
-        final String[] jvmNameParts = jvmName.split(PID_HOST_SEPARATOR);
-        if (jvmNameParts.length != 2 || jvmNameParts[0].isEmpty()
-                || jvmNameParts[1].isEmpty()) {
-            throw new IllegalArgumentException(String.format(
-                    "jvm name '%s' does not have the expected format pid@host",
-                    jvmName));
-        }
-
-        return jvmNameParts;
+        logReflectionError("getPidAndHost", error);
+        return null;
     }
 
     /**
      * Returns the PID of the java process.
      *
-     * @param runtime
-     *            runtime to use as information provider
-     * @return pid of the process
-     * @throws IllegalArgumentException
-     *             in case the PID could not be parsed from the runtime
-     *             environment
+     * @return pid of the process, <code>null</code> if no determinable on
+     *         current system
      */
-    public static int determinePid(final RuntimeMXBean runtime) {
-        final String[] pidAndHost = getPidAndHost(runtime);
-        // throwing the NumberFormatException here is ok since it is a subclass
-        // of RuntimeException
-        return Integer.valueOf(pidAndHost[0]);
+    public Integer determinePid() {
+        final String[] pidAndHost = getPidAndHost();
+        if (pidAndHost != null) {
+            try {
+                return Integer.valueOf(pidAndHost[0]);
+            } catch (final NumberFormatException e) {
+                LOG.log(Level.WARNING, "Unable to parse PID", e);
+            }
+        }
+        return null;
     }
 
     /**
@@ -115,6 +250,8 @@ public final class RuntimeOsUtilities {
      *            host name to work with, not <code>null</code>, not empty or
      *            dot character
      * @return host name without domain parts.
+     * @throws IllegalArgumentException
+     *             in case the given host name is empty
      */
     private static String removeDomainFromHostName(final String hostName) {
         final String[] parts = hostName.split("\\.");
@@ -126,17 +263,22 @@ public final class RuntimeOsUtilities {
 
     /**
      * Returns the host name of the computer the JVM designated by the
-     * {@link RuntimeMXBean} lives on.
+     * {@link java.lang.management.RuntimeMXBean} lives on.
      *
-     * @param runtime
-     *            runtime to use as information provider
-     * @return host name, not <code>null</code>
+     * @return host name, <code>null</code> if no determinable on current system
      * @throws IllegalArgumentException
      *             in case the host name could not be parsed from the runtime
      *             environment
      */
-    public static String determineHostName(final RuntimeMXBean runtime) {
-        final String[] pidAndHost = getPidAndHost(runtime);
-        return removeDomainFromHostName(pidAndHost[1]);
+    public String determineHostName() {
+        final String[] pidAndHost = getPidAndHost();
+        if (pidAndHost != null) {
+            try {
+                return removeDomainFromHostName(pidAndHost[1]);
+            } catch (final IllegalArgumentException e) {
+                LOG.log(Level.WARNING, "Unable to determine host name", e);
+            }
+        }
+        return null;
     }
 }

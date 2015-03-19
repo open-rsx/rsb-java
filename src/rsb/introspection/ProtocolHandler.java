@@ -282,6 +282,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
      * @param processDisplayName
      *            human-readable name of the process this instance operates in,
      *            may be <code>null</code> if not provided
+     * @throws LacksOsInformationException
+     *             thrown in case required information from the operating system
+     *             are not available. This makes the introspection unusable.
      */
     public ProtocolHandler(final IntrospectionModel model,
             final String processDisplayName) {
@@ -291,9 +294,29 @@ public class ProtocolHandler extends AbstractEventHandler implements
         this.processDisplayName = processDisplayName;
 
         // select the host and process information providers
+        try {
+            this.hostInfo =
+                    new HostIdEnsuringHostInfo(HostInfoSelector.getHostInfo());
+        } catch (final IllegalArgumentException e) {
+            throw new LacksOsInformationException(
+                    "Host information lacks required information.", e);
+        }
         this.processInfo = ProcessInfoSelector.getProcessInfo();
-        this.hostInfo =
-                new HostIdEnsuringHostInfo(HostInfoSelector.getHostInfo());
+
+        // check whether all required pieces of information for the process.
+        // Host information have already been checked by the constructor of
+        // HostIdEnsuringHostInfo.
+        if (this.processInfo.getPid() == null) {
+            throw new LacksOsInformationException(
+                    "No PID information available.");
+        }
+        if (this.processInfo.getProgramName() == null) {
+            throw new LacksOsInformationException("No program name available.");
+        }
+        if (this.processInfo.getStartTime() == null) {
+            throw new LacksOsInformationException(
+                    "No process start time available.");
+        }
 
         // register known actions to perform for introspection events
         this.eventActions.add(new ReplyToSurveyAction());

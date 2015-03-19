@@ -47,7 +47,7 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
     private static final Logger LOG = Logger
             .getLogger(IntrospectionParticipantObserver.class.getName());
 
-    private final IntrospectionModel model = new IntrospectionModel();
+    private final IntrospectionModel model;
     private final ProtocolHandler protocol;
 
     /**
@@ -57,8 +57,12 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
      * @param processDisplayName
      *            human-readable name of the process this instance operates in,
      *            may be <code>null</code> if not provided
+     * @throws rsb.introspection.LacksOsInformationException
+     *             thrown in case required information from the operating system
+     *             are not available. This makes the introspection unusable.
      */
     public IntrospectionParticipantObserver(final String processDisplayName) {
+        this.model = new IntrospectionModel();
         this.protocol = new ProtocolHandler(this.model, processDisplayName);
     }
 
