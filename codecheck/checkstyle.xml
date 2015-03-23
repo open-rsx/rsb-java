@@ -102,9 +102,6 @@
     <module name="MultipleStringLiterals"/>
     <module name="MultipleVariableDeclarations"/>
     <module name="OneStatementPerLine"/>
-    <module name="RedundantThrows">
-      <property name="suppressLoadErrors" value="true"/>
-    </module>
     <module name="LineLength">
       <property name="max" value="90"/>
       <property name="tabWidth" value="4"/>
