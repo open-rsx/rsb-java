@@ -191,7 +191,7 @@ public class RemoteMethod extends Method implements Handler {
                 request = this.pendingRequests.get(replyId);
                 this.pendingRequests.remove(replyId);
             } else {
-                LOG.info("Received a reply for a different RemoteServer instance.");
+                LOG.finer("Received a reply for a different RemoteServer instance.");
                 return;
             }
         }

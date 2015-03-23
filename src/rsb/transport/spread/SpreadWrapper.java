@@ -225,8 +225,8 @@ public class SpreadWrapper implements Activatable {
             LOG.fine("Spread connection's private group id is: "
                     + this.privGrpId);
         } catch (final SpreadException e) {
-            LOG.info("reoccuring SpreadException during connect to daemon: "
-                    + e.getMessage());
+            LOG.log(Level.WARNING,
+                    "reoccuring SpreadException during connect to daemon", e);
             // if we get here, all connection attempts failed
             throw new InitializeException("Could not create spread connection "
                     + "host=" + this.spreadhost.getHostName() + ", port="
@@ -290,8 +290,9 @@ public class SpreadWrapper implements Activatable {
                     LOG.log(Level.FINE, "SpreadGroup {0} has been left.", grp);
                 } catch (final SpreadException e) {
                     // ignored
-                    LOG.info("Caught a SpreadException while leaving group '"
-                            + grp + "': " + e.getMessage());
+                    LOG.log(Level.WARNING,
+                            "Caught a SpreadException while leaving group '"
+                                    + grp + "': " + e.getMessage(), e);
                 }
                 groupIt.remove();
             }
