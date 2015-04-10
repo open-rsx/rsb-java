@@ -102,23 +102,33 @@ class ReceiverTask extends Thread {
                 }
 
                 LOG.fine("Notification reveived by ReceiverTask");
-                final Event receivedFullEvent =
-                        this.convertNotification(receivedData);
+                Event receivedFullEvent = null;
+                try {
+                    receivedFullEvent = this.convertNotification(receivedData);
+                } catch (final RuntimeException e) {
+                    // catch anything else so that we cannot be actively crashed
+                    // with bad network input
+                    LOG.log(Level.SEVERE,
+                            "Error decoding event from the network layer", e);
+                    continue;
+                }
+                // receivedFullEvent might be null in case a fragment was
+                // received and no complete event is available yet
                 if (receivedFullEvent != null) {
                     // dispatch event
                     this.eventHandler.handle(receivedFullEvent);
                 }
 
-            } catch (final InterruptedIOException e1) {
+            } catch (final InterruptedIOException e) {
                 LOG.info("Listener thread was interrupted during IO.");
                 break;
-            } catch (final SpreadException e1) {
+            } catch (final SpreadException e) {
                 if (!this.spread.isConnected()) {
                     LOG.fine("Spread connection is closed.");
                 }
                 if (!this.spread.isShutdown()) {
                     LOG.log(Level.WARNING, "Caught a SpreadException while "
-                            + "trying to receive a message", e1);
+                            + "trying to receive a message", e);
                 }
                 // get out here, stop this thread as no further messages can be
                 // retrieved
