@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import rsb.Event;
-import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
@@ -72,6 +71,7 @@ public class SpreadOutConnector implements OutConnector {
     private QoSHandler spreadServiceHandler;
 
     private final SpreadWrapper spread;
+    private boolean active = false;
 
     /**
      * The converter selection strategy used to serialize messages.
@@ -158,8 +158,6 @@ public class SpreadOutConnector implements OutConnector {
             final ConverterSelectionStrategy<ByteBuffer> outStrategy,
             final QualityOfServiceSpec qos) {
 
-        assert !spread.isActive();
-
         this.spread = spread;
         this.converters = outStrategy;
         this.setQualityOfServiceSpec(qos);
@@ -167,12 +165,13 @@ public class SpreadOutConnector implements OutConnector {
     }
 
     @Override
-    public void activate() throws InitializeException {
+    public void activate() throws RSBException {
         // activate spread connection
-        if (this.spread.isActive()) {
+        if (this.active) {
             throw new IllegalStateException("Connector is already active.");
         }
         this.spread.activate();
+        this.active = true;
     }
 
     /**
@@ -347,12 +346,13 @@ public class SpreadOutConnector implements OutConnector {
     }
 
     @Override
-    public void deactivate() throws RSBException {
-        if (!this.spread.isActive()) {
+    public void deactivate() throws RSBException, InterruptedException {
+        if (!this.active) {
             throw new IllegalStateException("Connector is not active.");
         }
         LOG.fine("deactivating SpreadPort");
         this.spread.deactivate();
+        this.active = false;
     }
 
     @Override
@@ -378,7 +378,7 @@ public class SpreadOutConnector implements OutConnector {
 
     @Override
     public boolean isActive() {
-        return this.spread.isActive();
+        return this.active;
     }
 
     @Override
