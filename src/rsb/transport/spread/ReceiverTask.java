@@ -40,6 +40,7 @@ import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.EventHandler;
 import rsb.util.ByteHelpers;
+import spread.MembershipInfo;
 import spread.SpreadException;
 import spread.SpreadMessage;
 
@@ -62,9 +63,32 @@ class ReceiverTask extends Thread {
 
     private final EventHandler eventHandler;
 
+    private MembershipHandler membershipHandler = null;
+
     private final ConverterSelectionStrategy<ByteBuffer> converters;
 
     private final AssemblyPool pool = new AssemblyPool();
+
+    /**
+     * Interface for classes that handle membership changes.
+     *
+     * @author jwienke
+     */
+    public interface MembershipHandler {
+
+        /**
+         * Called in case a new member has joined a group.
+         *
+         * @param group
+         *            the group that was joined
+         * @param memberGroup
+         *            the private group of the member that joined.
+         * @return if <code>true</code>, deregister this handler and do not call
+         *         it further.
+         */
+        boolean joined(String group, String memberGroup);
+
+    }
 
     /**
      * @param spreadWrapper
@@ -76,8 +100,26 @@ class ReceiverTask extends Thread {
      */
     ReceiverTask(final SpreadWrapper spreadWrapper, final EventHandler handler,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
+        this(spreadWrapper, handler, null, converters);
+    }
+
+    /**
+     * @param spreadWrapper
+     *            the spread wrapper to receive from
+     * @param eventHandler
+     *            handler for received events
+     * @param membershipHandler
+     *            handler that processes membership changes
+     * @param converters
+     *            converter set to use for deserialization
+     */
+    ReceiverTask(final SpreadWrapper spreadWrapper,
+            final EventHandler eventHandler,
+            final MembershipHandler membershipHandler,
+            final ConverterSelectionStrategy<ByteBuffer> converters) {
         this.spread = spreadWrapper;
-        this.eventHandler = handler;
+        this.eventHandler = eventHandler;
+        this.membershipHandler = membershipHandler;
         this.converters = converters;
     }
 
@@ -91,11 +133,33 @@ class ReceiverTask extends Thread {
                 final SpreadMessage receivedMessage = this.spread.receive();
                 LOG.log(Level.FINEST,
                         "Message received from spread, message type: {0}",
-                        receivedMessage.isRegular());
+                        receivedMessage.getType());
 
-                // TODO check whether membership messages shall be handled
-                // similar to data messages and be converted into events
-                // TODO evaluate return value
+                // handle potential membership messages
+                if (this.membershipHandler != null
+                        && receivedMessage.isMembership()) {
+                    LOG.finest("Received message is a membership message");
+                    final MembershipInfo membershipInfo =
+                            receivedMessage.getMembershipInfo();
+                    boolean deregister = false;
+                    if (membershipInfo.isCausedByJoin()) {
+                        LOG.log(Level.FINEST,
+                                "Notifying MembershipHandler {0} "
+                                        + "about member {1} joining group {2}",
+                                new Object[] { this.membershipHandler,
+                                        membershipInfo.getJoined(),
+                                        membershipInfo.getGroup() });
+                        deregister =
+                                this.membershipHandler.joined(membershipInfo
+                                        .getGroup().toString(), membershipInfo
+                                        .getJoined().toString());
+                    }
+                    if (deregister) {
+                        this.membershipHandler = null;
+                    }
+                }
+
+                // otherwise try to handle data messages
                 final DataMessage receivedData =
                         this.smc.process(receivedMessage);
                 if (receivedData == null) {

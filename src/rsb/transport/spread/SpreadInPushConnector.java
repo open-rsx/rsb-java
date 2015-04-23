@@ -30,6 +30,7 @@ package rsb.transport.spread;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.Event;
@@ -62,6 +63,48 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
 
     /**
+     * Waits until a specific membership message occurs.
+     *
+     * @author jwienke
+     */
+    private static class WaitForJoinMembershipHandler implements
+            rsb.transport.spread.ReceiverTask.MembershipHandler {
+
+        private final Object lock = new Object();
+        private String desiredPrivateGroup;
+
+        public WaitForJoinMembershipHandler(final String desiredPrivateGroup) {
+            this.desiredPrivateGroup = desiredPrivateGroup;
+        }
+
+        public void waitForJoin() throws InterruptedException {
+            synchronized (this.lock) {
+                while (this.desiredPrivateGroup != null) {
+                    this.lock.wait();
+                }
+            }
+            LOG.finest("Waiting for joining finished.");
+        }
+
+        @Override
+        public boolean joined(final String group, final String memberGroup) {
+            LOG.log(Level.FINEST,
+                    "Join waiting got notified for member {0} in group "
+                            + "{1} while waiting for private group {2}",
+                    new Object[] { memberGroup, group, this.desiredPrivateGroup });
+            synchronized (this.lock) {
+                if (memberGroup.equals(this.desiredPrivateGroup)) {
+                    this.desiredPrivateGroup = null;
+                    this.lock.notify();
+                    return true;
+                }
+                return false;
+            }
+        }
+
+    }
+
+    /**
      * Creates a new connector.
      *
      * @param spread
@@ -82,11 +125,15 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
     public void activate() throws RSBException {
         assert this.scope != null;
 
-        this.receiver = new ReceiverTask(this.spread, this, this.inStrategy);
         // activate spread connection
         if (!this.spread.isActive()) {
             this.spread.activate();
         }
+        final WaitForJoinMembershipHandler membershipHandler =
+                new WaitForJoinMembershipHandler(this.spread.getPrivateGroup());
+        this.receiver =
+                new ReceiverTask(this.spread, this, membershipHandler,
+                        this.inStrategy);
         this.receiver.setPriority(Thread.NORM_PRIORITY + 2);
         this.receiver.setName("ReceiverTask [grp="
                 + this.spread.getPrivateGroup() + "]");
@@ -94,12 +141,22 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
         try {
             joinSpreadGroup(this.scope);
+            membershipHandler.waitForJoin();
         } catch (final SpreadException e) {
+            // CHECKSTYLE.OFF: MultipleStringLiterals - no useful way to get
+            // around this
             throw new InitializeException(
                     "Unable to join spread group for scope '" + this.scope
                             + "' with hash '"
                             + SpreadUtilities.spreadGroupName(this.scope)
                             + "'.", e);
+        } catch (final InterruptedException e) {
+            throw new InitializeException(
+                    "Unable to wait for joining the spread group for scope '"
+                            + this.scope + "' with hash '"
+                            + SpreadUtilities.spreadGroupName(this.scope)
+                            + "'.", e);
+            // CHECKSTYLE.ON: MultipleStringLiterals
         }
 
     }

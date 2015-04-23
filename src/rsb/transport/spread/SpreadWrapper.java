@@ -71,6 +71,9 @@ public interface SpreadWrapper extends Activatable {
 
     /**
      * If connected, joins the specified group. Otherwise, call is ignored.
+     * Calling this method does not wait until messages can effectively be
+     * received. You have to wait for a membership message containing your
+     * private group to be sure that this is the case.
      *
      * @param group
      *            group to join
