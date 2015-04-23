@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
 import rsb.ParticipantId;
 import rsb.protocol.EventIdType.EventId;
 import rsb.protocol.NotificationType.Notification;
@@ -43,7 +44,7 @@ import com.google.protobuf.ByteString;
 /**
  * @author swrede
  */
-public class ProtocolBufferConverterTest {
+public class ProtocolBufferConverterTest extends LoggingEnabled {
 
     private static final int RANDOM_SEQUENCE = 23;
 

@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.LoggingEnabled;
 import rsb.ParticipantId;
 import rsb.Scope;
 import rsb.converter.ConversionException;
@@ -56,7 +57,7 @@ import rsb.converter.UnambiguousConverterMap;
  *
  * @author jwienke
  */
-public abstract class ConnectorCheck {
+public abstract class ConnectorCheck extends LoggingEnabled {
 
     private static final String UTF8_WIRE_SCHEMA = "utf-8-string";
     private static final Scope OUT_BASE_SCOPE = new Scope("/this");

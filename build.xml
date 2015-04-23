@@ -298,7 +298,9 @@
 
         <jacoco:coverage destfile="${coverage.out.dir}/coverage.exec" enabled="${coverage}">
 
-            <junit printsummary="yes" haltonfailure="${failtests}" fork="true">
+            <junit printsummary="yes" haltonfailure="${failtests}" fork="true" forkmode="once">
+
+                <jvmarg value="-Djava.util.logging.config.file=test/logging.properties" />
 
                 <formatter type="xml" />
                 <formatter type="plain" usefile="false" />
@@ -316,6 +318,7 @@
                 </batchtest>
 
             </junit>
+
         </jacoco:coverage>
 
         <if>

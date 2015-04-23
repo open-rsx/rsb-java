@@ -35,11 +35,12 @@ import java.util.UUID;
 import org.junit.Test;
 
 import rsb.EventId;
+import rsb.LoggingEnabled;
 
 /**
  * @author swrede
  */
-public class UUIDToolsTest {
+public class UUIDToolsTest extends LoggingEnabled {
 
     /**
      * Test method for

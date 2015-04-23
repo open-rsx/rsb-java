@@ -33,10 +33,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * @author swrede
  */
-public class ProcessInfoTest {
+public class ProcessInfoTest extends LoggingEnabled {
 
     @Test
     public void testProcessInfo() {

@@ -43,7 +43,7 @@ import org.junit.Test;
  * @author jwienke
  */
 @SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals" })
-public class ScopeTest {
+public class ScopeTest extends LoggingEnabled {
 
     @Test
     public void parsingRoot() {

@@ -36,12 +36,14 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * Test for {@link LinuxProcessInfo}.
  *
  * @author jwienke
  */
-public class LinuxProcessInfoTest {
+public class LinuxProcessInfoTest extends LoggingEnabled {
 
     private static final long TEST_START_TIME = 1418232564050000L;
 

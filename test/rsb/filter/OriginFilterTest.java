@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.LoggingEnabled;
 import rsb.ParticipantId;
 import rsb.Scope;
 
@@ -41,7 +42,7 @@ import rsb.Scope;
  *
  * @author jmoringe
  */
-public class OriginFilterTest {
+public class OriginFilterTest extends LoggingEnabled {
 
     @Test
     public void transform() {

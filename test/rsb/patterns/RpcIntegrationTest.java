@@ -35,13 +35,14 @@ import org.junit.Test;
 
 import rsb.Event;
 import rsb.Factory;
+import rsb.LoggingEnabled;
 import rsb.Scope;
 import rsb.Utilities;
 
 /**
  * @author jwienke
  */
-public class RpcIntegrationTest {
+public class RpcIntegrationTest extends LoggingEnabled {
 
     private static final int NUM_CALLS = 100;
     private static final String TEST_DATA = "A test String";

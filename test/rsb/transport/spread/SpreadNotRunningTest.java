@@ -33,6 +33,7 @@ import rsb.Factory;
 import rsb.Informer;
 import rsb.InitializeException;
 import rsb.Listener;
+import rsb.LoggingEnabled;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
@@ -50,7 +51,7 @@ import rsb.util.Properties;
  * @author swrede
  * @author jwienke
  */
-public class SpreadNotRunningTest {
+public class SpreadNotRunningTest extends LoggingEnabled {
 
     private static final Scope SCOPE = new Scope("/test/");
 

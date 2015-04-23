@@ -36,7 +36,9 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-public class PropertiesTest {
+import rsb.LoggingEnabled;
+
+public class PropertiesTest extends LoggingEnabled {
 
     private static final String KEY = "Spread.Path";
     private static final String VALUE = "blaaaa";

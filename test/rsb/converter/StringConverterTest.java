@@ -38,10 +38,12 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * @author swrede
  */
-public class StringConverterTest {
+public class StringConverterTest extends LoggingEnabled {
 
     private static final String ASCII_WIRE_SCHEMA = "ascii-string";
     private static final String ASCII_ENCODING = "US-ASCII";

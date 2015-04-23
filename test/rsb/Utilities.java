@@ -42,7 +42,7 @@ import rsb.util.Properties;
  *
  * @author jwienke
  */
-public final class Utilities {
+public final class Utilities extends LoggingEnabled {
 
     private Utilities() {
         super();

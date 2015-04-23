@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import rsb.Event;
 import rsb.EventId;
+import rsb.LoggingEnabled;
 import rsb.ParticipantId;
 import rsb.Scope;
 
@@ -47,7 +48,7 @@ import rsb.Scope;
  *
  * @author jwienke
  */
-public abstract class ConnectorRoundtripCheck {
+public abstract class ConnectorRoundtripCheck extends LoggingEnabled {
 
     private final int dataSize;
 

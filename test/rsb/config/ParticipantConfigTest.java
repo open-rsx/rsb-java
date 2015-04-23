@@ -32,12 +32,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * Test for {@link ParticipantConfig}.
  *
  * @author jwienke
  */
-public class ParticipantConfigTest {
+public class ParticipantConfigTest extends LoggingEnabled {
 
     @Test
     public void construction() {

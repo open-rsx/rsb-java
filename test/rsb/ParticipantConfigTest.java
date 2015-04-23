@@ -43,7 +43,7 @@ import rsb.eventprocessing.SingleThreadFactory;
  *
  * @author jwienke
  */
-public class ParticipantConfigTest {
+public class ParticipantConfigTest extends LoggingEnabled {
 
     private ParticipantConfig configA;
     private ParticipantConfig configB;

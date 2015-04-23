@@ -33,8 +33,9 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.LoggingEnabled;
 
-public class MethodFilterTest {
+public class MethodFilterTest extends LoggingEnabled {
 
     @Test
     public void test() {

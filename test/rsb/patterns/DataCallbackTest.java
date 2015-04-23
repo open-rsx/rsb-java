@@ -33,11 +33,12 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.LoggingEnabled;
 
 /**
  * @author jwienke
  */
-public class DataCallbackTest {
+public class DataCallbackTest extends LoggingEnabled {
 
     @Test
     public void invokeVoid() throws Throwable {

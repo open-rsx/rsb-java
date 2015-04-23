@@ -32,13 +32,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
 import rsb.ParticipantId;
 import rsb.Scope;
 
 /**
  * @author swrede
  */
-public class FilterObservableTest {
+public class FilterObservableTest extends LoggingEnabled {
 
     private final class TestObserver implements FilterObserver {
 

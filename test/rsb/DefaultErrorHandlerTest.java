@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
-public class DefaultErrorHandlerTest {
+public class DefaultErrorHandlerTest extends LoggingEnabled {
 
     private static final Logger LOG = Logger
             .getLogger(DefaultErrorHandlerTest.class.getName());

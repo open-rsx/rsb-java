@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
 import rsb.util.Properties;
 
 /**
@@ -42,7 +43,7 @@ import rsb.util.Properties;
  *
  * @author jwienke
  */
-public class TransportConfigTest {
+public class TransportConfigTest extends LoggingEnabled {
 
     @Test
     public void defaultConstruction() {

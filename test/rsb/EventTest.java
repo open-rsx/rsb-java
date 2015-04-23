@@ -41,7 +41,7 @@ import org.junit.Test;
  *
  * @author jwienke
  */
-public class EventTest {
+public class EventTest extends LoggingEnabled {
 
     // for this test I want to test the different orders of calling equals
     // manually, so the warning about using assertEquals is explicitly not

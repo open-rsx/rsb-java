@@ -36,10 +36,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * @author jmoringe
  */
-public class FutureTest {
+public class FutureTest extends LoggingEnabled {
 
     @Test
     public void simpleGet() throws ExecutionException, TimeoutException {

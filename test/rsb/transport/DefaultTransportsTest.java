@@ -29,12 +29,14 @@ package rsb.transport;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * Test for {@link DefaultTransports}.
  *
  * @author jwienke
  */
-public class DefaultTransportsTest {
+public class DefaultTransportsTest extends LoggingEnabled {
 
     @Test
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")

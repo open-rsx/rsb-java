@@ -38,11 +38,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Event;
+import rsb.LoggingEnabled;
 
 /**
  * @author dklotz
  */
-public class TimeLimitedQueueTest {
+public class TimeLimitedQueueTest extends LoggingEnabled {
 
     private static final int WINDOW_MILLIS = 100;
 

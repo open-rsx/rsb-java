@@ -38,7 +38,7 @@ import org.junit.Test;
  *
  * @author jwienke
  */
-public class MetaDataTest {
+public class MetaDataTest extends LoggingEnabled {
 
     private static final int MILLIS_TO_MICROS = 1000;
     private static final int ALLOWED_DELTA_MICROS = 100000;

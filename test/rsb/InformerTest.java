@@ -47,7 +47,7 @@ import rsb.transport.DefaultTransports;
  * @author swrede
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public class InformerTest {
+public class InformerTest extends LoggingEnabled {
 
     private static final Scope DEFAULT_SCOPE = new Scope("/informer/example");
     private static final String DEFAULT_STRING_PAYLOAD = "Hello World!";

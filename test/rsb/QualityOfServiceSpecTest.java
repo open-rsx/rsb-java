@@ -38,7 +38,7 @@ import rsb.QualityOfServiceSpec.Reliability;
 /**
  * @author jwienke
  */
-public class QualityOfServiceSpecTest {
+public class QualityOfServiceSpecTest extends LoggingEnabled {
 
     @Test
     public void defaultSettings() {

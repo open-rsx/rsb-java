@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
@@ -46,7 +47,7 @@ import rsb.introspection.IntrospectionModel.IntrospectionModelObserver;
 /**
  * @author jwienke
  */
-public class IntrospectionModelTest {
+public class IntrospectionModelTest extends LoggingEnabled {
 
     private static class TestIntrospectionModelObserver implements
             IntrospectionModelObserver {

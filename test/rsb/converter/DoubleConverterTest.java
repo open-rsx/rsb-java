@@ -36,10 +36,12 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
+import rsb.LoggingEnabled;
+
 /**
  * @author jwienke
  */
-public class DoubleConverterTest {
+public class DoubleConverterTest extends LoggingEnabled {
 
     @Test
     public void serialize() throws Throwable {

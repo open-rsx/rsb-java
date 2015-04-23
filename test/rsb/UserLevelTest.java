@@ -42,7 +42,7 @@ import rsb.transport.DefaultTransports;
  *
  * @author jwienke
  */
-public class UserLevelTest {
+public class UserLevelTest extends LoggingEnabled {
 
     private static final int EVENTS_TO_SEND = 100;
 
