@@ -30,6 +30,7 @@ package rsb.transport.spread;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.Event;
@@ -203,6 +204,7 @@ public class SpreadOutConnector implements OutConnector {
 
     @Override
     public void push(final Event event) throws ConversionException {
+        LOG.log(Level.FINEST, "Pushing event to the wire: {0}", event);
 
         final WireContents<ByteBuffer> convertedDataBuffer =
                 ProtocolConversion.serializeEventData(event, this.converters);
@@ -211,9 +213,12 @@ public class SpreadOutConnector implements OutConnector {
 
         final List<Fragment> fragments =
                 prepareFragments(event, convertedDataBuffer);
+        LOG.log(Level.FINEST, "Event got fragmented into {0} parts",
+                fragments.size());
 
         // send all fragments
         for (final Fragment fragment : fragments) {
+            LOG.log(Level.FINEST, "Sending fragment {0}", fragment);
 
             fragment.getFragmentBuilder().setNotification(
                     fragment.getNotificationBuilder());

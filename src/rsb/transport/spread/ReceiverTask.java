@@ -89,8 +89,9 @@ class ReceiverTask extends Thread {
                 && !Thread.currentThread().isInterrupted()) {
             try {
                 final SpreadMessage receivedMessage = this.spread.receive();
-                LOG.fine("Message received from spread, message type: "
-                        + receivedMessage.isRegular());
+                LOG.log(Level.FINEST,
+                        "Message received from spread, message type: {0}",
+                        receivedMessage.isRegular());
 
                 // TODO check whether membership messages shall be handled
                 // similar to data messages and be converted into events
@@ -98,13 +99,16 @@ class ReceiverTask extends Thread {
                 final DataMessage receivedData =
                         this.smc.process(receivedMessage);
                 if (receivedData == null) {
+                    LOG.finest("Skipping processing of this message "
+                            + "because it is not ad DataMessage");
                     continue;
                 }
 
-                LOG.fine("Notification reveived by ReceiverTask");
                 Event receivedFullEvent = null;
                 try {
                     receivedFullEvent = this.convertNotification(receivedData);
+                    LOG.log(Level.FINEST, "receivedFullEvent={0}",
+                            receivedFullEvent);
                 } catch (final RuntimeException e) {
                     // catch anything else so that we cannot be actively crashed
                     // with bad network input
@@ -116,6 +120,9 @@ class ReceiverTask extends Thread {
                 // received and no complete event is available yet
                 if (receivedFullEvent != null) {
                     // dispatch event
+                    LOG.log(Level.FINEST,
+                            "Dispatching received event to handler {0}",
+                            this.eventHandler);
                     this.eventHandler.handle(receivedFullEvent);
                 }
 
