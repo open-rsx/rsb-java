@@ -87,7 +87,6 @@ public class BusServer extends BusBase {
                 try {
                     // accept socket
                     LOG.info("Waiting for new client connection");
-                    @SuppressWarnings("resource")
                     final Socket socket = BusServer.this.serverSocket.accept();
                     LOG.log(Level.FINE, "Accepted a new client socket: {0}",
                             socket);
