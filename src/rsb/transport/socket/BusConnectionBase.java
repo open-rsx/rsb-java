@@ -124,6 +124,7 @@ public abstract class BusConnectionBase implements BusConnection {
 
     @Override
     public void activate() throws RSBException {
+        LOG.finer("Activating connection");
 
         synchronized (this) {
             assert this.socket != null;
@@ -143,6 +144,7 @@ public abstract class BusConnectionBase implements BusConnection {
 
     @Override
     public void shutdown() throws IOException {
+        LOG.finest("Shutdown called");
         synchronized (this) {
             if (!this.activeShutdown) {
                 this.socket.shutdownOutput();
@@ -158,6 +160,7 @@ public abstract class BusConnectionBase implements BusConnection {
 
     @Override
     public void deactivate() throws RSBException {
+        LOG.finer("Deactivating connection");
 
         synchronized (this) {
 
@@ -262,9 +265,8 @@ public abstract class BusConnectionBase implements BusConnection {
     public void sendNotification(final Notification notification)
             throws IOException {
 
-        LOG.fine("Sending new notification.");
-
         final byte[] data = notification.toByteArray();
+        LOG.log(Level.FINE, "Sending new notification of size {0}", data.length);
 
         // send data size
         final ByteBuffer sizeBuffer =
@@ -280,8 +282,10 @@ public abstract class BusConnectionBase implements BusConnection {
             }
 
             if (isActiveShutdown()) {
-                LOG.fine("Ignoring send request for notification "
-                        + "because we are actively shutting down.");
+                LOG.log(Level.FINE,
+                        "Not sending notification {0} "
+                        + "since we are already in shutdown.",
+                        notification);
                 return;
             }
 

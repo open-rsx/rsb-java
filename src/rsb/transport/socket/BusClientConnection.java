@@ -98,8 +98,8 @@ public class BusClientConnection extends BusConnectionBase {
                     ByteBuffer.allocateDirect(Protocol.HANDSHAKE_BYTES);
             handshakeReplyBuffer.order(ByteOrder.LITTLE_ENDIAN);
             final int bytesRead = getReader().read(handshakeReplyBuffer);
-            LOG.log(Level.FINER, "Received {0} handshake bytes",
-                    new Object[] { bytesRead });
+            LOG.log(Level.FINER, "Received {0} handshake bytes in {1}",
+                    new Object[] { bytesRead, handshakeReplyBuffer });
             if (bytesRead != handshakeReplyBuffer.capacity()) {
                 throw new RSBException(
                         "Handshake reply too short. Only received " + bytesRead
@@ -108,11 +108,14 @@ public class BusClientConnection extends BusConnectionBase {
             handshakeReplyBuffer.rewind();
 
             // verify handshake reply
-            if (Protocol.HANDSHAKE_DATA != handshakeReplyBuffer.getInt()) {
+            final int receivedHandshake = handshakeReplyBuffer.getInt();
+            if (Protocol.HANDSHAKE_DATA != receivedHandshake) {
                 throw new RSBException(
                         "RSB Handshake failed in SocketTransport at "
                                 + getOptions()
-                                + ". Received bytes sequence is not expected.");
+                                + ". Received bytes sequence is not expected "
+                                + "(expected: " + Protocol.HANDSHAKE_DATA
+                                + ", received: " + receivedHandshake + ").");
             }
 
             LOG.fine("Handshake successfull");

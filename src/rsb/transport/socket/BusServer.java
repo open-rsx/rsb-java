@@ -130,7 +130,7 @@ public class BusServer extends BusBase {
                     return;
                 } catch (final RSBException e) {
                     LOG.log(Level.WARNING,
-                            "Unmexpected exception while accepting new client.",
+                            "Unexpected exception while accepting new client.",
                             e);
                     // TODO what to do here?
                 }
