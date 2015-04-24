@@ -48,7 +48,8 @@ import rsb.protocol.NotificationType.Notification;
  * Subclasses need to use this object for synchronization.
  *
  * Subclasses need to call {@link #setSocket(Socket)} with a valid socket before
- * {@link #activate()} will be called.
+ * {@link #activate()} will be called. {@link #activate()} will automatically
+ * call {@link #handshake()}.
  *
  * @author jwienke
  */
@@ -62,6 +63,14 @@ public abstract class BusConnectionBase implements BusConnection {
     private WritableByteChannel writer;
     private SocketOptions options;
     private boolean activeShutdown = false;
+
+    /**
+     * Performs the handshake step of the protocol.
+     *
+     * @throws RSBException
+     *             error during handshake
+     */
+    protected abstract void handshake() throws RSBException;
 
     /**
      * Returns the contained socket instance.
@@ -138,6 +147,7 @@ public abstract class BusConnectionBase implements BusConnection {
                 this.writer = null;
                 throw new RSBException(e);
             }
+            this.handshake();
         }
 
     }
@@ -276,15 +286,17 @@ public abstract class BusConnectionBase implements BusConnection {
 
         synchronized (this) {
 
-            if (!isActive()) {
-                throw new IllegalStateException(
-                        "Cannot send. Connection is not active.");
-            }
-
             if (isActiveShutdown()) {
                 LOG.log(Level.FINE,
                         "Not sending notification {0} "
                         + "since we are already in shutdown.",
+                        notification);
+                return;
+            }
+
+            if (!isActive()) {
+                LOG.log(Level.FINE, "Not sending notification {0} on "
+                        + "this connection because it is not active.",
                         notification);
                 return;
             }

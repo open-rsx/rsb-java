@@ -104,11 +104,14 @@ public class BusServer extends BusBase {
                         // handshake. Otherwise, a BusClient.activate call might
                         // return before this connection is really installed in
                         // our own dispatching logic.
+                        // This logic leads to the situation that inactive
+                        // connections are in the connection list and might be
+                        // called to dispatch incoming notifications. This case
+                        // needs to be handled explicitly.
                         final ReceiveThread thread = addConnection(connection);
                         // now we are safe to perform the handshake as
                         // everything else is set up
                         connection.activate();
-                        connection.handshake();
                         // We need to wait with starting the receive thread
                         // until the connection is fully functional
                         thread.start();

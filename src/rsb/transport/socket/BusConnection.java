@@ -30,7 +30,6 @@ package rsb.transport.socket;
 import java.io.IOException;
 
 import rsb.Activatable;
-import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -59,15 +58,6 @@ public interface BusConnection extends Activatable {
      *             communication error
      */
     Notification readNotification() throws IOException;
-
-    /**
-     * Performs the handshake step of the protocol. Must be called after
-     * {@link #activate()}.
-     *
-     * @throws RSBException
-     *             error during handshake
-     */
-    void handshake() throws RSBException;
 
     /**
      * Returns the current configuration of the connection.

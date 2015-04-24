@@ -87,7 +87,7 @@ public class BusClientConnection extends BusConnectionBase {
      *             error performing the handshake sequence
      */
     @Override
-    public void handshake() throws RSBException {
+    protected void handshake() throws RSBException {
 
         LOG.fine("Performing handshake as client.");
 

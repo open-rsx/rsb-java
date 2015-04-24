@@ -71,7 +71,7 @@ public class BusServerConnection extends BusConnectionBase {
     }
 
     @Override
-    public void handshake() throws RSBException {
+    protected void handshake() throws RSBException {
 
         LOG.fine("Performing handshake.");
 

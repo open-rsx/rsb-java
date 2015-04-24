@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rsb.LoggingEnabled;
+import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -85,14 +86,27 @@ public class BusConnectionRoundtripTest extends LoggingEnabled {
 
         this.client = new BusClientConnection(Utilities.getSocketOptions());
         assertFalse(this.client.isActive());
-        this.client.activate();
+
+        final Thread activateThread = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    BusConnectionRoundtripTest.this.client.activate();
+                } catch (final RSBException e) {
+                    // nothing to do. is active will notice this
+                }
+            };
+
+        };
+        activateThread.start();
 
         this.server = new BusServerConnection(this.serverSocket.accept(), true);
         assertFalse(this.server.isActive());
-        this.server.activate();
-        this.server.handshake();
 
-        this.client.handshake();
+        this.server.activate();
+
+        activateThread.join();
 
         assertTrue(this.client.isActive());
         assertTrue(this.server.isActive());
