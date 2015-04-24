@@ -231,8 +231,12 @@ public abstract class BusBase implements Bus {
 
                 // terminate available connections and associated receiver
                 // threads
-                for (final BusConnection connection : new HashSet<BusConnection>(
-                        this.connections.keySet())) {
+                HashSet<BusConnection> connectionCopy;
+                synchronized (this.connections) {
+                    connectionCopy =
+                            new HashSet<BusConnection>(this.connections.keySet());
+                }
+                for (final BusConnection connection : connectionCopy) {
                     final ReceiveThread thread = removeConnection(connection);
                     try {
                         // we should initiate a shutdown in case the receiving
@@ -370,8 +374,12 @@ public abstract class BusBase implements Bus {
         LOG.fine("Dispatching notification to bus connections");
 
         // makes an atomic copy of the available connections to prevent blocking
-        for (final BusConnection con : new HashSet<BusConnection>(
-                this.connections.keySet())) {
+        HashSet<BusConnection> connectionCopy;
+        synchronized (this.connections) {
+            connectionCopy =
+                    new HashSet<BusConnection>(this.connections.keySet());
+        }
+        for (final BusConnection con : connectionCopy) {
             if (con.equals(ignoreConnection)) {
                 continue;
             }
