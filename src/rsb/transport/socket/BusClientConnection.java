@@ -95,17 +95,17 @@ public class BusClientConnection extends BusConnectionBase {
 
             // read handshake reply
             final ByteBuffer handshakeReplyBuffer =
-                    ByteBuffer.allocateDirect(Protocol.HANDSHAKE_BYTES);
+                    ByteBuffer.allocate(Protocol.HANDSHAKE_BYTES);
             handshakeReplyBuffer.order(ByteOrder.LITTLE_ENDIAN);
             final int bytesRead = getReader().read(handshakeReplyBuffer);
             LOG.log(Level.FINER, "Received {0} handshake bytes in {1}",
                     new Object[] { bytesRead, handshakeReplyBuffer });
-            if (bytesRead != handshakeReplyBuffer.capacity()) {
+            if (bytesRead != Protocol.HANDSHAKE_BYTES) {
                 throw new RSBException(
                         "Handshake reply too short. Only received " + bytesRead
                                 + " bytes instead of 4.");
             }
-            handshakeReplyBuffer.rewind();
+            handshakeReplyBuffer.flip();
 
             // verify handshake reply
             final int receivedHandshake = handshakeReplyBuffer.getInt();

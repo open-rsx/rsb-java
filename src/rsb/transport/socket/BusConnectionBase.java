@@ -280,7 +280,7 @@ public abstract class BusConnectionBase implements BusConnection {
 
         // send data size
         final ByteBuffer sizeBuffer =
-                ByteBuffer.allocateDirect(Protocol.DATA_SIZE_BYTES);
+                ByteBuffer.allocate(Protocol.DATA_SIZE_BYTES);
         sizeBuffer.order(ByteOrder.LITTLE_ENDIAN);
         sizeBuffer.asIntBuffer().put(data.length);
 
