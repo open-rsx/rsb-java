@@ -27,35 +27,64 @@
  */
 package rsb.filter;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * @author swrede
+ * @deprecated This class will be removed because the double dispatch logic has
+ *             been removed from {@link FilterObserver}.
  */
+@Deprecated
 public class AbstractFilterObserver implements FilterObserver {
 
     private static final Logger LOG = Logger
             .getLogger(AbstractFilterObserver.class.getCanonicalName());
 
-    @Override
-    public void notify(final AbstractFilter event, final FilterAction action) {
-        LOG.fine("AbstractFilterObser::notify(AbstractFilter e, FilterAction a) called");
+    // CHECKSTYLE.OFF: JavadocMethod - deprecated type, will be removed
+    // CHECKSTYLE.OFF: MultipleStringLiterals - deprecated type, will be removed
+
+    protected void
+            notify(final AbstractFilter event, final FilterAction action) {
+        LOG.log(Level.FINE,
+                "AbstractFilterObserver::notify(AbstractFilter {0}, "
+                        + "FilterAction {1}) called", new Object[] { event,
+                        action });
     }
 
-    @Override
-    public void notify(final ScopeFilter event, final FilterAction action) {
-        LOG.fine("AbstractFilterObser::notify(ScopeFilter e, FilterAction a) called");
+    protected void notify(final ScopeFilter event, final FilterAction action) {
+        LOG.log(Level.FINE, "AbstractFilterObserver::notify(ScopeFilter {0}, "
+                + "FilterAction {1}) called", new Object[] { event, action });
     }
 
-    @Override
-    public void notify(final TypeFilter event, final FilterAction action) {
-        LOG.fine("AbstractFilterObser::notify(TypeFilter e, FilterAction a) called");
+    protected void notify(final TypeFilter event, final FilterAction action) {
+        LOG.log(Level.FINE, "AbstractFilterObserver::notify(TypeFilter {0}, "
+                + "FilterAction {1}) called", new Object[] { event, action });
 
     }
 
+    protected void notify(final OriginFilter event, final FilterAction action) {
+        LOG.log(Level.FINE, "AbstractFilterObserver::notify(OriginFilter {0}, "
+                + "FilterAction {1}) called", new Object[] { event, action });
+    }
+
+    // CHECKSTYLE.ON: MultipleStringLiterals
+    // CHECKSTYLE.ON: JavadocMethod
+
     @Override
-    public void notify(final OriginFilter event, final FilterAction action) {
-        LOG.fine("IdentityFilterObser::notify(TypeFilter e, FilterAction a) called");
+    public void notify(final Filter filter, final FilterAction action) {
+        if (filter instanceof ScopeFilter) {
+            notify((ScopeFilter) filter, action);
+        } else if (filter instanceof TypeFilter) {
+            notify((TypeFilter) filter, action);
+        } else if (filter instanceof OriginFilter) {
+            notify((OriginFilter) filter, action);
+        } else if (filter instanceof AbstractFilter) {
+            notify((AbstractFilter) filter, action);
+        } else {
+            LOG.log(Level.WARNING, "Unsupported filter type {0}",
+                    filter.getClass());
+        }
     }
 
 }

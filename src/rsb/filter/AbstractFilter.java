@@ -36,17 +36,25 @@ import rsb.EventId;
 
 /**
  * @author swrede
+ * @deprecated this class will be removed in favor of directly implementing
+ *             {@link Filter}
  */
+@Deprecated
 public abstract class AbstractFilter implements Filter {
 
     private static final Logger LOG = Logger.getLogger(AbstractFilter.class
             .getName());
+
+    // CHECKSTYLE.OFF: JavadocMethod - deprecated type, will be removed
+    // CHECKSTYLE.OFF: VisibilityModifier - deprecated type, will be removed
 
     /** Stores whitelisted event ids registered by {@link #skip(EventId)}. */
     protected Set<EventId> whitelist = new HashSet<EventId>();
 
     /** Stores the type info for this filter. */
     protected String type = AbstractFilter.class.getSimpleName();
+
+    // CHECKSTYLE.ON: VisibilityModifier
 
     /**
      * Constructor.
@@ -58,12 +66,20 @@ public abstract class AbstractFilter implements Filter {
         this.type = type;
     }
 
+    // CHECKSTYLE.OFF: JavadocMethod - deprecated type, will be removed
+
     public AbstractFilter(final Class<? extends AbstractFilter> type) {
         this.type = type.getSimpleName();
     }
 
-    @Override
     public abstract Event transform(Event event);
+
+    // CHECKSTYLE.ON: JavadocMethod
+
+    @Override
+    public boolean match(final Event event) {
+        return transform(event) != null;
+    }
 
     /**
      * Skip this filter for any event with the specified ID. This will cause the
@@ -100,7 +116,14 @@ public abstract class AbstractFilter implements Filter {
         this.whitelist.remove(eventId);
     }
 
-    @Override
+    /**
+     * Not used anymore. Only for interface stability.
+     *
+     * @param observer
+     *            unused
+     * @param action
+     *            unused
+     */
     public abstract void dispachToObserver(FilterObserver observer,
             FilterAction action);
 

@@ -29,8 +29,7 @@ package rsb.filter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -48,31 +47,17 @@ public class ScopeFilterTest extends LoggingEnabled {
     private static final int RANDOM_SEQUENCE = 2345;
 
     /**
-     * Test method for {@link rsb.filter.ScopeFilter#transform(rsb.Event)}.
+     * Test method for {@link rsb.filter.ScopeFilter#match(rsb.Event)}.
      */
     @Test
-    public void transform() {
+    public void match() {
         final Event event = new Event();
         event.setScope(DEFAULT_SCOPE);
         event.setId(new ParticipantId(), RANDOM_SEQUENCE);
         final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
-        assertNotNull(filter.transform(event));
+        assertTrue(filter.match(event));
         event.setScope(new Scope("/nomatch"));
-        assertNull(filter.transform(event));
-    }
-
-    @Test
-    public void skipEventId() {
-        final Event event = new Event();
-        // TODO actually, we need a mock object to test this correctly
-        // setting the Scope to another name than the scope filters
-        // configuration is just to check here whether the white-
-        // listing really works
-        event.setScope(DEFAULT_SCOPE.concat(new Scope("/justfortesting")));
-        event.setId(new ParticipantId(), RANDOM_SEQUENCE);
-        final ScopeFilter filter = new ScopeFilter(DEFAULT_SCOPE);
-        filter.skip(event.getId());
-        assertNotNull(filter.transform(event));
+        assertFalse(filter.match(event));
     }
 
     /**
@@ -86,11 +71,10 @@ public class ScopeFilterTest extends LoggingEnabled {
 
     @Test
     public void equalsFilter() {
-        final ScopeFilter filter1 = new ScopeFilter(DEFAULT_SCOPE);
-        final ScopeFilter filter2 = new ScopeFilter(DEFAULT_SCOPE);
-        assertEquals(filter1, filter2);
-        filter2.setScope(new Scope("/nope"));
-        assertFalse(filter1.equals(filter2));
+        assertEquals(new ScopeFilter(DEFAULT_SCOPE), new ScopeFilter(
+                DEFAULT_SCOPE));
+        assertFalse(new ScopeFilter(DEFAULT_SCOPE).equals(new ScopeFilter(
+                new Scope("/foooo"))));
     }
 
 }

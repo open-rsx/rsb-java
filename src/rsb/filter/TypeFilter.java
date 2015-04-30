@@ -27,66 +27,44 @@
  */
 package rsb.filter;
 
-import java.util.logging.Logger;
-
 import rsb.Event;
-import rsb.EventId;
 
 /**
+ * A {@link Filter} that only accepts events which have a payload of a specific
+ * type. Events are accepted if their payload can be assigned to the desired
+ * class (ie. also subclasses are accepted).
  *
  * @author swrede
+ * @author jwienke
  */
-public class TypeFilter extends AbstractFilter {
+public class TypeFilter implements Filter {
 
-    private static final Logger LOG = Logger.getLogger(TypeFilter.class
-            .getName());
+    private final Class<?> type;
 
-    private Class<?> type;
-
-    public TypeFilter() {
-        super(TypeFilter.class);
-    }
-
+    /**
+     * Constructor.
+     *
+     * @param type
+     *            the desired payload type, not <code>null</code>
+     * @throws IllegalArgumentException
+     *             type is <code>null</code>
+     */
     public TypeFilter(final Class<?> type) {
-        super(TypeFilter.class);
+        if (type == null) {
+            throw new IllegalArgumentException("Type must not be null");
+        }
         this.type = type;
     }
 
     @Override
-    public void skip(final EventId eventId) {
-        LOG.info("Event with ID " + eventId
-                + " will not be matched by TypeFilter "
-                + "as this was already done by network layer!");
-        super.skip(eventId);
+    public boolean match(final Event event) {
+        return this.type.isAssignableFrom(event.getType());
     }
 
     @Override
     public boolean equals(final Object that) {
         return that instanceof TypeFilter
                 && this.type.equals(((TypeFilter) that).type);
-    }
-
-    @Override
-    public Event transform(final Event event) {
-        // check skip
-        final EventId eventId = event.getId();
-        if (this.mustSkip(eventId)) {
-            LOG.info("event with ID " + eventId + " whitelisted in TypeFilter!");
-            this.skipped(eventId);
-            return event;
-        }
-        // condition: class types are equal
-        if (this.type.isAssignableFrom(event.getClass())) {
-            return event;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void dispachToObserver(final FilterObserver observer,
-            final FilterAction action) {
-        observer.notify(this, action);
     }
 
     @Override

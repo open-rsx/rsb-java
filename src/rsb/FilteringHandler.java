@@ -74,7 +74,7 @@ public class FilteringHandler implements Handler {
     @Override
     public void internalNotify(final Event event) {
         for (final Filter filter : this.filters) {
-            if (filter.transform(event) == null) {
+            if (!filter.match(event)) {
                 return;
             }
         }

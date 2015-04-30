@@ -27,79 +27,54 @@
  */
 package rsb.filter;
 
-import java.util.logging.Logger;
-
 import rsb.Event;
-import rsb.EventId;
 import rsb.Scope;
 
 /**
+ * A filter that only accepts events from a scope and all its subscopes.
+ *
  * @author swrede
+ * @author jwienke
  */
-public class ScopeFilter extends AbstractFilter {
+public class ScopeFilter implements Filter {
 
-    private static final Logger LOG = Logger.getLogger(ScopeFilter.class
-            .getName());
+    private final Scope scope;
 
-    private Scope scope;
-
+    /**
+     * Constructor.
+     *
+     * @param scope
+     *            the desired scope, not <code>null</code>
+     * @throws IllegalArgumentException
+     *             scope is <code>null</code>
+     */
     public ScopeFilter(final Scope scope) {
-        super(ScopeFilter.class);
+        if (scope == null) {
+            throw new IllegalArgumentException("Scope must not be null");
+        }
         this.scope = scope;
     }
 
-    @Override
-    public void dispachToObserver(final FilterObserver observer,
-            final FilterAction action) {
-        observer.notify(this, action);
-    }
-
-    public void setScope(final Scope scope) {
-        this.scope = scope;
-    }
-
+    /**
+     * Returns the scope this filter operates for. Events from this scope and
+     * all subscopes are accepted.
+     *
+     * @return the scope, not <code>null</code>
+     */
     public Scope getScope() {
         return this.scope;
     }
 
     @Override
-    public void skip(final EventId eventId) {
-        LOG.info("Event with ID " + eventId
-                + " will not be matched by ScopeFilter "
-                + "as this was already done by network layer!");
-        super.skip(eventId);
+    public boolean match(final Event event) {
+        return this.scope.equals(event.getScope())
+                || this.scope.isSuperScopeOf(event.getScope());
     }
 
     @Override
     public boolean equals(final Object that) {
         return that instanceof ScopeFilter
                 && this.scope.equals(((ScopeFilter) that).getScope());
-    }
-
-    @Override
-    public Event transform(final Event event) {
-        LOG.fine("ScopeFilter with scope " + this.scope
-                + " received event to transform.");
-        if (event.getScope() != null) {
-            LOG.fine("  Event's receiver Scope = " + event.getScope());
-        }
-        boolean matches = false;
-        if (this.mustSkip(event.getId())) {
-            LOG.fine("event with ID " + event.getId()
-                    + " whitelisted in ScopeFilter!");
-            matches = true;
-            this.skipped(event.getId());
-        } else {
-            matches =
-                    this.scope.equals(event.getScope())
-                            || this.scope.isSuperScopeOf(event.getScope());
-        }
-        if (matches) {
-            LOG.fine("ScopeFilter matched successfully!");
-        } else {
-            LOG.fine("ScopeFilter rejected event!");
-        }
-        return matches ? event : null;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class SingleThreadEventReceivingStrategy implements
                         // CHECKSTYLE.OFF: LineLength - no way to convince
                         // eclipse to wrap this
                         for (final Filter filter : SingleThreadEventReceivingStrategy.this.filters) {
-                            if (filter.transform(eventToDispatch) == null) {
+                            if (!filter.match(eventToDispatch)) {
                                 continue outer;
                             }
                         }

@@ -34,10 +34,7 @@ import rsb.Event;
  *
  * @author jwienke
  */
-public class MethodFilter extends AbstractFilter {
-
-    // private final static Logger LOG =
-    // Logger.getLogger(MethodFilter.class.getName());
+public class MethodFilter implements Filter {
 
     private final String method;
 
@@ -48,25 +45,13 @@ public class MethodFilter extends AbstractFilter {
      *            method to allow
      */
     public MethodFilter(final String method) {
-        super(MethodFilter.class);
         this.method = method;
     }
 
     @Override
-    public void dispachToObserver(final FilterObserver observer,
-            final FilterAction action) {
-        observer.notify(this, action);
-
-    }
-
-    @Override
-    public Event transform(final Event event) {
-        if (event.getMethod() != null
-                && event.getMethod().equalsIgnoreCase(this.method)) {
-
-            return event;
-        }
-        return null;
+    public boolean match(final Event event) {
+        return event.getMethod() != null
+                && event.getMethod().equalsIgnoreCase(this.method);
     }
 
 }

@@ -30,44 +30,27 @@ package rsb.filter;
 import rsb.Event;
 
 /**
+ * Interfaces for classes that indicate whether a received {@link Event} shall
+ * be dispatched or not.
+ *
+ * Filters must be immutable because parameters updates at runtime are not
+ * supported.
+ *
+ * @author jwienke
  * @author swrede
  */
 public interface Filter {
 
-    // boolean isStateless();
-
     /**
-     * transform the given event into a result event according to this filters
-     * rules. This may return null, if the event is dropped by the filter, the
-     * passed-in event if no transformation is applied, or some new event.
+     * Tells whether the given event matches the filter and hence shall be
+     * dispatched or not.
      *
      * @param event
-     *            the event to be transformed
-     * @return the transformed event or <code>null</code> in case the filter
-     *         does not apply to this event
+     *            the event to test, not <code>null</code>
+     * @return <code>true</code> if the event matches the restrictions specified
+     *         by this filter and hence can be delivered to the client,
+     *         <code>false</code> to remove the event from the stream.
      */
-    Event transform(Event event);
-
-    // /**
-    // * tell this MTF to skip any event matching the specified ID it
-    // encounters.
-    // * This causes the MTF to behave like an identity transformation and just
-    // * return the event as-is when it's passed to transform().
-    // *
-    // * @param id
-    // * the event ID to be skipped
-    // * @see #transform(Event)
-    // */
-    // public void skip(EventId id);
-
-    /**
-     * Helper method for double dispatch of Filter registrations.
-     *
-     * @param observer
-     *            the observer to dispatch to
-     * @param action
-     *            the action that was performed
-     */
-    void dispachToObserver(FilterObserver observer, FilterAction action);
+    boolean match(Event event);
 
 }

@@ -37,60 +37,88 @@ import rsb.ParticipantId;
  * @author swrede
  * @author jmoringe
  */
-public class OriginFilter extends AbstractFilter {
+public class OriginFilter implements Filter {
 
     private final ParticipantId origin;
-    private boolean invert = false;
+    private final boolean inverted;
 
+    /**
+     * Constructor.
+     *
+     * @param origin
+     *            the desired origin of a received event, not <code>null</code>
+     * @param invert
+     *            if <code>true</code>, suppress events from the provided origin
+     *            and allow all other events instead of only allowing events
+     *            from that origin.
+     * @throws IllegalArgumentException
+     *             origin is <code>null</code>
+     */
     public OriginFilter(final ParticipantId origin, final boolean invert) {
-        super(OriginFilter.class);
+        if (origin == null) {
+            throw new IllegalArgumentException("Origin must not be null");
+        }
         this.origin = origin;
-        this.invert = invert;
+        this.inverted = invert;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param origin
+     *            only events from this origin are allowed, not
+     *            <code>null</code>
+     * @throws IllegalArgumentException
+     *             origin is <code>null</code>
+     */
     public OriginFilter(final ParticipantId origin) {
         this(origin, false);
     }
 
+    /**
+     * Returns the origin participant id this filter operates for.
+     *
+     * @return the id, not <code>null</code>
+     */
     public ParticipantId getOrigin() {
         return this.origin;
     }
 
-    public boolean isInverted() {
-        return this.invert;
-    }
-
-    @Override
-    public Event transform(final Event event) {
-        boolean matches = event.getId().getParticipantId().equals(this.origin);
-        matches = this.invert ? !matches : matches;
-        if (matches) {
-            return event;
-        } else {
-            return null;
-        }
-    }
-
-    /*
-     * Helper method for double dispatch of Filter registrations
+    /**
+     * Indicates whether the filter accepts events only from the id returned by
+     * {@link #getOrigin()} or it only accepts events that do not originate from
+     * that origin.
+     *
+     * @return if <code>true</code>, only events NOT originating from
+     *         {@link #getOrigin()} are allowed. If <code>false</code>, only
+     *         events from {@link #getOrigin()} are allowed.
      */
+    public boolean isInverted() {
+        return this.inverted;
+    }
+
     @Override
-    public void dispachToObserver(final FilterObserver observer,
-            final FilterAction action) {
-        observer.notify(this, action);
+    public boolean match(final Event event) {
+        final boolean matches =
+                event.getId().getParticipantId().equals(this.origin);
+        if (this.inverted) {
+            return !matches;
+        } else {
+            return matches;
+        }
     }
 
     @Override
     public boolean equals(final Object that) {
         return that instanceof OriginFilter
                 && this.origin.equals(((OriginFilter) that).origin)
-                && this.invert == ((OriginFilter) that).invert;
+                && this.inverted == ((OriginFilter) that).inverted;
     }
 
     @Override
     public int hashCode() {
         return 31 * this.origin.hashCode() + 7
-                * Boolean.valueOf(this.invert).hashCode();
+                * Boolean.valueOf(this.inverted).hashCode();
     }
 
 }

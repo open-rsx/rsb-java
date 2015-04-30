@@ -27,14 +27,17 @@
  */
 package rsb.filter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import rsb.Event;
 import rsb.LoggingEnabled;
 
+/**
+ * @author jmoringe
+ */
 public class MethodFilterTest extends LoggingEnabled {
 
     @Test
@@ -43,11 +46,11 @@ public class MethodFilterTest extends LoggingEnabled {
         final MethodFilter filter = new MethodFilter(desiredMethod);
         final Event event = new Event();
         event.setMethod(desiredMethod);
-        assertNotNull(filter.transform(event));
+        assertTrue(filter.match(event));
         event.setMethod("REPLY");
-        assertNull(filter.transform(event));
+        assertFalse(filter.match(event));
         event.setMethod(desiredMethod.toLowerCase());
-        assertNotNull(filter.transform(event));
+        assertTrue(filter.match(event));
     }
 
 }

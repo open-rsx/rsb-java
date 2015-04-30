@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2011, 2012 Jan Moringen
+ * Copyright (C) 2010 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -34,36 +34,21 @@ import org.junit.Test;
 
 import rsb.Event;
 import rsb.LoggingEnabled;
-import rsb.ParticipantId;
-import rsb.Scope;
 
 /**
- * Unit tests for the {@link rsb.filter.OriginFilter} class.
- *
- * @author jmoringe
+ * @author jwienke
  */
-public class OriginFilterTest extends LoggingEnabled {
+public class TypeFilterTest extends LoggingEnabled {
 
     @Test
-    public void transform() {
-        final ParticipantId origin1 = new ParticipantId();
-        final Scope aScope = new Scope("/images");
-        final String someContents = "bla";
-        final Event event1 = new Event(aScope, String.class, someContents);
-        final int randomSequence = 234;
-        event1.setId(origin1, randomSequence);
+    public void testMatch() {
 
-        final ParticipantId origin2 = new ParticipantId();
-        final Event event2 = new Event(aScope, String.class, someContents);
-        event2.setId(origin2, 0);
+        final String goodData = "foo";
 
-        final OriginFilter filter1 = new OriginFilter(origin1);
-        assertTrue(filter1.match(event1));
-        assertFalse(filter1.match(event2));
+        final TypeFilter filter = new TypeFilter(goodData.getClass());
+        assertTrue(filter.match(new Event(goodData.getClass(), goodData)));
+        assertFalse(filter.match(new Event(Double.class, 0.0)));
 
-        final OriginFilter filter2 = new OriginFilter(origin1, true);
-        assertFalse(filter2.match(event1));
-        assertTrue(filter2.match(event2));
     }
 
-};
+}

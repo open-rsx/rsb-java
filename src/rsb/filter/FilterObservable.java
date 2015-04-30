@@ -27,38 +27,70 @@
  */
 package rsb.filter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
+ * Utility class maintaining a list of {@link FilterObserver} instances and the
+ * required methods to notify these instances about filter changes. This class
+ * is not thread-safe.
+ *
  * @author swrede
+ * @author jwienke
  */
 public class FilterObservable {
 
     private static final Logger LOG = Logger.getLogger(FilterObservable.class
             .getName());
 
-    private final List<FilterObserver> observers = new ArrayList<FilterObserver>();
+    private final Set<FilterObserver> observers = new HashSet<FilterObserver>();
 
-    public void addObserver(final FilterObserver observer) {
+    /**
+     * If not already registered, adds this observer to the list of registered
+     * observers.
+     *
+     * @param observer
+     *            observer to add
+     * @return <code>true</code> if the observer was actually newly registered.
+     */
+    public boolean addObserver(final FilterObserver observer) {
         LOG.finest("Added observer" + observer);
-        this.observers.add(observer);
+        return this.observers.add(observer);
     }
 
-    public void removeObserver(final FilterObserver observer) {
+    /**
+     * Removes a potentially registered observer.
+     *
+     * @param observer
+     *            the observer to remove
+     * @return <code>true</code> if the observer was previously registered and
+     *         is now unregistered
+     */
+    public boolean removeObserver(final FilterObserver observer) {
         LOG.finest("Removed observer" + observer);
-        this.observers.remove(observer);
+        return this.observers.remove(observer);
     }
 
+    /**
+     * Notifies all registered observers about a change to a {@link Filter}.
+     *
+     * @param filter
+     *            the filter that is affected, not <code>null</code>
+     * @param action
+     *            the action performed to the filter, not <code>null</code>
+     */
     public void notifyObservers(final Filter filter, final FilterAction action) {
         for (final FilterObserver observer : this.observers) {
-            // perform double dispatch
-            filter.dispachToObserver(observer, action);
+            observer.notify(filter, action);
         }
     }
 
+    /**
+     * Removes all registered observers.
+     */
     public void clearObservers() {
         this.observers.clear();
     }
+
 }

@@ -28,19 +28,23 @@
 package rsb.filter;
 
 /**
+ * Interface for classes that want to be notified about changes to registered
+ * {@link Filter} instances.
+ *
+ * @author jwienke
  * @author swrede
  */
 public interface FilterObserver {
 
-    // TODO change this to dynamic dispatch for extensibilty
-    // Example: XPathFilter
-
-    void notify(AbstractFilter filter, FilterAction action);
-
-    void notify(ScopeFilter filter, FilterAction action);
-
-    void notify(TypeFilter filter, FilterAction action);
-
-    void notify(OriginFilter filter, FilterAction action);
+    /**
+     * Called in case a {@link Filter} was changed.
+     *
+     * @param filter
+     *            the {@link Filter} that changes, not <code>null</code>
+     * @param action
+     *            the action that was performed with this filter, not
+     *            <code>null</code>
+     */
+    void notify(Filter filter, FilterAction action);
 
 }
