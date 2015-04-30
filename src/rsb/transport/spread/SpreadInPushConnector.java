@@ -39,7 +39,8 @@ import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.filter.AbstractFilterObserver;
+import rsb.filter.Filter;
+import rsb.filter.FilterAction;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 import spread.SpreadException;
@@ -49,8 +50,7 @@ import spread.SpreadException;
  *
  * @author jwienke
  */
-public class SpreadInPushConnector extends AbstractFilterObserver implements
-        InPushConnector, EventHandler {
+public class SpreadInPushConnector implements InPushConnector, EventHandler {
 
     private static final Logger LOG = Logger
             .getLogger(SpreadInPushConnector.class.getName());
@@ -220,6 +220,11 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
                 handler.handle(event);
             }
         }
+    }
+
+    @Override
+    public void notify(final Filter filter, final FilterAction action) {
+        // transport level filtering is currently not supported
     }
 
 }

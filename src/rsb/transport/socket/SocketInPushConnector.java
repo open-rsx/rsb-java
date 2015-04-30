@@ -39,7 +39,8 @@ import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.filter.AbstractFilterObserver;
+import rsb.filter.Filter;
+import rsb.filter.FilterAction;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.EventHandler;
@@ -51,8 +52,8 @@ import rsb.transport.socket.Bus.NotificationReceiver;
  *
  * @author jwienke
  */
-public class SocketInPushConnector extends AbstractFilterObserver implements
-        InPushConnector, NotificationReceiver {
+public class SocketInPushConnector implements InPushConnector,
+        NotificationReceiver {
 
     private static final Logger LOG = Logger
             .getLogger(SocketInPushConnector.class.getName());
@@ -158,6 +159,11 @@ public class SocketInPushConnector extends AbstractFilterObserver implements
                     + "registered handlers. Ignoring this.", e);
         }
 
+    }
+
+    @Override
+    public void notify(final Filter filter, final FilterAction action) {
+        // transport level filtering is currently not supported
     }
 
 }

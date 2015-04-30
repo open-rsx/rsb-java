@@ -35,7 +35,8 @@ import rsb.Event;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.filter.AbstractFilterObserver;
+import rsb.filter.Filter;
+import rsb.filter.FilterAction;
 import rsb.transport.EventHandler;
 
 /**
@@ -44,8 +45,8 @@ import rsb.transport.EventHandler;
  *
  * @author jwienke
  */
-public class InPushConnector extends AbstractFilterObserver implements
-        rsb.transport.InPushConnector, EventHandler {
+public class InPushConnector implements rsb.transport.InPushConnector,
+        EventHandler {
 
     private final Bus bus;
     private Scope scope;
@@ -150,6 +151,11 @@ public class InPushConnector extends AbstractFilterObserver implements
 
         }
 
+    }
+
+    @Override
+    public void notify(final Filter filter, final FilterAction action) {
+        // transport level filtering is currently not supported
     }
 
 }
