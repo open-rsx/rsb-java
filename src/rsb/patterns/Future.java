@@ -94,7 +94,7 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
     }
 
     @Override
-    public Data get() throws ExecutionException {
+    public Data get() throws ExecutionException, InterruptedException {
         synchronized (this) {
             try {
                 return this.get(0, TimeUnit.MILLISECONDS);
@@ -116,11 +116,13 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
      *             an error occurred in the provider of the result
      * @throws TimeoutException
      *             timeout reached and no result received so far
+     * @throws InterruptedException
+     *             if the current thread was interrupted while waiting
      *
      * @see Future#get(long, TimeUnit)
      */
     public Data get(final long timeout) throws ExecutionException,
-            TimeoutException {
+            TimeoutException, InterruptedException {
         synchronized (this) {
             return this.get(timeout, TimeUnit.MILLISECONDS);
         }
@@ -129,7 +131,7 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
     @SuppressWarnings("PMD.ConfusingTernary")
     @Override
     public Data get(final long timeout, final TimeUnit unit)
-            throws ExecutionException, TimeoutException {
+            throws ExecutionException, TimeoutException, InterruptedException {
         synchronized (this) {
             if (timeout == 0) {
                 // Wait until
@@ -137,11 +139,7 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
                 // - the operation is cancelled
                 // In case of spurious wakeups, just continue waiting.
                 while (!this.hasResult && !this.cancelled) {
-                    try {
-                        this.wait();
-                    } catch (final InterruptedException e) {
-                        // spourious wakeup?
-                    }
+                    this.wait();
                 }
             } else {
                 // Calculate waiting time in milliseconds. Prevent
@@ -160,14 +158,9 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
                 long waitTime = 0;
                 while (!this.hasResult && !this.cancelled
                         && waitTime < timeoutMillis) {
-                    try {
-                        this.wait(timeoutMillis - waitTime);
-                    } catch (final InterruptedException e) {
-                        // spurious wakeup?
-                    }
-                    waitTime += timeoutMillis; /*
-                                                * TODO(jmoringe): use real clock
-                                                */
+                    this.wait(timeoutMillis - waitTime);
+                    // TODO(jmoringe): use real clock
+                    waitTime += timeoutMillis;
                 }
             }
 

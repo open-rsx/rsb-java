@@ -90,6 +90,9 @@ public class LocalServer extends Server<LocalMethod> {
                                 callback);
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
+                // restore interruption state
+                // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                Thread.currentThread().interrupt();
                 throw new InitializeException(e);
             }
         }
@@ -118,18 +121,17 @@ public class LocalServer extends Server<LocalMethod> {
     /**
      * After calling {@link #deactivate()} this methods waits until the server
      * terminated completely.
+     *
+     * @throws InterruptedException
+     *             interrupted while waiting for the shutdown
      */
-    public void waitForShutdown() {
+    public void waitForShutdown() throws InterruptedException {
         synchronized (this) {
             // Blocks calling thread as long as this Server instance
             // is in activated state
             if (this.isActive()) {
-                try {
-                    // Wait until we are done
-                    this.wait();
-                } catch (final InterruptedException ex) {
-                    // Server has been deactivated, return from run
-                }
+                // Wait until we are done
+                this.wait();
             }
         }
     }

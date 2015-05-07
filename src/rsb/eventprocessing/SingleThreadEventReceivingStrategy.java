@@ -115,9 +115,12 @@ public class SingleThreadEventReceivingStrategy implements
         try {
             this.events.put(event);
         } catch (final InterruptedException e) {
-            // This must not happen
-            assert false;
-            throw new RuntimeException(e);
+            // This can occur in case the thread calling this method got
+            // interrupted. Since this method shouldn't be blocking and only
+            // our own use of a BlockingQueue adds interruption exceptions, we
+            // need to inform top-level code about the interrupt, as proposed
+            // here: http://www.ibm.com/developerworks/library/j-jtp05236/
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -343,7 +343,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
             } catch (final RSBException e) {
                 // ignore this since we can't do anything
             } catch (final InterruptedException e) {
-                // ignore this since we can't do anything
+                // pass to external code to preserve interruption state
+                // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                Thread.currentThread().interrupt();
             } catch (final RuntimeException e) {
                 // ignore this since we can't do anything
             }
@@ -410,7 +412,8 @@ public class ProtocolHandler extends AbstractEventHandler implements
         } catch (final InterruptedException e) {
             // reset state so we can retry activation again later
             safeCleanup();
-            throw new RSBException(e);
+            // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+            Thread.currentThread().interrupt();
         } catch (final RSBException e) {
             // reset state so we can retry activation again later
             safeCleanup();

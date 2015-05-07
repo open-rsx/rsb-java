@@ -172,11 +172,14 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             timeout waiting for the reply
      * @throws ExecutionException
      *             in case the method failed on the server side
+     * @throws InterruptedException
+     *             interrupted while waiting for the reply
      * @throws java.util.concurrent.CancellationException
      *             waiting for the result was cancelled
      */
     public Event call(final String name, final Event event)
-            throws RSBException, ExecutionException, TimeoutException {
+            throws RSBException, ExecutionException, TimeoutException,
+            InterruptedException {
         return this.call(name, event, this.getTimeout());
     }
 
@@ -198,12 +201,15 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             timeout waiting for the reply
      * @throws ExecutionException
      *             in case the method failed on the server side
+     * @throws InterruptedException
+     *             interrupted while waiting for the reply
      * @throws java.util.concurrent.CancellationException
      *             waiting for the result was cancelled
      */
     public Event
             call(final String name, final Event event, final double timeout)
-                    throws RSBException, ExecutionException, TimeoutException {
+                    throws RSBException, ExecutionException, TimeoutException,
+                    InterruptedException {
         final Future<Event> future = new Future<Event>();
         final EventFuturePreparator futurePreparator =
                 new EventFuturePreparator(future);
@@ -226,11 +232,13 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             timeout waiting for the reply
      * @throws ExecutionException
      *             in case the method failed on the server side
+     * @throws InterruptedException
+     *             interrupted while waiting for the reply
      * @throws java.util.concurrent.CancellationException
      *             waiting for the result was cancelled
      */
     public Event call(final String name) throws RSBException,
-            ExecutionException, TimeoutException {
+            ExecutionException, TimeoutException, InterruptedException {
         return this.call(name, new Event(Void.class, null));
     }
 
@@ -250,11 +258,14 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             timeout waiting for the reply
      * @throws ExecutionException
      *             in case the method failed on the server side
+     * @throws InterruptedException
+     *             interrupted while waiting for the reply
      * @throws java.util.concurrent.CancellationException
      *             waiting for the result was cancelled
      */
     public Event call(final String name, final double timeout)
-            throws RSBException, ExecutionException, TimeoutException {
+            throws RSBException, ExecutionException, TimeoutException,
+            InterruptedException {
         return this.call(name, new Event(Void.class, null), timeout);
     }
 
@@ -278,12 +289,14 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             timeout waiting for the reply
      * @throws ExecutionException
      *             in case the method failed on the server side
+     * @throws InterruptedException
+     *             interrupted while waiting for the reply
      * @throws java.util.concurrent.CancellationException
      *             waiting for the result was cancelled
      */
     public <ReplyType, RequestType> ReplyType call(final String name,
             final RequestType data) throws RSBException, ExecutionException,
-            TimeoutException {
+            TimeoutException, InterruptedException {
         return this.call(name, data, this.getTimeout());
     }
 
@@ -309,12 +322,14 @@ public class RemoteServer extends Server<RemoteMethod> {
      *             timeout waiting for the reply
      * @throws ExecutionException
      *             in case the method failed on the server side
+     * @throws InterruptedException
+     *             interrupted while waiting for the reply
      * @throws java.util.concurrent.CancellationException
      *             waiting for the result was cancelled
      */
     public <ReplyType, RequestType> ReplyType call(final String name,
             final RequestType data, final double timeout) throws RSBException,
-            ExecutionException, TimeoutException {
+            ExecutionException, TimeoutException, InterruptedException {
         final Future<ReplyType> future = new Future<ReplyType>();
         final DataFuturePreparator<ReplyType> resultPreparator =
                 new DataFuturePreparator<ReplyType>(future);
@@ -373,6 +388,9 @@ public class RemoteServer extends Server<RemoteMethod> {
                             + exception.getMessage() + " Re-throwing it.");
                     throw new RSBException(exception);
                 } catch (final InterruptedException e) {
+                    // restore interruption state
+                    // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                    Thread.currentThread().interrupt();
                     throw new RSBException(e);
                 }
             }

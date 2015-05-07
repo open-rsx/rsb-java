@@ -151,6 +151,9 @@ public class SpreadInPushConnector implements InPushConnector, EventHandler {
                             + SpreadUtilities.spreadGroupName(this.scope)
                             + "'.", e);
         } catch (final InterruptedException e) {
+            // restore interruption state
+            // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+            Thread.currentThread().interrupt();
             throw new InitializeException(
                     "Unable to wait for joining the spread group for scope '"
                             + this.scope + "' with hash '"
@@ -167,11 +170,7 @@ public class SpreadInPushConnector implements InPushConnector, EventHandler {
             LOG.fine("deactivating SpreadPort");
             this.spread.deactivate();
         }
-        try {
-            this.receiver.join();
-        } catch (final InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        this.receiver.join();
     }
 
     @Override

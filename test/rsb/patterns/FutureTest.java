@@ -29,6 +29,7 @@
 package rsb.patterns;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -44,24 +45,46 @@ import rsb.LoggingEnabled;
 public class FutureTest extends LoggingEnabled {
 
     @Test
-    public void simpleGet() throws ExecutionException, TimeoutException {
+    public void simpleGet() throws Exception {
         final Future<Integer> future = new Future<Integer>();
         future.complete(1);
         assertEquals(Integer.valueOf(1), future.get());
     }
 
     @Test(expected = CancellationException.class)
-    public void cancel() throws ExecutionException, TimeoutException {
+    public void cancel() throws Exception {
         final Future<Integer> future = new Future<Integer>();
         future.cancel(true);
         future.get();
     }
 
     @Test(expected = TimeoutException.class)
-    public void timeout() throws ExecutionException, TimeoutException {
+    public void timeout() throws Exception {
         final Future<Integer> future = new Future<Integer>();
         final int shortTimeout = 10;
         future.get(shortTimeout);
     }
 
+    @Test(timeout = 4000)
+    public void interruption() throws Exception {
+        final Future<Integer> future = new Future<Integer>();
+        final Boolean[] error = new Boolean[] { false };
+        final Thread waiter = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    future.get();
+                } catch (final ExecutionException e) {
+                    error[0] = true;
+                } catch (final InterruptedException e) {
+                    // expected and wanted
+                }
+            }
+        };
+        waiter.start();
+        waiter.interrupt();
+        waiter.join();
+        assertFalse(error[0]);
+    }
 }
