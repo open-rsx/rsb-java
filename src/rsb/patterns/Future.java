@@ -44,8 +44,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @see java.util.concurrent.Future
  */
-
-public class Future<Data> implements java.util.concurrent.Future<Data> {
+class Future<Data> implements java.util.concurrent.Future<Data> {
 
     private Throwable exception = null;
     private Data result = null;

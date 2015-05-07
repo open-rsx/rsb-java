@@ -95,18 +95,19 @@ public class RemoteServer extends Server<RemoteMethod> {
     /**
      * Calls a method of the server using the method name and request data
      * encapsulated in an {@link Event} instance. The method returns immediately
-     * with a {@link Future} instance.
+     * with a {@link java.util.concurrent.Future} instance.
      *
      * @param name
      *            name of the method to call
      * @param event
      *            request data
-     * @return A {@link Future} instance to retrieve the result {@link Event}
+     * @return A {@link java.util.concurrent.Future} instance to retrieve the
+     *         result {@link Event}
      * @throws RSBException
      *             communication errors or server-side errors
      */
-    public Future<Event> callAsync(final String name, final Event event)
-            throws RSBException {
+    public java.util.concurrent.Future<Event> callAsync(final String name,
+            final Event event) throws RSBException {
         final Future<Event> future = new Future<Event>();
         final EventFuturePreparator futurePreparator =
                 new EventFuturePreparator(future);
@@ -116,15 +117,18 @@ public class RemoteServer extends Server<RemoteMethod> {
 
     /**
      * Calls a method of the server without request parameter using the method
-     * name. The method returns immediately with a {@link Future} instance.
+     * name. The method returns immediately with a
+     * {@link java.util.concurrent.Future} instance.
      *
      * @param name
      *            name of the method to call
-     * @return A {@link Future} instance to retrieve the result {@link Event}
+     * @return A {@link java.util.concurrent.Future} instance to retrieve the
+     *         result {@link Event}
      * @throws RSBException
      *             communication errors or server-side errors
      */
-    public Future<Event> callAsync(final String name) throws RSBException {
+    public java.util.concurrent.Future<Event> callAsync(final String name)
+            throws RSBException {
         final Event event = new Event();
         event.setData(null);
         event.setType(Void.class);
@@ -133,7 +137,8 @@ public class RemoteServer extends Server<RemoteMethod> {
 
     /**
      * Calls a method of the server using the method name and plain request
-     * data. The method returns immediately with a {@link Future} instance.
+     * data. The method returns immediately with a
+     * {@link java.util.concurrent.Future} instance.
      *
      * @param name
      *            name of the method to call
@@ -143,12 +148,14 @@ public class RemoteServer extends Server<RemoteMethod> {
      *            the data type expected as the reply data
      * @param <RequestType>
      *            the data type for the passed in request data
-     * @return A {@link Future} instance to retrieve the result data
+     * @return A {@link java.util.concurrent.Future} instance to retrieve the
+     *         result data
      * @throws RSBException
      *             communication errors or server-side errors
      */
-    public <ReplyType, RequestType> Future<ReplyType> callAsync(
-            final String name, final RequestType data) throws RSBException {
+    public <ReplyType, RequestType> java.util.concurrent.Future<ReplyType>
+            callAsync(final String name, final RequestType data)
+                    throws RSBException {
         final Future<ReplyType> future = new Future<ReplyType>();
         final DataFuturePreparator<ReplyType> resultPreparator =
                 new DataFuturePreparator<ReplyType>(future);

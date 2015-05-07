@@ -27,9 +27,11 @@
  */
 
 // mark-start::body
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import rsb.Factory;
 import rsb.patterns.RemoteServer;
-import rsb.patterns.Future;
 
 public class ClientExample {
 
@@ -46,10 +48,9 @@ public class ClientExample {
 
             System.out.println("Server replied: " + server.call("echo", "bla"));
 
-            Future<String> future = server.callAsync("echo", "bla");
-            System.out.println("Server replied: " + future.get(10000));
-            // Note: timeout is in milliseconds here, but the get()
-            // Method has signatures for other time units.
+            final Future<String> future = server.callAsync("echo", "bla");
+            System.out.println("Server replied: "
+                    + future.get(10, TimeUnit.SECONDS));
 
         } finally {
             server.deactivate();
