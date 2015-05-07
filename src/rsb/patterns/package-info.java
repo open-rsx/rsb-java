@@ -33,4 +33,3 @@
  * @author jwienke
  */
 package rsb.patterns;
-
