@@ -373,6 +373,9 @@ public class RemoteServer extends Server<RemoteMethod> {
                             + exception.getMessage() + " Re-throwing it.");
                     throw new RSBException(exception);
                 } catch (final InterruptedException e) {
+                    // restore interruption state
+                    // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                    Thread.currentThread().interrupt();
                     throw new RSBException(e);
                 }
             }

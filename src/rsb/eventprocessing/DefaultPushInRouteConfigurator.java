@@ -73,7 +73,9 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
                 this.receivingStrategy.deactivate();
                 this.utility.deactivate();
             } catch (final InterruptedException e) {
-                throw new RSBException(e);
+                // restore interrupted state for outer thread
+                // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                Thread.currentThread().interrupt();
             }
             for (final InPushConnector connector : this.utility.getConnectors()) {
                 connector.removeHandler(this.receivingStrategy);

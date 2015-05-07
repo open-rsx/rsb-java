@@ -181,6 +181,10 @@ public abstract class BusBase implements Bus {
                         logDeactivationError(rsbException);
                     } catch (final InterruptedException interruptedException) {
                         logDeactivationError(interruptedException);
+                        // restore interruption state
+                        // cf.
+                        // http://www.ibm.com/developerworks/library/j-jtp05236/
+                        Thread.currentThread().interrupt();
                     }
                 } else {
                     assert false : "This should not happen as the "
@@ -227,64 +231,55 @@ public abstract class BusBase implements Bus {
                 throw new IllegalStateException("Bus is not active.");
             }
 
-            try {
-
-                // terminate available connections and associated receiver
-                // threads
-                HashSet<BusConnection> connectionCopy;
-                synchronized (this.connections) {
-                    connectionCopy =
-                            new HashSet<BusConnection>(this.connections.keySet());
-                }
-                for (final BusConnection connection : connectionCopy) {
-                    final ReceiveThread thread = removeConnection(connection);
-                    try {
-                        // we should initiate a shutdown in case the receiving
-                        // thread on that connection did not already do so
-                        // because the remote peer initiated the shut down
-                        // before us. (condition handled by shutdown method)
-                        connection.shutdown();
-                    } catch (final IOException e) {
-                        LOG.log(Level.WARNING,
-                                "Unable to indicate shutdown on connection "
-                                        + connection
-                                        + ". Interrupting receiver thread to stop it.",
-                                e);
-                        // thread might not exist in our map anymore. See
-                        // comment below for explanation.
-                        if (thread != null) {
-                            thread.interrupt();
-                        }
-                    }
-                    // We must not interrupt the receiver thread as it is
-                    // responsible for correctly deactivating the connection.
-                    // It might also have happened that the thread received an
-                    // EOF in the meantime, started to deactivated itself, and
-                    // during that process removed itself from the connections
-                    // map. We will still iterate over that entry as we created
-                    // a copy of the key set for our own iteration over the
-                    // connections in order to prevent a deadlock. Hence, it is
-                    // legal in this case for removeConnection to return null,
-                    // which we must handle here correctly.
-                    if (thread != null) {
-                        thread.join(RECEIVE_THREAD_JOIN_TIME);
-                        assert !thread.isAlive();
-                    }
-                    // finally, try to kill everything in case it still
-                    // survived. In normal cases this will never happen
-                    synchronized (connection) {
-                        if (connection.isActive()) {
-                            connection.deactivate();
-                        }
-                    }
-                }
-                this.connections.clear();
-
-            } catch (final InterruptedException e) {
-                throw new RSBException(
-                        "Interrupted while waiting for receiver threads to finish.",
-                        e);
+            // terminate available connections and associated receiver threads
+            HashSet<BusConnection> connectionCopy;
+            synchronized (this.connections) {
+                connectionCopy =
+                        new HashSet<BusConnection>(this.connections.keySet());
             }
+            for (final BusConnection connection : connectionCopy) {
+                final ReceiveThread thread = removeConnection(connection);
+                try {
+                    // we should initiate a shutdown in case the receiving
+                    // thread on that connection did not already do so
+                    // because the remote peer initiated the shut down
+                    // before us. (condition handled by shutdown method)
+                    connection.shutdown();
+                } catch (final IOException e) {
+                    LOG.log(Level.WARNING,
+                            "Unable to indicate shutdown on connection "
+                                    + connection
+                                    + ". Interrupting receiver thread to stop it.",
+                            e);
+                    // thread might not exist in our map anymore. See
+                    // comment below for explanation.
+                    if (thread != null) {
+                        thread.interrupt();
+                    }
+                }
+                // We must not interrupt the receiver thread as it is
+                // responsible for correctly deactivating the connection.
+                // It might also have happened that the thread received an
+                // EOF in the meantime, started to deactivated itself, and
+                // during that process removed itself from the connections
+                // map. We will still iterate over that entry as we created
+                // a copy of the key set for our own iteration over the
+                // connections in order to prevent a deadlock. Hence, it is
+                // legal in this case for removeConnection to return null,
+                // which we must handle here correctly.
+                if (thread != null) {
+                    thread.join(RECEIVE_THREAD_JOIN_TIME);
+                    assert !thread.isAlive();
+                }
+                // finally, try to kill everything in case it still
+                // survived. In normal cases this will never happen
+                synchronized (connection) {
+                    if (connection.isActive()) {
+                        connection.deactivate();
+                    }
+                }
+            }
+            this.connections.clear();
 
         }
 

@@ -90,6 +90,9 @@ public class LocalServer extends Server<LocalMethod> {
                                 callback);
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
+                // restore interruption state
+                // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                Thread.currentThread().interrupt();
                 throw new InitializeException(e);
             }
         }
@@ -128,8 +131,12 @@ public class LocalServer extends Server<LocalMethod> {
                     // Wait until we are done
                     this.wait();
                 } catch (final InterruptedException ex) {
-                    // Server has been deactivated, return from run
+                    // we have been interrupted while waiting for the shutdown
+                    // at least do not swallow the interruption for this release
+                    // without changing the API
+                    Thread.currentThread().interrupt();
                 }
+
             }
         }
     }

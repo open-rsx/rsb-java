@@ -140,8 +140,9 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
                             "Introspection protocol handler could"
                                     + " not be deactivated correctly.", e);
                     // the handler will have reset its state correctly, so we
-                    // don't need to do anything
-                    assert false;
+                    // only need to inform external code about the interrupt
+                    // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                    Thread.currentThread().interrupt();
                 }
 
             }

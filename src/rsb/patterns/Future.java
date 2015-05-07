@@ -140,7 +140,10 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
                     try {
                         this.wait();
                     } catch (final InterruptedException e) {
-                        // spourious wakeup?
+                        // only an intermediate solution for the current release
+                        // to prevent API changes
+                        Thread.currentThread().interrupt();
+                        throw new ExecutionException(e);
                     }
                 }
             } else {
@@ -163,11 +166,13 @@ public class Future<Data> implements java.util.concurrent.Future<Data> {
                     try {
                         this.wait(timeoutMillis - waitTime);
                     } catch (final InterruptedException e) {
-                        // spurious wakeup?
+                        // only an intermediate solution for the current release
+                        // to prevent API changes
+                        Thread.currentThread().interrupt();
+                        throw new ExecutionException(e);
                     }
-                    waitTime += timeoutMillis; /*
-                                                * TODO(jmoringe): use real clock
-                                                */
+                    // TODO(jmoringe): use real clock
+                    waitTime += timeoutMillis;
                 }
             }
 

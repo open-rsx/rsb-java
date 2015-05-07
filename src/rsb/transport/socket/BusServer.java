@@ -195,10 +195,6 @@ public class BusServer extends BusBase {
 
             } catch (final IOException e) {
                 LOG.log(Level.WARNING, "Exception closing server socket.", e);
-            } catch (final InterruptedException e) {
-                LOG.log(Level.WARNING,
-                        "Interrupted while waiting for acceptor thread to terminate.",
-                        e);
             }
 
             super.deactivate();
