@@ -87,7 +87,7 @@ public class RpcIntegrationTest extends LoggingEnabled {
         }
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripSmoke() throws Throwable {
         for (int i = 0; i < NUM_CALLS; i++) {
             final String reply = this.remote.call(METHOD_NAME, TEST_DATA);
@@ -95,14 +95,14 @@ public class RpcIntegrationTest extends LoggingEnabled {
         }
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripEventSyntax() throws Throwable {
         final Event reply = this.remote.call(METHOD_NAME, new Event(
                 String.class, TEST_DATA));
         assertEquals(reply.getData(), TEST_DATA);
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripDifferentCallSignatures() throws Throwable {
         final Event request = new Event();
         request.setType(String.class);
@@ -112,28 +112,28 @@ public class RpcIntegrationTest extends LoggingEnabled {
         assertEquals(TEST_DATA, this.remote.call(METHOD_NAME, TEST_DATA));
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripEventFutureSyntax() throws Throwable {
         final Future<Event> reply = this.remote.callAsync(METHOD_NAME,
                 new Event(String.class, TEST_DATA));
         assertEquals(reply.get().getData(), TEST_DATA);
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripDataFutureSyntax() throws Throwable {
         final Future<String> reply = this.remote.callAsync(METHOD_NAME,
                 TEST_DATA);
         assertEquals(reply.get(), TEST_DATA);
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripVoidVoid() throws Throwable {
         final Event reply = this.remote.call(VOID_VOID_METHOD_NAME);
         assertEquals(Void.class, reply.getType());
         assertEquals(null, reply.getData());
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void roundtripVoidVoidAsync() throws Throwable {
         final Future<Event> reply = this.remote
                 .callAsync(VOID_VOID_METHOD_NAME);
