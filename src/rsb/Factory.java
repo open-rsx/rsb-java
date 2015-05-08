@@ -353,9 +353,15 @@ public final class Factory {
      * @return new informer
      * @throws InitializeException
      *             error initializing the informer
+     * @throws IllegalArgumentException
+     *             args is <code>null</code>
      */
     public <DataType> Informer<DataType> createInformer(
             final InformerCreateArgs args) throws InitializeException {
+        if (args == null) {
+            throw new IllegalArgumentException(
+                    "InformerCreateArgs must not be null");
+        }
         final Informer<DataType> informer =
                 new Informer<DataType>(addConfigToArgs(args));
         informer.setObserverManager(this.observerManager);
@@ -433,9 +439,15 @@ public final class Factory {
      * @return new listener
      * @throws InitializeException
      *             error initializing the listener
+     * @throws IllegalArgumentException
+     *             args is <code>null</code>
      */
     public Listener createListener(final ListenerCreateArgs args)
             throws InitializeException {
+        if (args == null) {
+            throw new IllegalArgumentException(
+                    "ListenerCreateArgs must not be null");
+        }
         final Listener listener =
                 new Listener(addConfigToArgs(args));
         listener.setObserverManager(this.observerManager);
@@ -509,8 +521,14 @@ public final class Factory {
      * @param args
      *         Parameter object with create arguments for participant.
      * @return new LocalServer
+     * @throws IllegalArgumentException
+     *             args is <code>null</code>
      */
     public LocalServer createLocalServer(final LocalServerCreateArgs args) {
+        if (args == null) {
+            throw new IllegalArgumentException(
+                    "LocalServerCreateArgs must not be null");
+        }
         final LocalServer server =
                 new LocalServer(addConfigToArgs(args));
         server.setObserverManager(this.observerManager);
@@ -614,8 +632,14 @@ public final class Factory {
      * @param args
      *         Parameter object with create arguments for participant.
      * @return new remote server
+     * @throws IllegalArgumentException
+     *             args is <code>null</code>
      */
     public RemoteServer createRemoteServer(final RemoteServerCreateArgs args) {
+        if (args == null) {
+            throw new IllegalArgumentException(
+                    "RemoteServerCreateArgs must not be null");
+        }
         final RemoteServer server = new RemoteServer(addConfigToArgs(args));
         server.setObserverManager(this.observerManager);
         return server;
