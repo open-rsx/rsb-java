@@ -75,6 +75,12 @@ public abstract class Participant implements Activatable {
 
     @Override
     public void activate() throws RSBException {
+        if (this.createArgs == null) {
+            throw new IllegalStateException(
+                    "Participants can only be activated "
+                            + "and subsequently deactivated once. "
+                            + "Mutliple cycles are not supported.");
+        }
         if (this.observerManager != null) {
             this.observerManager.notifyParticipantCreated(this, this.createArgs);
         }
