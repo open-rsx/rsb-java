@@ -33,7 +33,7 @@ package rsb;
  *
  * @author swrede
  */
-public class InvalidStateException extends RuntimeException {
+public class InvalidStateException extends IllegalStateException {
 
     private static final long serialVersionUID = -2396672331593990574L;
 
