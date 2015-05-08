@@ -31,7 +31,6 @@ import java.util.List;
 
 import rsb.Factory;
 import rsb.Informer;
-import rsb.InvalidStateException;
 import rsb.Listener;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
@@ -74,11 +73,11 @@ public abstract class Method extends Participant {
          *             error initializing the method
          * @throws RSBException
          *             error initializing the method
-         * @throws InvalidStateException
+         * @throws IllegalStateException
          *             method in wrong state for this operation
          */
         public MethodState activate() throws RSBException {
-            throw new InvalidStateException("Method already activated.");
+            throw new IllegalStateException("Method already activated.");
         }
 
         /**
@@ -89,12 +88,12 @@ public abstract class Method extends Participant {
          *             error deactivating underlying RSB objects.
          * @throws InterruptedException
          *             interrupted while waiting for the shutdown of RSB objects
-         * @throws InvalidStateException
+         * @throws IllegalStateException
          *             method in wrong state for this operation
          */
         public MethodState deactivate() throws RSBException,
                 InterruptedException {
-            throw new InvalidStateException("Method not activated.");
+            throw new IllegalStateException("Method not activated.");
         }
     }
 

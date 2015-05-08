@@ -61,7 +61,7 @@ public class ListenerState {
      */
     protected void activate() throws RSBException {
         LOG.warning("invalid state exception during activate call");
-        throw new InvalidStateException("subscriber already activated");
+        throw new IllegalStateException("subscriber already activated");
     }
 
     /**
@@ -75,7 +75,7 @@ public class ListenerState {
      */
     protected void deactivate() throws RSBException, InterruptedException {
         LOG.warning("invalid state exception during deactivate call");
-        throw new InvalidStateException("subscriber already deactivated");
+        throw new IllegalStateException("subscriber already deactivated");
     }
 
     /**

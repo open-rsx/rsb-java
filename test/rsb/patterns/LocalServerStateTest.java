@@ -25,48 +25,27 @@
  *
  * ============================================================
  */
-package rsb;
+package rsb.patterns;
+
+import rsb.LocalServerCreateArgs;
+import rsb.Participant;
+import rsb.ParticipantStateCheck;
+import rsb.Scope;
+import rsb.Utilities;
 
 /**
- * This exception indicates that a method is called on an object that is not in
- * the correct state to perform the requested service.
+ * A {@link ParticipantStateCheck} for {@link LocalServer} instances.
  *
- * @author swrede
+ * @author jwienke
  */
-public class InvalidStateException extends RuntimeException {
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+public class LocalServerStateTest extends ParticipantStateCheck {
 
-    private static final long serialVersionUID = -2396672331593990574L;
-
-    /**
-     * Constructor with message only.
-     *
-     * @param message
-     *            the exception message
-     */
-    public InvalidStateException(final String message) {
-        super(message);
-    }
-
-    /**
-     * Constructor with message and cause.
-     *
-     * @param message
-     *            the exception message
-     * @param cause
-     *            the exception cause
-     */
-    public InvalidStateException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     * Constructor with cause.
-     *
-     * @param cause
-     *            the exception cause
-     */
-    public InvalidStateException(final Throwable cause) {
-        super(cause);
+    @Override
+    protected Participant createParticipant() throws Exception {
+        return new LocalServer(new LocalServerCreateArgs().setScope(
+                new Scope("/some/scope")).setConfig(
+                Utilities.createParticipantConfig()));
     }
 
 }

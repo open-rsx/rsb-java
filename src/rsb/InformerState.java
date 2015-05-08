@@ -68,7 +68,7 @@ public class InformerState<DataType> {
      */
     protected void activate() throws RSBException {
         LOG.warning("invalid state exception during activate call");
-        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
+        throw new IllegalStateException(NOT_ACTIVE_MESSAGE);
     }
 
     /**
@@ -81,7 +81,7 @@ public class InformerState<DataType> {
      */
     protected void deactivate() throws RSBException, InterruptedException {
         LOG.warning("invalid state exception during deactivate call");
-        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
+        throw new IllegalStateException(NOT_ACTIVE_MESSAGE);
     }
 
     /**
@@ -97,7 +97,7 @@ public class InformerState<DataType> {
             throws RSBException {
         LOG.warning("Method send(Event) not implemented for informer state "
                 + this);
-        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
+        throw new IllegalStateException(NOT_ACTIVE_MESSAGE);
     }
 
     /**
@@ -113,7 +113,7 @@ public class InformerState<DataType> {
             throws RSBException {
         LOG.warning("Method send(DataType) not implemented for informer state "
                 + this);
-        throw new InvalidStateException(NOT_ACTIVE_MESSAGE);
+        throw new IllegalStateException(NOT_ACTIVE_MESSAGE);
     }
 
     /**

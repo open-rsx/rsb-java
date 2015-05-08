@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import rsb.InvalidStateException;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
@@ -69,7 +68,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
          * Activates this state.
          *
          * @return the state that should follow this operation
-         * @throws InvalidStateException
+         * @throws IllegalStateException
          *             server in incorrect state
          * @throws rsb.InitializeException
          *             error initializing the server
@@ -77,14 +76,14 @@ public abstract class Server<MethodType extends Method> extends Participant {
          *             error initializing the server
          */
         public ServerState activate() throws RSBException {
-            throw new InvalidStateException("Server already activated.");
+            throw new IllegalStateException("Server already activated.");
         }
 
         /**
          * Deactivates this state.
          *
          * @return the state that should follow this operation
-         * @throws InvalidStateException
+         * @throws IllegalStateException
          *             server in incorrect state
          * @throws RSBException
          *             error initializing the server
@@ -93,11 +92,11 @@ public abstract class Server<MethodType extends Method> extends Participant {
          */
         public ServerState deactivate() throws RSBException,
                 InterruptedException {
-            throw new InvalidStateException("Server not activated.");
+            throw new IllegalStateException("Server not activated.");
         }
 
         public void run(@SuppressWarnings("unused") final boolean async) {
-            throw new InvalidStateException("server not activated");
+            throw new IllegalStateException("server not activated");
         }
 
         public abstract boolean isActive();
