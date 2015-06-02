@@ -28,12 +28,9 @@
 package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.Event;
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
@@ -42,7 +39,6 @@ import rsb.converter.ConverterSelectionStrategy;
 import rsb.filter.AbstractFilterObserver;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
-import spread.SpreadException;
 
 /**
  * An {@link InPushConnector} for the spread daemon network.
@@ -50,156 +46,71 @@ import spread.SpreadException;
  * @author jwienke
  */
 public class SpreadInPushConnector extends AbstractFilterObserver implements
-        InPushConnector, EventHandler {
+        InPushConnector {
 
     private static final Logger LOG = Logger
             .getLogger(SpreadInPushConnector.class.getName());
 
-    private final Set<EventHandler> eventHandlers = new HashSet<EventHandler>();
-    private ReceiverTask receiver;
-    private final SpreadWrapper spread;
     private Scope scope;
-
-    private final ConverterSelectionStrategy<ByteBuffer> inStrategy;
-
-    /**
-     * Waits until a specific membership message occurs.
-     *
-     * @author jwienke
-     */
-    private static class WaitForJoinMembershipHandler implements
-            rsb.transport.spread.ReceiverTask.MembershipHandler {
-
-        private final Object lock = new Object();
-        private String desiredPrivateGroup;
-
-        public WaitForJoinMembershipHandler(final String desiredPrivateGroup) {
-            this.desiredPrivateGroup = desiredPrivateGroup;
-        }
-
-        public void waitForJoin() throws InterruptedException {
-            synchronized (this.lock) {
-                while (this.desiredPrivateGroup != null) {
-                    this.lock.wait();
-                }
-            }
-            LOG.finest("Waiting for joining finished.");
-        }
-
-        @Override
-        public boolean joined(final String group, final String memberGroup) {
-            LOG.log(Level.FINEST,
-                    "Join waiting got notified for member {0} in group "
-                            + "{1} while waiting for private group {2}",
-                    new Object[] { memberGroup, group, this.desiredPrivateGroup });
-            synchronized (this.lock) {
-                if (memberGroup.equals(this.desiredPrivateGroup)) {
-                    this.desiredPrivateGroup = null;
-                    this.lock.notify();
-                    return true;
-                }
-                return false;
-            }
-        }
-
-    }
+    private final SpreadReceiver receiver;
 
     /**
      * Creates a new connector.
      *
      * @param spread
      *            the spread wrapper to use. Must not be active.
-     * @param inStrategy
+     * @param converters
      *            the converters to use for deserializing data
      */
     public SpreadInPushConnector(final SpreadWrapper spread,
-            final ConverterSelectionStrategy<ByteBuffer> inStrategy) {
+            final ConverterSelectionStrategy<ByteBuffer> converters) {
         assert !spread.isActive() : "As the spread object is used for handling "
                 + "our own activation state, it must not be active "
                 + "when passed in.";
-        this.spread = spread;
-        this.inStrategy = inStrategy;
+        this.receiver = new SpreadReceiver(spread, converters);
     }
 
     @Override
     public void activate() throws RSBException {
+        LOG.finer("Activate called");
         assert this.scope != null;
-
-        // activate spread connection
-        if (!this.spread.isActive()) {
-            this.spread.activate();
-        }
-        final WaitForJoinMembershipHandler membershipHandler =
-                new WaitForJoinMembershipHandler(this.spread.getPrivateGroup());
-        this.receiver =
-                new ReceiverTask(this.spread, this, membershipHandler,
-                        this.inStrategy);
-        this.receiver.setPriority(Thread.NORM_PRIORITY + 2);
-        this.receiver.setName("ReceiverTask [grp="
-                + this.spread.getPrivateGroup() + "]");
-        this.receiver.start();
-
+        this.receiver.activate();
         try {
-            joinSpreadGroup(this.scope);
-            membershipHandler.waitForJoin();
-        } catch (final SpreadException e) {
-            // CHECKSTYLE.OFF: MultipleStringLiterals - no useful way to get
-            // around this
-            throw new InitializeException(
-                    "Unable to join spread group for scope '" + this.scope
-                            + "' with hash '"
-                            + SpreadUtilities.spreadGroupName(this.scope)
-                            + "'.", e);
+            this.receiver.join(SpreadUtilities.spreadGroupName(this.scope));
         } catch (final InterruptedException e) {
             // restore interruption state
             // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
             Thread.currentThread().interrupt();
-            throw new InitializeException(
-                    "Unable to wait for joining the spread group for scope '"
-                            + this.scope + "' with hash '"
-                            + SpreadUtilities.spreadGroupName(this.scope)
-                            + "'.", e);
-            // CHECKSTYLE.ON: MultipleStringLiterals
+            throw new InitializeException(e);
         }
-
     }
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
-        if (this.spread.isActive()) {
-            LOG.fine("deactivating SpreadPort");
-            this.spread.deactivate();
-        }
-        this.receiver.join();
+        LOG.finer("Dectivate called");
+        this.receiver.deactivate();
     }
 
     @Override
     public void setScope(final Scope scope) {
-        assert !this.spread.isActive();
+        LOG.log(Level.FINER, "Setting scope to {0}", new Object[] { scope });
+        assert !this.receiver.isActive();
         this.scope = scope;
-    }
-
-    private void joinSpreadGroup(final Scope scope) throws SpreadException {
-        assert this.spread.isActive();
-        this.spread.join(SpreadUtilities.spreadGroupName(scope));
-
     }
 
     @Override
     public void addHandler(final EventHandler handler) {
-        assert !isActive();
-        assert handler != null;
-        synchronized (this.eventHandlers) {
-            this.eventHandlers.add(handler);
-        }
+        LOG.log(Level.FINER, "Adding handler {0}", new Object[] { handler });
+        this.receiver.addHandler(handler);
     }
 
     @Override
     public boolean removeHandler(final EventHandler handler) {
-        assert !isActive();
-        synchronized (this.eventHandlers) {
-            return this.eventHandlers.remove(handler);
-        }
+        LOG.log(Level.FINER, "Removing handler {0}", new Object[] { handler });
+        final boolean removed = this.receiver.removeHandler(handler);
+        LOG.log(Level.FINER, "Remove successfull for handler {0}: {1}",
+                new Object[] { handler, removed });
+        return removed;
     }
 
     @Override
@@ -209,16 +120,7 @@ public class SpreadInPushConnector extends AbstractFilterObserver implements
 
     @Override
     public boolean isActive() {
-        return this.spread.isActive();
-    }
-
-    @Override
-    public void handle(final Event event) {
-        synchronized (this.eventHandlers) {
-            for (final EventHandler handler : this.eventHandlers) {
-                handler.handle(event);
-            }
-        }
+        return this.receiver.isActive();
     }
 
 }

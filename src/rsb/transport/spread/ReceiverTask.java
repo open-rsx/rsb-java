@@ -29,6 +29,8 @@ package rsb.transport.spread;
 
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,11 +65,17 @@ class ReceiverTask extends Thread {
 
     private final EventHandler eventHandler;
 
-    private MembershipHandler membershipHandler = null;
-
     private final ConverterSelectionStrategy<ByteBuffer> converters;
 
     private final AssemblyPool pool = new AssemblyPool();
+
+    /**
+     * Set of currently registered {@link MembershipHandler} instances. Always
+     * synchronize on this set when using it since registration must be possible
+     * from different threads.
+     */
+    private final Set<MembershipHandler> membershipHandlers =
+            new HashSet<MembershipHandler>();
 
     /**
      * Interface for classes that handle membership changes.
@@ -88,19 +96,18 @@ class ReceiverTask extends Thread {
          */
         boolean joined(String group, String memberGroup);
 
-    }
+        /**
+         * Called in case a member has left a group.
+         *
+         * @param group
+         *            the group that was joined
+         * @param memberGroup
+         *            the private group of the member that joined.
+         * @return if <code>true</code>, deregister this handler and do not call
+         *         it further.
+         */
+        boolean left(String group, String memberGroup);
 
-    /**
-     * @param spreadWrapper
-     *            the spread wrapper to receive from
-     * @param handler
-     *            handler for received events
-     * @param converters
-     *            converter set to use for deserialization
-     */
-    ReceiverTask(final SpreadWrapper spreadWrapper, final EventHandler handler,
-            final ConverterSelectionStrategy<ByteBuffer> converters) {
-        this(spreadWrapper, handler, null, converters);
     }
 
     /**
@@ -108,19 +115,78 @@ class ReceiverTask extends Thread {
      *            the spread wrapper to receive from
      * @param eventHandler
      *            handler for received events
-     * @param membershipHandler
-     *            handler that processes membership changes
      * @param converters
      *            converter set to use for deserialization
      */
     ReceiverTask(final SpreadWrapper spreadWrapper,
             final EventHandler eventHandler,
-            final MembershipHandler membershipHandler,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
         this.spread = spreadWrapper;
         this.eventHandler = eventHandler;
-        this.membershipHandler = membershipHandler;
         this.converters = converters;
+    }
+
+    private void handleMembershipMessage(final MembershipInfo membershipInfo) {
+        LOG.log(Level.FINER, "Handling membership change {0}",
+                new Object[] { membershipInfo });
+        // currently, we only handle join messages
+        if (!(membershipInfo.isCausedByJoin() || membershipInfo
+                .isCausedByLeave())) {
+            return;
+        }
+
+        // notify all membership handlers about the new message
+        synchronized (this.membershipHandlers) {
+
+            // create a copy to allow removal during iteration
+            final Set<MembershipHandler> handlers =
+                    new HashSet<MembershipHandler>(this.membershipHandlers);
+
+            for (final MembershipHandler handler : handlers) {
+
+                boolean deregister = false;
+                if (membershipInfo.isCausedByJoin()) {
+
+                    LOG.log(Level.FINEST, "Notifying MembershipHandler {0}"
+                            + " about member {1} joining group {2}",
+                            new Object[] { handler, membershipInfo.getJoined(),
+                                    membershipInfo.getGroup() });
+                    deregister =
+                            handler.joined(
+                                    membershipInfo.getGroup().toString(),
+                                    membershipInfo.getJoined().toString());
+
+                } else if (membershipInfo.isCausedByLeave()) {
+
+                    // special case for self-leaving
+                    String leftPrivateGroup;
+                    if (membershipInfo.isSelfLeave()) {
+                        leftPrivateGroup = this.spread.getPrivateGroup();
+                    } else {
+                        leftPrivateGroup = membershipInfo.getLeft().toString();
+                    }
+
+                    LOG.log(Level.FINEST, "Notifying MembershipHandler {0} "
+                            + "about member {1} leaving group {2}",
+                            new Object[] { handler, leftPrivateGroup,
+                                    membershipInfo.getGroup() });
+                    deregister =
+                            handler.left(membershipInfo.getGroup().toString(),
+                                    leftPrivateGroup);
+
+                }
+
+                // deregister the handler if desired
+                if (deregister) {
+                    final boolean removed =
+                            this.membershipHandlers.remove(handler);
+                    assert removed : "Removing a handler we have just received "
+                            + "from a set must always work";
+                }
+
+            }
+        }
+
     }
 
     @Override
@@ -136,27 +202,9 @@ class ReceiverTask extends Thread {
                         receivedMessage.getType());
 
                 // handle potential membership messages
-                if (this.membershipHandler != null
-                        && receivedMessage.isMembership()) {
+                if (receivedMessage.isMembership()) {
                     LOG.finest("Received message is a membership message");
-                    final MembershipInfo membershipInfo =
-                            receivedMessage.getMembershipInfo();
-                    boolean deregister = false;
-                    if (membershipInfo.isCausedByJoin()) {
-                        LOG.log(Level.FINEST,
-                                "Notifying MembershipHandler {0} "
-                                        + "about member {1} joining group {2}",
-                                new Object[] { this.membershipHandler,
-                                        membershipInfo.getJoined(),
-                                        membershipInfo.getGroup() });
-                        deregister =
-                                this.membershipHandler.joined(membershipInfo
-                                        .getGroup().toString(), membershipInfo
-                                        .getJoined().toString());
-                    }
-                    if (deregister) {
-                        this.membershipHandler = null;
-                    }
+                    handleMembershipMessage(receivedMessage.getMembershipInfo());
                 }
 
                 // otherwise try to handle data messages
@@ -253,4 +301,22 @@ class ReceiverTask extends Thread {
         }
 
     }
+
+    /**
+     * Registers a handler for membership messages if it did not exist before.
+     * Immediately after this call returns, new membership messages will be
+     * received by this handler.
+     *
+     * @param handler
+     *            the handler to add, not <code>null</code>
+     * @return <code>true</code> if the handler did not exist before and was
+     *         added successfully
+     */
+    public boolean registerMembershipHandler(final MembershipHandler handler) {
+        assert handler != null;
+        synchronized (this.membershipHandlers) {
+            return this.membershipHandlers.add(handler);
+        }
+    }
+
 }
