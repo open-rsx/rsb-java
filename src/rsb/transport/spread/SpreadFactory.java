@@ -34,8 +34,6 @@ import java.util.Map;
 
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
-import rsb.QualityOfServiceSpec.Ordering;
-import rsb.QualityOfServiceSpec.Reliability;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
@@ -50,25 +48,9 @@ import rsb.util.Properties;
  */
 public class SpreadFactory implements TransportFactory {
 
-    private static final String QOS_RELIABILITY_KEY =
-            "qualityofservice.reliability";
-    private static final String QOS_ORDERING_KEY = "qualityofservice.ordering";
-    private static final String HOST_KEY = "transport.spread.host";
-    private static final String DEFAULT_HOST = "localhost";
-    private static final String PORT_KEY = "transport.spread.port";
-    private static final String DEFAULT_PORT = "4803";
-    private static final String NODELAY_KEY = "transport.spread.tcpnodelay";
-    private static final String DEFAULT_NODELAY = "true";
-
     private final Map<SpreadOptions, SpreadWrapper> spreadWrappers =
             new HashMap<SpreadOptions, SpreadWrapper>();
 
-    private SpreadOptions optionsFromProperties(final Properties properties) {
-        return new SpreadOptions(properties.getProperty(HOST_KEY, DEFAULT_HOST)
-                .asString(), properties.getProperty(PORT_KEY, DEFAULT_PORT)
-                .asInteger(), properties.getProperty(NODELAY_KEY,
-                DEFAULT_NODELAY).asBoolean());
-    }
 
     private SpreadWrapper createSpreadWrapper(final SpreadOptions options)
             throws InitializeException {
@@ -103,7 +85,8 @@ public class SpreadFactory implements TransportFactory {
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
         return new SpreadInPushConnector(
-                createSpreadWrapper(optionsFromProperties(properties)),
+                createSpreadWrapper(ConfigParseUtilities
+                        .spreadOptionsFromProperties(properties)),
                 (ConverterSelectionStrategy<ByteBuffer>) converters);
 
     }
@@ -114,23 +97,13 @@ public class SpreadFactory implements TransportFactory {
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
 
-        Ordering ordering = new QualityOfServiceSpec().getOrdering();
-        if (properties.hasProperty(QOS_ORDERING_KEY)) {
-            ordering =
-                    Ordering.valueOf(properties.getProperty(QOS_ORDERING_KEY)
-                            .asString());
-        }
-        Reliability reliability = new QualityOfServiceSpec().getReliability();
-        if (properties.hasProperty(QOS_RELIABILITY_KEY)) {
-            reliability =
-                    Reliability.valueOf(properties.getProperty(
-                            QOS_RELIABILITY_KEY).asString());
-        }
-
+        final QualityOfServiceSpec qos =
+                ConfigParseUtilities.parseQualityOfServiceSpec(properties);
         return new SpreadOutConnector(
-                createUniqueSpreadWrapper(optionsFromProperties(properties)),
-                (ConverterSelectionStrategy<ByteBuffer>) converters,
-                new QualityOfServiceSpec(ordering, reliability));
+                createUniqueSpreadWrapper(ConfigParseUtilities
+                        .spreadOptionsFromProperties(properties)),
+                (ConverterSelectionStrategy<ByteBuffer>) converters, qos);
 
     }
+
 }
