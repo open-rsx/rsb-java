@@ -31,6 +31,8 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
@@ -48,12 +50,22 @@ import rsb.util.Properties;
  */
 public class SpreadFactory implements TransportFactory {
 
+    private static final Logger LOG = Logger.getLogger(SpreadFactory.class
+            .getName());
+
+    private static final InPushConnectorFactory DEFAULT_IN_FACTORY =
+            new IndividualInPushConnectorFactory();
+
+    private static final String IN_FACTORY_KEY =
+            "transport.spread.java.infactory";
+
     private final Map<SpreadOptions, SpreadWrapper> spreadWrappers =
             new HashMap<SpreadOptions, SpreadWrapper>();
 
-
     private SpreadWrapper createSpreadWrapper(final SpreadOptions options)
             throws InitializeException {
+        LOG.log(Level.FINE, "Creating a spread wrapper with options {0}",
+                new Object[] { options });
         try {
             return new SpreadWrapperImpl(options);
         } catch (final NumberFormatException e) {
@@ -79,16 +91,32 @@ public class SpreadFactory implements TransportFactory {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("deprecation")
     @Override
     public InPushConnector createInPushConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
-        return new SpreadInPushConnector(
-                createSpreadWrapper(ConfigParseUtilities
-                        .spreadOptionsFromProperties(properties)),
-                (ConverterSelectionStrategy<ByteBuffer>) converters);
 
+        InPushConnectorFactory factory = DEFAULT_IN_FACTORY;
+        if (properties.hasProperty(IN_FACTORY_KEY)) {
+            factory =
+                    InPushConnectorFactoryRegistry.getInstance().get(
+                            properties.getProperty(IN_FACTORY_KEY).asString());
+            if (factory == null) {
+                throw new InitializeException(
+                        "InPushConnectorFactory with key '"
+                                + properties.getProperty(IN_FACTORY_KEY)
+                                        .asString()
+                                + "' not available in the registry");
+            }
+        }
+
+        LOG.log(Level.FINE,
+                "Creating an in-push connector from properties {0} "
+                        + "with factory {1} and converters {2}", new Object[] {
+                        properties, factory, converters });
+
+        return factory.create(properties, converters);
     }
 
     @SuppressWarnings("unchecked")
@@ -96,6 +124,9 @@ public class SpreadFactory implements TransportFactory {
     public OutConnector createOutConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
+        LOG.log(Level.FINE,
+                "Creating and out connector with properties {0} and converters {1}",
+                new Object[] { properties, converters });
 
         final QualityOfServiceSpec qos =
                 ConfigParseUtilities.parseQualityOfServiceSpec(properties);
@@ -105,5 +136,4 @@ public class SpreadFactory implements TransportFactory {
                 (ConverterSelectionStrategy<ByteBuffer>) converters, qos);
 
     }
-
 }
