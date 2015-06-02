@@ -93,6 +93,40 @@ public class PredicateConverterSelectionStrategy<WireType> implements
             return key.equals(this.desired);
         }
 
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result =
+                    prime
+                            * result
+                            + ((this.desired == null) ? 0 : this.desired
+                                    .hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof ExactKeyPredicate)) {
+                return false;
+            }
+            final ExactKeyPredicate other = (ExactKeyPredicate) obj;
+            if (this.desired == null) {
+                if (other.desired != null) {
+                    return false;
+                }
+            } else if (!this.desired.equals(other.desired)) {
+                return false;
+            }
+            return true;
+        }
+
     }
 
     /**
@@ -119,6 +153,40 @@ public class PredicateConverterSelectionStrategy<WireType> implements
             return this.pattern.matcher(key).matches();
         }
 
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result =
+                    prime
+                            * result
+                            + ((this.pattern == null) ? 0 : this.pattern
+                                    .hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof RegExPredicate)) {
+                return false;
+            }
+            final RegExPredicate other = (RegExPredicate) obj;
+            if (this.pattern == null) {
+                if (other.pattern != null) {
+                    return false;
+                }
+            } else if (!this.pattern.equals(other.pattern)) {
+                return false;
+            }
+            return true;
+        }
+
     }
 
     private final class PredicateConverterPair {
@@ -138,6 +206,62 @@ public class PredicateConverterSelectionStrategy<WireType> implements
 
         public Converter<WireType> getConverter() {
             return this.converter;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result =
+                    prime
+                            * result
+                            + ((this.converter == null) ? 0 : this.converter
+                                    .hashCode());
+            result =
+                    prime
+                            * result
+                            + ((this.predicate == null) ? 0 : this.predicate
+                                    .hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof PredicateConverterSelectionStrategy.PredicateConverterPair)) {
+                return false;
+            }
+            @SuppressWarnings("unchecked")
+            final PredicateConverterPair other = (PredicateConverterPair) obj;
+            if (!getOuterType().equals(other.getOuterType())) {
+                return false;
+            }
+            if (this.converter == null) {
+                if (other.converter != null) {
+                    return false;
+                }
+            } else if (!this.converter.equals(other.converter)) {
+                return false;
+            }
+            if (this.predicate == null) {
+                if (other.predicate != null) {
+                    return false;
+                }
+            } else if (!this.predicate.equals(other.predicate)) {
+                return false;
+            }
+            return true;
+        }
+
+        @SuppressWarnings("rawtypes")
+        private PredicateConverterSelectionStrategy getOuterType() {
+            return PredicateConverterSelectionStrategy.this;
         }
 
     }
@@ -169,6 +293,42 @@ public class PredicateConverterSelectionStrategy<WireType> implements
         assert predicate != null;
         assert converter != null;
         this.converters.add(new PredicateConverterPair(predicate, converter));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result =
+                prime
+                        * result
+                        + ((this.converters == null) ? 0 : this.converters
+                                .hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof PredicateConverterSelectionStrategy)) {
+            return false;
+        }
+        @SuppressWarnings("rawtypes")
+        final PredicateConverterSelectionStrategy other =
+                (PredicateConverterSelectionStrategy) obj;
+        if (this.converters == null) {
+            if (other.converters != null) {
+                return false;
+            }
+        } else if (!this.converters.equals(other.converters)) {
+            return false;
+        }
+        return true;
     }
 
 }
