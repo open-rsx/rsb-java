@@ -49,7 +49,7 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
      * Constructor.
      *
      * @param scope
-     *            the scope events are reeived on
+     *            the scope events are received on
      */
     public DefaultPushInRouteConfigurator(final Scope scope) {
         this.utility = new RouteConfiguratorUtility<InPushConnector>(scope);

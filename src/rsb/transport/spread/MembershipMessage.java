@@ -31,5 +31,5 @@ package rsb.transport.spread;
  * @author swrede
  */
 public class MembershipMessage {
-
+    // not interesting for us so far
 }
