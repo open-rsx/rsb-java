@@ -20,7 +20,7 @@ fi
 
 GITPATCH=`perl -p -e 's/-g[0-9a-fA-F]+$//;s/^.*-//' gitversion`
 
-RELBRANCH=`perl -p -e 's/^[0-9]+\.[0-9]+$//' gitbranch`
+RELBRANCH=""
 
 if [ -z "$GITPATCH" ] || [ -z "$GITBRANCH" ]; then
   echo "Could not get version/branch information. Is this either a git checkout or an official source archive?" 1>&2
@@ -29,7 +29,7 @@ fi
 
 
 if [ -z "$RELBRANCH" ]; then
-  FULLVERSION=$GITBRANCH.$GITPATCH
+  FULLVERSION="0.12.$GITPATCH"
   echo "We are on a release branch, version is $FULLVERSION"
   mvn versions:set -DnewVersion=$FULLVERSION
   echo "Changed the version in the pom.xml, you are now ready to build!"
