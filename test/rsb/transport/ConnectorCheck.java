@@ -80,7 +80,7 @@ public abstract class ConnectorCheck extends LoggingEnabled {
         this.getOutConnector().deactivate();
     }
 
-    @Test(expected = ConversionException.class)
+    @Test(expected = ConversionException.class, timeout = 10000)
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public void noConverterPassedToClient() throws Throwable {
         final Event event =
@@ -248,7 +248,7 @@ public abstract class ConnectorCheck extends LoggingEnabled {
             final UnambiguousConverterMap<ByteBuffer> converters)
             throws Throwable;
 
-    @Test
+    @Test(timeout = 10000)
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void longGroupNames() throws Throwable {
 
@@ -327,7 +327,7 @@ public abstract class ConnectorCheck extends LoggingEnabled {
         inPort.deactivate();
     }
 
-    @Test
+    @Test(timeout = 10000)
     public void noMoreEventsAfterDeactivate() throws Throwable {
 
         // create an event to send
