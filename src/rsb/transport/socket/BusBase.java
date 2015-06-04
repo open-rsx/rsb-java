@@ -56,6 +56,8 @@ import rsb.protocol.NotificationType.Notification;
  * @author swrede
  * @author jwienke
  */
+// false positive: methods of ReceiveThread are counted as well
+@SuppressWarnings("PMD.TooManyMethods")
 public abstract class BusBase implements Bus {
 
     private static final Logger LOG = Logger.getLogger(Bus.class.getName());

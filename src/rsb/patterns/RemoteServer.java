@@ -48,6 +48,8 @@ import rsb.patterns.RemoteMethod.FuturePreparator;
  * @author swrede
  * @author jwienke
  */
+// cannot be reduced while maintaining backwards compatibility
+@SuppressWarnings("PMD.TooManyMethods")
 public class RemoteServer extends Server<RemoteMethod> {
 
     /**

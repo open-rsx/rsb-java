@@ -43,6 +43,8 @@ import rsb.LoggingEnabled;
  */
 public class DoubleConverterTest extends LoggingEnabled {
 
+    private static final int SERIALIZED_NUM_BYTES = 8;
+
     @Test
     public void serialize() throws Throwable {
         final DoubleConverter converter = new DoubleConverter();
@@ -54,8 +56,8 @@ public class DoubleConverterTest extends LoggingEnabled {
         final byte[] converted = buf.getSerialization().array();
         final byte[] expected =
                 new byte[] { -115, -105, 110, 18, -125, -64, -13, 63 };
-        assertEquals(8, converted.length);
-        for (int i = 0; i < 8; i++) {
+        assertEquals(SERIALIZED_NUM_BYTES, converted.length);
+        for (int i = 0; i < SERIALIZED_NUM_BYTES; i++) {
             assertEquals(expected[i], converted[i]);
         }
     }

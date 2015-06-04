@@ -112,16 +112,19 @@ public final class UUIDTools {
      *            vector to update
      * @return updated byte vector
      */
-    @SuppressWarnings("PMD.UseVarargs")
+    // LongVariable: no natural way to shorten variables respecting their
+    // original name
+    @SuppressWarnings({ "PMD.UseVarargs", "PMD.LongVariable" })
     private static byte[] setVersionAndVariant(final byte[] bytes) {
         // Constants and bit manipulation from:
         // http://svn.apache.org/repos/asf/commons/sandbox/id/trunk/
-        /** Byte position of the clock sequence and reserved field */
+
+        // Byte position of the clock sequence and reserved field
         final short timeHiAndVersionByte6 = 6;
-        /** Byte position of the clock sequence and reserved field */
+        // Byte position of the clock sequence and reserved field
         final short clockSeqHiAndReservedByte8 = 8;
 
-        /** Version five constant for indicating UUID version */
+        // Version five constant for indicating UUID version
         // Different to above mentioned code, otherwise version
         // information is still misleading (set to 3)
         final int versionFive = 5;

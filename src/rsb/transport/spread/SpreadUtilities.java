@@ -44,6 +44,20 @@ public final class SpreadUtilities {
      */
     public static final int MAX_GROUP_NAME_LENGTH = 31;
 
+    /**
+     * Mask to extract the first byte of an integer.
+     */
+    private static final int BYTE_EXTRACTION_MASK = 0xFF;
+
+    /**
+     * Length of an MD5 hash.
+     */
+    private static final int MD5SUM_LENGTH = 16;
+
+    /**
+     * Mutex to synchronize on when using the MD5 message digest, which is a
+     * global variable.
+     */
     private static final Object MD5_DIGEST_MUTEX = new Object();
 
     private SpreadUtilities() {
@@ -79,11 +93,11 @@ public final class SpreadUtilities {
             }
 
         }
-        assert sum.length == 16;
+        assert sum.length == MD5SUM_LENGTH;
 
         final StringBuilder hexString = new StringBuilder();
         for (final byte element : sum) {
-            String hexRep = Integer.toHexString(0xFF & element);
+            String hexRep = Integer.toHexString(BYTE_EXTRACTION_MASK & element);
             if (hexRep.length() == 1) {
                 hexRep = '0' + hexRep;
             }

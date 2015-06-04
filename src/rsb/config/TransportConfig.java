@@ -251,7 +251,7 @@ public class TransportConfig {
         // CHECKSTYLE.ON: AvoidInlineConditionals
     }
 
-    @SuppressWarnings({ "PMD.NPathComplexity", "PMD.CyclomaticComplexity" })
+    @SuppressWarnings({ "PMD.NPathComplexity", "PMD.StdCyclomaticComplexity" })
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

@@ -48,6 +48,7 @@ import java.util.Set;
  */
 // TODO check if we want to provide the type via a template parameter
 // Rationale: A single event can only hold a single type
+@SuppressWarnings("PMD.GodClass")
 public class Event {
 
     @SuppressWarnings("PMD.ShortVariable")

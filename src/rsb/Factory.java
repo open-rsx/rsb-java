@@ -53,13 +53,16 @@ import rsb.util.Properties;
  * @author jwienke
  * @author swrede
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class Factory {
 
     private static final Logger LOG = Logger.getLogger(Factory.class.getName());
 
     /**
-     * Configuration key for the introspection dusplay name.
+     * Configuration key for the introspection display name.
      */
+    // no natural way to make this considerably shorter
+    @SuppressWarnings("PMD.LongVariable")
     private static final String INTROSPECTION_DISPLAYNAME_KEY =
             "introspection.displayname";
 

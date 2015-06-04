@@ -13,7 +13,11 @@
     <rule ref="rulesets/java/basic.xml" />
     <rule ref="rulesets/java/braces.xml" />
     <rule ref="rulesets/java/clone.xml" />
-    <rule ref="rulesets/java/codesize.xml" />
+    <rule ref="rulesets/java/codesize.xml">
+        <!-- decide for one complexity metric and all -->
+        <exclude name="CyclomaticComplexity" />
+        <exclude name="ModifiedCyclomaticComplexity" />
+    </rule>
     <rule ref="rulesets/java/empty.xml" />
     <rule ref="rulesets/java/coupling.xml">
         <exclude name="LoosePackageCoupling" />
@@ -74,6 +78,21 @@
     <rule ref="rulesets/java/imports.xml/TooManyStaticImports">
         <properties>
              <property name="maximumStaticImports" value="15"/>
+        </properties>
+    </rule>
+
+    <rule ref="rulesets/java/codesize.xml/StdCyclomaticComplexity">
+        <properties>
+             <!-- Do not compute cyclomatic complexity for classes. We already have it for methods -->
+             <property name="showClassesComplexity" value="false"/>
+             <!-- equals and hashCode are often complex and they require this... -->
+             <property name="violationSuppressRegex" value=".*method '(equals|hashCode)'.*"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/java/codesize.xml/NPathComplexity">
+        <properties>
+             <!-- equals and hashCode are often complex and they require this... -->
+             <property name="violationSuppressRegex" value=".*method (equals|hashCode)\(\).*"/>
         </properties>
     </rule>
 </ruleset>
