@@ -59,8 +59,6 @@ class ReceiverTask extends Thread {
 
     private final SpreadWrapper spread;
 
-    private final SpreadMessageConverter smc = new SpreadMessageConverter();
-
     private final EventHandler eventHandler;
 
     private MembershipHandler membershipHandler = null;
@@ -123,11 +121,8 @@ class ReceiverTask extends Thread {
         this.converters = converters;
     }
 
-    // allow catching generic exceptions to prevent being crashed by errors as
-    // long as no active error handling is available
     @Override
-    @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
-            "PMD.AvoidCatchingGenericException" })
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void run() {
         LOG.finer("Listener thread started");
         while (this.spread.isConnected()
@@ -138,59 +133,19 @@ class ReceiverTask extends Thread {
                         "Message received from spread, message type: {0}",
                         receivedMessage.getType());
 
-                // handle potential membership messages
-                if (this.membershipHandler != null
-                        && receivedMessage.isMembership()) {
+                if (receivedMessage.isRegular()) {
+                    // handle regular messages first because this should be the
+                    // more common case. This prevents a comparison operation
+                    LOG.finest("Received message is a regular message");
+                    handleDataMessage(receivedMessage);
+                } else if (receivedMessage.isMembership()) {
                     LOG.finest("Received message is a membership message");
-                    final MembershipInfo membershipInfo =
-                            receivedMessage.getMembershipInfo();
-                    boolean deregister = false;
-                    if (membershipInfo.isCausedByJoin()) {
-                        LOG.log(Level.FINEST,
-                                "Notifying MembershipHandler {0} "
-                                        + "about member {1} joining group {2}",
-                                new Object[] { this.membershipHandler,
-                                        membershipInfo.getJoined(),
-                                        membershipInfo.getGroup() });
-                        deregister =
-                                this.membershipHandler.joined(membershipInfo
-                                        .getGroup().toString(), membershipInfo
-                                        .getJoined().toString());
-                    }
-                    if (deregister) {
-                        this.membershipHandler = null;
-                    }
-                }
-
-                // otherwise try to handle data messages
-                final DataMessage receivedData =
-                        this.smc.process(receivedMessage);
-                if (receivedData == null) {
-                    LOG.finest("Skipping processing of this message "
-                            + "because it is not ad DataMessage");
-                    continue;
-                }
-
-                Event receivedFullEvent = null;
-                try {
-                    receivedFullEvent = this.convertNotification(receivedData);
-                    LOG.log(Level.FINEST, "receivedFullEvent={0}",
-                            receivedFullEvent);
-                } catch (final RuntimeException e) {
-                    // catch anything else so that we cannot be actively crashed
-                    // with bad network input
-                    LOG.log(Level.SEVERE,
-                            "Error decoding event from the network layer", e);
-                    continue;
-                }
-                // receivedFullEvent might be null in case a fragment was
-                // received and no complete event is available yet
-                if (receivedFullEvent != null) {
-                    // dispatch event
-                    LOG.log(Level.FINEST,
-                            "Dispatching received event to handler {0}",
-                            this.eventHandler);
-                    this.eventHandler.handle(receivedFullEvent);
+                    handleMembershipMessage(receivedMessage);
+                } else {
+                    LOG.log(Level.WARNING,
+                            "Received a message with is neither a data "
+                                    + "nor a membership message: {0}",
+                            new Object[] { receivedMessage });
                 }
 
             } catch (final InterruptedIOException e) {
@@ -215,7 +170,68 @@ class ReceiverTask extends Thread {
         LOG.fine("Listener thread stopped");
     }
 
-    // TODO think about whether this could actually be a regular converter call
+    // allow catching generic exceptions to prevent being crashed by errors as
+    // long as no active error handling is available
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    private void handleDataMessage(final SpreadMessage receivedMessage) {
+        assert receivedMessage.isRegular();
+
+        try {
+            final DataMessage receivedData =
+                    DataMessage.convertSpreadMessage(receivedMessage);
+
+            Event receivedFullEvent = null;
+            try {
+                receivedFullEvent = this.convertNotification(receivedData);
+                LOG.log(Level.FINEST, "receivedFullEvent={0}",
+                        receivedFullEvent);
+            } catch (final RuntimeException e) {
+                // catch anything else so that we cannot be actively crashed
+                // with bad network input
+                LOG.log(Level.SEVERE,
+                        "Error decoding event from the network layer", e);
+                return;
+            }
+            // receivedFullEvent might be null in case a fragment was
+            // received and no complete event is available yet
+            if (receivedFullEvent == null) {
+                return;
+            }
+
+            LOG.log(Level.FINEST, "Dispatching received event to handler {0}",
+                    this.eventHandler);
+            this.eventHandler.handle(receivedFullEvent);
+
+        } catch (final SerializeException e) {
+            LOG.log(Level.WARNING, "Error de-serializing SpreadMessage", e);
+        }
+
+    }
+
+    private void handleMembershipMessage(final SpreadMessage receivedMessage) {
+        if (this.membershipHandler == null) {
+            return;
+        }
+        assert receivedMessage.isMembership();
+
+        final MembershipInfo membershipInfo =
+                receivedMessage.getMembershipInfo();
+        boolean deregister = false;
+        if (membershipInfo.isCausedByJoin()) {
+            LOG.log(Level.FINEST, "Notifying MembershipHandler {0} "
+                    + "about member {1} joining group {2}", new Object[] {
+                    this.membershipHandler, membershipInfo.getJoined(),
+                    membershipInfo.getGroup() });
+            deregister =
+                    this.membershipHandler.joined(membershipInfo.getGroup()
+                            .toString(), membershipInfo.getJoined().toString());
+        }
+        if (deregister) {
+            this.membershipHandler = null;
+        }
+
+    }
+
     /**
      * Method for converting Spread data messages into Java RSB events. The main
      * purpose of this method is the conversion of Spread data messages by
@@ -224,8 +240,8 @@ class ReceiverTask extends Thread {
      *
      * @param receivedData
      *            data gathered from the wire
-     * @return deserialized event or null if the event was fragmented and the
-     *         given data does not complete an event
+     * @return deserialized event or <code>null</code> if the event was
+     *         fragmented and the given data does not complete an event
      */
     private Event convertNotification(final DataMessage receivedData) {
 
@@ -246,12 +262,11 @@ class ReceiverTask extends Thread {
             return ProtocolConversion.fromNotification(initialNotification,
                     joinedData.getData(), this.converters);
 
-            // TODO better error handling with callback object
-        } catch (final InvalidProtocolBufferException e1) {
-            LOG.log(Level.SEVERE, "Error decoding protocol buffer", e1);
+        } catch (final InvalidProtocolBufferException e) {
+            LOG.log(Level.SEVERE, "Error decoding protocol buffer", e);
             return null;
-        } catch (final ConversionException e1) {
-            LOG.log(Level.SEVERE, "Error deserializing user data", e1);
+        } catch (final ConversionException e) {
+            LOG.log(Level.SEVERE, "Error deserializing user data", e);
             return null;
         }
 

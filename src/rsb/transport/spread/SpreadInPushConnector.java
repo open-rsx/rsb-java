@@ -95,7 +95,7 @@ public class SpreadInPushConnector implements InPushConnector, EventHandler {
             synchronized (this.lock) {
                 if (memberGroup.equals(this.desiredPrivateGroup)) {
                     this.desiredPrivateGroup = null;
-                    this.lock.notify();
+                    this.lock.notifyAll();
                     return true;
                 }
                 return false;
