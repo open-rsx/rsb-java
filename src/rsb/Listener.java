@@ -62,9 +62,6 @@ public class Listener extends Participant {
     @SuppressWarnings("PMD.ImmutableField")
     private ListenerState state;
 
-    @SuppressWarnings({ "deprecation", "unused" })
-    private ErrorHandler errorHandler;
-
     private final List<Filter> filters = new ArrayList<Filter>();
     private final List<Handler> handlers = new ArrayList<Handler>();
     private final PushInRouteConfigurator router;
@@ -134,7 +131,6 @@ public class Listener extends Participant {
         super(args);
 
         this.state = new ListenerStateInactive(this);
-        this.errorHandler = new DefaultErrorHandler(LOG);
         this.router = new DefaultPushInRouteConfigurator(getScope());
         this.router.setEventReceivingStrategy(getConfig()
                 .getReceivingStrategy().create());
@@ -256,16 +252,6 @@ public class Listener extends Participant {
             throws InterruptedException {
         this.handlers.remove(handler);
         this.getRouter().handlerRemoved(handler, wait);
-    }
-
-    /**
-     * @param handler
-     *            an error handler to call on errors
-     * @deprecated not yet designed
-     */
-    @Deprecated
-    public void setErrorHandler(final ErrorHandler handler) {
-        this.errorHandler = handler;
     }
 
     @Override
