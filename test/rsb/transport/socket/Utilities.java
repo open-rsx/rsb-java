@@ -37,7 +37,7 @@ import rsb.ParticipantId;
 import rsb.Scope;
 import rsb.converter.ConversionException;
 import rsb.converter.Converter;
-import rsb.converter.Uint64Converter;
+import rsb.converter.LongConverter;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
 import rsb.protocol.ProtocolConversion;
@@ -83,7 +83,8 @@ public final class Utilities {
         final Builder builder = Notification.newBuilder();
         builder.setEventId(ProtocolConversion.createEventIdBuilder(event
                 .getId()));
-        final Converter<ByteBuffer> converter = new Uint64Converter();
+        final Converter<ByteBuffer> converter =
+                new LongConverter(LongConverter.UINT64_SIGNATURE);
         final ByteBuffer serialization =
                 converter.serialize(event.getType(), event.getData())
                         .getSerialization();
@@ -98,5 +99,5 @@ public final class Utilities {
 
 }
 
-//CHECKSTYLE.ON: JavadocMethod
-//CHECKSTYLE.ON: MagicNumber
+// CHECKSTYLE.ON: JavadocMethod
+// CHECKSTYLE.ON: MagicNumber

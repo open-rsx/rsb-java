@@ -32,21 +32,42 @@ import java.nio.ByteBuffer;
 
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
- * integers that fit into 64 bits.
+ * integers that fit into 64 bits by using the Java {@link Long} type.
  *
  * @author jmoringe
+ * @author jwienke
  */
-public class Int64Converter implements Converter<ByteBuffer> {
+public class LongConverter implements Converter<ByteBuffer> {
 
     /**
-     * Signature of {@link Int64Converter} instances.
+     * Signature for using the converter with unsigned integers.
      */
-    public static final ConverterSignature SIGNATURE = new ConverterSignature(
-            "int64", Long.class);
+    public static final ConverterSignature INT64_SIGNATURE =
+            new ConverterSignature("int64", Long.class);
+
+    /**
+     * Signature for using the converter with signed integers. This may result
+     * in overflows.
+     */
+    public static final ConverterSignature UINT64_SIGNATURE =
+            new ConverterSignature("uint64", Long.class);
 
     private static final int BYTES_PER_INT = 8;
     private static final int BYTE_LENGTH = 8;
     private static final int MASK = 0xff;
+    private static final long MAX_VALUE_PER_BYTE = 256L;
+
+    private final ConverterSignature signature;
+
+    /**
+     * Constructor allowing different signatures.
+     *
+     * @param signature
+     *            the signature to use
+     */
+    public LongConverter(final ConverterSignature signature) {
+        this.signature = signature;
+    }
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
@@ -64,7 +85,7 @@ public class Int64Converter implements Converter<ByteBuffer> {
             }
             final ByteBuffer serialized = ByteBuffer.wrap(backing);
             return new WireContents<ByteBuffer>(serialized,
-                    SIGNATURE.getSchema());
+                    this.signature.getSchema());
 
         } catch (final ClassCastException e) {
             throw new ConversionException(
@@ -77,9 +98,9 @@ public class Int64Converter implements Converter<ByteBuffer> {
     public UserData<ByteBuffer> deserialize(final String wireSchema,
             final ByteBuffer bytes) throws ConversionException {
 
-        if (!wireSchema.equals(SIGNATURE.getSchema())) {
+        if (!wireSchema.equals(this.signature.getSchema())) {
             throw new ConversionException("Unexpected wire schema '"
-                    + wireSchema + "', expected '" + SIGNATURE.getSchema()
+                    + wireSchema + "', expected '" + this.signature.getSchema()
                     + "'.");
         }
 
@@ -87,7 +108,7 @@ public class Int64Converter implements Converter<ByteBuffer> {
         for (int i = 0; i < BYTES_PER_INT; ++i) {
             long value = bytes.get(i);
             if (value < 0L) {
-                value = 256L + value;
+                value = MAX_VALUE_PER_BYTE + value;
             }
             result |= value << (i * BYTE_LENGTH);
         }
@@ -96,6 +117,6 @@ public class Int64Converter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return SIGNATURE;
+        return this.signature;
     }
 }

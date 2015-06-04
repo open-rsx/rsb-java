@@ -55,13 +55,13 @@ public final class DefaultConverters {
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new BoolConverter());
         // DefaultConverterRepository.getDefaultConverterRepository()
-        // .addConverter(new Uint64Converter());
+        // .addConverter(new LongConverter(LongConverter.UINT64_SIGNATURE));
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new EventIdConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new NullConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new Int64Converter());
+                .addConverter(new LongConverter(LongConverter.INT64_SIGNATURE));
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new DoubleConverter());
 

@@ -41,11 +41,12 @@ import rsb.LoggingEnabled;
 /**
  * @author jmoringe
  */
-public class Uint64ConverterTest extends LoggingEnabled {
+public class LongConverterTest extends LoggingEnabled {
 
     @Test
     public void serialize() throws Throwable {
-        final Uint64Converter converter = new Uint64Converter();
+        final LongConverter converter =
+                new LongConverter(LongConverter.UINT64_SIGNATURE);
         final Long input = 2431709L;
         final WireContents<ByteBuffer> buf =
                 converter.serialize(Long.class, input);
@@ -54,7 +55,8 @@ public class Uint64ConverterTest extends LoggingEnabled {
 
     @Test
     public void roundtripSmallValue() throws Throwable {
-        final Uint64Converter converter = new Uint64Converter();
+        final LongConverter converter =
+                new LongConverter(LongConverter.UINT64_SIGNATURE);
         final Long input = 24398L;
         final WireContents<ByteBuffer> buf =
                 converter.serialize(Long.class, input);
@@ -68,7 +70,8 @@ public class Uint64ConverterTest extends LoggingEnabled {
 
     @Test
     public void roundtripLargeValue() throws Throwable {
-        final Uint64Converter converter = new Uint64Converter();
+        final LongConverter converter =
+                new LongConverter(LongConverter.UINT64_SIGNATURE);
         final Long input = 130236144L;
         final WireContents<ByteBuffer> buf =
                 converter.serialize(Long.class, input);
@@ -82,7 +85,8 @@ public class Uint64ConverterTest extends LoggingEnabled {
 
     @Test(expected = ConversionException.class)
     public void serializationNotALongError() throws Throwable {
-        final Uint64Converter converter = new Uint64Converter();
+        final LongConverter converter =
+                new LongConverter(LongConverter.UINT64_SIGNATURE);
         converter.serialize(Long.class, new LinkedList<Integer>());
     }
 
