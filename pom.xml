@@ -33,6 +33,9 @@
         <pbuf.outpath>target/generated-protocol</pbuf.outpath>
         <spread.daemon>/usr/sbin/spread</spread.daemon>
         <target.java.version>1.6</target.java.version>
+        <plugin.checkstyle.version>2.15</plugin.checkstyle.version>
+        <plugin.pmd.version>3.4</plugin.pmd.version>
+        <failOnStyleError>true</failOnStyleError>
     </properties>
 
     <build>
@@ -335,6 +338,60 @@
                 </executions>
             </plugin>
 
+            <!-- Generate checkstyle warnings on the command line during compilation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${plugin.checkstyle.version}</version>
+                <configuration>
+                    <configLocation>codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=codecheck</propertyExpansion>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <consoleOutput>true</consoleOutput>
+                    <linkXRef>false</linkXRef>
+                    <violationSeverity>warning</violationSeverity>
+                    <failOnViolation>${failOnStyleError}</failOnViolation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle-validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Generate PMD warnings on the command line during compilation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${plugin.pmd.version}</version>
+                <configuration>
+                    <targetJdk>${target.java.version}</targetJdk>
+                    <rulesets>
+                        <ruleset>${project.basedir}/codecheck/pmd-rules.xml</ruleset>
+                    </rulesets>
+                    <excludeRoots>
+                        <excludeRoot>target/generated-protocol</excludeRoot>
+                        <excludeRoot>spread-src</excludeRoot>
+                    </excludeRoots>
+                    <failOnViolation>${failOnStyleError}</failOnViolation>
+                    <verbose>true</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pmd-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>cpd-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -453,7 +510,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.4</version>
+                <version>${plugin.pmd.version}</version>
                 <configuration>
                     <targetJdk>${target.java.version}</targetJdk>
                     <rulesets>
@@ -470,7 +527,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.10</version>
+                <version>${plugin.checkstyle.version}</version>
                 <configuration>
                     <configLocation>codecheck/checkstyle.xml</configLocation>
                     <propertyExpansion>config_loc=codecheck</propertyExpansion>
