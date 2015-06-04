@@ -59,7 +59,10 @@ public final class SpreadUtilities {
      *            scope to create group name
      * @return truncated md5 hash to fit into a spread group
      */
-    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
+    // AvoidThrowingRawExceptionTypes: just a safety network for something that
+    // should never happen
+    @SuppressWarnings({ "PMD.UseStringBufferForStringAppends",
+            "PMD.AvoidThrowingRawExceptionTypes" })
     public static String spreadGroupName(final Scope scope) {
 
         byte[] sum;

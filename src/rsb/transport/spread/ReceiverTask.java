@@ -123,8 +123,11 @@ class ReceiverTask extends Thread {
         this.converters = converters;
     }
 
+    // allow catching generic exceptions to prevent being crashed by errors as
+    // long as no active error handling is available
     @Override
-    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
+            "PMD.AvoidCatchingGenericException" })
     public void run() {
         LOG.finer("Listener thread started");
         while (this.spread.isConnected()

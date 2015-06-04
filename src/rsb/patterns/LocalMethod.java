@@ -40,6 +40,7 @@ import rsb.ListenerCreateArgs;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
 import rsb.filter.MethodFilter;
+import rsb.patterns.Callback.UserCodeException;
 
 /**
  * Objects of this class implement and make available methods of a local server.
@@ -87,17 +88,21 @@ class LocalMethod extends Method implements Handler {
                         this.getConfig()).setParent(this)));
     }
 
+    // We want clients to be able to throw anything so that good errors can be
+    // sent to the caller
     @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void internalNotify(final Event request) {
 
         Event reply;
         try {
             reply = this.callback.internalInvoke(request);
-        } catch (final Throwable exception) {
+        } catch (final UserCodeException e) {
+            final Throwable exception = e.getCause();
             LOG.log(Level.WARNING,
                     "Exception during method invocation in participant: {0}. "
-                            + "Exception message: {1}", new Object[] {
-                            this.getScope(), exception });
+                            + "Exception message: {1}",
+                    new Object[] { this.getScope(), exception });
             final StringWriter exceptionWriter = new StringWriter();
             final PrintWriter exceptionPrinter =
                     new PrintWriter(exceptionWriter);
@@ -122,8 +127,8 @@ class LocalMethod extends Method implements Handler {
             // TODO call local error handler
             LOG.log(Level.WARNING,
                     "Exception while sending reply in server: {0}."
-                            + " Exception message: {1}", new Object[] {
-                            this.getScope(), exception });
+                            + " Exception message: {1}",
+                    new Object[] { this.getScope(), exception });
         }
     }
 

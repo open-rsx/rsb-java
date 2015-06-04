@@ -37,9 +37,15 @@ import rsb.Event;
  */
 public abstract class EventCallback implements Callback {
 
+    // Convenience for users to throw anything
     @Override
-    public Event internalInvoke(final Event request) throws Throwable {
-        return this.invoke(request);
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    public Event internalInvoke(final Event request) throws UserCodeException {
+        try {
+            return this.invoke(request);
+        } catch (final Exception e) {
+            throw new UserCodeException(e);
+        }
     }
 
     /**
@@ -50,9 +56,11 @@ public abstract class EventCallback implements Callback {
      *            caller.
      * @return A result that should be returned to the remote caller as the
      *         result of the calling the method.
-     * @throws Throwable
+     * @throws Exception
      *             Can throw anything.
      */
-    public abstract Event invoke(Event request) throws Throwable;
+    // Convenience for users to throw anything
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    public abstract Event invoke(Event request) throws Exception;
 
 };

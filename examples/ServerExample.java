@@ -37,7 +37,7 @@ public class ServerExample {
     public static class EchoCallback extends EventCallback {
 
         @Override
-        public Event invoke(final Event request) throws Throwable {
+        public Event invoke(final Event request) throws Exception {
             return new Event(String.class, request.getData());
         }
 

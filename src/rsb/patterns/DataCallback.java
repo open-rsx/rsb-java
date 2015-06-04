@@ -51,19 +51,26 @@ import rsb.Event;
  */
 public abstract class DataCallback<ReplyType, RequestType> implements Callback {
 
+    // Convenience for users to throw anything
     @Override
-    public Event internalInvoke(final Event request) throws Throwable {
-        @SuppressWarnings("unchecked")
-        final ReplyType result = this.invoke((RequestType) request.getData());
-        // wrap return data in event instance
-        Class<?> type;
-        // null needs to be specifically handled
-        if (result == null) {
-            type = Void.class;
-        } else {
-            type = result.getClass();
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    public Event internalInvoke(final Event request) throws UserCodeException {
+        try {
+            @SuppressWarnings("unchecked")
+            final ReplyType result =
+                    this.invoke((RequestType) request.getData());
+            // wrap return data in event instance
+            Class<?> type;
+            // null needs to be specifically handled
+            if (result == null) {
+                type = Void.class;
+            } else {
+                type = result.getClass();
+            }
+            return new Event(type, result);
+        } catch (final Exception e) {
+            throw new UserCodeException(e);
         }
-        return new Event(type, result);
     }
 
     /**
@@ -74,9 +81,11 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
      *            caller.
      * @return A result that should be returned to the remote caller as the
      *         result of the calling the method.
-     * @throws Throwable
+     * @throws Exception
      *             Can throw anything.
      */
-    public abstract ReplyType invoke(RequestType request) throws Throwable;
+    // Convenience for users to throw anything
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    public abstract ReplyType invoke(RequestType request) throws Exception;
 
 };

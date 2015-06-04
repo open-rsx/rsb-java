@@ -60,7 +60,7 @@ public class ServerTest extends LoggingEnabled {
         }
 
         @Override
-        public String invoke(final String request) throws Throwable {
+        public String invoke(final String request) throws Exception {
             this.server.deactivate();
             return "shutdown now";
         }

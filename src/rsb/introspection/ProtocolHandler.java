@@ -109,7 +109,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
     private static class EchoCallback extends EventCallback {
 
         @Override
-        public Event invoke(final Event request) throws Throwable {
+        public Event invoke(final Event request) {
             request.getMetaData().setUserTime(
                     ProtocolUtilities.REQUEST_SEND_USER_TIME,
                     request.getMetaData().getSendTime());

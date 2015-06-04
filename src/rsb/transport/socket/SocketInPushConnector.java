@@ -38,6 +38,7 @@ import rsb.Event;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
+import rsb.converter.ConversionException;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
@@ -123,7 +124,9 @@ public class SocketInPushConnector implements InPushConnector,
         return this.handlers.remove(handler);
     }
 
+    // we need to shield against user code terminating the framework code
     @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void handle(final Notification notification) {
 
         LOG.log(Level.FINEST, "Received a notification with scope {0}",
@@ -153,10 +156,12 @@ public class SocketInPushConnector implements InPushConnector,
                 handler.handle(resultEvent);
             }
 
-        } catch (final Exception e) {
-            // TODO here we would have to use an error handler
+        } catch (final RuntimeException e) {
             LOG.log(Level.WARNING, "Error while dispatching notification to "
                     + "registered handlers. Ignoring this.", e);
+        } catch (final ConversionException e) {
+            LOG.log(Level.WARNING,
+                    "Error decoding the received message. Ignroing this.", e);
         }
 
     }

@@ -36,7 +36,7 @@ class ReplyDataCallback extends DataCallback<String, String> {
     private final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public String invoke(final String request) throws Throwable {
+    public String invoke(final String request) throws Exception {
         if (!this.flag.get()) {
             this.flag.set(true);
         }

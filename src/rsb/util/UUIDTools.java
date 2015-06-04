@@ -61,6 +61,9 @@ public final class UUIDTools {
      *            Actual name to be encoded in UUID
      * @return Byte buffer with V5 UUID
      */
+    // AvoidThrowingRawExceptionTypes: just a safety network for something that
+    // should never happen
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public static UUID
             getNameBasedUUID(final UUID namespace, final String name) {
 
@@ -70,10 +73,10 @@ public final class UUIDTools {
             if (digester == null) {
                 try {
                     digester = MessageDigest.getInstance("SHA-1");
-                } catch (final NoSuchAlgorithmException nex) {
+                } catch (final NoSuchAlgorithmException e) {
+                    assert false;
                     throw new RuntimeException(
-                            "Couldn't instantiate SHA-1 algorithm: "
-                                    + nex.toString(), nex);
+                            "Couldn't instantiate SHA-1 algorithm", e);
                 }
             }
 

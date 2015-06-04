@@ -120,9 +120,6 @@ public class SpreadWrapperImpl implements SpreadWrapper {
     }
 
     private void checkConnection() {
-        if (this.conn == null) {
-            return; // not initialized yet
-        }
         if (!this.conn.isConnected() && !this.shutdown) {
             LOG.severe(CONNECTION_LOST_MSG);
             throw new ConnectionLostException(CONNECTION_LOST_MSG);
@@ -163,36 +160,25 @@ public class SpreadWrapperImpl implements SpreadWrapper {
     }
 
     @Override
-    public boolean send(final DataMessage msg) {
-
-        // check group names for length
-        for (final String group : msg.getGroups()) {
-            if (group.length() > SpreadUtilities.MAX_GROUP_NAME_LENGTH) {
-                throw new IllegalArgumentException("Group with name '" + group
-                        + "' is too long for spread, "
-                        + "only 31 characters are allowed.");
-            }
-        }
-
-        // TODO check whether we should rethrow the exceptions
-        if (this.conn == null) {
-            return false;
+    public void send(final DataMessage msg) {
+        if (this.status != State.ACTIVATED) {
+            throw new IllegalStateException("Not activated");
         }
 
         this.checkConnection();
+
         try {
             this.conn.multicast(msg.getSpreadMessage());
-            return true;
         } catch (final SpreadException e) {
             LOG.log(Level.WARNING,
                     "SpreadException occurred during multicast send of message",
                     e);
-            return false;
+            throw new SendException(e);
         } catch (final SerializeException e) {
             LOG.log(Level.WARNING,
                     "SerializeException occurred during multicast send of message",
                     e);
-            return false;
+            throw new SendException(e);
         }
 
     }
@@ -213,7 +199,7 @@ public class SpreadWrapperImpl implements SpreadWrapper {
                     // ignored
                     LOG.log(Level.WARNING,
                             "Caught a SpreadException while leaving group '"
-                            + grp + "': " + e.getMessage(), e);
+                                    + grp + "': " + e.getMessage(), e);
                 }
                 groupIt.remove();
             }

@@ -92,7 +92,7 @@ public class SpreadNotRunningTest extends LoggingEnabled {
         server.addMethod("foobar", new DataCallback<String, String>() {
 
             @Override
-            public String invoke(final String request) throws Throwable {
+            public String invoke(final String request) throws Exception {
                 return "";
             }
 

@@ -46,7 +46,7 @@ public class DataCallbackTest extends LoggingEnabled {
         class VoidCallback extends DataCallback<Void, Void> {
 
             @Override
-            public Void invoke(final Void request) throws Throwable {
+            public Void invoke(final Void request) throws Exception {
                 return null;
             }
 
@@ -67,7 +67,7 @@ public class DataCallbackTest extends LoggingEnabled {
         class MyCallback extends DataCallback<String, Integer> {
 
             @Override
-            public String invoke(final Integer request) throws Throwable {
+            public String invoke(final Integer request) throws Exception {
                 return testString;
             }
 

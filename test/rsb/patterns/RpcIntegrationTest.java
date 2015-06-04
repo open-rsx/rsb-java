@@ -65,7 +65,7 @@ public class RpcIntegrationTest extends LoggingEnabled {
                 new DataCallback<Void, Void>() {
 
                     @Override
-                    public Void invoke(final Void request) throws Throwable {
+                    public Void invoke(final Void request) throws Exception {
                         return null;
                     }
 

@@ -72,16 +72,19 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
         this.handlerTasks = handlerTasks;
     }
 
+    // client errors should not be able to break the whole framework. Therefore
+    // we need to catch all of these exceptions
     @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public Boolean call() {
         try {
             if (this.match(this.event)) {
                 try {
                     this.handler.internalNotify(this.event);
-                } catch (final Exception ex) {
+                } catch (final RuntimeException e) {
                     LOG.log(Level.WARNING,
                             "Unable to dispatch event to handler"
-                                    + this.handler, ex);
+                                    + this.handler, e);
                     // TODO pass to exception handler
                 }
                 return true;

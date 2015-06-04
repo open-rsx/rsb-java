@@ -107,8 +107,20 @@ public class DataMessage {
      *
      * @param group
      *            the new group
+     * @throws IllegalArgumentException
+     *             group name is <code>null</code>, empty, or longer then
+     *             {@link SpreadUtilities#MAX_GROUP_NAME_LENGTH}
      */
     public void addGroup(final String group) {
+        if (group == null) {
+            throw new IllegalArgumentException("Group name must not be null");
+        }
+        if (group.isEmpty()) {
+            throw new IllegalArgumentException("Group name must not be empty");
+        }
+        if (group.length() > SpreadUtilities.MAX_GROUP_NAME_LENGTH) {
+            throw new IllegalArgumentException("Group name too long");
+        }
         this.msg.addGroup(group);
     }
 
@@ -120,8 +132,8 @@ public class DataMessage {
      * @return <code>true</code> if this message will be sent to that group
      */
     public boolean isForGroup(final String name) {
-        for (int i = 0; i < this.msg.getGroups().length; i++) {
-            if (this.msg.getGroups()[i].equals(name)) {
+        for (final SpreadGroup group : this.msg.getGroups()) {
+            if (group.toString().equals(name)) {
                 return true;
             }
         }

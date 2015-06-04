@@ -123,8 +123,8 @@ public class RefCountingSpreadWrapper implements SpreadWrapper {
     }
 
     @Override
-    public boolean send(final DataMessage msg) {
-        return this.wrapped.send(msg);
+    public void send(final DataMessage msg) {
+        this.wrapped.send(msg);
     }
 
     @Override

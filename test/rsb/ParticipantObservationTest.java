@@ -220,15 +220,16 @@ public class ParticipantObservationTest extends LoggingEnabled {
         final FactoryObserver observer = new FactoryObserver();
         this.factory.addObserver(observer);
 
-        final LocalServer server
-            = this.factory.createLocalServer(TEST_SCOPE, this.config);
+        final LocalServer server =
+                this.factory.createLocalServer(TEST_SCOPE, this.config);
         server.activate();
 
         final String methodName = "test";
         server.addMethod(methodName, new Callback() {
 
             @Override
-            public Event internalInvoke(final Event request) throws Throwable {
+            public Event internalInvoke(final Event request)
+                    throws UserCodeException {
                 // nothing to do for testing
                 return null;
             }

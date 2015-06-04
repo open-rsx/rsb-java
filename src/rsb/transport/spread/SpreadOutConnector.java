@@ -203,7 +203,7 @@ public class SpreadOutConnector implements OutConnector {
     }
 
     @Override
-    public void push(final Event event) throws ConversionException {
+    public void push(final Event event) throws RSBException {
         LOG.log(Level.FINEST, "Pushing event to the wire: {0}", event);
 
         final WireContents<ByteBuffer> convertedDataBuffer =
@@ -252,11 +252,11 @@ public class SpreadOutConnector implements OutConnector {
                                 + "for a spread message.", ex);
             }
 
-            final boolean sent = this.spread.send(message);
-            assert sent;
-            if (!sent) {
-                throw new RuntimeException(
-                        "Don't know why, but a message could not be sent using spread.");
+            try {
+                this.spread.send(message);
+            } catch (final SendException e) {
+                LOG.log(Level.WARNING, "Unable to send message", e);
+                throw new RSBException(e);
             }
 
         }

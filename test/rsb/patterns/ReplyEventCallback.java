@@ -39,7 +39,7 @@ public class ReplyEventCallback extends EventCallback {
     private final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public Event invoke(final Event request) throws Throwable {
+    public Event invoke(final Event request) throws Exception {
         final Event reply = new Event(String.class, request.getData());
         reply.getMetaData().setUserInfo("replyTo",
                 request.getId().getAsUUID().toString());

@@ -28,6 +28,7 @@
 package rsb.patterns;
 
 import rsb.Event;
+import rsb.RSBException;
 
 /**
  * A {@link Callback} implements the functionality of a single method of a
@@ -42,15 +43,41 @@ import rsb.Event;
 public interface Callback {
 
     /**
+     * Exception to be thrown by callbacks to indicate an error while processing
+     * the user code. Exceptions of this type will always have a cause.
+     *
+     * @author jwienke
+     */
+    class UserCodeException extends RSBException {
+
+        private static final long serialVersionUID = -1957188490022606548L;
+
+        /**
+         * Constructor.
+         *
+         * @param cause
+         *            wrapped exception as the root cause, not <code>null</code>
+         */
+        public UserCodeException(final Exception cause) {
+            super(cause);
+            if (cause == null) {
+                throw new IllegalArgumentException(
+                        "Causing exception must not be null");
+            }
+        }
+
+    }
+
+    /**
      * Method to invoke the {@link Callback}'s functionality. This method can be
      * considered an internal implementation detail.
      *
      * @param request
      *            the request received from a {@link RemoteServer} method call
      * @return an event with the result data of a method
-     * @throws Throwable
-     *             any exception type may be thrown
+     * @throws UserCodeException
+     *             any exception in the user code invoked by the callback
      */
-    Event internalInvoke(Event request) throws Throwable;
+    Event internalInvoke(Event request) throws UserCodeException;
 
 }

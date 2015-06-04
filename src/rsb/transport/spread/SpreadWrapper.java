@@ -87,9 +87,10 @@ public interface SpreadWrapper extends Activatable {
      *
      * @param msg
      *            the message to send
-     * @return <code>true</code> if sent correctly, else <code>false</code>
+     * @throws SendException
+     *             error sending the message
      */
-    boolean send(DataMessage msg);
+    void send(DataMessage msg);
 
     /**
      * If connected and joined, leaves the specified group.
