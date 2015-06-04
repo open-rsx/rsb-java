@@ -28,9 +28,7 @@
 package rsb.transport.inprocess;
 
 import rsb.Event;
-import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
-import rsb.Scope;
 
 /**
  * {@link rsb.transport.OutConnector} implementation for the inprocess
@@ -38,11 +36,8 @@ import rsb.Scope;
  *
  * @author jwienke
  */
-public class OutConnector implements rsb.transport.OutConnector {
-
-    private final Bus bus;
-    private boolean active = false;
-    private Scope scope = null;
+public class OutConnector extends ConnectorBase implements
+        rsb.transport.OutConnector {
 
     /**
      * Creates a new out connector operating on a given bus instance.
@@ -51,54 +46,7 @@ public class OutConnector implements rsb.transport.OutConnector {
      *            the bus to use for sending events.
      */
     public OutConnector(final Bus bus) {
-        this.bus = bus;
-    }
-
-    @Override
-    public void setQualityOfServiceSpec(final QualityOfServiceSpec spec) {
-        // nothing to do here
-    }
-
-    @Override
-    public void setScope(final Scope scope) {
-        synchronized (this) {
-            if (isActive()) {
-                throw new IllegalStateException(
-                        "Scope can only be set when not active.");
-            }
-            this.scope = scope;
-        }
-    }
-
-    @Override
-    public void activate() throws RSBException {
-        synchronized (this) {
-            if (isActive()) {
-                throw new IllegalStateException("Already active");
-            }
-            if (this.scope == null) {
-                throw new IllegalStateException(
-                        "Scope needs to be set before activating a connector.");
-            }
-            this.active = true;
-        }
-    }
-
-    @Override
-    public void deactivate() throws RSBException, InterruptedException {
-        synchronized (this) {
-            if (!isActive()) {
-                throw new IllegalStateException("Not active");
-            }
-            this.active = false;
-        }
-    }
-
-    @Override
-    public boolean isActive() {
-        synchronized (this) {
-            return this.active;
-        }
+        super(bus);
     }
 
     @Override
@@ -109,7 +57,7 @@ public class OutConnector implements rsb.transport.OutConnector {
                         "Connector needs to be active for sending events");
             }
             event.getMetaData().setSendTime(0);
-            this.bus.push(event);
+            getBus().push(event);
         }
     }
 

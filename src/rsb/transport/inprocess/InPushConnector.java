@@ -32,9 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rsb.Event;
-import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
-import rsb.Scope;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.transport.EventHandler;
@@ -45,12 +43,9 @@ import rsb.transport.EventHandler;
  *
  * @author jwienke
  */
-public class InPushConnector implements rsb.transport.InPushConnector,
-        EventHandler {
+public class InPushConnector extends ConnectorBase implements
+        rsb.transport.InPushConnector, EventHandler {
 
-    private final Bus bus;
-    private Scope scope;
-    private boolean active;
     private final Set<EventHandler> handlers = Collections
             .synchronizedSet(new HashSet<EventHandler>());
 
@@ -62,61 +57,13 @@ public class InPushConnector implements rsb.transport.InPushConnector,
      *            the bus to receive from
      */
     public InPushConnector(final Bus bus) {
-        this.bus = bus;
-    }
-
-    @Override
-    public void setQualityOfServiceSpec(final QualityOfServiceSpec spec) {
-        // nothing to do here
-    }
-
-    @Override
-    public void setScope(final Scope scope) {
-        synchronized (this) {
-            if (isActive()) {
-                throw new IllegalStateException(
-                        "Scope can only be set when not active.");
-            }
-            this.scope = scope;
-        }
-
+        super(bus);
     }
 
     @Override
     public void activate() throws RSBException {
-        synchronized (this) {
-            if (isActive()) {
-                throw new IllegalStateException("Already active");
-            }
-            if (this.scope == null) {
-                throw new IllegalStateException(
-                        "Scope must be set before activating a connector");
-            }
-            this.active = true;
-
-            this.bus.addHandler(this);
-
-        }
-    }
-
-    @Override
-    public void deactivate() throws RSBException, InterruptedException {
-        synchronized (this) {
-            if (!isActive()) {
-                throw new IllegalStateException("Not active");
-            }
-            this.active = false;
-
-            this.bus.removeHandler(this);
-
-        }
-    }
-
-    @Override
-    public boolean isActive() {
-        synchronized (this) {
-            return this.active;
-        }
+        super.activate();
+        getBus().addHandler(this);
     }
 
     @Override
@@ -138,8 +85,8 @@ public class InPushConnector implements rsb.transport.InPushConnector,
                 return;
             }
 
-            if (!event.getScope().equals(this.scope)
-                    && !event.getScope().isSubScopeOf(this.scope)) {
+            if (!event.getScope().equals(getScope())
+                    && !event.getScope().isSubScopeOf(getScope())) {
                 return;
             }
 
