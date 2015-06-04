@@ -28,11 +28,16 @@
 package rsb.transport.spread;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import rsb.util.ByteHelpers;
+import spread.SpreadGroup;
 import spread.SpreadMessage;
 
 /**
+ * Encapsulates a message containing data to be sent via spread.
+ *
  * @author swrede
  */
 public class DataMessage {
@@ -63,10 +68,6 @@ public class DataMessage {
 
     // CHECKSTYLE.ON: DeclarationOrderCheck
 
-    public DataMessage() {
-        super();
-    }
-
     static DataMessage convertSpreadMessage(final SpreadMessage msg)
             throws SerializeException {
         if (msg.isMembership()) {
@@ -88,26 +89,37 @@ public class DataMessage {
         }
     }
 
-    public String[] getGroups() {
-        final String[] groups = new String[this.msg.getGroups().length];
-        for (int i = 0; i < this.msg.getGroups().length; i++) {
-            groups[i] = this.msg.getGroups()[i].toString();
+    /**
+     * Returns the spread groups this message will be sent to.
+     *
+     * @return array of group names
+     */
+    public Set<String> getGroups() {
+        final Set<String> groups = new HashSet<String>();
+        for (final SpreadGroup group : this.msg.getGroups()) {
+            groups.add(group.toString());
         }
         return groups;
     }
 
-    @SuppressWarnings("PMD.UseVarargs")
-    public void setGroups(final String[] grp) {
-        for (final String element : grp) {
-            this.msg.addGroup(element);
-        }
+    /**
+     * Adds a group this message should be sent to.
+     *
+     * @param group
+     *            the new group
+     */
+    public void addGroup(final String group) {
+        this.msg.addGroup(group);
     }
 
-    public void addGroup(final String grp) {
-        this.msg.addGroup(grp);
-    }
-
-    public boolean inGroup(final String name) {
+    /**
+     * Tells whether this message shall be sent to the requested group.
+     *
+     * @param name
+     *            name of the group to test for
+     * @return <code>true</code> if this message will be sent to that group
+     */
+    public boolean isForGroup(final String name) {
         for (int i = 0; i < this.msg.getGroups().length; i++) {
             if (this.msg.getGroups()[i].equals(name)) {
                 return true;
@@ -116,24 +128,56 @@ public class DataMessage {
         return false;
     }
 
+    /**
+     * Sets the data to send with this message.
+     *
+     * @param buffer
+     *            data buffer, not <code>null</code>
+     * @throws SerializeException
+     *             buffer cannot be serialized
+     */
     public void setData(final ByteBuffer buffer) throws SerializeException {
         this.checkSize(buffer);
         this.msg.setData(ByteHelpers.byteBufferToArray(buffer));
     }
 
+    /**
+     * Sets the data to send with this message.
+     *
+     * @param buffer
+     *            data buffer, not <code>null</code>
+     * @throws SerializeException
+     *             buffer cannot be serialized
+     */
     @SuppressWarnings("PMD.UseVarargs")
     public void setData(final byte[] buffer) throws SerializeException {
         this.msg.setData(buffer);
     }
 
+    /**
+     * Returns the data this message will contain.
+     *
+     * @return byte buffer instance, not <code>null</code>
+     */
     public ByteBuffer getData() {
         return ByteBuffer.wrap(this.msg.getData());
     }
 
+    /**
+     * Sets the self discard flag for this message so that it will not be
+     * delivered to the sender by the spread daemon.
+     */
     public void enableSelfDiscard() {
         this.msg.setSelfDiscard(true);
     }
 
+    /**
+     * Returns the constructed {@link SpreadMessage} instance.
+     *
+     * @return constructed instance
+     * @throws SerializeException
+     *             message cannot be created because information is missing
+     */
     public SpreadMessage getSpreadMessage() throws SerializeException {
         // TODO bad exception type for the expressed meaning
         // TODO there should also be a way to get a message that is not fully
