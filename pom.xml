@@ -35,6 +35,7 @@
         <target.java.version>1.6</target.java.version>
         <plugin.checkstyle.version>2.15</plugin.checkstyle.version>
         <plugin.pmd.version>3.4</plugin.pmd.version>
+        <plugin.javadoc.version>2.10.3</plugin.javadoc.version>
         <failOnStyleError>true</failOnStyleError>
     </properties>
 
@@ -272,7 +273,7 @@
                     </execution>
                 </executions>
                 <dependencies>
-                    <!-- All this is needed to get ant-contrib in the ant 
+                    <!-- All this is needed to get ant-contrib in the ant
                         task above. -->
                     <dependency>
                         <groupId>ant-contrib</groupId>
@@ -392,6 +393,22 @@
                 </executions>
             </plugin>
 
+            <!-- Copied from reporting section because the documented
+                 inheritance of options from the reporting section does not
+                 work.
+                 Cf. https://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag
+                 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${plugin.javadoc.version}</version>
+                <configuration>
+                    <show>protected</show>
+                    <excludePackageNames>spread:tutorial.protobuf</excludePackageNames>
+                    <quiet>true</quiet>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -499,10 +516,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
+                <version>${plugin.javadoc.version}</version>
                 <configuration>
-                    <show>public</show>
+                    <show>protected</show>
                     <excludePackageNames>spread:tutorial.protobuf</excludePackageNames>
+                    <quiet>true</quiet>
                 </configuration>
             </plugin>
 
@@ -560,8 +578,39 @@
         </dependency>
     </dependencies>
 
-    <!-- Since we're not descending from the "ai-common" project, we have 
-        to specify our default repository ourself -->
+    <profiles>
+        <profile>
+            <id>doclint-java8-disable</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${plugin.javadoc.version}</version>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${plugin.javadoc.version}</version>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
+
     <distributionManagement>
         <!-- use the following if you're not using a snapshot version. -->
         <repository>
@@ -576,4 +625,5 @@
             <url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
 </project>

@@ -162,7 +162,8 @@ public final class ProtocolConversion {
      * it is bound to the converter configuration.
      *
      * @param notification
-     *            {@link Notification} instance to deserialize
+     *            {@link rsb.protocol.NotificationType.Notification} instance
+     *            to deserialize
      * @return deserialized {@link Event} instance
      */
     public static Event fromNotification(final Notification notification) {
@@ -204,7 +205,8 @@ public final class ProtocolConversion {
     }
 
     /**
-     * Builds an {@link Event} instance from a {@link Notification} and a
+     * Builds an {@link Event} instance from a
+     * {@link rsb.protocol.NotificationType.Notification} and a
      * {@link ByteBuffer} containing the event payload. This includes the
      * deserialization of the payload using a specified converter strategy.
      *

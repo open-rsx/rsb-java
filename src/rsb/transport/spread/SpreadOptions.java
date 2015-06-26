@@ -45,7 +45,7 @@ public class SpreadOptions {
      *            the host name or IP address of the spread daemon. Must not be
      *            <code>null</code> or empty.
      * @param port
-     *            the port of the spread daemon, > 0
+     *            the port of the spread daemon, &gt; 0
      * @param tcpNoDelay
      *            whether to connect with tcpnodelay or not
      * @throws IllegalArgumentException
@@ -80,7 +80,7 @@ public class SpreadOptions {
     /**
      * Returns the port of the spread daemon.
      *
-     * @return port > 0
+     * @return port &gt; 0
      */
     public int getPort() {
         return this.port;

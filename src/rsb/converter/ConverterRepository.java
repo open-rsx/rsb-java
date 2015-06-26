@@ -41,7 +41,7 @@ public interface ConverterRepository<WireType> {
 
     /**
      * This method queries the converter map for seralizable data types and
-     * returns an UnambiguousConverterMap for the chosen <WireType> to the
+     * returns an UnambiguousConverterMap for the chosen WireType to the
      * caller.
      *
      * @return ConverterSelectionStrategy object for serialization
@@ -50,7 +50,7 @@ public interface ConverterRepository<WireType> {
 
     /**
      * This method queries the converter map for deseralizable data types and
-     * returns an UnambiguousConverterMap for the chosen <WireType> to the
+     * returns an UnambiguousConverterMap for the chosen WireType to the
      * caller.
      *
      * @return ConverterSelectionStrategy object for deserialization

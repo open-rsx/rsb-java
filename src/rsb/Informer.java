@@ -244,7 +244,7 @@ public class Informer<DataType extends Object> extends Participant {
     }
 
     /**
-     * Send data (of type <T>) to all subscribed participants.
+     * Send data (of type DataType) to all subscribed participants.
      *
      * @param data
      *            data to send with default setting from the informer

@@ -166,7 +166,8 @@ public class EventId {
 
     /**
      * Formats an decimal sequence number as a string with 8 byte width encoding
-     * that number in hex. E.g. 0 -> 00000000, 1 -> 00000000, 32 -> 00000020.
+     * that number in hex.
+     * E.g. 0 -&lt; 00000000, 1 -&lt; 00000000, 32 -&lt; 00000020.
      * This is the format used inside the UUID-based representation.
      *
      * @param value

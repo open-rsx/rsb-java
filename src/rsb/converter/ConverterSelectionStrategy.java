@@ -29,7 +29,7 @@ package rsb.converter;
 
 /**
  * Implementations of this interface perform mappings of one of the followings
- * forms: - wire-schema -> @ref Converter - data-type -> @ref Converter.
+ * forms: - wire-schema -&lt; @ref Converter - data-type -&lt; @ref Converter.
  *
  * @author jmoringe
  * @author swrede
