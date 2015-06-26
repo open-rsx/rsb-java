@@ -36,6 +36,7 @@
         <plugin.checkstyle.version>2.15</plugin.checkstyle.version>
         <plugin.pmd.version>3.4</plugin.pmd.version>
         <plugin.javadoc.version>2.10.3</plugin.javadoc.version>
+        <plugin.jacoco.version>0.7.5.201505241946</plugin.jacoco.version>
         <failOnStyleError>true</failOnStyleError>
     </properties>
 
@@ -227,7 +228,7 @@
                                     executable="${pbuf.protoc}">
                                     <arg value="--java_out=${pbuf.outpath}" />
                                     <arg
-                                        value="--proto_path=${basedir}/examples/tutorial/protocol" />
+                                        value="--proto_path=${project.basedir}/examples/tutorial/protocol" />
                                     <fileset
                                         dir="examples/tutorial/protocol"
                                         includes="*.proto" />
@@ -258,7 +259,7 @@
                                         <forget>
                                             <exec executable="${spread.daemon}">
                                                 <arg
-                                                    line="-n localhost -c ${basedir}/etc/spread.conf" />
+                                                    line="-n localhost -c ${project.basedir}/etc/spread.conf" />
                                             </exec>
                                         </forget>
 
@@ -321,7 +322,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.6.3.201306030806</version>
+                <version>${plugin.jacoco.version}</version>
                 <executions>
                     <execution>
                         <id>pre-unit-test</id>
@@ -345,17 +346,13 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${plugin.checkstyle.version}</version>
                 <configuration>
-                    <configLocation>codecheck/checkstyle.xml</configLocation>
-                    <propertyExpansion>config_loc=codecheck</propertyExpansion>
+                    <configLocation>${project.basedir}/codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=${project.basedir}/codecheck</propertyExpansion>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <consoleOutput>true</consoleOutput>
-                    <linkXRef>false</linkXRef>
                     <violationSeverity>warning</violationSeverity>
                     <failOnViolation>${failOnStyleError}</failOnViolation>
-                    <sourceDirectories>
-                        <dir>src</dir>
-                        <dir>test</dir>
-                    </sourceDirectories>
+                    <sourceDirectory>${project.basedir}/src</sourceDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -379,8 +376,9 @@
                         <ruleset>${project.basedir}/codecheck/pmd-rules.xml</ruleset>
                     </rulesets>
                     <excludeRoots>
-                        <excludeRoot>target/generated-protocol</excludeRoot>
-                        <excludeRoot>spread-src</excludeRoot>
+                        <excludeRoot>${project.basedir}/target/generated-protocol</excludeRoot>
+                        <excludeRoot>${project.basedir}/spread-src</excludeRoot>
+                        <excludeRoot>${project.basedir}/examples</excludeRoot>
                     </excludeRoots>
                     <failOnViolation>${failOnStyleError}</failOnViolation>
                     <verbose>true</verbose>
@@ -499,7 +497,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.6.3.201306030806</version>
+                <version>${plugin.jacoco.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>spread/**/*.*</exclude>
@@ -539,8 +537,9 @@
                         <ruleset>${project.basedir}/codecheck/pmd-rules.xml</ruleset>
                     </rulesets>
                     <excludeRoots>
-                        <excludeRoot>target/generated-protocol</excludeRoot>
-                        <excludeRoot>spread-src</excludeRoot>
+                        <excludeRoot>${project.basedir}/target/generated-protocol</excludeRoot>
+                        <excludeRoot>${project.basedir}/spread-src</excludeRoot>
+                        <excludeRoot>${project.basedir}/examples</excludeRoot>
                     </excludeRoots>
                 </configuration>
             </plugin>
@@ -551,13 +550,10 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${plugin.checkstyle.version}</version>
                 <configuration>
-                    <configLocation>${basedir}/codecheck/checkstyle.xml</configLocation>
-                    <propertyExpansion>config_loc=${basedir}/codecheck</propertyExpansion>
+                    <configLocation>${project.basedir}/codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=${project.basedir}/codecheck</propertyExpansion>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <sourceDirectories>
-                        <dir>src</dir>
-                        <dir>test</dir>
-                    </sourceDirectories>
+                    <sourceDirectory>${project.basedir}/src</sourceDirectory>
                 </configuration>
             </plugin>
 
