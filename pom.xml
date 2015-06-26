@@ -352,6 +352,10 @@
                     <linkXRef>false</linkXRef>
                     <violationSeverity>warning</violationSeverity>
                     <failOnViolation>${failOnStyleError}</failOnViolation>
+                    <sourceDirectories>
+                        <dir>src</dir>
+                        <dir>test</dir>
+                    </sourceDirectories>
                 </configuration>
                 <executions>
                     <execution>
@@ -547,9 +551,13 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${plugin.checkstyle.version}</version>
                 <configuration>
-                    <configLocation>codecheck/checkstyle.xml</configLocation>
-                    <propertyExpansion>config_loc=codecheck</propertyExpansion>
+                    <configLocation>${basedir}/codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=${basedir}/codecheck</propertyExpansion>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <sourceDirectories>
+                        <dir>src</dir>
+                        <dir>test</dir>
+                    </sourceDirectories>
                 </configuration>
             </plugin>
 
@@ -612,13 +620,11 @@
     </profiles>
 
     <distributionManagement>
-        <!-- use the following if you're not using a snapshot version. -->
         <repository>
             <id>citec</id>
             <name>CIT-EC Repository</name>
             <url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-releases/</url>
         </repository>
-        <!-- use the following if you ARE using a snapshot version. -->
         <snapshotRepository>
             <id>citec</id>
             <name>CIT-EC Repository</name>
