@@ -236,8 +236,27 @@ public class Informer<DataType extends Object> extends Participant {
      * @throws IllegalArgumentException
      *             if the event is not complete or does not match the type or
      *             scope settings of the informer
+     * @deprecated Use {@link #publish(Event)} instead to be consistent across
+     *             implementations
      */
+    @Deprecated
     public Event send(final Event event) throws RSBException {
+        return publish(event);
+    }
+
+    /**
+     * Publish an {@link Event} to all subscribed participants.
+     *
+     * @param event
+     *            the event to send
+     * @return modified event with set timing information
+     * @throws RSBException
+     *             error sending event
+     * @throws IllegalArgumentException
+     *             if the event is not complete or does not match the type or
+     *             scope settings of the informer
+     */
+    public Event publish(final Event event) throws RSBException {
         synchronized (this) {
             return this.state.send(event);
         }
@@ -251,8 +270,24 @@ public class Informer<DataType extends Object> extends Participant {
      * @return generated event
      * @throws RSBException
      *             error sending event
+     * @deprecated Use {@link #publish(Object)} instead to be consistent across
+     *             implementations
      */
+    @Deprecated
     public Event send(final DataType data) throws RSBException {
+        return publish(data);
+    }
+
+    /**
+     * Publish data (of type DataType) to all subscribed participants.
+     *
+     * @param data
+     *            data to send with default setting from the informer
+     * @return generated event
+     * @throws RSBException
+     *             error sending event
+     */
+    public Event publish(final DataType data) throws RSBException {
         synchronized (this) {
             return this.state.send(data);
         }

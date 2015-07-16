@@ -535,7 +535,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         }
 
         try {
-            this.informer.send(helloEvent);
+            this.informer.publish(helloEvent);
         } catch (final RSBException e) {
             LOG.log(Level.WARNING, "HELLO event could not be sent.", e);
         }
@@ -655,7 +655,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         final Event event = new Event(bye.getClass(), bye);
         event.setScope(ProtocolUtilities.participantScope(participant));
         try {
-            this.informer.send(event);
+            this.informer.publish(event);
         } catch (final RSBException e) {
             LOG.log(Level.WARNING, "BYE event could not be sent.", e);
         }
@@ -671,7 +671,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
         pongEvent.addCause(query.getId());
 
         try {
-            this.informer.send(pongEvent);
+            this.informer.publish(pongEvent);
         } catch (final RSBException e) {
             LOG.log(Level.WARNING, "Pong event could not be sent", e);
         }

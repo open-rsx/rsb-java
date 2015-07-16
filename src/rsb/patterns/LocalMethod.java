@@ -122,7 +122,7 @@ class LocalMethod extends Method implements Handler {
 
         // send reply via method informer
         try {
-            this.getInformer().send(reply);
+            this.getInformer().publish(reply);
         } catch (final RSBException exception) {
             // TODO call local error handler
             LOG.log(Level.WARNING,

@@ -80,7 +80,7 @@ public class UserLevelTest extends LoggingEnabled {
         for (int i = 0; i < EVENTS_TO_SEND; ++i) {
             final String message =
                     "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
-            informer.send(message);
+            informer.publish(message);
             sentMessages.add(message);
         }
 

@@ -165,7 +165,7 @@ public class RemoteMethod extends Method implements Handler {
         // further metadata is set by informer
 
         synchronized (this) {
-            final Event sentEvent = this.getInformer().send(request);
+            final Event sentEvent = this.getInformer().publish(request);
             // put future with id as weak ref in pending results table
             this.pendingRequests.put(sentEvent.getId(), resultPreparator);
             LOG.fine("registered future in pending requests with id: "

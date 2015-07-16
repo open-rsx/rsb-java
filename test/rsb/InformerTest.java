@@ -158,18 +158,18 @@ public class InformerTest extends LoggingEnabled {
     @Test
     public void sendEvent() throws Throwable {
         Event sentEvent =
-                this.stringInformer.send(new Event(DEFAULT_SCOPE, String.class,
-                        DEFAULT_STRING_PAYLOAD));
+                this.stringInformer.publish(new Event(DEFAULT_SCOPE,
+                        String.class, DEFAULT_STRING_PAYLOAD));
         this.testEvent(sentEvent, this.stringInformer);
         sentEvent =
-                this.genericInformer.send(new Event(DEFAULT_SCOPE,
+                this.genericInformer.publish(new Event(DEFAULT_SCOPE,
                         String.class, DEFAULT_STRING_PAYLOAD));
         this.testEvent(sentEvent, this.genericInformer);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendWrongType() throws RSBException {
-        this.stringInformer.send(new Event(DEFAULT_SCOPE, Object.class,
+        this.stringInformer.publish(new Event(DEFAULT_SCOPE, Object.class,
                 "not allowed"));
     }
 
@@ -184,7 +184,7 @@ public class InformerTest extends LoggingEnabled {
     @Test
     public void sendT() throws Throwable {
         final Event sentEvent =
-                this.stringInformer.send(DEFAULT_STRING_PAYLOAD);
+                this.stringInformer.publish(DEFAULT_STRING_PAYLOAD);
         this.testEvent(sentEvent, this.stringInformer);
     }
 
@@ -194,12 +194,12 @@ public class InformerTest extends LoggingEnabled {
                 new Event(this.stringInformer.getTypeInfo(),
                         DEFAULT_STRING_PAYLOAD);
         sentEvent.setScope(null);
-        this.stringInformer.send(sentEvent);
+        this.stringInformer.publish(sentEvent);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendEventWrongScope() throws Throwable {
-        this.stringInformer.send(new Event(new Scope("/blubb"),
+        this.stringInformer.publish(new Event(new Scope("/blubb"),
                 this.stringInformer.getTypeInfo(), DEFAULT_STRING_PAYLOAD));
     }
 
@@ -207,7 +207,7 @@ public class InformerTest extends LoggingEnabled {
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     @Test
     public void sendEventSubScope() throws Throwable {
-        this.stringInformer.send(new Event(DEFAULT_SCOPE.concat(new Scope(
+        this.stringInformer.publish(new Event(DEFAULT_SCOPE.concat(new Scope(
                 "/bla")), this.stringInformer.getTypeInfo(),
                 DEFAULT_STRING_PAYLOAD));
     }
@@ -215,7 +215,7 @@ public class InformerTest extends LoggingEnabled {
     @Test(expected = IllegalArgumentException.class)
     public void sendEventWrongType() throws Throwable {
         this.stringInformer.setTypeInfo(String.class);
-        this.stringInformer.send(new Event(DEFAULT_SCOPE, Boolean.class,
+        this.stringInformer.publish(new Event(DEFAULT_SCOPE, Boolean.class,
                 DEFAULT_STRING_PAYLOAD));
     }
 }
