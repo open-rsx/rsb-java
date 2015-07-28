@@ -57,64 +57,77 @@ public class Listener extends Participant {
     private static final Logger LOG = Logger
             .getLogger(Listener.class.getName());
 
-    /** The class state currently being active. */
-    // false positive due to use in private state classes
-    @SuppressWarnings("PMD.ImmutableField")
-    private ListenerState state;
+    /**
+     * The class state currently being active.
+     */
+    private State state;
 
     private final List<Filter> filters = new ArrayList<Filter>();
     private final List<Handler> handlers = new ArrayList<Handler>();
     private final PushInRouteConfigurator router;
 
     /**
-     * {@link ListenerState} representing the active state.
+     * Interface for State-pattern in the Listener class.
+     *
+     * @author swrede
+     * @author jwienke
+     */
+    private abstract class State extends Activatable.State {
+        // just to pull everything into our own namespace for useful names
+    }
+
+    /**
+     * {@link State} representing the active state.
      *
      * @author swrede
      */
-    protected class ListenerStateActive extends ListenerState {
+    private class StateActive extends State {
 
-        /**
-         * Constructor.
-         *
-         * @param listener
-         *            the listener to manage
-         */
-        public ListenerStateActive(final Listener listener) {
-            super(listener);
+        @Override
+        public void deactivate() throws RSBException, InterruptedException {
+            Listener.super.deactivate();
+            Listener.this.getRouter().deactivate();
+            Listener.this.state = new StateTerminal();
         }
 
         @Override
-        protected void deactivate() throws RSBException, InterruptedException {
-            Listener.super.deactivate();
-            Listener.this.getRouter().deactivate();
-            this.getListener().state = new ListenerStateInactive(
-                    this.getListener());
+        public boolean isActive() {
+            return true;
         }
 
     }
 
     /**
-     * {@link ListenerState} representing the inactive state.
+     * {@link State} representing the inactive state.
      *
      * @author swrede
      */
-    protected class ListenerStateInactive extends ListenerState {
+    private class StateInactive extends State {
 
-        /**
-         * Constructor.
-         *
-         * @param listener
-         *            the listener to manage
-         */
-        public ListenerStateInactive(final Listener listener) {
-            super(listener);
+        @Override
+        public void activate() throws RSBException {
+            Listener.this.getRouter().activate();
+            Listener.this.state = new StateActive();
+            Listener.super.activate();
         }
 
         @Override
-        protected void activate() throws RSBException {
-            Listener.this.getRouter().activate();
-            this.getListener().state = new ListenerStateActive(this.getListener());
-            Listener.super.activate();
+        public boolean isActive() {
+            return false;
+        }
+
+    }
+
+    /**
+     * {@link State} representing the final state which cannot be left.
+     *
+     * @author jwienke
+     */
+    private class StateTerminal extends State {
+
+        @Override
+        public boolean isActive() {
+            return false;
         }
 
     }
@@ -122,15 +135,15 @@ public class Listener extends Participant {
     /**
      * Creates a listener for a given scope and participant config.
      *
-     * @param args arguments used to create this instance.
+     * @param args
+     *            arguments used to create this instance.
      * @throws InitializeException
      *             error initializing the listener
      */
-    Listener(final ListenerCreateArgs args)
-            throws InitializeException {
+    Listener(final ListenerCreateArgs args) throws InitializeException {
         super(args);
 
-        this.state = new ListenerStateInactive(this);
+        this.state = new StateInactive();
         this.router = new DefaultPushInRouteConfigurator(getScope());
         this.router.setEventReceivingStrategy(getConfig()
                 .getReceivingStrategy().create());
@@ -256,7 +269,7 @@ public class Listener extends Participant {
 
     @Override
     public boolean isActive() {
-        return this.state.getClass() == ListenerStateActive.class;
+        return this.state.isActive();
     }
 
     @Override

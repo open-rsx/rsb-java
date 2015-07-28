@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import rsb.Activatable;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
@@ -50,94 +51,33 @@ import rsb.RSBException;
 public abstract class Server<MethodType extends Method> extends Participant {
 
     private final Map<String, MethodType> methods;
-    private ServerState state;
+    private State state;
 
     /**
      * Abstract base class for implementations of the different server states.
+     *
+     * @author jwienke
      */
-    private abstract class ServerState {
-
-        // reference to server instance
-        private Server<MethodType> server;
-
-        protected ServerState(final Server<MethodType> server) {
-            this.setServer(server);
-        }
-
-        /**
-         * Activates this state.
-         *
-         * @return the state that should follow this operation
-         * @throws IllegalStateException
-         *             server in incorrect state
-         * @throws rsb.InitializeException
-         *             error initializing the server
-         * @throws RSBException
-         *             error initializing the server
-         */
-        public ServerState activate() throws RSBException {
-            throw new IllegalStateException("Server already activated.");
-        }
-
-        /**
-         * Deactivates this state.
-         *
-         * @return the state that should follow this operation
-         * @throws IllegalStateException
-         *             server in incorrect state
-         * @throws RSBException
-         *             error initializing the server
-         * @throws InterruptedException
-         *             interrupted while waiting for deactivation to finish
-         */
-        public ServerState deactivate() throws RSBException,
-                InterruptedException {
-            throw new IllegalStateException("Server not activated.");
-        }
-
-        public void run(@SuppressWarnings("unused") final boolean async) {
-            throw new IllegalStateException("server not activated");
-        }
-
-        public abstract boolean isActive();
-
-        protected Server<MethodType> getServer() {
-            return this.server;
-        }
-
-        protected void setServer(final Server<MethodType> server) {
-            this.server = server;
-        }
-
+    private abstract class State extends Activatable.State {
+        // pull into own namespace for nice state class names
     }
 
     /**
      * Represent an active server.
      */
-    protected class ServerStateActive extends ServerState {
-
-        /**
-         * Constructor.
-         *
-         * @param server
-         *            server managed by this state
-         */
-        ServerStateActive(final Server<MethodType> server) {
-            super(server);
-        }
+    private class StateActive extends State {
 
         @Override
-        public ServerState deactivate() throws RSBException,
-                InterruptedException {
+        public void deactivate() throws RSBException, InterruptedException {
             Server.super.deactivate();
             for (final Method method : Server.this.methods.values()) {
                 method.deactivate();
             }
             // send signal to thread in waitForShutdown
-            synchronized (this.getServer()) {
-                this.getServer().notifyAll();
+            synchronized (Server.this) {
+                Server.this.notifyAll();
             }
-            return new ServerStateInactive(this.getServer());
+            Server.this.state = new StateTerminal();
         }
 
         @Override
@@ -151,31 +91,36 @@ public abstract class Server<MethodType extends Method> extends Participant {
      *
      * @author jwienke
      */
-    protected class ServerStateInactive extends ServerState {
-
-        /**
-         * Constructor.
-         *
-         * @param server
-         *            server managed by this state
-         */
-        ServerStateInactive(final Server<MethodType> server) {
-            super(server);
-        }
+    private class StateInactive extends State {
 
         @Override
-        public ServerState activate() throws RSBException {
+        public void activate() throws RSBException {
             for (final Method method : Server.this.methods.values()) {
                 method.activate();
             }
             Server.super.activate();
-            return new ServerStateActive(this.getServer());
+            Server.this.state = new StateActive();
         }
 
         @Override
         public boolean isActive() {
             return false;
         }
+
+    }
+
+    /**
+     * State which doesn't allow any further changes.
+     *
+     * @author jwienke
+     */
+    private class StateTerminal extends State {
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
     }
 
     /**
@@ -187,7 +132,7 @@ public abstract class Server<MethodType extends Method> extends Participant {
     protected Server(final ParticipantCreateArgs<?> args) {
         super(args);
         this.methods = new HashMap<String, MethodType>();
-        this.state = new ServerStateInactive(this);
+        this.state = new StateInactive();
     }
 
     /**
@@ -267,14 +212,14 @@ public abstract class Server<MethodType extends Method> extends Participant {
     @Override
     public void activate() throws RSBException {
         synchronized (this) {
-            this.state = this.state.activate();
+            this.state.activate();
         }
     }
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
         synchronized (this) {
-            this.state = this.state.deactivate();
+            this.state.deactivate();
         }
     }
 

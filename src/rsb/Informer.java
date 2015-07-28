@@ -49,45 +49,65 @@ import rsb.transport.TransportRegistry;
  * @param <DataType>
  *            The type of data sent by this informer
  */
+// due to internal state classes
+@SuppressWarnings("PMD.TooManyMethods")
 public class Informer<DataType extends Object> extends Participant {
 
     private static final Logger LOG = Logger
             .getLogger(Informer.class.getName());
 
-    /** Contains the state instance currently being active. */
-    // false positive due to use in private state classes
-    @SuppressWarnings("PMD.ImmutableField")
-    private InformerState<DataType> state;
+    /**
+     * Contains the state instance currently being active.
+     */
+    private State state;
 
-    /** An atomic uint32 counter object for event sequence numbers. */
+    /**
+     * An atomic uint32 counter object for event sequence numbers.
+     */
     private final SequenceNumber sequenceNumber = new SequenceNumber();
 
-    /** The default data type for this informer. */
+    /**
+     * The default data type for this informer.
+     */
     private Class<?> type;
 
     private final OutRouteConfigurator router;
 
     /**
-     * {@link InformerState} in case the informer is inactive.
+     * Interface specification for state classes used to represent the state
+     * pattern in {@link Informer} instances.
+     *
+     * @author swrede
+     * @author jwienke
+     */
+    private abstract class State extends Activatable.State {
+
+        public Event send(@SuppressWarnings("unused") final Event event)
+                throws RSBException {
+            throw new IllegalStateException(
+                    "send(Event) cannot be called in state "
+                            + getClass().getSimpleName());
+        }
+
+        public Event send(@SuppressWarnings("unused") final DataType data)
+                throws RSBException {
+            throw new IllegalStateException(
+                    "send(Object) cannot be called in state "
+                            + getClass().getSimpleName());
+        }
+
+    }
+
+    /**
+     * {@link State} in case the informer is inactive.
      *
      * @author swrede
      */
-    protected class InformerStateInactive extends InformerState<DataType> {
-
-        /**
-         * Constructor.
-         *
-         * @param ctx
-         *            the host informer
-         */
-        protected InformerStateInactive(final Informer<DataType> ctx) {
-            super(ctx);
-        }
+    private class StateInactive extends State {
 
         @Override
-        protected void activate() throws RSBException {
-            this.getInformer().state = new InformerStateActive(
-                    this.getInformer());
+        public void activate() throws RSBException {
+            Informer.this.state = new StateActive();
             LOG.log(Level.FINE,
                     "Informer activated: [Scope={0}, Type={1}]",
                     new Object[] { Informer.this.getScope(),
@@ -100,31 +120,25 @@ public class Informer<DataType extends Object> extends Participant {
             Informer.super.activate();
         }
 
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
     }
 
     /**
-     * {@link InformerState} in case the informer is active.
+     * {@link State} in case the informer is active.
      *
      * @author swrede
      */
-    protected class InformerStateActive extends InformerState<DataType> {
-
-        /**
-         * Constructor.
-         *
-         * @param ctx
-         *            the host informer
-         */
-        protected InformerStateActive(final Informer<DataType> ctx) {
-            super(ctx);
-        }
+    private class StateActive extends State {
 
         @Override
-        protected void deactivate() throws RSBException, InterruptedException {
+        public void deactivate() throws RSBException, InterruptedException {
             Informer.super.deactivate();
             Informer.this.router.deactivate();
-            this.getInformer().state = new InformerStateInactive(
-                    this.getInformer());
+            Informer.this.state = new StateTerminal();
             LOG.log(Level.FINE,
                     "Informer deactivated: [Scope={0}, Type={1}]",
                     new Object[] { Informer.this.getScope(),
@@ -132,7 +146,12 @@ public class Informer<DataType extends Object> extends Participant {
         }
 
         @Override
-        protected Event send(final Event event) throws RSBException {
+        public boolean isActive() {
+            return true;
+        }
+
+        @Override
+        public Event send(final Event event) throws RSBException {
 
             if (event.getScope() == null) {
                 throw new IllegalArgumentException(
@@ -144,8 +163,7 @@ public class Informer<DataType extends Object> extends Participant {
                 throw new IllegalArgumentException(
                         "Event scope not a sub-scope of informer scope.");
             }
-            if (!this.getInformer().getTypeInfo()
-                    .isAssignableFrom(event.getType())) {
+            if (!getTypeInfo().isAssignableFrom(event.getType())) {
                 throw new IllegalArgumentException(
                         "Type of event data does not match nor "
                                 + "is a sub-class of the Informer data type.");
@@ -165,9 +183,23 @@ public class Informer<DataType extends Object> extends Participant {
         }
 
         @Override
-        protected Event send(final DataType data) throws RSBException {
+        public Event send(final DataType data) throws RSBException {
             return this.send(new Event(Informer.this.getScope(), data
                     .getClass(), data));
+        }
+
+    }
+
+    /**
+     * Terminal state which does not allow any change of state.
+     *
+     * @author jwienke
+     */
+    private class StateTerminal extends State {
+
+        @Override
+        public boolean isActive() {
+            return false;
         }
 
     }
@@ -205,7 +237,7 @@ public class Informer<DataType extends Object> extends Participant {
                                             .getDefaultConverterRepository())
                                     .getConvertersForSerialization()));
         }
-        this.state = new InformerStateInactive(this);
+        this.state = new StateInactive();
         LOG.fine("New informer instance created: [Scope:" + this.getScope()
                 + ",State:Inactive,Type:" + this.type.getName() + "]");
 
@@ -314,7 +346,7 @@ public class Informer<DataType extends Object> extends Participant {
 
     @Override
     public boolean isActive() {
-        return this.state.getClass() == InformerStateActive.class;
+        return this.state.isActive();
     }
 
     @Override

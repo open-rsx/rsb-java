@@ -77,4 +77,34 @@ public interface Activatable {
      */
     boolean isActive();
 
+    /**
+     * A utility base class which can be used to implement a state pattern which
+     * fulfills the {@link Activatable} interface. Classes implementing
+     * {@link Activatable} can create own state classes derived from this one to
+     * inherit the default behavior for {@link #activate()} and
+     * {@link #deactivate()}.
+     *
+     * The base implementations of {@link #activate()} and {@link #deactivate()}
+     * always throw an {@link IllegalStateException}.
+     *
+     * @author jwienke
+     */
+    abstract class State {
+
+        public void activate() throws RSBException {
+            throw new IllegalStateException(
+                    "activate() cannot be called in state "
+                            + this.getClass().getSimpleName());
+        }
+
+        public void deactivate() throws RSBException, InterruptedException {
+            throw new IllegalStateException(
+                    "deactivate() cannot be called in state "
+                            + this.getClass().getSimpleName());
+        }
+
+        public abstract boolean isActive();
+
+    }
+
 }

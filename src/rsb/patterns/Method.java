@@ -29,6 +29,7 @@ package rsb.patterns;
 
 import java.util.List;
 
+import rsb.Activatable;
 import rsb.Factory;
 import rsb.Informer;
 import rsb.Listener;
@@ -57,54 +58,25 @@ public abstract class Method extends Participant {
     private final Factory factory;
     private Informer<?> informer;
     private Listener listener;
-    private MethodState state;
+    private State state;
 
     /**
      * Abstract base class for states of a {@link Method} based on the state
      * pattern.
+     *
+     * @author jwienke
      */
-    protected abstract class MethodState {
-
-        /**
-         * Activates the method.
-         *
-         * @return the next state of the method
-         * @throws rsb.InitializeException
-         *             error initializing the method
-         * @throws RSBException
-         *             error initializing the method
-         * @throws IllegalStateException
-         *             method in wrong state for this operation
-         */
-        public MethodState activate() throws RSBException {
-            throw new IllegalStateException("Method already activated.");
-        }
-
-        /**
-         * Deactivates the method.
-         *
-         * @return next method state
-         * @throws RSBException
-         *             error deactivating underlying RSB objects.
-         * @throws InterruptedException
-         *             interrupted while waiting for the shutdown of RSB objects
-         * @throws IllegalStateException
-         *             method in wrong state for this operation
-         */
-        public MethodState deactivate() throws RSBException,
-                InterruptedException {
-            throw new IllegalStateException("Method not activated.");
-        }
+    private abstract class State extends Activatable.State {
+        // pull into own namespace for nice class names
     }
 
     /**
      * Represents the state of a method that is currently active.
      */
-    protected class MethodStateActive extends MethodState {
+    private class StateActive extends State {
 
         @Override
-        public MethodState deactivate() throws RSBException,
-                InterruptedException {
+        public void deactivate() throws RSBException, InterruptedException {
             Method.super.deactivate();
             // Deactivate informer and listener if necessary.
             if (Method.this.getListener() != null) {
@@ -115,22 +87,48 @@ public abstract class Method extends Participant {
                 Method.this.getInformer().deactivate();
                 Method.this.setInformer(null);
             }
-            return new MethodStateInactive();
+            Method.this.state = new StateTerminal();
         }
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
+
     }
 
     /**
      * Represents the state of a method that is currently inactive.
      */
-    protected class MethodStateInactive extends MethodState {
+    private class StateInactive extends State {
 
         @Override
-        public MethodState activate() throws RSBException {
+        public void activate() throws RSBException {
             Method.this.getListener().activate();
             Method.this.getInformer().activate();
             Method.super.activate();
-            return new MethodStateActive();
+            Method.this.state = new StateActive();
         }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
+    }
+
+    /**
+     * State which prevents any further state changes.
+     *
+     * @author jwienke
+     */
+    private class StateTerminal extends State {
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
     }
 
     /**
@@ -148,7 +146,7 @@ public abstract class Method extends Participant {
                             + "they do not have a name then.");
         }
         this.factory = Factory.getInstance();
-        this.state = new MethodStateInactive();
+        this.state = new StateInactive();
     }
 
     /**
@@ -195,17 +193,17 @@ public abstract class Method extends Participant {
 
     @Override
     public boolean isActive() {
-        return this.state.getClass() == MethodStateActive.class;
+        return this.state.isActive();
     }
 
     @Override
     public void activate() throws RSBException {
-        this.state = this.state.activate();
+        this.state.activate();
     }
 
     @Override
     public void deactivate() throws RSBException, InterruptedException {
-        this.state = this.state.deactivate();
+        this.state.deactivate();
     }
 
     @Override
