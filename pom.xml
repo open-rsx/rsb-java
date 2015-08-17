@@ -510,13 +510,13 @@
         <repository>
             <id>citec</id>
             <name>CIT-EC Repository</name>
-            <url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-releases/</url>
+            <url>https://mvn.cit-ec.de/nexus/content/repositories/releases/</url>
         </repository>
         <!-- use the following if you ARE using a snapshot version. -->
         <snapshotRepository>
             <id>citec</id>
             <name>CIT-EC Repository</name>
-            <url>https://repo.cit-ec.uni-bielefeld.de/content/repositories/public-snapshots/</url>
+            <url>https://mvn.cit-ec.de/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
