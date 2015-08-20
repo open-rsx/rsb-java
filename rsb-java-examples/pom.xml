@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- General project settings. -->
+    <parent>
+        <groupId>rsb</groupId>
+        <artifactId>rsb-java</artifactId>
+        <version>0.13-SNAPSHOT</version>
+    </parent>
+    <artifactId>rsb-examples</artifactId>
+    <packaging>jar</packaging>
+
+    <name>rsb-java-examples</name>
+    <description>Examples for the Robotics Service Bus (RSB) java implementation</description>
+
+    <build>
+        <plugins>
+            <!-- generate the protocol files -->
+            <plugin>
+                <groupId>com.google.protobuf.tools</groupId>
+                <artifactId>maven-protoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>rsb</groupId>
+            <artifactId>rsb</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

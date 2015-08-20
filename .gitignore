@@ -1,13 +1,7 @@
 /build*
 /dist
-/generated-protocol
-/target
-/doc
-/testreports
-/coverage
-/bin
-/gitversion
-/gitbranch
-/codecheckreports
-/pom.xml.versionsBackup
 /target/
+*/target/
+*/gitversion
+*/gitbranch
+pom.xml.versionsBackup
