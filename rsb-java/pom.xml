@@ -107,7 +107,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                     <execution>
                         <goals>
                             <goal>compile</goal>
-                            <goal>test-compile</goal>
                         </goals>
                     </execution>
                 </executions>
