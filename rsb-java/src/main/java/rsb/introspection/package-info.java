@@ -27,6 +27,8 @@
  */
 
 /**
+ * Contains the implementation of the introspection mechanism of RSB.
+ *
  * @author swrede
  */
 package rsb.introspection;
