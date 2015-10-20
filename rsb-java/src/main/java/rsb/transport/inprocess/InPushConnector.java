@@ -27,6 +27,7 @@
  */
 package rsb.transport.inprocess;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -103,6 +104,11 @@ public class InPushConnector extends ConnectorBase implements
     @Override
     public void notify(final Filter filter, final FilterAction action) {
         // transport level filtering is currently not supported
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return getBus().getTransportUri();
     }
 
 }

@@ -27,6 +27,9 @@
  */
 package rsb.introspection;
 
+import java.net.URI;
+import java.util.Set;
+
 import rsb.ParticipantId;
 import rsb.Scope;
 
@@ -45,6 +48,7 @@ public class ParticipantInfo {
     private final ParticipantId parentId;
     private final Scope scope;
     private final Class<?> type;
+    private final Set<URI> transportUris;
 
     /**
      * Creates a new instance.
@@ -62,20 +66,25 @@ public class ParticipantInfo {
      * @param dataType
      *            data type of the participant or <code>null</code> if not
      *            applicable
+     * @param transportUris
+     *            URIs describing the transports for the represented
+     *            participant. Must not be <code>null</code>.
      */
     public ParticipantInfo(final String kind,
             @SuppressWarnings("PMD.ShortVariable") final ParticipantId id,
             final ParticipantId parentId, final Scope scope,
-            final Class<?> dataType) {
+            final Class<?> dataType, final Set<URI> transportUris) {
         assert kind != null;
         assert id != null;
         assert scope != null;
+        assert transportUris != null;
 
         this.kind = kind;
         this.id = id;
         this.parentId = parentId;
         this.scope = scope;
         this.type = dataType;
+        this.transportUris = transportUris;
     }
 
     /**
@@ -123,6 +132,16 @@ public class ParticipantInfo {
      */
     public Class<?> getDataType() {
         return this.type;
+    }
+
+    /**
+     * Returns the URIs describing the transports the represented participant
+     * uses.
+     *
+     * @return set of URIs, not <code>null</code>
+     */
+    public Set<URI> getTransportUris() {
+        return this.transportUris;
     }
 
 }

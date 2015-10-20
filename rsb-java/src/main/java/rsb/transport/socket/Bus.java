@@ -27,6 +27,8 @@
  */
 package rsb.transport.socket;
 
+import java.net.URI;
+
 import rsb.Activatable;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
@@ -95,5 +97,16 @@ public interface Bus extends Activatable {
      *            the receiver to remove
      */
     void removeNotificationReceiver(NotificationReceiver receiver);
+
+    /**
+     * Return the URI describing the transport manifested by this bus.
+     *
+     * Only valid if activated.
+     *
+     * @return URI, not <code>null</code>
+     * @throws IllegalStateException
+     *             instance is in wrong state to prepare the URI
+     */
+    URI getTransportUri();
 
 }

@@ -27,9 +27,11 @@
  */
 package rsb;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import rsb.config.TransportConfig;
@@ -73,7 +75,13 @@ public class Listener extends Participant {
      * @author jwienke
      */
     private abstract class State extends Activatable.State {
-        // just to pull everything into our own namespace for useful names
+
+        public Set<URI> getTransportUris() {
+            throw new IllegalStateException(
+                    "getTransportUris cannot be called in state "
+                            + getClass().getSimpleName());
+        }
+
     }
 
     /**
@@ -93,6 +101,11 @@ public class Listener extends Participant {
         @Override
         public boolean isActive() {
             return true;
+        }
+
+        @Override
+        public Set<URI> getTransportUris() {
+            return Listener.this.router.getTransportUris();
         }
 
     }
@@ -280,6 +293,11 @@ public class Listener extends Participant {
     @Override
     public Class<?> getDataType() {
         return Object.class;
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return this.state.getTransportUris();
     }
 
 }

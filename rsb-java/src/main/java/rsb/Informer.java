@@ -27,6 +27,8 @@
  */
 package rsb;
 
+import java.net.URI;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,6 +95,12 @@ public class Informer<DataType extends Object> extends Participant {
                 throws RSBException {
             throw new IllegalStateException(
                     "send(Object) cannot be called in state "
+                            + getClass().getSimpleName());
+        }
+
+        public Set<URI> getTransportUris() {
+            throw new IllegalStateException(
+                    "getTransportUris cannot be called in state "
                             + getClass().getSimpleName());
         }
 
@@ -186,6 +194,11 @@ public class Informer<DataType extends Object> extends Participant {
         public Event send(final DataType data) throws RSBException {
             return this.send(new Event(Informer.this.getScope(), data
                     .getClass(), data));
+        }
+
+        @Override
+        public Set<URI> getTransportUris() {
+            return Informer.this.router.getTransportUris();
         }
 
     }
@@ -357,6 +370,11 @@ public class Informer<DataType extends Object> extends Participant {
     @Override
     public Class<?> getDataType() {
         return this.type;
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return this.state.getTransportUris();
     }
 
 }

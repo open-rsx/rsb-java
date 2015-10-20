@@ -29,6 +29,7 @@ package rsb.transport.spread;
 
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -151,6 +152,11 @@ public class RefCountingSpreadWrapper implements SpreadWrapper {
     @Override
     public boolean isShutdown() {
         return this.wrapped.isShutdown();
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return this.wrapped.getTransportUri();
     }
 
 }

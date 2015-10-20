@@ -28,6 +28,7 @@
 package rsb.transport;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
@@ -66,9 +67,8 @@ public abstract class ConnectorCheck extends LoggingEnabled {
     @Before
     public void setUp() throws Throwable {
 
-        final OutConnector outConnector =
-                createOutConnector(getStringConverterStrategy(String.class
-                        .getName()));
+        final OutConnector outConnector = createOutConnector(
+                getStringConverterStrategy(String.class.getName()));
         outConnector.setScope(OUT_BASE_SCOPE);
         outConnector.activate();
         this.setOutConnector(outConnector);
@@ -89,16 +89,16 @@ public abstract class ConnectorCheck extends LoggingEnabled {
         this.getOutConnector().push(event);
     }
 
-    private UnambiguousConverterMap<ByteBuffer> getStringConverterStrategy(
-            final String key) {
+    private UnambiguousConverterMap<ByteBuffer>
+            getStringConverterStrategy(final String key) {
         final UnambiguousConverterMap<ByteBuffer> strategy =
                 new UnambiguousConverterMap<ByteBuffer>();
         strategy.addConverter(key, new StringConverter());
         return strategy;
     }
 
-    private UnambiguousConverterMap<ByteBuffer> getDoubleConverterStrategy(
-            final String key) {
+    private UnambiguousConverterMap<ByteBuffer>
+            getDoubleConverterStrategy(final String key) {
         final UnambiguousConverterMap<ByteBuffer> strategy =
                 new UnambiguousConverterMap<ByteBuffer>();
         strategy.addConverter(key, new DoubleConverter());
@@ -108,13 +108,14 @@ public abstract class ConnectorCheck extends LoggingEnabled {
     @Test(timeout = 10000)
     public void primitiveTypeSending() throws Throwable {
         final OutConnector outConnector =
-                createOutConnector(getDoubleConverterStrategy(DoubleConverter.SIGNATURE
-                        .getDataType().getName()));
+                createOutConnector(getDoubleConverterStrategy(
+                        DoubleConverter.SIGNATURE.getDataType().getName()));
         final InPushConnector inConnector =
-                createInConnector(getDoubleConverterStrategy(DoubleConverter.SIGNATURE
-                        .getSchema()));
+                createInConnector(getDoubleConverterStrategy(
+                        DoubleConverter.SIGNATURE.getSchema()));
         try {
-            final Scope scope = new Scope("/connectorCheck/primitiveTypeSending");
+            final Scope scope =
+                    new Scope("/connectorCheck/primitiveTypeSending");
 
             final Object synchronizer = new Object();
             final List<Event> receivedEvents = new ArrayList<Event>();
@@ -136,8 +137,7 @@ public abstract class ConnectorCheck extends LoggingEnabled {
             inConnector.activate();
 
             final double data = 45;
-            final Event event =
-                    new Event(scope, Double.class, data);
+            final Event event = new Event(scope, Double.class, data);
             event.setId(new ParticipantId(), 23423);
             outConnector.push(event);
 
@@ -183,8 +183,8 @@ public abstract class ConnectorCheck extends LoggingEnabled {
 
             final List<Event> receivedEvents = new ArrayList<Event>();
             receivedEventsByScope.put(scope, receivedEvents);
-            final InPushConnector inPort =
-                    createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
+            final InPushConnector inPort = createInConnector(
+                    getStringConverterStrategy(UTF8_WIRE_SCHEMA));
             inPort.addHandler(new EventHandler() {
 
                 @Override
@@ -209,8 +209,8 @@ public abstract class ConnectorCheck extends LoggingEnabled {
         final int numEvents = 100;
 
         // send events
-        final Event event =
-                new Event(sendScope, String.class, "a test string " + numEvents);
+        final Event event = new Event(sendScope, String.class,
+                "a test string " + numEvents);
         event.setId(new ParticipantId(), 42);
 
         this.getOutConnector().push(event);
@@ -242,19 +242,19 @@ public abstract class ConnectorCheck extends LoggingEnabled {
 
     protected abstract InPushConnector createInConnector(
             final UnambiguousConverterMap<ByteBuffer> converters)
-            throws Throwable;
+                    throws Throwable;
 
     protected abstract OutConnector createOutConnector(
             final UnambiguousConverterMap<ByteBuffer> converters)
-            throws Throwable;
+                    throws Throwable;
 
     @Test(timeout = 10000)
     @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
     public void longGroupNames() throws Throwable {
 
         final Event event = new Event(String.class, "a test string again");
-        event.setScope(OUT_BASE_SCOPE.concat(new Scope(
-                "/is/a/very/long/scope/that/would/never/fit"
+        event.setScope(OUT_BASE_SCOPE
+                .concat(new Scope("/is/a/very/long/scope/that/would/never/fit"
                         + "/in/a/spread/group/directly")));
         event.setId(new ParticipantId(), 452334);
 
@@ -308,18 +308,20 @@ public abstract class ConnectorCheck extends LoggingEnabled {
             final Event receivedEvent = receivedEvents.get(0);
 
             // first check that there is a receive time in the event
-            assertTrue(receivedEvent.getMetaData().getReceiveTime() >= beforeSend);
-            assertTrue(receivedEvent.getMetaData().getReceiveTime() >= receivedEvent
-                    .getMetaData().getSendTime());
-            assertTrue(receivedEvent.getMetaData().getReceiveTime() <= System
-                    .currentTimeMillis() * 1000);
+            assertTrue(
+                    receivedEvent.getMetaData().getReceiveTime() >= beforeSend);
+            assertTrue(receivedEvent.getMetaData()
+                    .getReceiveTime() >= receivedEvent.getMetaData()
+                            .getSendTime());
+            assertTrue(receivedEvent.getMetaData()
+                    .getReceiveTime() <= System.currentTimeMillis() * 1000);
 
             // now adapt this time to use the normal equals method for comparing
             // all other fields
             event.getMetaData().setReceiveTime(
                     receivedEvent.getMetaData().getReceiveTime());
-            receivedEvent.getMetaData().setSendTime(
-                    event.getMetaData().getSendTime());
+            receivedEvent.getMetaData()
+                    .setSendTime(event.getMetaData().getSendTime());
 
             assertEquals(event, receivedEvent);
         }
@@ -372,6 +374,20 @@ public abstract class ConnectorCheck extends LoggingEnabled {
 
     }
 
+    @Test
+    public void hasTransportUri() throws Throwable {
+        assertNotNull(this.outConnector.getTransportUri());
+        final InPushConnector inConnector =
+                createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
+        inConnector.setScope(new Scope("/some/strange/scope"));
+        inConnector.activate();
+        try {
+            assertNotNull(this.outConnector.getTransportUri());
+        } finally {
+            inConnector.deactivate();
+        }
+    }
+
     protected OutConnector getOutConnector() {
         return this.outConnector;
     }
@@ -382,5 +398,5 @@ public abstract class ConnectorCheck extends LoggingEnabled {
 
 }
 
-//CHECKSTYLE.ON: MagicNumber
-//CHECKSTYLE.ON: JavadocMethod
+// CHECKSTYLE.ON: MagicNumber
+// CHECKSTYLE.ON: JavadocMethod

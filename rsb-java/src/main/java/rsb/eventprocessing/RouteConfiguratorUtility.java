@@ -28,8 +28,11 @@
 
 package rsb.eventprocessing;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import rsb.RSBException;
@@ -159,6 +162,24 @@ public class RouteConfiguratorUtility<ConnectorType extends Connector> {
      */
     public List<ConnectorType> getConnectors() {
         return this.connectors;
+    }
+
+    /**
+     * Utility method to implement {@link RouteConfigurator#getTransportUris()}.
+     *
+     * Iterates all transports and returns their URIs.
+     *
+     * Might only be possible, depending on the transports, if activated before.
+     *
+     * @return set of transport URIs, not <code>null</code>
+     * @throws IllegalStateException not activated
+     */
+    public Set<URI> getTransportUris() {
+        final Set<URI> uris = new HashSet<URI>();
+        for (final ConnectorType connector : this.connectors) {
+            uris.add(connector.getTransportUri());
+        }
+        return uris;
     }
 
 }

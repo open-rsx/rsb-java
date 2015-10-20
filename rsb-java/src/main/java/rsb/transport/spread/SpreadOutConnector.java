@@ -27,11 +27,14 @@
  */
 package rsb.transport.spread;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.protobuf.ByteString;
 
 import rsb.Event;
 import rsb.QualityOfServiceSpec;
@@ -45,8 +48,6 @@ import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.OutConnector;
 import rsb.util.ByteHelpers;
-
-import com.google.protobuf.ByteString;
 
 /**
  * An {@link OutConnector} for the spread daemon network.
@@ -389,6 +390,11 @@ public class SpreadOutConnector implements OutConnector {
     @Override
     public void setScope(final Scope scope) {
         // we don't care about the scope for sending. No need to declare it
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return this.spread.getTransportUri();
     }
 
 }

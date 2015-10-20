@@ -27,10 +27,13 @@
  */
 package rsb.patterns;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import rsb.Activatable;
 import rsb.Participant;
@@ -221,6 +224,11 @@ public abstract class Server<MethodType extends Method> extends Participant {
         synchronized (this) {
             this.state.deactivate();
         }
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return new HashSet<URI>();
     }
 
 };

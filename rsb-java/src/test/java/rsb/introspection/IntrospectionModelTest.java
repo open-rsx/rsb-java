@@ -31,8 +31,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -129,6 +132,11 @@ public class IntrospectionModelTest extends LoggingEnabled {
         @Override
         public Class<?> getDataType() {
             return Object.class;
+        }
+
+        @Override
+        public Set<URI> getTransportUris() {
+            return new HashSet<URI>();
         }
 
     }

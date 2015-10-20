@@ -27,6 +27,7 @@
  */
 package rsb.transport.spread;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
@@ -224,6 +225,11 @@ public class SpreadInPushConnector implements InPushConnector, EventHandler {
     @Override
     public void notify(final Filter filter, final FilterAction action) {
         // transport level filtering is currently not supported
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return this.spread.getTransportUri();
     }
 
 }

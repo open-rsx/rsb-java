@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2013 CoR-Lab, Bielefeld University
+ * Copyright (C) 2015 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,47 +25,34 @@
  *
  * ============================================================
  */
-package rsb.transport.inprocess;
+package rsb;
 
-import java.net.URI;
+import org.junit.After;
 
-import rsb.Event;
-import rsb.RSBException;
+import rsb.config.ParticipantConfig;
 
 /**
- * {@link rsb.transport.OutConnector} implementation for the inprocess
- * transport.
- *
  * @author jwienke
  */
-public class OutConnector extends ConnectorBase implements
-        rsb.transport.OutConnector {
-
-    /**
-     * Creates a new out connector operating on a given bus instance.
-     *
-     * @param bus
-     *            the bus to use for sending events.
-     */
-    public OutConnector(final Bus bus) {
-        super(bus);
-    }
+public class ListenerTest extends ParticipantCheck {
 
     @Override
-    public void push(final Event event) throws RSBException {
-        synchronized (this) {
-            if (!isActive()) {
-                throw new IllegalStateException(
-                        "Connector needs to be active for sending events");
-            }
-            event.getMetaData().setSendTime(0);
-            getBus().push(event);
+    protected Participant createParticipant() throws Exception {
+
+        final ParticipantConfig config = Utilities.createParticipantConfig();
+
+        final Listener listener =
+                new Listener(new ListenerCreateArgs().setScope(
+                        new Scope("/foo/bar")).setConfig(config));
+        listener.activate();
+        return listener;
+    }
+
+    @After
+    public void tearDown() throws Throwable {
+        if (this.getParticipant().isActive()) {
+            this.getParticipant().deactivate();
         }
-    }
-
-    @Override
-    public URI getTransportUri() {
-        return getBus().getTransportUri();
     }
 
 }

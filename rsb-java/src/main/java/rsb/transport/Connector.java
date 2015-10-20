@@ -27,6 +27,8 @@
  */
 package rsb.transport;
 
+import java.net.URI;
+
 import rsb.Activatable;
 import rsb.QualityOfServiceSpec;
 import rsb.Scope;
@@ -57,5 +59,16 @@ public interface Connector extends Activatable {
      *            the scope
      */
     void setScope(Scope scope);
+
+    /**
+     * Return the URI describing this connector.
+     *
+     * Only valid if activated.
+     *
+     * @return URI, not <code>null</code>
+     * @throws IllegalStateException
+     *             instance is in wrong state to prepare the URI
+     */
+    URI getTransportUri();
 
 }

@@ -27,6 +27,9 @@
  */
 package rsb.eventprocessing;
 
+import java.net.URI;
+import java.util.Set;
+
 import rsb.Handler;
 import rsb.RSBException;
 import rsb.Scope;
@@ -130,6 +133,11 @@ public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
             assert strategy != null;
             this.receivingStrategy = strategy;
         }
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return this.utility.getTransportUris();
     }
 
 }

@@ -27,10 +27,13 @@
  */
 package rsb.introspection;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.protobuf.ByteString;
 
 import rsb.AbstractEventHandler;
 import rsb.Activatable;
@@ -55,8 +58,6 @@ import rsb.util.os.HostInfo;
 import rsb.util.os.HostInfoSelector;
 import rsb.util.os.ProcessInfo;
 import rsb.util.os.ProcessInfoSelector;
-
-import com.google.protobuf.ByteString;
 
 /**
  * Implementation of the introspection protocol using RSB patterns. Cf.
@@ -639,6 +640,9 @@ public class ProtocolHandler extends AbstractEventHandler implements
             helloBuilder.setType(participant.getDataType().getName());
         }
         helloBuilder.setScope(participant.getScope().toString());
+        for (final URI uri : participant.getTransportUris()) {
+            helloBuilder.addTransport(uri.toString());
+        }
 
     }
 

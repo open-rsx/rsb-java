@@ -29,6 +29,7 @@ package rsb.transport.spread;
 
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
+import java.net.URI;
 
 import rsb.Activatable;
 import spread.SpreadException;
@@ -133,5 +134,12 @@ public interface SpreadWrapper extends Activatable {
      * @return <code>true</code> if requested.
      */
     boolean isShutdown();
+
+    /**
+     * Returns the transport URI for this spread connection.
+     *
+     * @return URI representing this connection
+     */
+    URI getTransportUri();
 
 }

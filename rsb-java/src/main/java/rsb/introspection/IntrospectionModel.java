@@ -179,10 +179,9 @@ public class IntrospectionModel {
         if (parent != null) {
             parentId = parent.getId();
         }
-        final ParticipantInfo info =
-                new ParticipantInfo(participant.getKind(), participant.getId(),
-                        parentId, participant.getScope(),
-                        participant.getDataType());
+        final ParticipantInfo info = new ParticipantInfo(participant.getKind(),
+                participant.getId(), parentId, participant.getScope(),
+                participant.getDataType(), participant.getTransportUris());
 
         synchronized (this) {
 

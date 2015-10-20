@@ -27,6 +27,7 @@
  */
 package rsb.transport.socket;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 import rsb.Event;
@@ -115,6 +116,11 @@ public class SocketOutConnector implements OutConnector {
         final Notification notification = builder.build();
         this.utility.getBus().handleOutgoing(notification);
 
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return this.utility.getBus().getTransportUri();
     }
 
 }

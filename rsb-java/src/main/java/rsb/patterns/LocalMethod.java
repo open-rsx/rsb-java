@@ -29,6 +29,9 @@ package rsb.patterns;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -140,6 +143,11 @@ class LocalMethod extends Method implements Handler {
     @Override
     public Class<?> getDataType() {
         return null;
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return new HashSet<URI>();
     }
 
 };

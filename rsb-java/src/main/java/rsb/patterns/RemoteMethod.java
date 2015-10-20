@@ -28,7 +28,10 @@
 package rsb.patterns;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -218,6 +221,11 @@ public class RemoteMethod extends Method implements Handler {
     @Override
     public Class<?> getDataType() {
         return null;
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return new HashSet<URI>();
     }
 
 };

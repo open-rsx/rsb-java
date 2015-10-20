@@ -30,6 +30,8 @@ package rsb.transport.socket;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -496,6 +498,26 @@ public abstract class BusBase implements Bus {
     @Override
     public void removeNotificationReceiver(final NotificationReceiver receiver) {
         this.receivers.remove(receiver);
+    }
+
+    @Override
+    public URI getTransportUri() {
+        final StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("tcpnodelay=");
+        if (this.options.isTcpNoDelay()) {
+            queryBuilder.append('1');
+        } else {
+            queryBuilder.append('0');
+        }
+        try {
+            return new URI("socket", null, this.options.getAddress().getHostAddress(),
+                    this.options.getPort(), null, queryBuilder.toString(),
+                    null);
+        } catch (final URISyntaxException e) {
+            assert false : "We do not add a path to the URI. "
+                    + "Therefore it must always be valid.";
+            throw new AssertionError(e);
+        }
     }
 
 }

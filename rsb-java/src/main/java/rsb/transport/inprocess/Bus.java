@@ -27,12 +27,18 @@
  */
 package rsb.transport.inprocess;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import rsb.Event;
 import rsb.transport.EventHandler;
+import rsb.util.os.HostInfo;
+import rsb.util.os.HostInfoSelector;
+import rsb.util.os.ProcessInfo;
+import rsb.util.os.ProcessInfoSelector;
 
 /**
  * Implement an inprocess channel for passing events between different
@@ -47,6 +53,10 @@ public class Bus {
 
     private final Set<EventHandler> handlers = Collections
             .synchronizedSet(new HashSet<EventHandler>());
+
+    private final HostInfo hostInfo = HostInfoSelector.getHostInfo();
+    private final ProcessInfo processInfo =
+            ProcessInfoSelector.getProcessInfo();
 
     /**
      * Dispatch an event to all registered handlers.
@@ -82,6 +92,26 @@ public class Bus {
      */
     public void removeHandler(final EventHandler handler) {
         this.handlers.remove(handler);
+    }
+
+    /**
+     * Return the URI describing the transport manifested by this bus.
+     *
+     * Only valid if activated.
+     *
+     * @return URI, not <code>null</code>
+     * @throws IllegalStateException
+     *             instance is in wrong state to prepare the URI
+     */
+    public URI getTransportUri() {
+        try {
+            return new URI("inprocess", null, this.hostInfo.getHostName(),
+                    this.processInfo.getPid(), null, null, null);
+        } catch (final URISyntaxException e) {
+            assert false : "We do not add a path to the URI. "
+                    + "Therefore it must always be valid.";
+            throw new AssertionError(e);
+        }
     }
 
 }

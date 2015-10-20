@@ -27,6 +27,8 @@
  */
 package rsb.transport.socket;
 
+import java.net.URI;
+
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
@@ -135,6 +137,11 @@ public class RefCountingBus implements Bus {
      */
     public Bus getContainedBus() {
         return this.bus;
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return this.bus.getTransportUri();
     }
 
 }

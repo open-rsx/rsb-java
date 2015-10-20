@@ -27,6 +27,8 @@
  */
 package rsb.eventprocessing;
 
+import java.net.URI;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import rsb.Event;
@@ -88,6 +90,11 @@ public class DefaultOutRouteConfigurator implements OutRouteConfigurator {
             LOG.finer("Pushing event to connector " + connector);
             connector.push(event);
         }
+    }
+
+    @Override
+    public Set<URI> getTransportUris() {
+        return this.utility.getTransportUris();
     }
 
     // TODO method for setting quality of service specs on the connectors

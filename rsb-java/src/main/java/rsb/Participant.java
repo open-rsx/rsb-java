@@ -27,6 +27,9 @@
  */
 package rsb;
 
+import java.net.URI;
+import java.util.Set;
+
 import rsb.Factory.ParticipantObserverManager;
 import rsb.config.ParticipantConfig;
 
@@ -159,5 +162,16 @@ public abstract class Participant implements Activatable {
      *         participant
      */
     public abstract Class<?> getDataType();
+
+    /**
+     * Returns URIs describing the transports configured for this participants.
+     *
+     * Only valid if activated.
+     *
+     * @return set of transport URIs, not <code>null</code>
+     * @throws IllegalStateException
+     *             participant is in wrong state to get these URIs
+     */
+    public abstract Set<URI> getTransportUris();
 
 }

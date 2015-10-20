@@ -27,6 +27,7 @@
  */
 package rsb.transport.socket;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
@@ -169,6 +170,11 @@ public class SocketInPushConnector implements InPushConnector,
     @Override
     public void notify(final Filter filter, final FilterAction action) {
         // transport level filtering is currently not supported
+    }
+
+    @Override
+    public URI getTransportUri() {
+        return this.utility.getBus().getTransportUri();
     }
 
 }

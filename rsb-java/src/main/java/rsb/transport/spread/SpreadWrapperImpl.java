@@ -29,6 +29,8 @@ package rsb.transport.spread;
 
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -281,6 +283,22 @@ public class SpreadWrapperImpl implements SpreadWrapper {
     @Override
     public boolean isShutdown() {
         return this.shutdown;
+    }
+
+    @Override
+    public URI getTransportUri() {
+        try {
+            char tcpNoDelay = '0';
+            if (this.useTcpNoDelay) {
+                tcpNoDelay = '1';
+            }
+            return new URI("spread", null, this.spreadhost.getHostAddress(),
+                    this.port, null, "tcpnodelay=" + tcpNoDelay, null);
+        } catch (final URISyntaxException e) {
+            assert false : "We do not add a path to the URI. "
+                    + "Therefore it must always be valid.";
+            throw new AssertionError(e);
+        }
     }
 
 }

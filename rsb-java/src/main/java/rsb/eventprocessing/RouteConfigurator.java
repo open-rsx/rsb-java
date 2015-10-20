@@ -28,6 +28,9 @@
 
 package rsb.eventprocessing;
 
+import java.net.URI;
+import java.util.Set;
+
 import rsb.Activatable;
 import rsb.transport.Connector;
 
@@ -69,5 +72,16 @@ public interface RouteConfigurator<ConnectorType extends Connector> extends
      *         hence remove now, else <code>false</code>
      */
     boolean removeConnector(ConnectorType connector);
+
+    /**
+     * Returns URIs describing the transports configured for this configurator.
+     *
+     * Only valid if activated.
+     *
+     * @return set of transport URIs, not <code>null</code>
+     * @throws IllegalStateException
+     *             instance is in wrong state to get these URIs
+     */
+    Set<URI> getTransportUris();
 
 }

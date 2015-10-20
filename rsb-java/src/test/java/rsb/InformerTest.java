@@ -33,21 +33,17 @@ import static org.junit.Assert.assertNotNull;
 import java.nio.ByteBuffer;
 
 import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rsb.config.ParticipantConfig;
 import rsb.converter.ConverterRepository;
 import rsb.converter.DefaultConverterRepository;
-import rsb.converter.DefaultConverters;
-import rsb.transport.DefaultTransports;
 
 /**
  * @author swrede
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public class InformerTest extends LoggingEnabled {
+public class InformerTest extends ParticipantCheck {
 
     private static final Scope DEFAULT_SCOPE = new Scope("/informer/example");
     private static final String DEFAULT_STRING_PAYLOAD = "Hello World!";
@@ -60,14 +56,8 @@ public class InformerTest extends LoggingEnabled {
             DefaultConverterRepository.getDefaultConverterRepository();
     private ParticipantConfig config;
 
-    @BeforeClass
-    public static void registerConverters() {
-        DefaultConverters.register();
-        DefaultTransports.register();
-    }
-
-    @Before
-    public void setUp() throws Throwable {
+    @Override
+    protected Participant createParticipant() throws Exception {
 
         this.config = Utilities.createParticipantConfig();
 
@@ -80,7 +70,7 @@ public class InformerTest extends LoggingEnabled {
                 new Informer<Object>(new InformerCreateArgs().setScope(
                         DEFAULT_SCOPE).setConfig(this.config));
         this.genericInformer.activate();
-
+        return this.genericInformer;
     }
 
     @After
@@ -218,4 +208,5 @@ public class InformerTest extends LoggingEnabled {
         this.stringInformer.publish(new Event(DEFAULT_SCOPE, Boolean.class,
                 DEFAULT_STRING_PAYLOAD));
     }
+
 }
