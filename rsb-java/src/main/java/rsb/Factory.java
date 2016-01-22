@@ -73,7 +73,7 @@ public final class Factory {
 
     private final Properties properties = new Properties();
 
-    private final ParticipantConfig defaultConfig = new ParticipantConfig();
+    private ParticipantConfig defaultConfig = new ParticipantConfig();
 
     private final ParticipantObserverManager observerManager =
             new ParticipantObserverManager();
@@ -675,6 +675,26 @@ public final class Factory {
      */
     public ParticipantConfig getDefaultParticipantConfig() {
         return this.defaultConfig;
+    }
+
+    /**
+     * Sets the default participant config used per default for new
+     * participants.
+     *
+     * This method is not thread-safe! Only use it when no other thread is
+     * creating participants!
+     *
+     * @param config
+     *             the new config to use, not <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the given config is <code>null</code>
+     */
+    public void setDefaultParticipantConfig(final ParticipantConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException(
+                    "Participant config must not be null.");
+        }
+        this.defaultConfig = config;
     }
 
     /**
