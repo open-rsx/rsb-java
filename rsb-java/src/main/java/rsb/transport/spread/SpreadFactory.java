@@ -31,11 +31,11 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rsb.InitializeException;
 import rsb.QualityOfServiceSpec;
-import rsb.QualityOfServiceSpec.Ordering;
-import rsb.QualityOfServiceSpec.Reliability;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
@@ -50,28 +50,22 @@ import rsb.util.Properties;
  */
 public class SpreadFactory implements TransportFactory {
 
-    private static final String QOS_RELIABILITY_KEY =
-            "qualityofservice.reliability";
-    private static final String QOS_ORDERING_KEY = "qualityofservice.ordering";
-    private static final String HOST_KEY = "transport.spread.host";
-    private static final String DEFAULT_HOST = "localhost";
-    private static final String PORT_KEY = "transport.spread.port";
-    private static final String DEFAULT_PORT = "4803";
-    private static final String NODELAY_KEY = "transport.spread.tcpnodelay";
-    private static final String DEFAULT_NODELAY = "true";
+    private static final Logger LOG = Logger.getLogger(SpreadFactory.class
+            .getName());
+
+    private static final InPushConnectorFactory DEFAULT_IN_FACTORY =
+            new IndividualInPushConnectorFactory();
+
+    private static final String IN_FACTORY_KEY =
+            "transport.spread.java.infactory";
 
     private final Map<SpreadOptions, SpreadWrapper> spreadWrappers =
             new HashMap<SpreadOptions, SpreadWrapper>();
 
-    private SpreadOptions optionsFromProperties(final Properties properties) {
-        return new SpreadOptions(properties.getProperty(HOST_KEY, DEFAULT_HOST)
-                .asString(), properties.getProperty(PORT_KEY, DEFAULT_PORT)
-                .asInteger(), properties.getProperty(NODELAY_KEY,
-                DEFAULT_NODELAY).asBoolean());
-    }
-
     private SpreadWrapper createSpreadWrapper(final SpreadOptions options)
             throws InitializeException {
+        LOG.log(Level.FINE, "Creating a spread wrapper with options {0}",
+                new Object[] { options });
         try {
             return new SpreadWrapperImpl(options);
         } catch (final NumberFormatException e) {
@@ -97,15 +91,32 @@ public class SpreadFactory implements TransportFactory {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("deprecation")
     @Override
     public InPushConnector createInPushConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
-        return new SpreadInPushConnector(
-                createSpreadWrapper(optionsFromProperties(properties)),
-                (ConverterSelectionStrategy<ByteBuffer>) converters);
 
+        InPushConnectorFactory factory = DEFAULT_IN_FACTORY;
+        if (properties.hasProperty(IN_FACTORY_KEY)) {
+            factory =
+                    InPushConnectorFactoryRegistry.getInstance().get(
+                            properties.getProperty(IN_FACTORY_KEY).asString());
+            if (factory == null) {
+                throw new InitializeException(
+                        "InPushConnectorFactory with key '"
+                                + properties.getProperty(IN_FACTORY_KEY)
+                                        .asString()
+                                + "' not available in the registry");
+            }
+        }
+
+        LOG.log(Level.FINE,
+                "Creating an in-push connector from properties {0} "
+                        + "with factory {1} and converters {2}", new Object[] {
+                        properties, factory, converters });
+
+        return factory.create(properties, converters);
     }
 
     @SuppressWarnings("unchecked")
@@ -113,24 +124,16 @@ public class SpreadFactory implements TransportFactory {
     public OutConnector createOutConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
+        LOG.log(Level.FINE,
+                "Creating and out connector with properties {0} and converters {1}",
+                new Object[] { properties, converters });
 
-        Ordering ordering = new QualityOfServiceSpec().getOrdering();
-        if (properties.hasProperty(QOS_ORDERING_KEY)) {
-            ordering =
-                    Ordering.valueOf(properties.getProperty(QOS_ORDERING_KEY)
-                            .asString());
-        }
-        Reliability reliability = new QualityOfServiceSpec().getReliability();
-        if (properties.hasProperty(QOS_RELIABILITY_KEY)) {
-            reliability =
-                    Reliability.valueOf(properties.getProperty(
-                            QOS_RELIABILITY_KEY).asString());
-        }
-
+        final QualityOfServiceSpec qos =
+                ConfigParseUtilities.parseQualityOfServiceSpec(properties);
         return new SpreadOutConnector(
-                createUniqueSpreadWrapper(optionsFromProperties(properties)),
-                (ConverterSelectionStrategy<ByteBuffer>) converters,
-                new QualityOfServiceSpec(ordering, reliability));
+                createUniqueSpreadWrapper(ConfigParseUtilities
+                        .spreadOptionsFromProperties(properties)),
+                (ConverterSelectionStrategy<ByteBuffer>) converters, qos);
 
     }
 }
