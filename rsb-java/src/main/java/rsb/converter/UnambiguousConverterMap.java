@@ -70,4 +70,42 @@ public class UnambiguousConverterMap<WireType> implements
         this.converters.put(key, converter);
     }
 
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE.OFF: AvoidInlineConditionals - this method is more
+        // readable with the inline conditionals
+        final int prime = 31;
+        int result = 1;
+        result =
+                prime
+                        * result
+                        + ((this.converters == null) ? 0 : this.converters
+                                .hashCode());
+        return result;
+        // CHECKSTYLE.ON: AvoidInlineConditionals
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof UnambiguousConverterMap)) {
+            return false;
+        }
+        @SuppressWarnings("rawtypes")
+        final UnambiguousConverterMap other = (UnambiguousConverterMap) obj;
+        if (this.converters == null) {
+            if (other.converters != null) {
+                return false;
+            }
+        } else if (!this.converters.equals(other.converters)) {
+            return false;
+        }
+        return true;
+    }
+
 }
