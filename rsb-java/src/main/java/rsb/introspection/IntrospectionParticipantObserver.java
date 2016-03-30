@@ -73,7 +73,7 @@ public class IntrospectionParticipantObserver implements ParticipantObserver {
         // only handle participants that want to have introspection enabled
         if (!participant.getConfig().isIntrospectionEnabled()) {
             LOG.log(Level.FINE,
-                    "Skipping created processing for participant {0} since"
+                    "Skipping created processing for participant {0} since "
                             + "introspection is disabled for this participant",
                     participant);
             return;
