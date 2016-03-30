@@ -25,6 +25,7 @@
  *
  * ============================================================
  */
+package rsb.examples;
 
 // mark-start::body
 import rsb.Factory;
