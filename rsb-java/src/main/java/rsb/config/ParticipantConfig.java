@@ -165,6 +165,7 @@ public class ParticipantConfig {
 
         final ParticipantConfig copy = new ParticipantConfig();
         copy.receivingStrategy = this.receivingStrategy;
+        copy.introspectionEnabled = this.introspectionEnabled;
         // CHECKSTYLE.OFF: LineLength - no way to format this
         for (final Entry<String, TransportConfig> entry : this.transportsByName.entrySet()) {
             copy.transportsByName.put(entry.getKey(), entry.getValue().copy());

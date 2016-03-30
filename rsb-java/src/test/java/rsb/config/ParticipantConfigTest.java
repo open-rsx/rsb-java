@@ -27,6 +27,7 @@
  */
 package rsb.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -77,4 +78,13 @@ public class ParticipantConfigTest extends LoggingEnabled {
         config.setIntrospectionEnabled(false);
         assertFalse(config.isIntrospectionEnabled());
     }
+
+    @Test
+    public void copy() {
+        final ParticipantConfig config = new ParticipantConfig();
+        config.setIntrospectionEnabled(false);
+        config.getOrCreateTransport("sadfasdf");
+        assertEquals(config, config.copy());
+    }
+
 }
