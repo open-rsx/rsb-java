@@ -147,8 +147,9 @@ public class Informer<DataType extends Object> extends Participant {
             if (!this.getInformer().getTypeInfo()
                     .isAssignableFrom(event.getType())) {
                 throw new IllegalArgumentException(
-                        "Type of event data does not match nor "
-                                + "is a sub-class of the Informer data type.");
+                        "Type of event data " + event.getType() + " does not match nor "
+                        + "is a sub-class of the Informer data type "
+                        + Informer.this.type.getName() +  ".");
             }
 
             // set participant metadata
