@@ -82,7 +82,7 @@ public abstract class Participant implements Activatable {
             throw new IllegalStateException(
                     "Participants can only be activated "
                             + "and subsequently deactivated once. "
-                            + "Mutliple cycles are not supported.");
+                            + "Multiple cycles are not supported.");
         }
         if (this.observerManager != null) {
             this.observerManager.notifyParticipantCreated(this, this.createArgs);
