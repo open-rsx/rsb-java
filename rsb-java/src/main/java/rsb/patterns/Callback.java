@@ -55,11 +55,28 @@ public interface Callback {
         /**
          * Constructor.
          *
+         * @param message
+         *            Description of the problem
+         * @param cause
+         *            wrapped exception as the root cause, not <code>null</code>
+         */
+        public UserCodeException(final String message, final Exception cause) {
+            super(message, cause);
+            ensureCause(cause);
+        }
+
+        /**
+         * Constructor.
+         *
          * @param cause
          *            wrapped exception as the root cause, not <code>null</code>
          */
         public UserCodeException(final Exception cause) {
             super(cause);
+            ensureCause(cause);
+        }
+
+        private static void ensureCause(final Exception cause) {
             if (cause == null) {
                 throw new IllegalArgumentException(
                         "Causing exception must not be null");
