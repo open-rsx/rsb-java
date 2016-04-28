@@ -140,4 +140,10 @@ public class EventTest extends LoggingEnabled {
 
     }
 
+    @Test
+    public void testToString() {
+        // ensure that an empty event can be converted to a string
+        new Event().toString();
+    }
+
 }
