@@ -60,6 +60,8 @@ public final class DefaultConverters {
                 .addConverter(new EventIdConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new NullConverter());
+        DefaultConverterRepository.getDefaultConverterRepository().addConverter(
+                new IntegerConverter(IntegerConverter.INT32_SIGNATURE));
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new LongConverter(LongConverter.INT64_SIGNATURE));
         DefaultConverterRepository.getDefaultConverterRepository()
