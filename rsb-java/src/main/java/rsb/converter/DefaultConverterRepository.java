@@ -28,15 +28,16 @@
 package rsb.converter;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * A {@link ConverterRepository} implementation used as the default in RSB. The
  * accessor methods return {@link ConverterSelectionStrategy} instances of type
- * {@link UnambiguousConverterMap}.
+ * {@link UnambiguousConverterMap}. Adding a converter with the same signature
+ * as an existing one will replace the previous entry.
  *
  * @param <WireType>
  *            wire type of contained converters
@@ -51,7 +52,7 @@ public class DefaultConverterRepository<WireType> implements
             new DefaultConverterRepository<ByteBuffer>();
 
     private final Map<ConverterSignature, Converter<WireType>> converterMap =
-            new HashMap<ConverterSignature, Converter<WireType>>();
+            new ConcurrentHashMap<ConverterSignature, Converter<WireType>>();
 
     /**
      * @return the converterMap
@@ -99,14 +100,15 @@ public class DefaultConverterRepository<WireType> implements
 
     @Override
     public void addConverter(final Converter<WireType> converter) {
-        if (this.converterMap.containsKey(converter.getSignature())) {
-            LOG.log(Level.WARNING,
-                    "Converter with signature {0} already registered in "
-                            + "DefaultConverterRepository. "
-                            + "Existing entry will be overwritten!",
-                    converter.getSignature());
+        final Converter<WireType> previous =
+                this.converterMap.put(converter.getSignature(), converter);
+        if (previous != null) {
+            LOG.log(Level.FINE,
+                    "A Converter with signature {0} was already registered in "
+                            + "DefaultConverterRepository: {1}. "
+                            + "Existing entry was overwritten!",
+                    new Object[] { converter.getSignature(), previous });
         }
-        this.converterMap.put(converter.getSignature(), converter);
     }
 
     /**
