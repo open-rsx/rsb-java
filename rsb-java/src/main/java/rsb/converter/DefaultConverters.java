@@ -66,6 +66,8 @@ public final class DefaultConverters {
                 .addConverter(new LongConverter(LongConverter.INT64_SIGNATURE));
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new DoubleConverter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new FloatConverter());
 
         // Converter instances required for introspection subsystem
         DefaultConverterRepository.getDefaultConverterRepository()
