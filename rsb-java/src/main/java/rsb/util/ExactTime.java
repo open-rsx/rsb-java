@@ -63,6 +63,8 @@ public final class ExactTime {
 
         long currentTimeMicros();
 
+        boolean works();
+
     }
 
     /**
@@ -79,6 +81,11 @@ public final class ExactTime {
             return System.currentTimeMillis() * MSEC_TO_MUSEC;
         }
 
+        @Override
+        public boolean works() {
+            return true;
+        }
+
     }
 
     /**
@@ -89,7 +96,7 @@ public final class ExactTime {
      */
     private static class JnrPosixImplementation implements Implementation {
 
-        private static final long SEC_TO_MUSEC = 1000000L;
+        private static final long MILLION = 1000000L;
         private final LibC libc;
         private final Runtime runtime;
 
@@ -98,7 +105,7 @@ public final class ExactTime {
             // CHECKSTYLE.OFF: MemberName|VisibilityModifier - required
             // interface
             public final time_t tv_sec = new time_t();
-            public final SignedLong tv_usec = new SignedLong();
+            public final Signed32 tv_usec = new Signed32();
             // CHECKSTYLE.ON: MemberName|VisibilityModifier
 
             Timeval(final Runtime runtime) {
@@ -123,7 +130,15 @@ public final class ExactTime {
         public long currentTimeMicros() {
             final Timeval timeval = new Timeval(this.runtime);
             this.libc.gettimeofday(timeval, null);
-            return timeval.tv_sec.get() * SEC_TO_MUSEC + timeval.tv_usec.get();
+            return timeval.tv_sec.get() * MILLION + timeval.tv_usec.get();
+        }
+
+        @Override
+        public boolean works() {
+            final long value = currentTimeMicros();
+            final Timeval timeval = new Timeval(this.runtime);
+            this.libc.gettimeofday(timeval, null);
+            return value > 0 && timeval.tv_usec.get() < MILLION;
         }
 
     }
@@ -131,11 +146,13 @@ public final class ExactTime {
     static {
         try {
             final Implementation candidate = new JnrPosixImplementation();
-            // probe whether the time can be accessed
-            final long time = candidate.currentTimeMicros();
-            // minimal validity check
-            if (time > 0) {
+            if (candidate.works()) {
                 implementation = candidate;
+            } else {
+                LOG.log(Level.FINE,
+                        "Candidate {0} indicates that it doesn't work correctly. "
+                                + "Discarding.",
+                        candidate);
             }
         } catch (final Exception e) { // NOPMD - be safe to not fail anywhere
             LOG.log(Level.FINE,
