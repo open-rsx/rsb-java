@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.util.ExactTime;
 import rsb.util.os.RuntimeOsUtilities.RuntimeNotAvailableException;
 
 /**
@@ -44,8 +45,6 @@ public class PortableProcessInfo extends CommonProcessInfo {
 
     private static final Logger LOG = Logger
             .getLogger(PortableProcessInfo.class.getName());
-
-    private static final int MILLIS_TO_MICROS = 1000;
 
     /**
      * Creates a new instance and initializes all provided values in
@@ -65,7 +64,7 @@ public class PortableProcessInfo extends CommonProcessInfo {
                     "Unable to determine PID, process start time "
                             + "and arguments.", e);
             // fallback to current time
-            setStartTime(System.currentTimeMillis() * MILLIS_TO_MICROS);
+            setStartTime(ExactTime.currentTimeMicros());
         }
 
         this.setProgramName(determineProgramName());

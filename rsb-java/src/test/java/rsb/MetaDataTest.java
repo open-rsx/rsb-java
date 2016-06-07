@@ -33,6 +33,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import rsb.util.ExactTime;
+
 /**
  * Test for {@link MetaData}.
  *
@@ -48,10 +50,9 @@ public class MetaDataTest extends LoggingEnabled {
     public void construction() {
 
         final MetaData meta = new MetaData();
-        assertTrue(meta.getCreateTime() >= System.currentTimeMillis()
-                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
-        assertTrue(meta.getCreateTime() <= System.currentTimeMillis()
-                * MILLIS_TO_MICROS);
+        assertTrue(meta.getCreateTime() >= ExactTime.currentTimeMicros()
+                - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getCreateTime() <= ExactTime.currentTimeMicros());
         assertEquals(0, meta.getReceiveTime());
         assertEquals(0, meta.getDeliverTime());
         assertEquals(0, meta.getSendTime());
@@ -69,22 +70,18 @@ public class MetaDataTest extends LoggingEnabled {
         meta.setReceiveTime(0);
         meta.setDeliverTime(0);
 
-        assertTrue(meta.getCreateTime() > System.currentTimeMillis()
-                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
-        assertTrue(meta.getCreateTime() <= System.currentTimeMillis()
-                * MILLIS_TO_MICROS);
-        assertTrue(meta.getSendTime() > System.currentTimeMillis()
-                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
-        assertTrue(meta.getSendTime() <= System.currentTimeMillis()
-                * MILLIS_TO_MICROS);
-        assertTrue(meta.getReceiveTime() > System.currentTimeMillis()
-                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
-        assertTrue(meta.getReceiveTime() <= System.currentTimeMillis()
-                * MILLIS_TO_MICROS);
-        assertTrue(meta.getDeliverTime() > System.currentTimeMillis()
-                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
-        assertTrue(meta.getDeliverTime() <= System.currentTimeMillis()
-                * MILLIS_TO_MICROS);
+        assertTrue(meta.getCreateTime() > ExactTime.currentTimeMicros()
+                - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getCreateTime() <= ExactTime.currentTimeMicros());
+        assertTrue(meta.getSendTime() > ExactTime.currentTimeMicros()
+                - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getSendTime() <= ExactTime.currentTimeMicros());
+        assertTrue(meta.getReceiveTime() > ExactTime.currentTimeMicros()
+                - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getReceiveTime() <= ExactTime.currentTimeMicros());
+        assertTrue(meta.getDeliverTime() > ExactTime.currentTimeMicros()
+                - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getDeliverTime() <= ExactTime.currentTimeMicros());
 
     }
 
@@ -139,10 +136,9 @@ public class MetaDataTest extends LoggingEnabled {
         final String autoKey = "auto";
         meta.setUserTime(autoKey, 0);
 
-        assertTrue(meta.getUserTime(autoKey) > System.currentTimeMillis()
-                * MILLIS_TO_MICROS - ALLOWED_DELTA_MICROS);
-        assertTrue(meta.getUserTime(autoKey) <= System.currentTimeMillis()
-                * MILLIS_TO_MICROS);
+        assertTrue(meta.getUserTime(autoKey) > ExactTime.currentTimeMicros()
+                - ALLOWED_DELTA_MICROS);
+        assertTrue(meta.getUserTime(autoKey) <= ExactTime.currentTimeMicros());
     }
 
     @SuppressWarnings("PMD.JUnitTestContainsTooManyAsserts")

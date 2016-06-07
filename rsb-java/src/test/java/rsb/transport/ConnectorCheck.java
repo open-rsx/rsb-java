@@ -49,6 +49,7 @@ import rsb.converter.ConversionException;
 import rsb.converter.DoubleConverter;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
+import rsb.util.ExactTime;
 
 // CHECKSTYLE.OFF: JavadocMethod - test class
 // CHECKSTYLE.OFF: MagicNumber - random test values
@@ -292,9 +293,9 @@ public abstract class ConnectorCheck extends LoggingEnabled {
         Thread.sleep(500);
 
         // send event
-        final long beforeSend = System.currentTimeMillis() * 1000;
+        final long beforeSend = ExactTime.currentTimeMicros();
         this.getOutConnector().push(event);
-        final long afterSend = System.currentTimeMillis() * 1000;
+        final long afterSend = ExactTime.currentTimeMicros();
 
         assertTrue(event.getMetaData().getSendTime() >= beforeSend);
         assertTrue(event.getMetaData().getSendTime() <= afterSend);
@@ -314,7 +315,7 @@ public abstract class ConnectorCheck extends LoggingEnabled {
                     .getReceiveTime() >= receivedEvent.getMetaData()
                             .getSendTime());
             assertTrue(receivedEvent.getMetaData()
-                    .getReceiveTime() <= System.currentTimeMillis() * 1000);
+                    .getReceiveTime() <= ExactTime.currentTimeMicros());
 
             // now adapt this time to use the normal equals method for comparing
             // all other fields

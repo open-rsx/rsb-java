@@ -31,16 +31,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import rsb.util.ExactTime;
+
 /**
  * Framework-supplied meta data attached to each event that give information
  * e.g. about timing issues.
+ *
+ * In case you are setting timestamps manually, ensure to create these
+ * timestamps using {@link ExactTime} to get the highest possible resolution.
  *
  * @author jwienke
  */
 public class MetaData {
 
-    private static final int MILLIS_TO_MICROS = 1000;
-    private long createTime = System.currentTimeMillis() * MILLIS_TO_MICROS;
+    private long createTime = ExactTime.currentTimeMicros();
     private long sendTime = 0;
     private long receiveTime = 0;
     private long deliverTime = 0;
@@ -82,7 +86,7 @@ public class MetaData {
      */
     public void setCreateTime(final long time) {
         if (time <= 0) {
-            this.createTime = System.currentTimeMillis() * MILLIS_TO_MICROS;
+            this.createTime = ExactTime.currentTimeMicros();
         } else {
             this.createTime = time;
         }
@@ -107,7 +111,7 @@ public class MetaData {
      */
     public void setSendTime(final long time) {
         if (time <= 0) {
-            this.sendTime = System.currentTimeMillis() * MILLIS_TO_MICROS;
+            this.sendTime = ExactTime.currentTimeMicros();
         } else {
             this.sendTime = time;
         }
@@ -132,7 +136,7 @@ public class MetaData {
      */
     public void setReceiveTime(final long time) {
         if (time <= 0) {
-            this.receiveTime = System.currentTimeMillis() * MILLIS_TO_MICROS;
+            this.receiveTime = ExactTime.currentTimeMicros();
         } else {
             this.receiveTime = time;
         }
@@ -159,7 +163,7 @@ public class MetaData {
      */
     public void setDeliverTime(final long time) {
         if (time <= 0) {
-            this.deliverTime = System.currentTimeMillis() * MILLIS_TO_MICROS;
+            this.deliverTime = ExactTime.currentTimeMicros();
         } else {
             this.deliverTime = time;
         }
@@ -212,8 +216,7 @@ public class MetaData {
      */
     public void setUserTime(final String key, final long time) {
         if (time <= 0) {
-            this.userTimes.put(key, System.currentTimeMillis()
-                    * MILLIS_TO_MICROS);
+            this.userTimes.put(key,  ExactTime.currentTimeMicros());
         } else {
             this.userTimes.put(key, time);
         }

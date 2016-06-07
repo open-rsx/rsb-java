@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2013 CoR-Lab, Bielefeld University
+ * Copyright (C) 2014 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,36 +25,33 @@
  *
  * ============================================================
  */
-package rsb.apps;
+package rsb.util;
 
-import rsb.Version;
-import rsb.util.ExactTime;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 
 /**
- * A simply executable to dump the RSB version to the command line.
- *
  * @author jwienke
  */
-public final class DumpVersion {
+public class ExactTimeTest {
 
-    private DumpVersion() {
-        // empty constructor to prevent initialization
+    private static final int MUSEC_TO_MSEC = 1000;
+
+    @Test
+    public void testSmoke() {
+        final long before = System.currentTimeMillis();
+        final long exact = ExactTime.currentTimeMicros();
+        final long after = System.currentTimeMillis();
+        assertTrue(before <= exact / MUSEC_TO_MSEC);
+        assertTrue(after >= exact / MUSEC_TO_MSEC);
     }
 
-    /**
-     * Main method.
-     *
-     * @param args
-     *            command line args
-     * @throws Throwable
-     *             in case of any error
-     */
-    @SuppressWarnings({ "PMD.UseVarargs", "PMD.SystemPrintln" })
-    public static void main(final String[] args) throws Throwable {
-        System.out.println(
-                "RSB Version: " + Version.getInstance().getVersionString() + "-"
-                        + Version.getInstance().getLastCommit());
-        System.out.println("Current time: " + ExactTime.currentTimeMicros()
-                + " (fallback implementation: " + ExactTime.isFallback() + ")");
+    @Test
+    public void testUseNative() {
+        assertFalse(ExactTime.isFallback());
     }
+
 }
