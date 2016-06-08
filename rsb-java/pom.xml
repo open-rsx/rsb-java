@@ -183,9 +183,17 @@ project.properties["git.commit"] = commit
                             <token>@LOGGING_DIR@</token>
                             <value>${project.basedir}/target</value>
                         </replacement>
+                        <!-- ugly hack for windows paths. Otherwise the logging
+                            framework interprets backslashes in the config file
+                            as escaped characters -->
+                        <replacement>
+                            <token>\</token>
+                            <value>/</value>
+                        </replacement>
                     </replacements>
                     <outputDir>${test.configs}</outputDir>
                     <preserveDir>false</preserveDir>
+                    <regex>false</regex>
                 </configuration>
             </plugin>
 
