@@ -105,7 +105,10 @@ public class Bus {
      */
     public URI getTransportUri() {
         try {
-            return new URI("inprocess", null, this.hostInfo.getHostName(),
+            String hostname = this.hostInfo.getHostName();
+            // conflicting RFCs for URIs and valid host names
+            hostname = hostname.replace("_", "");
+            return new URI("inprocess", null, hostname,
                     this.processInfo.getPid(), null, null, null);
         } catch (final URISyntaxException e) {
             assert false : "We do not add a path to the URI. "
