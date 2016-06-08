@@ -31,6 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jnr.ffi.LibraryLoader;
+import jnr.ffi.Platform;
+import jnr.ffi.Platform.OS;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
 import jnr.ffi.Struct;
@@ -65,16 +67,24 @@ public final class ExactTime {
 
         boolean works();
 
+        boolean isFallback();
+
     }
 
     /**
-     * Fallback implementation based on {@link System#currentTimeMillis()}.
+     * Implementation based on {@link System#currentTimeMillis()}.
      *
      * @author jwienke
      */
-    private static class FallbackImplementation implements Implementation {
+    private static class JavaSystemImplementation implements Implementation {
 
         private static final int MSEC_TO_MUSEC = 1000;
+
+        private final boolean fallback;
+
+        JavaSystemImplementation(final boolean fallback) {
+            this.fallback = fallback;
+        }
 
         @Override
         public long currentTimeMicros() {
@@ -84,6 +94,11 @@ public final class ExactTime {
         @Override
         public boolean works() {
             return true;
+        }
+
+        @Override
+        public boolean isFallback() {
+            return this.fallback;
         }
 
     }
@@ -141,6 +156,11 @@ public final class ExactTime {
             return value > 0 && timeval.tv_usec.get() < MILLION;
         }
 
+        @Override
+        public boolean isFallback() {
+            return false;
+        }
+
     }
 
     static {
@@ -162,10 +182,15 @@ public final class ExactTime {
             LOG.log(Level.FINE,
                     "Unable to use JnrPosixImplementation due to an error", e);
         }
+        // on windows we have no clock with higher precision in any case
+        if (implementation == null
+                && Platform.getNativePlatform().getOS().equals(OS.WINDOWS)) {
+            implementation = new JavaSystemImplementation(false);
+        }
         if (implementation == null) {
             LOG.fine("No specific implementation worked. "
                     + "Using fallback implementation");
-            implementation = new FallbackImplementation();
+            implementation = new JavaSystemImplementation(true);
         }
     }
 
@@ -193,7 +218,7 @@ public final class ExactTime {
      * @return <code>true</code> if no accurate time can be provided.
      */
     public static boolean isFallback() {
-        return implementation.getClass() == FallbackImplementation.class;
+        return implementation.isFallback();
     }
 
 }
