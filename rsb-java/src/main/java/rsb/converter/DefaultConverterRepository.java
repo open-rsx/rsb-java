@@ -28,6 +28,7 @@
 package rsb.converter;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ public class DefaultConverterRepository<WireType> implements
     private static final Logger LOG = Logger
             .getLogger(DefaultConverterRepository.class.getName());
 
-    private static ConverterRepository<ByteBuffer> defaultInstance =
+    private static DefaultConverterRepository<ByteBuffer> defaultInstance =
             new DefaultConverterRepository<ByteBuffer>();
 
     private final Map<ConverterSignature, Converter<WireType>> converterMap =
@@ -112,11 +113,21 @@ public class DefaultConverterRepository<WireType> implements
     }
 
     /**
+     * Returns all converters that are currently contained in this repository.
+     *
+     * @return collection of contained converters, not <code>null</code>, might
+     *         be empty. Order has no significance
+     */
+    public Collection<Converter<WireType>> getRegisteredConverters() {
+        return this.converterMap.values();
+    }
+
+    /**
      * Returns a global repository for wire type {@link ByteBuffer}.
      *
      * @return repository instance
      */
-    public static ConverterRepository<ByteBuffer>
+    public static DefaultConverterRepository<ByteBuffer>
             getDefaultConverterRepository() {
         return defaultInstance;
     }
