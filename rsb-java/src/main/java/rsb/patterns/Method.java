@@ -104,8 +104,12 @@ public abstract class Method extends Participant {
 
         @Override
         public void activate() throws RSBException {
-            Method.this.getListener().activate();
+            // activate the informer before the listener so that in case of a
+            // LocalMethod a potential request that arrives after activation of
+            // the listener always has a working informer it can use to send his
+            // response, even if this activation is not completed yet.
             Method.this.getInformer().activate();
+            Method.this.getListener().activate();
             Method.super.activate();
             Method.this.state = new StateActive();
         }
