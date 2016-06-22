@@ -85,7 +85,6 @@ class LocalMethod extends Method implements Handler {
                 new ListenerCreateArgs().setScope(this.getScope()).setConfig(
                         this.getConfig()).setParent(this)));
         this.getListener().addFilter(new MethodFilter("REQUEST"));
-        this.getListener().addHandler(this, true);
         this.setInformer(getFactory().createInformer(
                 new InformerCreateArgs().setScope(this.getScope()).setConfig(
                         this.getConfig()).setParent(this)));
@@ -148,6 +147,23 @@ class LocalMethod extends Method implements Handler {
     @Override
     public Set<URI> getTransportUris() {
         return new HashSet<URI>();
+    }
+
+    @Override
+    public void activate() throws RSBException {
+        // Performs all the necessary state checking
+        super.activate();
+        // Register the handler for receiving requests once all participants
+        // have been set up by the base class to ensure that a request can
+        // actually be answered by the active informer. Refer to #2580.
+        try {
+            this.getListener().addHandler(this, true);
+        } catch (final InterruptedException e) {
+            LOG.log(Level.WARNING, "Interrupted while registering the callback",
+                    e);
+            Thread.currentThread().interrupt();
+            throw new RSBException(e);
+        }
     }
 
 };
