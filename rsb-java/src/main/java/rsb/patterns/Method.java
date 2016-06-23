@@ -104,10 +104,6 @@ public abstract class Method extends Participant {
 
         @Override
         public void activate() throws RSBException {
-<<<<<<< HEAD
-=======
-            Method.this.getInformer().activate();
->>>>>>> 024ebfb... Proper fix for #2580
             Method.this.getListener().activate();
             Method.this.getInformer().activate();
             Method.super.activate();
