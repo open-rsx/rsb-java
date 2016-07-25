@@ -200,6 +200,7 @@ project.properties["git.commit"] = commit
             <!-- Different steps realized using ant. -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
                 <executions>
                     <!-- Start spread before running tests. -->
                     <execution>
@@ -247,9 +248,9 @@ project.properties["git.commit"] = commit
                         </exclusions>
                     </dependency>
                     <dependency>
-                        <groupId>ant</groupId>
+                        <groupId>org.apache.ant</groupId>
                         <artifactId>ant-nodeps</artifactId>
-                        <version>1.6.5</version>
+                        <version>1.8.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
