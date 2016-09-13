@@ -81,6 +81,7 @@ public final class Utilities extends LoggingEnabled {
         new ConfigLoader().loadFileIfAvailable(
                 0,
                 new File(System.getProperty("user.dir") + "/rsb.conf"),
+                "Test config file",
                 properties);
         new ParticipantConfigCreator().reconfigure(config, properties);
 

@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,12 +58,43 @@ public class ConfigLoader {
     private static final String DEBUG_INDENT_1 = "  ";
     private static final String DEBUG_INDENT_2 = "     ";
 
+    // File-related things.
+
+    /**
+     * Name of the environment variable that can be used to specify an
+     * alternate list of configuration files.
+     */
+    private static final String CONFIG_FILES_VARIABLE = "RSB_CONFIG_FILES";
+
+    private static final String CONFIG_FILE_KEY_SYSTEM = "%system";
+    private static final String CONFIG_FILE_KEY_PREFIX = "%prefix";
+    private static final String CONFIG_FILE_KEY_USER = "%user";
+    private static final String CONFIG_FILE_KEY_PWD = "%pwd";
+
+    private static final String ETC_DIRECTORY = "etc";
+    private static final String CONFIG_FILE_NAME = "rsb.conf";
+
+    /**
+     * By default, read configuration properties in the following order:
+     * 1. from /etc/rsb.conf, if the file exists
+     * 2. from ${HOME}/.config/rsb.conf, if the file exists
+     * 3. from $(pwd)/rsb.conf, if the file exists
+     */
+    private static final List<String> DEFAULT_CONFIG_FILES
+        = Arrays.asList(CONFIG_FILE_KEY_PREFIX,
+                        CONFIG_FILE_KEY_USER,
+                        CONFIG_FILE_KEY_PWD);
+
+    // Environment variable things.
     private static final String ENV_SEPARATOR = "_";
 
+    // Not source-specific things.
     private static final String KEY_SEPARATOR = ".";
 
     private static final Logger LOG = Logger.getLogger(ConfigLoader.class
             .getName());
+
+    private final List<String> fileSpecs;
 
     private final String prefix;
     private final String environmentPrefix;
@@ -78,6 +111,7 @@ public class ConfigLoader {
      *            prefix for environment variables
      */
     public ConfigLoader(final String prefix, final String environmentPrefix) {
+        this.fileSpecs = computeConfigFileCascade();
         this.prefix = prefix;
         this.environmentPrefix = environmentPrefix;
         this.debug = System.getenv().containsKey(CONFIG_DEBUG_VARIABLE);
@@ -89,6 +123,16 @@ public class ConfigLoader {
      */
     public ConfigLoader() {
         this("/", "RSB_");
+    }
+
+    private static List<String> computeConfigFileCascade() {
+        final String raw = System.getenv()
+            .getOrDefault(CONFIG_FILES_VARIABLE, null);
+        if (raw == null) {
+            return DEFAULT_CONFIG_FILES;
+        } else {
+            return Arrays.asList(raw.split(":"));
+        }
     }
 
     /**
@@ -110,10 +154,10 @@ public class ConfigLoader {
             System.out.println("Configuring with sources (lowest priority first)");
         }
 
-        // parse rsb.conf files in standard locations
+        // Load rsb.conf files
         this.loadFiles(results);
 
-        // parse environment
+        // Load environment variables
         this.loadEnv(results);
 
         return results;
@@ -126,21 +170,52 @@ public class ConfigLoader {
         LOG.log(Level.FINE,
                 "Loading properties for default config files into {0}", results);
 
-        // Read configuration properties in the following order:
-        // 1. from /etc/rsb.conf, if the file exists
-        // 2. from ${HOME}/.config/rsb.conf, if the file exists
-        // 3. from $(pwd)/rsb.conf, if the file exists
         if (this.debug) {
             System.out.println(DEBUG_INDENT_1 + "1. Configuration files");
         }
-        loadFileIfAvailable(0, new File(this.prefix + "/etc/rsb.conf"), results);
+        int index = 0;
+        for (final String spec : this.fileSpecs) {
+            resolveAndLoadFile(index++, spec, results);
+        }
+    }
 
-        final String homeDir = System.getProperty("user.home");
-        loadFileIfAvailable(1, new File(homeDir + "/.config/rsb.conf"), results);
-
-        final String workDir = System.getProperty("user.dir");
-        loadFileIfAvailable(2, new File(workDir + "/rsb.conf"), results);
-
+    private void resolveAndLoadFile(final int index,
+                                    final String spec,
+                                    final Properties results) {
+        if (spec.equals(CONFIG_FILE_KEY_SYSTEM)) {
+            loadFileIfAvailable(index,
+                                new File(File.separator + ETC_DIRECTORY
+                                         + File.separator + CONFIG_FILE_NAME),
+                                "System wide config file",
+                                results);
+        } else if (spec.equals(CONFIG_FILE_KEY_PREFIX)) {
+            loadFileIfAvailable(index,
+                                new File(this.prefix
+                                         + File.separator + ETC_DIRECTORY
+                                         + File.separator + CONFIG_FILE_NAME),
+                                "Prefix wide config file",
+                                results);
+        } else if (spec.equals(CONFIG_FILE_KEY_USER)) {
+            final String homeDir = System.getProperty("user.home");
+            loadFileIfAvailable(index,
+                                new File(homeDir
+                                         + File.separator + ".config"
+                                         + File.separator + CONFIG_FILE_NAME),
+                                "User config file",
+                                results);
+        } else if (spec.equals(CONFIG_FILE_KEY_PWD)) {
+            final String workDir = System.getProperty("user.dir");
+            loadFileIfAvailable(index,
+                                new File(workDir
+                                         + File.separator + CONFIG_FILE_NAME),
+                                "Current directory file",
+                                results);
+        } else {
+            loadFileIfAvailable(index,
+                                new File(spec),
+                                "User specified config file",
+                                results);
+        }
     }
 
     /**
@@ -153,6 +228,8 @@ public class ConfigLoader {
      *            cascade
      * @param file
      *            the file to read, might not exist
+     * @param description
+     *            a description of the file being loaded
      * @param results
      *            the instance to fill with new properties
      * @return the result instance with loaded properties
@@ -160,6 +237,7 @@ public class ConfigLoader {
     @SuppressWarnings("PMD.SystemPrintln")
     public Properties loadFileIfAvailable(final int index,
                                           final File file,
+                                          final String description,
                                           final Properties results) {
         LOG.log(Level.FINE,
                 "Loading properties from {0} into {1} if available.",
@@ -168,7 +246,7 @@ public class ConfigLoader {
             final boolean exists = file.exists();
             if (this.debug) {
                 final StringBuffer text = new StringBuffer(DEBUG_INDENT_2);
-                text.append(index + 1 + ". \"" + file + "\"");
+                text.append(index + 1 + ". " + description + " \"" + file + "\"");
                 if (exists) {
                     text.append(" exists");
                 } else {
