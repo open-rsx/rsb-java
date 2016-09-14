@@ -179,13 +179,15 @@ public class ParticipantConfig {
     @Override
     public String toString() {
 
-        final StringBuilder builder = new StringBuilder(35);
+        final StringBuilder builder = new StringBuilder(57);
         builder.append(getClass().getName());
         builder.append("[transports=");
         builder.append(Arrays
                 .toString(this.transportsByName.values().toArray()));
         builder.append(", receivingStrategy=");
         builder.append(this.receivingStrategy);
+        builder.append("], introspectionEnabled=");
+        builder.append(this.introspectionEnabled);
         builder.append(']');
 
         return builder.toString();
