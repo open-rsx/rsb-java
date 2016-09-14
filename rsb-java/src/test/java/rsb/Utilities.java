@@ -79,6 +79,7 @@ public final class Utilities extends LoggingEnabled {
         // handle configuration
         final Properties properties = new Properties();
         new ConfigLoader().loadFileIfAvailable(
+                0,
                 new File(System.getProperty("user.dir") + "/rsb.conf"),
                 properties);
         new ParticipantConfigCreator().reconfigure(config, properties);

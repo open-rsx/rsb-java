@@ -43,8 +43,18 @@ import java.util.logging.Logger;
  * it in a {@link Properties} object.
  *
  * @author jwienke
+ * @author jmoringe
  */
 public class ConfigLoader {
+
+    /**
+     * Name of the environment variable that can be used to enable
+     * configuration debugging.
+     */
+    private static final String CONFIG_DEBUG_VARIABLE = "RSB_CONFIG_DEBUG";
+
+    private static final String DEBUG_INDENT_1 = "  ";
+    private static final String DEBUG_INDENT_2 = "     ";
 
     private static final String ENV_SEPARATOR = "_";
 
@@ -55,6 +65,8 @@ public class ConfigLoader {
 
     private final String prefix;
     private final String environmentPrefix;
+
+    private final boolean debug;
 
     /**
      * Creates a new instance with specific parameters.
@@ -68,6 +80,7 @@ public class ConfigLoader {
     public ConfigLoader(final String prefix, final String environmentPrefix) {
         this.prefix = prefix;
         this.environmentPrefix = environmentPrefix;
+        this.debug = System.getenv().containsKey(CONFIG_DEBUG_VARIABLE);
     }
 
     /**
@@ -89,9 +102,13 @@ public class ConfigLoader {
      *            the instance to fill with new properties
      * @return the result instance, now loaded
      */
+    @SuppressWarnings("PMD.SystemPrintln")
     public Properties load(final Properties results) {
 
         LOG.log(Level.FINE, "Loading properties into {0}", results);
+        if (this.debug) {
+            System.out.println("Configuring with sources (lowest priority first)");
+        }
 
         // parse rsb.conf files in standard locations
         this.loadFiles(results);
@@ -103,6 +120,7 @@ public class ConfigLoader {
 
     }
 
+    @SuppressWarnings("PMD.SystemPrintln")
     private void loadFiles(final Properties results) {
 
         LOG.log(Level.FINE,
@@ -112,13 +130,16 @@ public class ConfigLoader {
         // 1. from /etc/rsb.conf, if the file exists
         // 2. from ${HOME}/.config/rsb.conf, if the file exists
         // 3. from $(pwd)/rsb.conf, if the file exists
-        loadFileIfAvailable(new File(this.prefix + "/etc/rsb.conf"), results);
+        if (this.debug) {
+            System.out.println(DEBUG_INDENT_1 + "1. Configuration files");
+        }
+        loadFileIfAvailable(0, new File(this.prefix + "/etc/rsb.conf"), results);
 
         final String homeDir = System.getProperty("user.home");
-        loadFileIfAvailable(new File(homeDir + "/.config/rsb.conf"), results);
+        loadFileIfAvailable(1, new File(homeDir + "/.config/rsb.conf"), results);
 
         final String workDir = System.getProperty("user.dir");
-        loadFileIfAvailable(new File(workDir + "/rsb.conf"), results);
+        loadFileIfAvailable(2, new File(workDir + "/rsb.conf"), results);
 
     }
 
@@ -127,19 +148,35 @@ public class ConfigLoader {
      *
      * The passed in instance is not cleared before loading the file.
      *
+     * @param index
+     *            the index of the file in the configuration file
+     *            cascade
      * @param file
      *            the file to read, might not exist
      * @param results
      *            the instance to fill with new properties
      * @return the result instance with loaded properties
      */
-    public Properties loadFileIfAvailable(final File file,
-            final Properties results) {
+    @SuppressWarnings("PMD.SystemPrintln")
+    public Properties loadFileIfAvailable(final int index,
+                                          final File file,
+                                          final Properties results) {
         LOG.log(Level.FINE,
                 "Loading properties from {0} into {1} if available.",
                 new Object[] { file, results });
         try {
-            if (file.exists()) {
+            final boolean exists = file.exists();
+            if (this.debug) {
+                final StringBuffer text = new StringBuffer(DEBUG_INDENT_2);
+                text.append(index + 1 + ". \"" + file + "\"");
+                if (exists) {
+                    text.append(" exists");
+                } else {
+                    text.append(" does not exist");
+                }
+                System.out.println(text);
+            }
+            if (exists) {
                 LOG.log(Level.FINE, "{0} does exist, loading.", file);
                 this.loadFile(file, results);
             }
@@ -232,25 +269,35 @@ public class ConfigLoader {
      *            the instance to fill with new properties
      * @return the passed in instance
      */
+    @SuppressWarnings("PMD.SystemPrintln")
     public Properties loadEnv(final Properties results) {
         LOG.log(Level.FINE, "Loading properties from environment into {0}",
                 results);
+        if (this.debug) {
+            System.out.println("  2. Environment variables with prefix RSB_");
+        }
         this.parseMap(System.getenv(), results);
         return results;
     }
 
+    @SuppressWarnings("PMD.SystemPrintln")
     private void parseMap(final Map<String, String> env,
             final Properties results) {
         for (final Entry<String, String> entry : env.entrySet()) {
             final String key = entry.getKey();
+            final String value = entry.getValue();
             if (key.startsWith(this.environmentPrefix)) {
                 final String propsKey =
                         key.substring(this.environmentPrefix.length())
                                 .replace(ENV_SEPARATOR, KEY_SEPARATOR)
                                 .toLowerCase(Locale.US);
+                if (this.debug) {
+                    System.out.println(DEBUG_INDENT_2 + key
+                                       + " (mapped to " + propsKey + ") -> " + value);
+                }
                 LOG.log(Level.FINER, "Parsed from map: {0} = {1}",
-                        new Object[] { propsKey, entry.getValue() });
-                results.setProperty(propsKey, entry.getValue());
+                        new Object[] { propsKey, value });
+                results.setProperty(propsKey, value);
             }
         }
     }
