@@ -126,12 +126,11 @@ public class ConfigLoader {
     }
 
     private static List<String> computeConfigFileCascade() {
-        final String raw = System.getenv()
-            .getOrDefault(CONFIG_FILES_VARIABLE, null);
-        if (raw == null) {
-            return DEFAULT_CONFIG_FILES;
-        } else {
+        if (System.getenv().containsKey(CONFIG_FILES_VARIABLE)) {
+            final String raw = System.getenv().get(CONFIG_FILES_VARIABLE);
             return Arrays.asList(raw.split(":"));
+        } else {
+            return DEFAULT_CONFIG_FILES;
         }
     }
 
