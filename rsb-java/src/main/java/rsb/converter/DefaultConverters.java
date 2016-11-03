@@ -57,8 +57,6 @@ public final class DefaultConverters {
         // DefaultConverterRepository.getDefaultConverterRepository()
         // .addConverter(new LongConverter(LongConverter.UINT64_SIGNATURE));
         DefaultConverterRepository.getDefaultConverterRepository()
-                .addConverter(new EventIdConverter());
-        DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new NullConverter());
         DefaultConverterRepository.getDefaultConverterRepository().addConverter(
                 new IntegerConverter(IntegerConverter.INT32_SIGNATURE));
@@ -68,6 +66,11 @@ public final class DefaultConverters {
                 .addConverter(new DoubleConverter());
         DefaultConverterRepository.getDefaultConverterRepository()
                 .addConverter(new FloatConverter());
+
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new ScopeConverter());
+        DefaultConverterRepository.getDefaultConverterRepository()
+                .addConverter(new EventIdConverter());
 
         // Converter instances required for introspection subsystem
         DefaultConverterRepository.getDefaultConverterRepository()
