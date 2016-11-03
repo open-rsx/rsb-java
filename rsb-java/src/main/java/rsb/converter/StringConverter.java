@@ -31,9 +31,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
 
 /**
  * A converter with wire type {@link ByteBuffer} that is capable of handling
@@ -45,8 +42,7 @@ import java.nio.charset.CodingErrorAction;
 public class StringConverter implements Converter<ByteBuffer> {
 
     private ConverterSignature signature;
-    private ThreadLocal<CharsetEncoder> encoder;
-    private ThreadLocal<CharsetDecoder> decoder;
+    private CachedCharsetCoding coding;
 
     /**
      * Creates a converter for UTF-8 encoding with utf-8-string wire schema.
@@ -92,29 +88,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
         // TODO replace by Java class object for type info
         this.signature = new ConverterSignature(wireSchema, String.class);
-
-        this.encoder = new ThreadLocal<CharsetEncoder>() {
-
-            @Override
-            protected CharsetEncoder initialValue() {
-                final CharsetEncoder encoder = charset.newEncoder();
-                encoder.onMalformedInput(CodingErrorAction.REPORT);
-                encoder.onUnmappableCharacter(CodingErrorAction.REPORT);
-                return encoder;
-            }
-
-        };
-        this.decoder = new ThreadLocal<CharsetDecoder>() {
-
-            @Override
-            protected CharsetDecoder initialValue() {
-                final CharsetDecoder decoder = charset.newDecoder();
-                decoder.onMalformedInput(CodingErrorAction.REPORT);
-                decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
-                return decoder;
-            }
-
-        };
+        this.coding = new CachedCharsetCoding(charset);
 
     }
 
@@ -129,7 +103,7 @@ public class StringConverter implements Converter<ByteBuffer> {
             final String string = (String) data;
 
             final ByteBuffer serialized =
-                    this.encoder.get().encode(CharBuffer.wrap(string));
+                    this.coding.getEncoder().encode(CharBuffer.wrap(string));
             return new WireContents<ByteBuffer>(serialized,
                     this.signature.getSchema());
 
@@ -156,7 +130,7 @@ public class StringConverter implements Converter<ByteBuffer> {
 
         try {
 
-            final String string = this.decoder.get().decode(bytes).toString();
+            final String string = this.coding.getDecoder().decode(bytes).toString();
             return new UserData<ByteBuffer>(string, String.class);
 
         } catch (final CharacterCodingException e) {
