@@ -41,8 +41,18 @@ import com.google.protobuf.ByteString;
  */
 public class EventIdConverter implements Converter<ByteBuffer> {
 
+    private final ConverterSignature signature;
     private final ProtocolBufferConverter<EventId> converter =
             new ProtocolBufferConverter<EventId>(EventId.getDefaultInstance());
+
+    /**
+     * Creates a new converter instance.
+     */
+    public EventIdConverter() {
+        this.signature = new ConverterSignature(
+                this.converter.getSignature().getSchema(),
+                rsb.EventId.class);
+    }
 
     @Override
     public WireContents<ByteBuffer> serialize(final Class<?> typeInfo,
@@ -83,7 +93,7 @@ public class EventIdConverter implements Converter<ByteBuffer> {
 
     @Override
     public ConverterSignature getSignature() {
-        return this.converter.getSignature();
+        return this.signature;
     }
 
 }
