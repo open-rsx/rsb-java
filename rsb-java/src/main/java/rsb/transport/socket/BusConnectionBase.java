@@ -35,6 +35,11 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,14 +60,28 @@ import rsb.protocol.NotificationType.Notification;
  */
 public abstract class BusConnectionBase implements BusConnection {
 
-    private static final Logger LOG = Logger.getLogger(BusConnectionBase.class
-            .getName());
+    private static final Logger LOG =
+            Logger.getLogger(BusConnectionBase.class.getName());
+
+    /**
+     * Time in seconds to wait for the submission pool to terminate when
+     * deactivating.
+     */
+    private static final int POOL_SHUTDOWN_TIMEOUT_SEC = 10;
 
     private Socket socket;
     private ReadableByteChannel reader;
     private WritableByteChannel writer;
     private SocketOptions options;
     private boolean activeShutdown = false;
+
+    /**
+     * A thread pool (with a single thread) used to submit notifications to the
+     * wire. This is used to decouple the sending thread from the client's
+     * publish thread because otherwise, an interrupt set on the client thread
+     * might close the sending socket (default java behavior).
+     */
+    private ExecutorService submissionPool;
 
     /**
      * Performs the handshake step of the protocol.
@@ -148,6 +167,7 @@ public abstract class BusConnectionBase implements BusConnection {
                 throw new RSBException(e);
             }
             this.handshake();
+            this.submissionPool = Executors.newSingleThreadExecutor();
         }
 
     }
@@ -169,7 +189,7 @@ public abstract class BusConnectionBase implements BusConnection {
     }
 
     @Override
-    public void deactivate() throws RSBException {
+    public void deactivate() throws RSBException, InterruptedException {
         LOG.finer("Deactivating connection");
 
         synchronized (this) {
@@ -178,12 +198,18 @@ public abstract class BusConnectionBase implements BusConnection {
                 throw new IllegalStateException("Connection is not active.");
             }
 
+            this.submissionPool.shutdown();
+            this.submissionPool.awaitTermination(POOL_SHUTDOWN_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
+
             try {
                 getSocket().close();
             } catch (final IOException e) {
-                LOG.log(Level.WARNING, "Exception during deactivation. "
-                        + "Ignoring this exception and doing so "
-                        + "as if nothing happened.", e);
+                LOG.log(Level.WARNING,
+                        "Exception during deactivation. "
+                                + "Ignoring this exception and doing so "
+                                + "as if nothing happened.",
+                        e);
             }
 
             this.reader = null;
@@ -276,7 +302,8 @@ public abstract class BusConnectionBase implements BusConnection {
             throws IOException {
 
         final byte[] data = notification.toByteArray();
-        LOG.log(Level.FINE, "Sending new notification of size {0}", data.length);
+        LOG.log(Level.FINE, "Sending new notification of size {0}",
+                data.length);
 
         // send data size
         final ByteBuffer sizeBuffer =
@@ -289,24 +316,47 @@ public abstract class BusConnectionBase implements BusConnection {
             if (isActiveShutdown()) {
                 LOG.log(Level.FINE,
                         "Not sending notification {0} "
-                        + "since we are already in shutdown.",
+                                + "since we are already in shutdown.",
                         notification);
                 return;
             }
 
             if (!isActive()) {
-                LOG.log(Level.FINE, "Not sending notification {0} on "
-                        + "this connection because it is not active.",
+                LOG.log(Level.FINE,
+                        "Not sending notification {0} on "
+                                + "this connection because it is not active.",
                         notification);
                 return;
             }
 
-            this.writer.write(sizeBuffer);
-            LOG.log(Level.FINER, "Sent out size specification for {0} bytes",
-                    data.length);
+            // use the submission pool for write operations to ensure that a
+            // potentially existing interrupt state will not close the socket.
+            try {
+                this.submissionPool.submit(new Callable<Void>() {
 
-            // send real data
-            this.writer.write(ByteBuffer.wrap(data));
+                    @Override
+                    // Interface requirement
+                    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+                    public Void call() throws Exception {
+                        BusConnectionBase.this.writer.write(sizeBuffer);
+                        LOG.log(Level.FINER,
+                                "Sent out size specification for {0} bytes",
+                                data.length);
+
+                        // send real data
+                        BusConnectionBase.this.writer
+                                .write(ByteBuffer.wrap(data));
+                        return null;
+                    }
+
+                }).get();
+            } catch (final ExecutionException e) {
+                throw new IOException(e);
+            } catch (final InterruptedException e) {
+                // restore interrupted state for outer thread
+                // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
+                Thread.currentThread().interrupt();
+            }
 
         }
 
