@@ -37,7 +37,6 @@ import org.junit.Test;
 import rsb.LoggingEnabled;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
-import rsb.transport.socket.Bus.NotificationReceiver;
 
 /**
  * Tests the roundtrip of data through bus server and client.
@@ -52,35 +51,6 @@ public class BusRoundtripTest extends LoggingEnabled {
     private BusServer server;
     private BusClient client;
     private BusClient secondClient;
-
-    private class ResultWaiter implements NotificationReceiver {
-
-        private Notification received = null;
-
-        @Override
-        public void handle(final Notification notification) {
-            synchronized (this) {
-                this.received = notification;
-                this.notifyAll();
-            }
-        }
-
-        public Notification waitForResult() throws InterruptedException {
-            synchronized (this) {
-
-                final long waitTime = 25000;
-                final long waitStart = System.currentTimeMillis();
-                while (this.received == null
-                        && System.currentTimeMillis() < waitStart + waitTime) {
-                    this.wait(waitTime);
-                }
-
-                return this.received;
-
-            }
-        }
-
-    }
 
     @Before
     public void setUp() throws Throwable {
