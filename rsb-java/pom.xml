@@ -207,7 +207,7 @@ project.properties["git.commit"] = commit
                         <id>start-spread</id>
                         <phase>generate-test-resources</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <taskdef
                                     resource="net/sf/antcontrib/antcontrib.properties"
                                     classpathref="maven.plugin.classpath" />
@@ -226,7 +226,7 @@ project.properties["git.commit"] = commit
                                         <sleep seconds="10" />
                                     </then>
                                 </if>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
