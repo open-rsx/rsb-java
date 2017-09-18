@@ -27,6 +27,8 @@
  */
 package rsb.transport;
 
+import java.util.Set;
+
 import rsb.InitializeException;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.util.Properties;
@@ -39,6 +41,72 @@ import rsb.util.Properties;
  * @author swrede
  */
 public interface TransportFactory {
+
+    /**
+     * Instances of this class describe capabilities and properties of
+     * transport implementations.
+     *
+     * @author jmoringe
+     */
+    class ConnectorInfo {
+
+        private final String      name;
+        private final Set<String> schemas;
+        private final Set<String> options;
+        private final boolean     remote;
+
+        /**
+         * Creates a description for the transport implementation
+         * named @a name.
+         *
+         * @param name
+         *            Name of the transport implementation
+         * @param schemas
+         *            The schemas supported by the transport
+         *            implementation.
+         * @param options
+         *            Names of the configuration options accepted by
+         *            the transport implementation.
+         * @param remote
+         *            Indicates whether the transport performs remote
+         *            communication.
+         */
+        public ConnectorInfo(final String      name,
+                             final Set<String> schemas,
+                             final Set<String> options,
+                             final boolean     remote) {
+            this.name    = name;
+            this.schemas = schemas;
+            this.options = options;
+            this.remote  = remote;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public Set<String> getSchemas() {
+            return this.schemas;
+        }
+
+        public Set<String> getOptions() {
+            return this.options;
+        }
+
+        public boolean isRemote() {
+            return this.remote;
+        }
+
+    }
+
+    /**
+     * Returns information aobut the transport for which this factory
+     * constructs connectors.
+     *
+     * @return The info.
+     *
+     */
+    ConnectorInfo getInfo();
 
     /**
      * Creates an out connector for sending events.

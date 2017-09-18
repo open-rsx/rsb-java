@@ -30,7 +30,9 @@ package rsb.transport.spread;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +51,8 @@ import rsb.util.Properties;
  * @author swrede
  */
 public class SpreadFactory implements TransportFactory {
+
+    private static final String SCHEMA = "spread";
 
     private static final Logger LOG = Logger.getLogger(SpreadFactory.class
             .getName());
@@ -89,6 +93,17 @@ public class SpreadFactory implements TransportFactory {
             }
             return this.spreadWrappers.get(options);
         }
+    }
+
+    @Override
+    public ConnectorInfo getInfo() {
+        final Set<String> schemas = new HashSet<String>();
+        schemas.add(SCHEMA);
+        final Set<String> options = new HashSet<String>();
+        options.add("host");
+        options.add("port");
+        options.add("tcpnodelay");
+        return new ConnectorInfo(SCHEMA, schemas, options, false);
     }
 
     @SuppressWarnings("deprecation")

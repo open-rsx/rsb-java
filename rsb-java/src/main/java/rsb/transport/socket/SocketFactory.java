@@ -30,6 +30,8 @@ package rsb.transport.socket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import rsb.InitializeException;
 import rsb.converter.ConverterSelectionStrategy;
@@ -44,6 +46,8 @@ import rsb.util.Properties;
  * @author jwienke
  */
 public class SocketFactory implements TransportFactory {
+
+    private static final String SCHEMA = "socket";
 
     private static final String SERVER_MODE_NO = "0";
     private static final String SERVER_MODE_YES = "1";
@@ -103,6 +107,18 @@ public class SocketFactory implements TransportFactory {
 
         return serverMode;
 
+    }
+
+    @Override
+    public ConnectorInfo getInfo() {
+        final Set<String> schemas = new HashSet<String>();
+        schemas.add(SCHEMA);
+        final Set<String> options = new HashSet<String>();
+        options.add("host");
+        options.add("port");
+        options.add("server");
+        options.add("tcpnodelay");
+        return new ConnectorInfo(SCHEMA, schemas, options, true);
     }
 
     @SuppressWarnings("unchecked")

@@ -27,6 +27,9 @@
  */
 package rsb.transport.inprocess;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import rsb.InitializeException;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.transport.InPushConnector;
@@ -41,7 +44,17 @@ import rsb.util.Properties;
  */
 public class InProcessFactory implements TransportFactory {
 
+    private static final String SCHEMA = "inprocess";
+
     private static Bus defaultBus = new Bus();
+
+    @Override
+    public ConnectorInfo getInfo() {
+        final Set<String> schemas = new HashSet<String>();
+        schemas.add(SCHEMA);
+        final Set<String> options = new HashSet<String>();
+        return new ConnectorInfo(SCHEMA, schemas, options, false);
+    }
 
     @Override
     public OutConnector createOutConnector(final Properties properties,
