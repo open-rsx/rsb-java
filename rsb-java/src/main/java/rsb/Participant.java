@@ -46,7 +46,7 @@ import rsb.config.ParticipantConfig;
  * @author jwienke
  * @author swrede
  */
-public abstract class Participant implements Activatable {
+public abstract class Participant extends AbstractActivatable {
 
     @SuppressWarnings("PMD.ShortVariable")
     private final ParticipantId id = new ParticipantId();

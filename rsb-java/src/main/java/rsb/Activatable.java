@@ -27,6 +27,8 @@
  */
 package rsb;
 
+import java.io.Closeable;
+
 /**
  * Interface for objects which require an explicit activation and deactivation.
  * Users of such objects should ensure that {@link #deactivate()} is called when
@@ -41,7 +43,9 @@ package rsb;
  * @author swrede
  * @author jwienke
  */
-public interface Activatable {
+public interface Activatable extends Closeable {
+    // We implement Closeable instead of AutoCloseable for Java 7
+    // compatibility.
 
     /**
      * Activates all resources that belong to a specific object.
