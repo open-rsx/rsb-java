@@ -60,13 +60,14 @@ public class CauseFilter implements Filter {
 
     /**
      * Indicates whether the filter accepts events containing the
-     * event id returned by {@link #getCause()} in their cause vector
-     * or events that do not have that cause.
+     * specified event id in their cause vector or events that do not
+     * have that cause.
      *
      * @return if <code>true</code>, only events NOT that do not have
-     *         {@link #getCause()} in their cause vector are
+     *         the specified event id in their cause vector are
      *         allowed. If <code>false</code>, only events that have
-     *         {@link #getCause()} in their cause vector are allowed.
+     *         the specified event id in their cause vector are
+     *         allowed.
      */
     public boolean isInverted() {
         return this.inverted;
