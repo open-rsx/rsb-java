@@ -46,6 +46,7 @@ import rsb.converter.WireContents;
 import rsb.protocol.FragmentedNotificationType.FragmentedNotification;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
+import rsb.transport.AbstractConnector;
 import rsb.transport.OutConnector;
 import rsb.util.ByteHelpers;
 
@@ -55,7 +56,8 @@ import rsb.util.ByteHelpers;
  * @author jwienke
  * @author swrede
  */
-public class SpreadOutConnector implements OutConnector {
+public class SpreadOutConnector extends AbstractConnector
+                                        implements OutConnector {
 
     private static final Logger LOG = Logger.getLogger(SpreadOutConnector.class
             .getName());

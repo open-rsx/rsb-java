@@ -30,14 +30,14 @@ package rsb.transport.inprocess;
 import rsb.QualityOfServiceSpec;
 import rsb.RSBException;
 import rsb.Scope;
-import rsb.transport.Connector;
+import rsb.transport.AbstractConnector;
 
 /**
  * Base class for inprocess connectors handling the activation logic.
  *
  * @author jwienke
  */
-abstract class ConnectorBase implements Connector {
+abstract class ConnectorBase extends AbstractConnector  {
 
     private final Bus bus;
     private boolean active = false;

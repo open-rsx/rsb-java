@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import rsb.AbstractActivatable;
 import rsb.Event;
 import rsb.Handler;
 import rsb.filter.Filter;
@@ -42,8 +43,9 @@ import rsb.filter.Filter;
  *
  * @author jwienke
  */
-public class SingleThreadEventReceivingStrategy implements
-        EventReceivingStrategy {
+public class SingleThreadEventReceivingStrategy
+    extends AbstractActivatable
+    implements EventReceivingStrategy {
 
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());

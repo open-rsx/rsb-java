@@ -27,6 +27,7 @@
  */
 package rsb.introspection;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -700,6 +701,25 @@ public class ProtocolHandler extends AbstractEventHandler implements
     @Override
     public void participantRemoved(final ParticipantInfo info) {
         sendBye(info);
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            if (isActive()) {
+                deactivate();
+            }
+        } catch (RSBException exception) {
+            throw new IOException("Failed to deactivate participant " + this,
+                                  exception);
+        } catch (InterruptedException exception) {
+            // We are strongly urged to not throw an
+            // InterruptedException in this case. So we just disregard
+            // which is apparently better than potentially disrupting
+            // the control flow of the surrounding program.
+            // See https://docs.oracle.com/javase/7/
+            // docs/api/java/lang/AutoCloseable.html#close()
+        }
     }
 
 }

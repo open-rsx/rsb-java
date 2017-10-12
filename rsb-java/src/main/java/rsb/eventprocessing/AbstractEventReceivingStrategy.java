@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2017 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,28 +25,17 @@
  *
  * ============================================================
  */
-package rsb.transport.spread;
+package rsb.eventprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-
-import rsb.LoggingEnabled;
-import rsb.Utilities;
+import rsb.AbstractActivatable;
 
 /**
- * @author swrede
+ * Inherits close method.
+ *
+ * @author jmoringe
  */
-public class SpreadWrapperTest extends LoggingEnabled {
-
-    @Test
-    public void spreadWrapper() throws Throwable {
-        final SpreadWrapper spread = Utilities.createSpreadWrapper();
-        assertNotNull(spread);
-        assertEquals(SpreadWrapper.ConnectionState.DEACTIVATED, spread.getStatus());
-        spread.activate();
-        assertEquals(SpreadWrapper.ConnectionState.ACTIVATED, spread.getStatus());
-    }
-
+@SuppressWarnings("PMD")
+public abstract class AbstractEventReceivingStrategy
+    extends AbstractActivatable
+    implements EventReceivingStrategy {
 }

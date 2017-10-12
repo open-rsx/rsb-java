@@ -31,6 +31,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import rsb.AbstractActivatable;
 import rsb.Event;
 import rsb.RSBException;
 import rsb.Scope;
@@ -42,7 +43,8 @@ import rsb.transport.OutConnector;
  *
  * @author jwienke
  */
-public class DefaultOutRouteConfigurator implements OutRouteConfigurator {
+public class DefaultOutRouteConfigurator extends AbstractActivatable
+                                         implements OutRouteConfigurator {
 
     private static final Logger LOG = Logger
             .getLogger(DefaultOutRouteConfigurator.class.getName());

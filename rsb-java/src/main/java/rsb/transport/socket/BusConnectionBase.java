@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.AbstractActivatable;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
@@ -58,7 +59,8 @@ import rsb.protocol.NotificationType.Notification;
  *
  * @author jwienke
  */
-public abstract class BusConnectionBase implements BusConnection {
+public abstract class BusConnectionBase extends AbstractActivatable
+                                        implements BusConnection {
 
     private static final Logger LOG =
             Logger.getLogger(BusConnectionBase.class.getName());

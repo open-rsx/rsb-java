@@ -49,7 +49,7 @@ public interface SpreadWrapper extends Activatable {
      *
      * @author jwienke
      */
-    enum State {
+    enum ConnectionState {
         ACTIVATED, DEACTIVATED
     };
 
@@ -58,7 +58,7 @@ public interface SpreadWrapper extends Activatable {
      *
      * @return the status
      */
-    State getStatus();
+    ConnectionState getStatus();
 
     /**
      * @return the spreadhost

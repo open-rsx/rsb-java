@@ -30,6 +30,7 @@ package rsb.eventprocessing;
 import java.net.URI;
 import java.util.Set;
 
+import rsb.AbstractActivatable;
 import rsb.Handler;
 import rsb.RSBException;
 import rsb.Scope;
@@ -42,7 +43,8 @@ import rsb.transport.InPushConnector;
  * @author jwienke
  * @author swrede
  */
-public class DefaultPushInRouteConfigurator implements PushInRouteConfigurator {
+public class DefaultPushInRouteConfigurator extends AbstractActivatable
+                                            implements PushInRouteConfigurator {
 
     private EventReceivingStrategy receivingStrategy =
             new SingleThreadEventReceivingStrategy();

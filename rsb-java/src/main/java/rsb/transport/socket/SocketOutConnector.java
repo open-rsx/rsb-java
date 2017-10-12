@@ -39,6 +39,7 @@ import rsb.converter.WireContents;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
 import rsb.protocol.ProtocolConversion;
+import rsb.transport.AbstractConnector;
 import rsb.transport.OutConnector;
 import rsb.util.ByteHelpers;
 
@@ -47,7 +48,8 @@ import rsb.util.ByteHelpers;
  *
  * @author jwienke
  */
-public class SocketOutConnector implements OutConnector {
+public class SocketOutConnector extends AbstractConnector
+                                implements OutConnector {
 
     private final SocketConnectorUtility utility;
 

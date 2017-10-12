@@ -29,6 +29,7 @@ package rsb.transport.socket;
 
 import java.net.URI;
 
+import rsb.AbstractActivatable;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
@@ -40,7 +41,8 @@ import rsb.protocol.NotificationType.Notification;
  *
  * @author jwienke
  */
-public class RefCountingBus implements Bus {
+public class RefCountingBus extends AbstractActivatable
+                            implements Bus {
 
     private final Bus bus;
     private int count = 0;

@@ -50,8 +50,8 @@ import rsb.filter.Filter;
  *
  * @author swrede
  */
-public class UnorderedParallelEventReceivingStrategy implements
-        EventReceivingStrategy {
+public class UnorderedParallelEventReceivingStrategy
+    extends AbstractEventReceivingStrategy {
 
     // TODO add support for single threaded, queue receive, pull style, lazy
     // evaluation

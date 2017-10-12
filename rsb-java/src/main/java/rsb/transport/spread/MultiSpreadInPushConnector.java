@@ -37,6 +37,7 @@ import rsb.RSBException;
 import rsb.Scope;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
+import rsb.transport.AbstractConnector;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 import rsb.transport.spread.SpreadMultiReceiver.Subscription;
@@ -47,7 +48,8 @@ import rsb.transport.spread.SpreadMultiReceiver.Subscription;
  *
  * @author jwienke
  */
-public class MultiSpreadInPushConnector implements InPushConnector {
+public class MultiSpreadInPushConnector extends AbstractConnector
+                                        implements InPushConnector {
 
     private final SpreadMultiReceiver spread;
     private Scope scope = null;

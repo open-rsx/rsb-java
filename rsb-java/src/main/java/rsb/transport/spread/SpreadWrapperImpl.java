@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.AbstractActivatable;
 import rsb.InitializeException;
 import rsb.RSBException;
 import spread.SpreadConnection;
@@ -52,7 +53,8 @@ import spread.SpreadMessage;
  *
  * @author swrede
  */
-public class SpreadWrapperImpl implements SpreadWrapper {
+public class SpreadWrapperImpl extends AbstractActivatable
+                               implements SpreadWrapper {
 
     private static final String CONNECTION_LOST_MSG =
             "Lost connection to spread daemon";
@@ -60,7 +62,7 @@ public class SpreadWrapperImpl implements SpreadWrapper {
     private static final Logger LOG = Logger.getLogger(SpreadWrapperImpl.class
             .getName());
 
-    private State status = State.DEACTIVATED;
+    private ConnectionState status = ConnectionState.DEACTIVATED;
 
     private String privGrpId;
     private SpreadConnection conn;
@@ -87,7 +89,7 @@ public class SpreadWrapperImpl implements SpreadWrapper {
     }
 
     @Override
-    public State getStatus() {
+    public ConnectionState getStatus() {
         return this.status;
     }
 
@@ -163,7 +165,7 @@ public class SpreadWrapperImpl implements SpreadWrapper {
 
     @Override
     public void send(final DataMessage msg) {
-        if (this.status != State.ACTIVATED) {
+        if (this.status != ConnectionState.ACTIVATED) {
             throw new IllegalStateException("Not activated");
         }
 
@@ -211,14 +213,14 @@ public class SpreadWrapperImpl implements SpreadWrapper {
             } catch (final SpreadException e) {
                 LOG.log(Level.INFO, "Error disconnecting", e);
             }
-            this.status = State.DEACTIVATED;
+            this.status = ConnectionState.DEACTIVATED;
 
         }
     }
 
     @Override
     public void leave(final String group) {
-        if (this.status == State.ACTIVATED) {
+        if (this.status == ConnectionState.ACTIVATED) {
             final Iterator<SpreadGroup> groupIt = this.groups.iterator();
             while (groupIt.hasNext()) {
                 final SpreadGroup grp = groupIt.next();
@@ -247,13 +249,13 @@ public class SpreadWrapperImpl implements SpreadWrapper {
     public void activate() throws InitializeException {
         synchronized (this) {
             this.makeConnection(true);
-            this.status = State.ACTIVATED;
+            this.status = ConnectionState.ACTIVATED;
         }
     }
 
     @Override
     public boolean isActive() {
-        return this.status == State.ACTIVATED;
+        return this.status == ConnectionState.ACTIVATED;
     }
 
     @Override
@@ -263,7 +265,7 @@ public class SpreadWrapperImpl implements SpreadWrapper {
 
     @Override
     protected void finalize() throws Throwable {
-        if (this.status == State.ACTIVATED) {
+        if (this.status == ConnectionState.ACTIVATED) {
             LOG.severe("Finalize called while status is activated.");
         }
         super.finalize();

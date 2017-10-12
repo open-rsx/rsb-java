@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.Activatable;
+import rsb.AbstractActivatable;
 import rsb.Event;
 import rsb.InitializeException;
 import rsb.RSBException;
@@ -52,7 +52,7 @@ import spread.SpreadException;
  * @author jwienke
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public class SpreadReceiver implements Activatable {
+public class SpreadReceiver extends AbstractActivatable {
 
     private static final Logger LOG = Logger.getLogger(SpreadReceiver.class
             .getName());

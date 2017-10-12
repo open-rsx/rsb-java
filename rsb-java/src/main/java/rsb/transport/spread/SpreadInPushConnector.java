@@ -39,6 +39,7 @@ import rsb.Scope;
 import rsb.converter.ConverterSelectionStrategy;
 import rsb.filter.Filter;
 import rsb.filter.FilterAction;
+import rsb.transport.AbstractConnector;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 
@@ -47,7 +48,8 @@ import rsb.transport.InPushConnector;
  *
  * @author jwienke
  */
-public class SpreadInPushConnector implements InPushConnector {
+public class SpreadInPushConnector extends AbstractConnector
+                                   implements InPushConnector {
 
     private static final Logger LOG = Logger
             .getLogger(SpreadInPushConnector.class.getName());

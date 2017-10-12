@@ -45,6 +45,7 @@ import rsb.filter.Filter;
 import rsb.filter.FilterAction;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
+import rsb.transport.AbstractConnector;
 import rsb.transport.EventHandler;
 import rsb.transport.InPushConnector;
 import rsb.transport.socket.Bus.NotificationReceiver;
@@ -54,8 +55,9 @@ import rsb.transport.socket.Bus.NotificationReceiver;
  *
  * @author jwienke
  */
-public class SocketInPushConnector implements InPushConnector,
-        NotificationReceiver {
+public class SocketInPushConnector extends AbstractConnector
+                                   implements InPushConnector,
+                                              NotificationReceiver {
 
     private static final Logger LOG = Logger
             .getLogger(SocketInPushConnector.class.getName());

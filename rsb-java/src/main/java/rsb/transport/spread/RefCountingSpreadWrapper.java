@@ -33,6 +33,7 @@ import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import rsb.AbstractActivatable;
 import rsb.RSBException;
 import spread.SpreadException;
 import spread.SpreadMessage;
@@ -45,7 +46,8 @@ import spread.SpreadMessage;
  *
  * @author jwienke
  */
-public class RefCountingSpreadWrapper implements SpreadWrapper {
+public class RefCountingSpreadWrapper extends AbstractActivatable
+                                      implements SpreadWrapper {
 
     private static final Logger LOG = Logger
             .getLogger(RefCountingSpreadWrapper.class.getName());
@@ -104,7 +106,7 @@ public class RefCountingSpreadWrapper implements SpreadWrapper {
     }
 
     @Override
-    public State getStatus() {
+    public ConnectionState getStatus() {
         return this.wrapped.getStatus();
     }
 

@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rsb.RSBException;
+import rsb.AbstractActivatable;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -60,7 +61,8 @@ import rsb.protocol.NotificationType.Notification;
  */
 // false positive: methods of ReceiveThread are counted as well
 @SuppressWarnings("PMD.TooManyMethods")
-public abstract class BusBase implements Bus {
+public abstract class BusBase extends AbstractActivatable
+                              implements Bus {
 
     private static final Logger LOG = Logger.getLogger(Bus.class.getName());
     private static final long RECEIVE_THREAD_JOIN_TIME = 20000;
