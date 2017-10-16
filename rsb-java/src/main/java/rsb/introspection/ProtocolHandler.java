@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.introspection;
+package rsb.introspection; // NOPMD
 
 import java.io.IOException;
 import java.net.URI;
