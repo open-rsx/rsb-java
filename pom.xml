@@ -5,7 +5,7 @@
     <!-- General project settings. -->
     <groupId>rsb</groupId>
     <artifactId>rsb-java</artifactId>
-    <version>0.17-SNAPSHOT</version>
+    <version>0.18-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>RSB</name>
