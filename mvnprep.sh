@@ -39,8 +39,7 @@ fi
 
 # Workaround to detect correct protobuf version on unix systems
 # as dependency versions cannot be modified with the maven properties plugin
-PROTOC_VERSION="$(protoc --version | sed 's/[[:alpha:]|(|[:space:]]//g' | awk -F- '{print $1}')"
-echo "Changing required protobuf version to ${PROTOC_VERSION}"
-# FIX-ME: Better regexp to locate pbuf.version property
-# (currently depends on 2.4.1 as the unique default placeholder)
-sed -i.bak -e 's/2.4.1/'${PROTOC_VERSION}'/' pom.xml
+VERSION_OUT="$(protoc --version)"
+VERSION_MAJOR="$(echo "${VERSION_OUT}" | sed -r 's/.* ([0-9]+)\.[0-9]+.*/\1/')"
+VERSION_MINOR="$(echo "${VERSION_OUT}" | sed -r 's/.* [0-9]+\.([0-9]+).*/\1/')"
+sed -i.bak -e 's#<pbuf\.minversion>.*</pbuf\.minversion>#<pbuf.minversion>'"${VERSION_MAJOR}.${VERSION_MINOR}"'</pbuf.minversion>#;s#<pbuf\.maxversion>.*</pbuf\.maxversion>#<pbuf.maxversion>'"${VERSION_MAJOR}.$((${VERSION_MINOR}+1))"'</pbuf.maxversion>#' pom.xml

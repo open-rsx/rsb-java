@@ -29,7 +29,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pbuf.protopath>${env.prefix}/share/rsbprotocol</pbuf.protopath>
         <pbuf.protoc>/usr/bin/protoc</pbuf.protoc>
-        <pbuf.version>2.4.1</pbuf.version>
+        <pbuf.minversion>2.6</pbuf.minversion>
+        <pbuf.maxversion>2.7</pbuf.maxversion>
         <spread.daemon>/usr/sbin/spread</spread.daemon>
         <spread.port>4910</spread.port>
         <socket.port>55444</socket.port>
@@ -153,7 +154,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>[${pbuf.version}]</version>
+            <version>[${pbuf.minversion},${pbuf.maxversion})</version>
         </dependency>
 
         <dependency>
