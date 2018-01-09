@@ -1,6 +1,6 @@
 /*
  * The Spread Toolkit.
- *     
+ *
  * The contents of this file are subject to the Spread Open-Source
  * License, Version 1.0 (the ``License''); you may not use
  * this file except in compliance with the License.  You may obtain a
@@ -10,9 +10,9 @@
  *
  * or in the file ``license.txt'' found in this distribution.
  *
- * Software distributed under the License is distributed on an AS IS basis, 
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License 
- * for the specific language governing rights and limitations under the 
+ * Software distributed under the License is distributed on an AS IS basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
  * License.
  *
  * The Creators of Spread are:
@@ -72,11 +72,11 @@ public class SpreadConnection
 	// The default Spread port.
 	///////////////////////////
 	private static final int DEFAULT_SPREAD_PORT = 4803;
-	
+
 	// The maximum length of the private name.
 	//////////////////////////////////////////
 	private static final int MAX_PRIVATE_NAME = 10;
-	
+
 	// The maximum length of a message + group names.
 	//////////////////////////////////////////
 	private static final int MAX_MESSAGE_LENGTH = 140000;
@@ -84,7 +84,7 @@ public class SpreadConnection
 	// The maximum length of the group name.
 	////////////////////////////////////////
 	protected static final int MAX_GROUP_NAME = 32;
-	
+
 	// The Spread version.
 	//////////////////////
         private static final int SP_MAJOR_VERSION = 4;
@@ -110,58 +110,58 @@ public class SpreadConnection
 	// Received if a connection attempt was successful.
 	///////////////////////////////////////////////////
 	private static final int ACCEPT_SESSION = 1;
-	
+
 	// Used to determine endianness.
 	////////////////////////////////
 	private static final int ENDIAN_TYPE = 0x80000080;
-	
+
 	// Only true if this connection is connected.
 	/////////////////////////////////////////////
 	private boolean connected;
-	
+
 	// Reading synchro.
 	///////////////////
-	private Boolean rsynchro;
+	private Object rsynchro;
 	// Writing synchro.
 	///////////////////
-	private Boolean wsynchro;
+	private Object wsynchro;
 	// Listener list synchro.
 	///////////////////
-	private Boolean listenersynchro;
+	private Object listenersynchro;
 
-    
+
 	// True if calling listeners.
 	/////////////////////////////
 	private boolean callingListeners;
-	
+
 	// The thread feeding the listeners.
 	////////////////////////////////////
 	private Listener listener;
-	
+
 	// Basic listeners.
 	///////////////////
 	protected Vector basicListeners;
-	
+
 	// Advanced listeners.
 	//////////////////////
 	protected Vector advancedListeners;
-	
+
 	// The daemon's address.
 	////////////////////////
 	private InetAddress address;
-	
+
 	// The daemon's port.
 	/////////////////////
 	private int port;
-	
+
 	// Is this a priority connection?
 	/////////////////////////////////
 	private boolean priority;
-	
+
 	// Getting group membership messages?
 	/////////////////////////////////////
 	private boolean groupMembership;
-	
+
 	// Name of active choosen Authentication method
 	///////////////////////////////////////////////
 	private String authName;
@@ -181,26 +181,26 @@ public class SpreadConnection
 	// The socket this connection is using.
 	///////////////////////////////////////
 	private Socket socket;
-	
+
 	// The socket's input stream.
 	/////////////////////////////
 	private InputStream socketInput;
-	
+
 	// The socket's output stream.
 	//////////////////////////////
 	private OutputStream socketOutput;
-	
+
 	// The private group.
 	/////////////////////
 	private SpreadGroup group;
-	
+
 	// Commands buffered during listener callbacks.
 	// The buffer is a list of BUFFER_* constants.
 	// For commands with an argument (all except
 	// for BUFFER_DISCONNECT), the argument follows in the Vector.
 	//////////////////////////////////////////////////////////////
 	private Vector listenerBuffer;
-	
+
 	// Listener buffer commands.
 	// These are Object's because they need to be added to a Vector.
 	////////////////////////////////////////////////////////////////
@@ -209,21 +209,21 @@ public class SpreadConnection
 	private static final Object BUFFER_ADD_ADVANCED = new Object();
 	private static final Object BUFFER_REMOVE_BASIC = new Object();
 	private static final Object BUFFER_REMOVE_ADVANCED = new Object();
-	
+
 	// Checks if the int is the same-endian type as the local machine.
 	//////////////////////////////////////////////////////////////////
 	private static boolean sameEndian(int i)
 	{
 		return ((i & ENDIAN_TYPE) == 0);
 	}
-	
+
 	// Clears the int's endian type.
 	////////////////////////////////
 	private static int clearEndian(int i)
 	{
 		return (i & ~ENDIAN_TYPE);
 	}
-	
+
 	// Endian-flips the int.
 	////////////////////////
 	protected static int flip(int i)
@@ -237,7 +237,7 @@ public class SpreadConnection
 	{
 		return ((short)(((s >> 8) & 0x00ff) | ((s << 8 ) & 0xff00)));
 	}
-	
+
 	// Puts a group name into an array of bytes.
 	////////////////////////////////////////////
 	private static void toBytes(SpreadGroup group, byte buffer[], int bufferIndex)
@@ -255,7 +255,7 @@ public class SpreadConnection
 			/////////////////////////////////////////////////
 			name = new byte[0];
 		}
-		
+
 		// Put a cap on the length.
 		///////////////////////////
 		int len = name.length;
@@ -268,7 +268,7 @@ public class SpreadConnection
 		for( ; len < MAX_GROUP_NAME ; len++ )
 			buffer[bufferIndex + len] = 0;
 	}
-	
+
 	// Puts an int into an array of bytes.
 	//////////////////////////////////////
 	private static void toBytes(int i, byte buffer[], int bufferIndex)
@@ -278,7 +278,7 @@ public class SpreadConnection
 		buffer[bufferIndex++] = (byte)((i >> 8 ) & 0xFF);
 		buffer[bufferIndex++] = (byte)((i      ) & 0xFF);
 	}
-	
+
 	// Gets an int from an array of bytes.
 	//////////////////////////////////////
 	protected static int toInt(byte buffer[], int bufferIndex)
@@ -287,9 +287,9 @@ public class SpreadConnection
 		int i1 = (buffer[bufferIndex++] & 0xFF);
 		int i2 = (buffer[bufferIndex++] & 0xFF);
 		int i3 = (buffer[bufferIndex++] & 0xFF);
-		
+
 		return ((i0 << 24) | (i1 << 16) | (i2 << 8) | (i3));
-	}	
+	}
 
     // Reads from inputsocket until all bytes read or exception raised
     //////////////////////////////////////////////////////////////////
@@ -332,7 +332,7 @@ public class SpreadConnection
 	{
 	    keep_going = false;
 	    try {
-		while( byteIndex < buffer.length) 
+		while( byteIndex < buffer.length)
 		{
 		    rcode = socketInput.read(buffer, byteIndex, buffer.length - byteIndex);
 		    if(rcode == -1)
@@ -342,7 +342,7 @@ public class SpreadConnection
 		    byteIndex += rcode;
 		}
 
-	    } 
+	    }
 	    catch( InterruptedIOException e) {
 		if ( listener != null && listener.signal == true )
 		{
@@ -361,7 +361,7 @@ public class SpreadConnection
 
     }
 
-	
+
 	// Gets a string from an array of bytes.
 	////////////////////////////////////////
 	protected SpreadGroup toGroup(byte buffer[], int bufferIndex)
@@ -375,7 +375,7 @@ public class SpreadConnection
 					// Get the group name.
 					//////////////////////
 					String name = new String(buffer, bufferIndex, end - bufferIndex, "ISO8859_1");
-					
+
 					// Return the group.
 					////////////////////
 					return new SpreadGroup(this, name);
@@ -387,15 +387,15 @@ public class SpreadConnection
 			// Already checked for this exception in connect.
 			/////////////////////////////////////////////////
 		}
-	
+
 		return null;
 	}
-	
+
 	// Set the send and receive buffer sizes.
 	/////////////////////////////////////////
 	private void setBufferSizes() throws SpreadException
 	{
-/* NOT SUPPORTED IN 1.1			
+/* NOT SUPPORTED IN 1.1
 		try
 		{
 			for(int i = 10 ; i <= 200 ; i += 5)
@@ -403,12 +403,12 @@ public class SpreadConnection
 				// The size to try.
 				///////////////////
 				int size = (1024 * i);
-				
+
 				// Set the buffer sizes.
 				////////////////////////
 				socket.setSendBufferSize(size);
 				socket.setReceiveBufferSize(size);
-				
+
 				// Check the actual sizes.  If smaller, then the max was hit.
 				/////////////////////////////////////////////////////////////
 				if((socket.getSendBufferSize() < size) || (socket.getReceiveBufferSize() < size))
@@ -423,7 +423,7 @@ public class SpreadConnection
 		}
 NOT SUPPORTED IN 1.1	*/
 	}
-	
+
 	// Sends the initial connect message.
 	/////////////////////////////////////
 	private void sendConnect(String privateName) throws SpreadException
@@ -436,11 +436,11 @@ NOT SUPPORTED IN 1.1	*/
 			privateName = privateName.substring(0, MAX_PRIVATE_NAME);
 			len = MAX_PRIVATE_NAME;
 		}
-		
+
 		// Allocate the buffer.
 		///////////////////////
 		byte buffer[] = new byte[len + 5];
-		
+
 		// Set the version.
 		///////////////////
 		buffer[0] = (byte)SP_MAJOR_VERSION;
@@ -450,25 +450,25 @@ NOT SUPPORTED IN 1.1	*/
 		// Byte used for group membership and priority.
 		///////////////////////////////////////////////
 		buffer[3] = 0;
-		
+
 		// Group membership.
 		////////////////////
 		if(groupMembership)
 		{
 			buffer[3] |= 0x01;
 		}
-		
+
 		// Priority.
 		////////////
 		if(priority)
 		{
 			buffer[3] |= 0x10;
 		}
-		
+
 		// Write the length.
 		////////////////////
 		buffer[4] = (byte)len;
-		
+
 		if(len > 0)
 		{
 			// Write the private name.
@@ -479,7 +479,7 @@ NOT SUPPORTED IN 1.1	*/
 				buffer[dest] = nameBytes[src];
 			}
 		}
-		
+
 		// Send the connection message.
 		///////////////////////////////
 		try
@@ -489,12 +489,12 @@ NOT SUPPORTED IN 1.1	*/
 		catch(IOException e)
 		{
 			throw new SpreadException("write(): " + e);
-		}		
+		}
 	}
 
         // read the Auth List
         /////////////////////
-    	private void readAuthMethods() throws SpreadException
+        private void readAuthMethods() throws SpreadException
 	{
 		// Read the length.
 		///////////////////
@@ -507,7 +507,7 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// System.out.println("readAuthMethods: len is " + len);
 		// Check for no more data.
 		//////////////////////////
@@ -532,7 +532,7 @@ NOT SUPPORTED IN 1.1	*/
 		//{
 		//	throw new SpreadException("Connection closed during connect attempt to read authnames");
 		//}
-		
+
 		// for now we ignore the list.
 		//////////////////////////////
 	}
@@ -545,7 +545,7 @@ NOT SUPPORTED IN 1.1	*/
 		// Allocate the buffer.
 		///////////////////////
 		byte buffer[] = new byte[MAX_AUTH_NAME*MAX_AUTH_METHODS];
-		
+
 		try
 		{
 			System.arraycopy(authName.getBytes("ISO8859_1"), 0, buffer, 0, len);
@@ -567,10 +567,10 @@ NOT SUPPORTED IN 1.1	*/
 		catch(IOException e)
 		{
 			throw new SpreadException("write(): " + e);
-		}		
+		}
 	}
 
-        // 
+        //
 	/////////////////////////////////////
 	private void instantiateAuthMethod() throws SpreadException
 	{
@@ -616,14 +616,14 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// Check for no more data.
 		//////////////////////////
 		if(accepted == -1)
 		{
 			throw new SpreadException("Connection closed during connect attempt");
 		}
-		
+
 		// Was it accepted?
 		///////////////////
 		if(accepted != ACCEPT_SESSION)
@@ -631,11 +631,11 @@ NOT SUPPORTED IN 1.1	*/
 			throw new SpreadException("Connection attempt rejected=" + (0xffffff00 | accepted));
 		}
 	}
-	
+
 	// Checks the daemon version.
 	/////////////////////////////
 	private void checkVersion() throws SpreadException
-	{		
+	{
 		// Read the version.
 		////////////////////
 		int majorVersion;
@@ -647,7 +647,7 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// Read the sub-version.
 		////////////////////////
 		int minorVersion;
@@ -659,7 +659,7 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// Read the patch-version.
 		////////////////////////
 		int patchVersion;
@@ -671,14 +671,14 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// Check for no more data.
 		//////////////////////////
 		if((majorVersion == -1) || (minorVersion == -1) || (patchVersion == -1) )
 		{
 			throw new SpreadException("Connection closed during connect attempt");
 		}
-		
+
 		// Check the version.
 		/////////////////////
 		int version = ( (majorVersion*10000) + (minorVersion*100) + patchVersion );
@@ -691,7 +691,7 @@ NOT SUPPORTED IN 1.1	*/
 			throw new SpreadException("Old version " + majorVersion + "." + minorVersion + "." + patchVersion + " does not support priority");
 		}
 	}
-	
+
 	// Get the private group name.
 	//////////////////////////////
 	private void readGroup() throws SpreadException
@@ -707,14 +707,14 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// Check for no more data.
 		//////////////////////////
 		if(len == -1)
 		{
 			throw new SpreadException("Connection closed during connect attempt");
 		}
-		
+
 		// Read the name.
 		/////////////////
 		byte buffer[] = new byte[len];
@@ -724,13 +724,13 @@ NOT SUPPORTED IN 1.1	*/
 		///////////////////
 		group = new SpreadGroup(this, new String(buffer));
 	}
-	
+
 	// Constructor.
 	///////////////
 	/**
 	 * Initializes a new SpreadConnection object.  To connect to a daemon with this
 	 * object, use {@link SpreadConnection#connect(InetAddress, int, String, boolean, boolean)}.
-	 * 
+	 *
 	 * @see  SpreadConnection#connect(InetAddress, int, String, boolean, boolean)
 	 */
 	public SpreadConnection()
@@ -738,17 +738,17 @@ NOT SUPPORTED IN 1.1	*/
 		// We're not connected.
 		///////////////////////
 		connected = false;
-		
+
 		// Init synchros.
 		/////////////////
-		rsynchro = new Boolean(false);
-		wsynchro = new Boolean(false);
-		listenersynchro = new Boolean(false);
+		rsynchro = new Object();
+		wsynchro = new Object();
+		listenersynchro = new Object();
 		// Init listeners.
 		//////////////////
 		basicListeners = new Vector();
 		advancedListeners = new Vector();
-		
+
 		// Init listener command buffer.
 		////////////////////////////////
 		listenerBuffer = new Vector();
@@ -761,7 +761,7 @@ NOT SUPPORTED IN 1.1	*/
 
         /**
          * Sets the authentication name and class string for the client side authentication method.
-         * An authentication method can only be registered before connect is called. 
+         * An authentication method can only be registered before connect is called.
          * The authentication method registered will then be used whenever
          * {@link SpreadConnection#connect(InetAddress, int, String, boolean, boolean)} is called.
          *
@@ -797,7 +797,7 @@ NOT SUPPORTED IN 1.1	*/
 	/**
 	 * Establishes a connection to a spread daemon.  Groups can be joined, and messages can be
 	 * sent or received once the connection has been established.
-	 * 
+	 *
 	 * @param  address  the daemon's address, or null to connect to the localhost
 	 * @param  port  the daemon's port, or 0 for the default port (4803)
 	 * @param  privateName  the private name to use for this connection
@@ -814,7 +814,7 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("Already connected.");
 		}
-		
+
 		// Is ISO8859_1 encoding supported?
 		///////////////////////////////
 		try
@@ -825,14 +825,14 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("ISO8859_1 encoding is not supported.");
 		}
-		
+
 		// Store member variables.
 		//////////////////////////
 		this.address = address;
 		this.port = port;
 		this.priority = priority;
 		this.groupMembership = groupMembership;
-		
+
 		// Check if no address was specified.
 		/////////////////////////////////////
 		if(address == null)
@@ -848,7 +848,7 @@ NOT SUPPORTED IN 1.1	*/
 				throw new SpreadException("Error getting local host");
 			}
 		}
-		
+
 		// Check if no port was specified.
 		//////////////////////////////////
 		if(port == 0)
@@ -857,14 +857,14 @@ NOT SUPPORTED IN 1.1	*/
 			////////////////////////
 			port = DEFAULT_SPREAD_PORT;
 		}
-		
+
 		// Check if the port is out of range.
 		/////////////////////////////////////
 		if((port < 0) || (port > (32 * 1024)))
 		{
 			throw new SpreadException("Bad port (" + port + ").");
 		}
-		
+
 		// Create the socket.
 		/////////////////////
 		try
@@ -875,11 +875,11 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("Socket(): " + e);
 		}
-		
+
 		// Set the socket's buffer sizes.
 		/////////////////////////////////
 		setBufferSizes();
-				
+
 		// Get the socket's streams.
 		////////////////////////////
 		try
@@ -891,11 +891,11 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("getInput/OutputStream(): " + e);
 		}
-		
+
 		// Send the connect message.
 		////////////////////////////
 		sendConnect(privateName);
-		
+
 		// Recv the authentication method list
 		//////////////////////////////////////
 		readAuthMethods();
@@ -926,25 +926,25 @@ NOT SUPPORTED IN 1.1	*/
 			    Throwable thr = e.getTargetException();
 			    if ( thr.getClass().equals(SpreadException.class) )
 			    {
-				 throw new SpreadException("Connection Rejected: Authentication failed");   
+				 throw new SpreadException("Connection Rejected: Authentication failed");
 			    }
 		}
 		// Check for acceptance.
 		////////////////////////
 		checkAccept();
-		
+
 		// Check the version.
 		/////////////////////
 		checkVersion();
-		
+
 		// Get the private group name.
 		//////////////////////////////
 		readGroup();
-		
+
 		// Connection complete.
 		///////////////////////
 		connected = true;
-		
+
 		// Are there any listeners.
 		///////////////////////////
 		if((basicListeners.size() != 0) || (advancedListeners.size() != 0))
@@ -954,13 +954,13 @@ NOT SUPPORTED IN 1.1	*/
 			startListener();
 		}
 	}
-	
+
 	// Disconnects from the spread daemon.
 	//////////////////////////////////////
 	/**
 	 * Disconnects the connection to the daemon.  Nothing else should be done with this connection
 	 * after disconnecting it.
-	 * 
+	 *
 	 * @throws  SpreadException  if there is no connection or there is an error disconnecting
 	 * @see  SpreadConnection#connect(InetAddress, int, String, boolean, boolean)
 	 */
@@ -972,7 +972,7 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("Not connected.");
 		}
-		
+
 		// Are we in a listener callback?
 		/////////////////////////////////
 		if(callingListeners)
@@ -980,7 +980,7 @@ NOT SUPPORTED IN 1.1	*/
 			// Add it to the command buffer.
 			////////////////////////////////
 			listenerBuffer.addElement(BUFFER_DISCONNECT);
-			
+
 			// Don't need to do anything else.
 			//////////////////////////////////
 			return;
@@ -989,19 +989,19 @@ NOT SUPPORTED IN 1.1	*/
 		    // Get a new message.
 		    /////////////////////
 		    SpreadMessage killMessage = new SpreadMessage();
-		
+
 		    // Send it to our private group.
 		    ////////////////////////////////
 		    killMessage.addGroup(group);
-		
+
 		    // Set the service type.
 		    ////////////////////////
 		    killMessage.setServiceType(SpreadMessage.KILL_MESS);
-		
+
 		    // Send the message.
 		    ////////////////////
 		    multicast(killMessage);
-		
+
 		    // Check for a listener thread.
 		    ///////////////////////////////
 		    if(listener != null)
@@ -1010,7 +1010,7 @@ NOT SUPPORTED IN 1.1	*/
 			///////////
 			stopListener();
 		    }
-		
+
 		    // Close the socket.
 		    ////////////////////
 		    try
@@ -1021,12 +1021,12 @@ NOT SUPPORTED IN 1.1	*/
 		    {
 			throw new SpreadException("close(): " + e);
 		    }
-		} 
+		}
 		finally {
 		    connected = false;
 		}
 	}
-	
+
 	// Enable/disable TCP_NODELAY on the socket used for this connection.
 	/////////////////////////////////
 	/**
@@ -1054,7 +1054,7 @@ NOT SUPPORTED IN 1.1	*/
 	/////////////////////////////////
 	/**
 	 * Gets the private group for this connection.
-	 * 
+	 *
 	 * @return  the SpreadGroup representing this connection's private group, or null if there is no connection
 	 */
 	public SpreadGroup getPrivateGroup()
@@ -1065,16 +1065,16 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			return null;
 		}
-		
+
 		return group;
 	}
-	
+
 	// Receives a new message.
 	//////////////////////////
 	/**
 	 * Receives the next message waiting on this connection.  If there are no messages
 	 * waiting, the call will block until a message is ready to be received.
-	 * 
+	 *
 	 * @return  the message that has just been received
 	 * @throws  SpreadException  if there is no connection or there is any error reading a new message
 	 */
@@ -1088,15 +1088,15 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			// Get out of here.
 			///////////////////
-		 	throw new SpreadException("Tried to receive while there are listeners");
+		        throw new SpreadException("Tried to receive while there are listeners");
 		}
-		
+
 		return internal_receive();
 	    }
 	}
 
         // Actually receives a new message
-        /////////////////////////////////// 
+        ///////////////////////////////////
 	private SpreadMessage internal_receive() throws SpreadException, InterruptedIOException
 	{
 		// Check if we're connected.
@@ -1105,27 +1105,27 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("Not connected.");
 		}
-		
+
 		// Read the header.
 		///////////////////
 		byte header[] = new byte[MAX_GROUP_NAME+16];
 		int headerIndex;
 
-		try 
+		try
 	        {
 		    readBytesFromSocketListener( header, "message header" );
 		}
 		catch(InterruptedIOException e) {
 		    throw e;
-		} 
+		}
 		catch(IOException e) {
 			throw new SpreadException("read(): " + e);
 		}
-		
+
 		// Reset header index.
 		//////////////////////
 		headerIndex = 0;
-		
+
 		// Get service type.
 		////////////////////
 		int serviceType = toInt(header, headerIndex);
@@ -1162,7 +1162,7 @@ NOT SUPPORTED IN 1.1	*/
 			serviceType = flip(serviceType);
 			numGroups = flip(numGroups);
 			dataLen = flip(dataLen);
-		
+
 			// The daemon endian-mismatch.
 			//////////////////////////////
 			daemonEndianMismatch = true;
@@ -1173,10 +1173,10 @@ NOT SUPPORTED IN 1.1	*/
 			//////////////////////////////
 			daemonEndianMismatch = false;
 		}
-			
+
 		// Validate numGroups and dataLen
 
-		if ( (numGroups < 0) || (dataLen < 0) ) 
+		if ( (numGroups < 0) || (dataLen < 0) )
 		{
 			// drop message
 			throw new SpreadException("Illegal Message: Message Dropped");
@@ -1189,7 +1189,7 @@ NOT SUPPORTED IN 1.1	*/
 		// The type.
 		////////////
 		short type;
-		
+
 		// Is this a regular message?
 		/////////////////////////////
 		if( SpreadMessage.isRegular(serviceType) || SpreadMessage.isReject(serviceType) )
@@ -1206,7 +1206,7 @@ NOT SUPPORTED IN 1.1	*/
 			{
 				endianMismatch = false;
 			}
-			
+
 			// Get the type from the hint.
 			//////////////////////////////
 			hint = clearEndian(hint);
@@ -1226,13 +1226,13 @@ NOT SUPPORTED IN 1.1	*/
                 {
                         // Read in the old type and or with reject type field.
                         byte oldtypeBuffer[] = new byte[4];
-			try 
+			try
 		        {
 			    readBytesFromSocketListener( oldtypeBuffer, "message reject type" );
 			}
 			catch(InterruptedIOException e) {
 			    throw e;
-			} 
+			}
 			catch(IOException e) {
 			    throw new SpreadException("read(): " + e);
 			}
@@ -1247,13 +1247,13 @@ NOT SUPPORTED IN 1.1	*/
 		// Read in the group names.
 		///////////////////////////
 		byte buffer[] = new byte[numGroups * MAX_GROUP_NAME];
-		try 
+		try
 		{
 		    readBytesFromSocketListener( buffer, "message group name" );
 		}
 		catch(InterruptedIOException e) {
 		    throw e;
-		} 
+		}
 		catch(IOException e) {
 		    throw new SpreadException("read(): " + e);
 		}
@@ -1275,13 +1275,13 @@ NOT SUPPORTED IN 1.1	*/
 		// Read in the data.
 		////////////////////
 		byte data[] = new byte[dataLen];
-		try 
+		try
 		{
 		    readBytesFromSocketListener( data, "message body" );
 		}
 		catch(InterruptedIOException e) {
 		    throw e;
-		} 
+		}
 		catch(IOException e) {
 		    throw new SpreadException("read(): " + e);
 		}
@@ -1294,7 +1294,7 @@ NOT SUPPORTED IN 1.1	*/
 			// Create a membership info object.
 			///////////////////////////////////
 			membershipInfo = new MembershipInfo(this, serviceType, groups, sender, data, daemonEndianMismatch);
-			
+
 			// Is it a regular membership message?
 			//////////////////////////////////////
 			if(membershipInfo.isRegularMembership())
@@ -1315,14 +1315,14 @@ NOT SUPPORTED IN 1.1	*/
 		//////////////////////
 		return new SpreadMessage(serviceType, groups, sender, data, type, endianMismatch, membershipInfo);
 	}
-	
+
 	// Receives numMessages new messages.
 	/////////////////////////////////////
 	/**
 	 * Receives <code>numMessages</code> messages on the connection and returns them in an array.
 	 * If there are not <code>numMessages</code> messages waiting, the call will block until there are
 	 * enough messages available.
-	 * 
+	 *
 	 * @param  numMessages  the number of messages to receive
 	 * @return an array of messages
 	 * @throws  SpreadException  if there is no connection or if there is any error reading the messages
@@ -1348,18 +1348,18 @@ NOT SUPPORTED IN 1.1	*/
 			{
 				messages[i] = internal_receive();
 			}
-		
+
 		}
 		// Return the array.
 		////////////////////
 		return messages;
 	}
-	
+
 	// Returns true if there are messages waiting.
 	//////////////////////////////////////////////
 	/**
 	 * Returns true if there are any messages waiting on this connection.
-	 * 
+	 *
 	 * @return true if there is at least one message that can be received
 	 * @throws  SpreadException  if there is no connection or if there is an error checking for messages
 	 */
@@ -1371,7 +1371,7 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("Not connected.");
 		}
-		
+
 		// Check if there is anything waiting.
 		//////////////////////////////////////
 		try
@@ -1387,12 +1387,12 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("available(): " + e);
 		}
-		
+
 		// There's something to read.
 		/////////////////////////////
 		return true;
 	}
-	
+
 	// Private function for starting a listener thread.
 	///////////////////////////////////////////////////
 	private void startListener()
@@ -1400,12 +1400,12 @@ NOT SUPPORTED IN 1.1	*/
 		// Get a new thread.
 		////////////////////
 		listener = new Listener(this);
-		
+
 		// Start it.
 		////////////
 		listener.start();
 	}
-	
+
 	// Adds a new basic message listener.
 	/////////////////////////////////////
 	/**
@@ -1413,7 +1413,7 @@ NOT SUPPORTED IN 1.1	*/
 	 * start a thread to listen for new messages.  From the time this function is called until
 	 * this listener is removed, {@link BasicMessageListener#messageReceived(SpreadMessage)} will
 	 * be called every time a message is received.
-	 * 
+	 *
 	 * @param  listener  a BasicMessageListener to add to this connection
 	 * @see  SpreadConnection#remove(BasicMessageListener)
 	 */
@@ -1428,7 +1428,7 @@ NOT SUPPORTED IN 1.1	*/
 			////////////////////////////////
 			listenerBuffer.addElement(BUFFER_ADD_BASIC);
 			listenerBuffer.addElement(listener);
-			
+
 			// Don't need to do anything else.
 			//////////////////////////////////
 			return;
@@ -1436,7 +1436,7 @@ NOT SUPPORTED IN 1.1	*/
 		// Add the listener.
 		////////////////////
 		basicListeners.addElement(listener);
-		
+
 		// Check if we're connected.
 		////////////////////////////
 		if(connected == true)
@@ -1452,17 +1452,17 @@ NOT SUPPORTED IN 1.1	*/
 		}
 	}
 	}
-	
+
 	// Adds a new advanced message listener.
 	////////////////////////////////////////
 	/**
 	 * Adds the AdvancedMessageListener to this connection.  If there are no other listeners, this call will
 	 * start a thread to listen for new messages.  From the time this function is called until
 	 * this listener is removed, {@link AdvancedMessageListener#regularMessageReceived(SpreadMessage)} will
-	 * be called every time a regular message is received, and 
+	 * be called every time a regular message is received, and
 	 * {@link AdvancedMessageListener#membershipMessageReceived(SpreadMessage)} will be called every time
 	 * a membership message is received.
-	 * 
+	 *
 	 * @param  listener an AdvancedMessageListener to add to this connection
 	 * @see  SpreadConnection#remove(AdvancedMessageListener)
 	 */
@@ -1477,7 +1477,7 @@ NOT SUPPORTED IN 1.1	*/
 			////////////////////////////////
 			listenerBuffer.addElement(BUFFER_ADD_ADVANCED);
 			listenerBuffer.addElement(listener);
-			
+
 			// Don't need to do anything else.
 			//////////////////////////////////
 			return;
@@ -1486,7 +1486,7 @@ NOT SUPPORTED IN 1.1	*/
 		// Add the listener.
 		////////////////////
 		advancedListeners.addElement(listener);
-		
+
 		// Check if we're connected.
 		////////////////////////////
 		if(connected == true)
@@ -1502,7 +1502,7 @@ NOT SUPPORTED IN 1.1	*/
 		}
 	}
 	}
-	
+
 	// Stops the listener thread.
 	/////////////////////////////
 	private void stopListener()
@@ -1510,14 +1510,14 @@ NOT SUPPORTED IN 1.1	*/
 		// Set the signal.
 		//////////////////
 		listener.signal = true;
-		
+
 		// Wait for the thread to die, to avoid inconsistencies.
 		////////////////////////////////////////////////////////
-		if ( listener != null && ! listener.equals(Thread.currentThread()) ) 
+		if ( listener != null && ! listener.equals(Thread.currentThread()) )
 		{
 		    try {
 			listener.join();
-		    } 
+		    }
 		    catch ( InterruptedException e ) {
 			// Ignore
 		    }
@@ -1526,13 +1526,13 @@ NOT SUPPORTED IN 1.1	*/
 		//////////////////////
 		listener = null;
 	}
-	
+
 	// Removes a basic message listener.
 	////////////////////////////////////
 	/**
 	 * Removes the BasicMessageListener from this connection.  If this is the only listener on this
 	 * connection, the listener thread will be stopped.
-	 * 
+	 *
 	 * @param  listener  the listener to remove
 	 * @see  SpreadConnection#add(BasicMessageListener)
 	 */
@@ -1547,16 +1547,16 @@ NOT SUPPORTED IN 1.1	*/
 			////////////////////////////////
 			listenerBuffer.addElement(BUFFER_REMOVE_BASIC);
 			listenerBuffer.addElement(listener);
-			
+
 			// Don't need to do anything else.
 			//////////////////////////////////
 			return;
 		}
-		
+
 		// Remove the listener.
 		///////////////////////
 		basicListeners.removeElement(listener);
-		
+
 		// Check if we're connected.
 		////////////////////////////
 		if (connected == true)
@@ -1578,7 +1578,7 @@ NOT SUPPORTED IN 1.1	*/
 	/**
 	 * Removes the AdvancedMessageListener from this connection.  If this is the only listener on this
 	 * connection, the listener thread will be stopped.
-	 * 
+	 *
 	 * @param  listener  the listener to remove
 	 * @see SpreadConnection#add(AdvancedMessageListener)
 	 */
@@ -1593,16 +1593,16 @@ NOT SUPPORTED IN 1.1	*/
 			////////////////////////////////
 			listenerBuffer.addElement(BUFFER_REMOVE_ADVANCED);
 			listenerBuffer.addElement(listener);
-			
+
 			// Don't need to do anything else.
 			//////////////////////////////////
 			return;
 		}
-		
+
 		// Remove the listener.
 		///////////////////////
 		advancedListeners.removeElement(listener);
-		
+
 		// Check if we're connected.
 		////////////////////////////
 		if (connected == true)
@@ -1618,7 +1618,7 @@ NOT SUPPORTED IN 1.1	*/
 		}
 	}
 	}
-	
+
 	// This is the thread used to handle listener interfaces.
 	/////////////////////////////////////////////////////////
 	private class Listener extends Thread
@@ -1626,11 +1626,11 @@ NOT SUPPORTED IN 1.1	*/
 		// The connection this thread is listening to.
 		//////////////////////////////////////////////
 		private SpreadConnection connection;
-		
+
 		// If true, the connection wants the thread to stop.
 		////////////////////////////////////////////////////
 		protected volatile boolean signal;
-		
+
 		// The constructor.
 		///////////////////
 		public Listener(SpreadConnection connection)
@@ -1639,13 +1639,13 @@ NOT SUPPORTED IN 1.1	*/
 			/////////////////////////
 			this.connection = connection;
 			this.signal = false;
-			
+
 			// Be a daemon.
 			///////////////
 			this.setDaemon(true);
 
 		}
-		
+
 		// The thread's entry point.
 		////////////////////////////
 		public void run()
@@ -1653,19 +1653,19 @@ NOT SUPPORTED IN 1.1	*/
 			// An incoming message.
 			///////////////////////
 			SpreadMessage message;
-			
+
 			// A basic listener.
 			////////////////////
 			BasicMessageListener basicListener;
-			
+
 			// An advanced listener.
 			////////////////////////
 			AdvancedMessageListener advancedListener;
-			
+
 			// A buffered command.
 			//////////////////////
 			Object command;
-			
+
 			int previous_socket_timeout = 100;
 
 			try
@@ -1675,7 +1675,7 @@ NOT SUPPORTED IN 1.1	*/
 				    connection.socket.setSoTimeout(100);
 				}
 				catch( SocketException e ) {
-				    // just ignore for now 
+				    // just ignore for now
 				    System.out.println("socket error setting timeout" + e.toString() );
 				}
 				while(true)
@@ -1691,24 +1691,24 @@ NOT SUPPORTED IN 1.1	*/
 					    connection.socket.setSoTimeout(previous_socket_timeout);
 					}
 					catch( SocketException e ) {
-					    // just ignore for now 
+					    // just ignore for now
 					    System.out.println("socket error setting timeout" + e.toString() );
 					}
-					
+
 					return;
 				    }
 				    // Get a lock on the connection.
 				    ////////////////////////////////
 				    synchronized(connection)
 				    {
-							
+
 						// Get a message.
 						// WE WILL BLOCK HERE UNTIL DATA IS AVAILABLE
 						// or 100 MS expires
 						/////////////////
-    					        message = null;
+                                                message = null;
 						try {
-					
+
 						    synchronized(rsynchro) {
 							boolean keep_going = true;
 							while( keep_going == true )
@@ -1716,7 +1716,7 @@ NOT SUPPORTED IN 1.1	*/
 							    keep_going = false;
 							    try {
 								message = connection.internal_receive();
-							    } 
+							    }
 							    catch( InterruptedIOException e) {
 								if ( signal  == true )
 								{
@@ -1729,7 +1729,7 @@ NOT SUPPORTED IN 1.1	*/
 						    // Calling listeners.
 						    /////////////////////
 						    callingListeners = true;
-						
+
 						    // Tell all the basic listeners.
 						    ////////////////////////////////
 						    for(int i = 0 ; i < basicListeners.size() ; i++)
@@ -1737,7 +1737,7 @@ NOT SUPPORTED IN 1.1	*/
 							    // Get the listener.
 							    ////////////////////
 							    basicListener = (BasicMessageListener)basicListeners.elementAt(i);
-									
+
 							    // Tell it.
 							    ///////////
 							    basicListener.messageReceived(message);
@@ -1750,7 +1750,7 @@ NOT SUPPORTED IN 1.1	*/
 							    // Get the listener.
 							    ////////////////////
 							    advancedListener = (AdvancedMessageListener)advancedListeners.elementAt(i);
-									
+
 							    // What type of message is it?
 							    //////////////////////////////
 							    if(message.isRegular())
@@ -1766,11 +1766,11 @@ NOT SUPPORTED IN 1.1	*/
 								    advancedListener.membershipMessageReceived(message);
 							    }
 						    }
-							
+
 						    // Done calling listeners.
 						    //////////////////////////
 						    callingListeners = false;
-							
+
 
 						} catch( InterruptedIOException e) {
 						    /// Ignore
@@ -1782,11 +1782,11 @@ NOT SUPPORTED IN 1.1	*/
 							// Get the first command.
 							/////////////////////////
 							command = listenerBuffer.firstElement();
-								
+
 							// Remove it from the list.
 							///////////////////////////
 							listenerBuffer.removeElementAt(0);
-								
+
 								// Check what type of command it is.
 								////////////////////////////////////
 							if(command == BUFFER_DISCONNECT)
@@ -1794,7 +1794,7 @@ NOT SUPPORTED IN 1.1	*/
 								// Disconnect.
 								//////////////
 								connection.disconnect();
-									
+
 								// Don't execute any more commands.
 								///////////////////////////////////
 								listenerBuffer.removeAllElements();
@@ -1804,7 +1804,7 @@ NOT SUPPORTED IN 1.1	*/
 								// Get the listener.
 								////////////////////
 								basicListener = (BasicMessageListener)listenerBuffer.firstElement();
-									
+
 								// Add it.
 								//////////
 								connection.add(basicListener);
@@ -1818,7 +1818,7 @@ NOT SUPPORTED IN 1.1	*/
 								// Get the listener.
 								////////////////////
 								advancedListener = (AdvancedMessageListener)listenerBuffer.firstElement();
-									
+
 								// Add it.
 								//////////
 								connection.add(advancedListener);
@@ -1832,7 +1832,7 @@ NOT SUPPORTED IN 1.1	*/
 								// Get the listener.
 								////////////////////
 								basicListener = (BasicMessageListener)listenerBuffer.firstElement();
-									
+
 								// Remove it.
 								/////////////
 								basicListeners.removeElement(basicListener);
@@ -1846,7 +1846,7 @@ NOT SUPPORTED IN 1.1	*/
 								// Get the listener.
 								////////////////////
 								advancedListener = (AdvancedMessageListener)listenerBuffer.firstElement();
-									
+
 								// Remove it.
 								/////////////
 								advancedListeners.removeElement(advancedListener);
@@ -1855,7 +1855,7 @@ NOT SUPPORTED IN 1.1	*/
 								listenerBuffer.removeElementAt(0);
 							}
 						}
-						// Check if there are any more listeners, if not, then quit listener thread. 
+						// Check if there are any more listeners, if not, then quit listener thread.
 						/////////////////////////////////////////
 						if((basicListeners.size() == 0) && (advancedListeners.size() == 0))
 						{
@@ -1866,10 +1866,10 @@ NOT SUPPORTED IN 1.1	*/
 							connection.socket.setSoTimeout(previous_socket_timeout);
 						    }
 						    catch( SocketException e ) {
-							// just ignore for now 
+							// just ignore for now
 							System.out.println("socket error setting timeout" + e.toString() );
 						    }
-						    
+
 						    listener = null;
 						    // Exit from running Listener Thread
 						    return;
@@ -1896,7 +1896,7 @@ NOT SUPPORTED IN 1.1	*/
 	/**
 	 * Multicasts a message.  The message will be sent to all the groups specified in
 	 * the message.
-	 * 
+	 *
 	 * @param  message  the message to multicast
 	 * @throws  SpreadException  if there is no connection or if there is any error sending the message
 	 */
@@ -1908,21 +1908,21 @@ NOT SUPPORTED IN 1.1	*/
 		{
 			throw new SpreadException("Not connected.");
 		}
-	
+
 		// The groups this message is going to.
 		///////////////////////////////////////
 		SpreadGroup groups[] = message.getGroups();
-		
+
 		// The message data.
 		////////////////////
 		byte data[] = message.getData();
-		
+
 		// Calculate the total number of bytes.
 		///////////////////////////////////////
 		int numBytes = 16;  // serviceType, numGroups, type/hint, dataLen
 		numBytes += MAX_GROUP_NAME;  // private group
 		numBytes += (MAX_GROUP_NAME * groups.length);  // groups
-		
+
 		if (numBytes + data.length > MAX_MESSAGE_LENGTH )
 		{
 		    throw new SpreadException("Message is too long for a Spread Message");
@@ -1931,7 +1931,7 @@ NOT SUPPORTED IN 1.1	*/
 		////////////////////////////
 		byte buffer[] = new byte[numBytes];
 		int bufferIndex = 0;
-		
+
 		// The service type.
 		////////////////////
 		toBytes(message.getServiceType(), buffer, bufferIndex);
@@ -1941,22 +1941,22 @@ NOT SUPPORTED IN 1.1	*/
 		/////////////////////
 		toBytes(group, buffer, bufferIndex);
 		bufferIndex += MAX_GROUP_NAME;
-		
+
 		// The number of groups.
 		////////////////////////
 		toBytes(groups.length, buffer, bufferIndex);
 		bufferIndex += 4;
-		
+
 		// The service type and hint.
 		/////////////////////////////
 		toBytes(((int)message.getType() << 8) & 0x00FFFF00, buffer, bufferIndex);
 		bufferIndex += 4;
-		
+
 		// The data length.
 		///////////////////
 		toBytes(data.length, buffer, bufferIndex);
 		bufferIndex += 4;
-		
+
 		// The group names.
 		///////////////////
 		for(int i = 0 ; i < groups.length ; i++)
@@ -1964,7 +1964,7 @@ NOT SUPPORTED IN 1.1	*/
 			toBytes(groups[i], buffer, bufferIndex);
 			bufferIndex += MAX_GROUP_NAME;
 		}
-		
+
 		// Send it.
 		///////////
 	synchronized (wsynchro) {
@@ -1979,13 +1979,13 @@ NOT SUPPORTED IN 1.1	*/
 		}
 	}
 	}
-	
+
 	// Sends the array of messages.
 	///////////////////////////////
 	/**
 	 * Multicasts an array of messages.  Each message will be sent to all the groups specified in
 	 * the message.
-	 * 
+	 *
 	 * @param  messages  the messages to multicast
 	 * @throws  SpreadException  if there is no connection or if there is any error sending the messages
 	 */
