@@ -264,14 +264,6 @@ public class SpreadWrapperImpl extends AbstractActivatable
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        if (this.status == ConnectionState.ACTIVATED) {
-            LOG.severe("Finalize called while status is activated.");
-        }
-        super.finalize();
-    }
-
-    @Override
     public boolean isConnected() {
         return this.conn.isConnected();
     }
