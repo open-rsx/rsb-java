@@ -585,7 +585,7 @@ NOT SUPPORTED IN 1.1	*/
 		}
 
 		try {
-			authObj = authclass.newInstance();
+			authObj = authclass.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw new SpreadException("class " + authClassName + " error getting instance.\n" + e);
 		}
