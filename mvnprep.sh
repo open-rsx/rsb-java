@@ -6,27 +6,26 @@
 #
 # Just run this before you use Maven to build.
 
-GITVERSION=`git describe --tags --long --match release-*.* 2>/dev/null`
+GITVERSION=$(git describe --tags --long --match release-*.* 2>/dev/null)
 if [ $? -eq 0 ]; then
     echo $GITVERSION > rsb-java/gitversion
 fi
 
-GITBRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
+GITBRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 if [ $? -eq 0 ]; then
     echo $GITBRANCH > rsb-java/gitbranch
 else
-    GITBRANCH=`cat rsb-java/gitbranch`
+    GITBRANCH=$(cat rsb-java/gitbranch)
 fi
 
-GITPATCH=`perl -p -e 's/-g[0-9a-fA-F]+$//;s/^.*-//' rsb-java/gitversion`
+GITPATCH=$(perl -p -e 's/-g[0-9a-fA-F]+$//;s/^.*-//' rsb-java/gitversion)
 
-RELBRANCH=`perl -p -e 's/^[0-9]+\.[0-9]+$//' rsb-java/gitbranch`
+RELBRANCH=$(perl -p -e 's/^[0-9]+\.[0-9]+$//' rsb-java/gitbranch)
 
 if [ -z "$GITPATCH" ] || [ -z "$GITBRANCH" ]; then
     echo "Could not get version/branch information. Is this either a git checkout or an official source archive?" 1>&2
     exit 1
 fi
-
 
 if [ -z "$RELBRANCH" ]; then
     FULLVERSION=$GITBRANCH.$GITPATCH
