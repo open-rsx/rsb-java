@@ -38,7 +38,7 @@
         <plugin.checkstyle.version>2.15</plugin.checkstyle.version>
         <plugin.pmd.version>3.6</plugin.pmd.version>
         <plugin.javadoc.version>2.10.3</plugin.javadoc.version>
-        <plugin.jacoco.version>0.7.5.201505241946</plugin.jacoco.version>
+        <plugin.jacoco.version>0.8.0</plugin.jacoco.version>
         <failOnStyleError>true</failOnStyleError>
     </properties>
 
