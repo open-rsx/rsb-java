@@ -13,6 +13,13 @@
 
     <description>The Robotics Service Bus (RSB) is a message-oriented, event-driven middleware aiming at scalable integration of robotics systems in diverse environments. Being fundamentally a bus architecture, RSB structures heterogeneous systems of service providers and consumers using broadcast communication over a hierarchy of logically unified channels instead of a large number of point-to-point connections. Nevertheless RSB comes with a collection of communication patterns and other tools for structuring communication, but does not require a particular functional or decomposition style.</description>
 
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+        </license>
+    </licenses>
+
     <organization>
         <name>CoR-Lab</name>
         <url>http://www.cor-lab.org/</url>
