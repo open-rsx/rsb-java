@@ -234,7 +234,7 @@ public class SpreadWrapperImpl extends AbstractActivatable
                                 + group, e);
                     }
                     groupIt.remove();
-                    LOG.info("SpreadGroup '" + grp + "' has been left.");
+                    LOG.fine("SpreadGroup '" + grp + "' has been left.");
                     break;
                 }
                 if (!groupIt.hasNext()) {
