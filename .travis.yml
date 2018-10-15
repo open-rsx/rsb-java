@@ -1,0 +1,17 @@
+language: java
+dist: xenial
+sudo: true
+before_install:
+  - sudo add-apt-repository http://packages.cor-lab.de/ubuntu/
+  - wget -q http://packages.cor-lab.de/keys/cor-lab.asc -O- | sudo apt-key add -
+  - sudo apt-get update -q
+  - sudo apt-get install spread
+  - ./mvnprep.sh
+jdk:
+  - oraclejdk10
+  - openjdk8
+  - openjdk10
+  - openjdk11
+cache:
+  directories:
+    - $HOME/.m2

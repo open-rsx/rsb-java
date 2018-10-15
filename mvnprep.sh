@@ -35,10 +35,3 @@ if [ -z "$RELBRANCH" ]; then
 else
     echo "We are not on a release branch, not changing the version. You can build now!"
 fi
-
-# Workaround to detect correct protobuf version on unix systems
-# as dependency versions cannot be modified with the maven properties plugin
-VERSION_OUT="$(protoc --version)"
-VERSION_MAJOR="$(echo "${VERSION_OUT}" | perl -p -e 's/.* ([0-9]+)\.[0-9]+.*/\1/')"
-VERSION_MINOR="$(echo "${VERSION_OUT}" | perl -p -e 's/.* [0-9]+\.([0-9]+).*/\1/')"
-sed -i.bak -e 's#<pbuf\.minversion>.*</pbuf\.minversion>#<pbuf.minversion>'"${VERSION_MAJOR}.${VERSION_MINOR}"'</pbuf.minversion>#;s#<pbuf\.maxversion>.*</pbuf\.maxversion>#<pbuf.maxversion>'"${VERSION_MAJOR}.$((${VERSION_MINOR}+1))"'</pbuf.maxversion>#' pom.xml

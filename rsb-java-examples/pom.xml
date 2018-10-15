@@ -16,10 +16,11 @@
 
     <build>
         <plugins>
+
             <!-- generate the protocol files -->
             <plugin>
-                <groupId>com.google.protobuf.tools</groupId>
-                <artifactId>maven-protoc-plugin</artifactId>
+                <groupId>org.xolstice.maven.plugins</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>
