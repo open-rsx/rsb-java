@@ -34,10 +34,7 @@
         package'. -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <pbuf.protopath>${env.prefix}/share/rsbprotocol</pbuf.protopath>
-        <pbuf.protoc>/usr/bin/protoc</pbuf.protoc>
-        <pbuf.minversion>2.6</pbuf.minversion>
-        <pbuf.maxversion>2.7</pbuf.maxversion>
+        <pbuf.version>3.4.0</pbuf.version>
         <spread.daemon>/usr/sbin/spread</spread.daemon>
         <spread.port>4910</spread.port>
         <socket.port>55444</socket.port>
@@ -55,6 +52,13 @@
     </modules>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.0</version>
+            </extension>
+        </extensions>
         <pluginManagement>
             <plugins>
 
@@ -71,11 +75,11 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>com.google.protobuf.tools</groupId>
-                    <artifactId>maven-protoc-plugin</artifactId>
-                    <version>0.4.2</version>
+                    <groupId>org.xolstice.maven.plugins</groupId>
+                    <artifactId>protobuf-maven-plugin</artifactId>
+                    <version>0.6.1</version>
                     <configuration>
-                        <protocExecutable>${pbuf.protoc}</protocExecutable>
+                        <protocArtifact>com.google.protobuf:protoc:${pbuf.version}:exe:${os.detected.classifier}</protocArtifact>
                     </configuration>
                 </plugin>
 
@@ -161,7 +165,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>[${pbuf.minversion},${pbuf.maxversion})</version>
+            <version>[${pbuf.version}]</version>
         </dependency>
 
         <dependency>
@@ -216,12 +220,5 @@
             <url>https://mvn.cit-ec.de/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>protoc-plugin</id>
-            <url>https://dl.bintray.com/sergei-ivanov/maven/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
 </project>

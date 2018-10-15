@@ -50,22 +50,6 @@ Could not find 'gitversion' and 'gitbranch' files, please run mvnprep.sh before 
                                 </requireFilesExist>
                                 <requireFilesExist>
                                     <message>
-Google Protocol Buffers compiler not found at '${pbuf.protoc}'. Please set pbuf.protoc.
-                                    </message>
-                                    <files>
-                                        <file>${pbuf.protoc}</file>
-                                    </files>
-                                </requireFilesExist>
-                                <requireFilesExist>
-                                    <message>
-RSB protocol property pbuf.protopath does not point to a valid installation of RSBProtocol at '${pbuf.protopath}'
-                                    </message>
-                                    <files>
-                                        <file>${pbuf.protopath}/rsb/protocol/Notification.proto</file>
-                                    </files>
-                                </requireFilesExist>
-                                <requireFilesExist>
-                                    <message>
 Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                                     </message>
                                     <files>
@@ -98,11 +82,8 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
 
             <!-- generate the protocol files -->
             <plugin>
-                <groupId>com.google.protobuf.tools</groupId>
-                <artifactId>maven-protoc-plugin</artifactId>
-                <configuration>
-                    <protoSourceRoot>${pbuf.protopath}</protoSourceRoot>
-                </configuration>
+                <groupId>org.xolstice.maven.plugins</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>
