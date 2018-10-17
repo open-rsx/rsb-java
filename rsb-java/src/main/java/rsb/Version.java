@@ -27,11 +27,6 @@
  */
 package rsb;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.jar.Manifest;
-
 /**
  * Provides version information about RSB.
  *
@@ -39,12 +34,9 @@ import java.util.jar.Manifest;
  */
 public final class Version {
 
-    private static final String LAST_COMMIT_ENTRY = "Last-Commit";
-
     private static final Version INSTANCE = new Version();
 
     private String versionString;
-    private String lastCommit;
 
     private Version() {
         super();
@@ -58,40 +50,6 @@ public final class Version {
                     .getImplementationVersion();
         }
 
-        // get last commit from jar Manifest if available
-        final Manifest manifest = this.getManifest();
-        if (manifest == null
-                || manifest.getMainAttributes().getValue(LAST_COMMIT_ENTRY) == null) {
-            this.lastCommit = "archive";
-        } else {
-            this.lastCommit = manifest.getMainAttributes().getValue(
-                    LAST_COMMIT_ENTRY);
-        }
-
-    }
-
-    private Manifest getManifest() {
-        final Class<?> clazz = this.getClass();
-        final String className = clazz.getSimpleName() + ".class";
-        final URL classResource = clazz.getResource(className);
-        if (classResource == null) {
-            return null;
-        }
-        final String classPath = classResource.toString();
-        if (!classPath.startsWith("jar")) {
-            // class not from JAR
-            return null;
-        }
-        final String manifestPath = classPath.substring(0,
-                classPath.lastIndexOf('!') + 1)
-                + "/META-INF/MANIFEST.MF";
-        try {
-            return new Manifest(new URL(manifestPath).openStream());
-        } catch (final MalformedURLException e) {
-            return null;
-        } catch (final IOException e) {
-            return null;
-        }
     }
 
     /**
@@ -111,17 +69,6 @@ public final class Version {
      */
     public String getVersionString() {
         return this.versionString;
-    }
-
-    /**
-     * Returns a string describing the last commit on the project resulting in
-     * this version.
-     *
-     * @return commit string in repo-specific format or <code>"archive"</code>
-     *         if not known.
-     */
-    public String getLastCommit() {
-        return this.lastCommit;
     }
 
 }

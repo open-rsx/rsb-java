@@ -6,7 +6,6 @@ before_install:
   - wget -q http://packages.cor-lab.de/keys/cor-lab.asc -O- | sudo apt-key add -
   - sudo apt-get update -q
   - sudo apt-get install spread
-  - ./mvnprep.sh
 jdk:
   - openjdk8
   - openjdk10

@@ -6,7 +6,7 @@
     <parent>
         <groupId>rsb</groupId>
         <artifactId>rsb-java</artifactId>
-        <version>0.19-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>rsb</artifactId>
     <packaging>jar</packaging>
@@ -41,15 +41,6 @@
                                 </requireJavaVersion>
                                 <requireFilesExist>
                                     <message>
-Could not find 'gitversion' and 'gitbranch' files, please run mvnprep.sh before building with Maven.
-                                    </message>
-                                    <files>
-                                        <file>${project.basedir}/gitversion</file>
-                                        <file>${project.basedir}/gitbranch</file>
-                                    </files>
-                                </requireFilesExist>
-                                <requireFilesExist>
-                                    <message>
 Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                                     </message>
                                     <files>
@@ -65,7 +56,7 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18.1</version>
+                <version>2.22.1</version>
                 <configuration>
                     <systemProperties>
                         <property>
@@ -89,31 +80,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Load the last git commit from gitversion. -->
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <properties>
-                                <git.version.file>${project.basedir}/gitversion</git.version.file>
-                            </properties>
-                            <source>
-def file = new File(project.properties["git.version.file"])
-commit = file.getText().replaceFirst(/^.*-/,"")
-project.properties["git.commit"] = commit
-                            </source>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
