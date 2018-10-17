@@ -8,7 +8,6 @@ before_install:
   - sudo apt-get install spread
   - ./mvnprep.sh
 jdk:
-  - oraclejdk10
   - openjdk8
   - openjdk10
   - openjdk11
