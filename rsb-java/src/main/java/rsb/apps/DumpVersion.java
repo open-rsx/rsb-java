@@ -52,8 +52,7 @@ public final class DumpVersion {
     @SuppressWarnings({ "PMD.UseVarargs", "PMD.SystemPrintln" })
     public static void main(final String[] args) throws Throwable {
         System.out.println(
-                "RSB Version: " + Version.getInstance().getVersionString() + "-"
-                        + Version.getInstance().getLastCommit());
+                "RSB Version: " + Version.getInstance().getVersionString());
         System.out.println("Current time: " + ExactTime.currentTimeMicros()
                 + " (fallback implementation: " + ExactTime.isFallback() + ")");
     }

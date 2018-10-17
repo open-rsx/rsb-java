@@ -45,10 +45,4 @@ public class VersionTest extends LoggingEnabled {
         assertFalse(Version.getInstance().getVersionString().isEmpty());
     }
 
-    @Test
-    public void lastCommit() {
-        assertNotNull(Version.getInstance().getLastCommit());
-        assertFalse(Version.getInstance().getLastCommit().isEmpty());
-    }
-
 }
