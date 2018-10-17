@@ -15,3 +15,55 @@ after_success:
 cache:
   directories:
     - $HOME/.m2
+
+jobs:
+  include:
+    - stage: deploy
+      jdk: openjdk10
+      # erase default value
+      after_success:
+      script:
+        - mkdir -p deploy
+        - "mvn -B -DskipTests=true -DaltDeploymentRepository=snapshot-repo::default::file:deploy/rsb-java deploy"
+        - cd deploy
+        - tar -czf "../rsb-java-${TRAVIS_BRANCH}.tar.gz" rsb-java
+        - cd ..
+        - |
+          cat << EOF > bintray.json
+          {
+            "package": {
+              "name": "rsb-java",
+              "repo": "travis-artifacts",
+              "subject": "open-rsx",
+              "desc": "Travis artifact for branch ${TRAVIS_BRANCH}",
+              "vcs_url": "https://github.com/open-rsx/rsb-java.git",
+              "licenses": ["LGPL-3.0"]
+            },
+
+            "version": {
+              "name": "travis-${TRAVIS_BRANCH}",
+              "vcs_tag": "${TRAVIS_BRANCH}"
+            },
+
+            "files": [
+              {
+                "includePattern": "\\./(rsb-java-.*\\\\.tar\\\\.gz)",
+                "uploadPattern": "\$1",
+                "matrixParams": {
+                  "override": 1
+                }
+              }
+            ],
+            "publish": true
+          }
+          EOF
+      after_success:
+      deploy:
+        provider: bintray
+        file: "bintray.json"
+        user: "languitar"
+        key: '${BINTRAY_KEY}'
+        skip_cleanup: true
+        on:
+          repo: open-rsx/rsb-java
+          all_branches: true
