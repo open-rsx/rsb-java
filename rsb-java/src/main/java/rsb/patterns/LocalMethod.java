@@ -99,6 +99,12 @@ class LocalMethod extends Method implements Handler {
         Event reply;
         try {
             reply = this.callback.internalInvoke(request);
+            if (reply == null) {
+                throw new UserCodeException(
+                        "Received a null reply from the client code",
+                        new IllegalArgumentException(
+                            "Null reply from callback"));
+            }
         } catch (final UserCodeException e) {
             final Throwable exception = e.getCause();
             LOG.log(Level.WARNING,
