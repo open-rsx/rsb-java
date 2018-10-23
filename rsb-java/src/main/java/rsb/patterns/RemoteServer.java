@@ -444,13 +444,15 @@ public class RemoteServer extends Server<RemoteMethod> {
                             // dummy type
                         }.setScope(getScope().concat(new Scope("/" + name)))
                                 .setConfig(getConfig()).setParent(this));
-        // it should never be possible that an exception is thrown for a
-        // duplicated method because we take care of this
-        addMethod(name, method, false);
+        method.setObserverManager(this.getObserverManager());
 
         if (this.isActive()) {
             method.activate();
         }
+
+        // it should never be possible that an exception is thrown for a
+        // duplicated method because we take care of this
+        addMethod(name, method, false);
 
         return method;
     }

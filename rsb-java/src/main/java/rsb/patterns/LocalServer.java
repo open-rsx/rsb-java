@@ -112,10 +112,11 @@ public class LocalServer extends Server<LocalMethod> {
      */
     private void addAndActivate(final String name, final LocalMethod method)
             throws RSBException {
-        addMethod(name, method, false);
+        method.setObserverManager(this.getObserverManager());
         if (this.isActive()) {
             method.activate();
         }
+        addMethod(name, method, false);
     }
 
     /**

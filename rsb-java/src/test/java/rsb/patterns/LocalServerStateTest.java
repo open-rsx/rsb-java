@@ -27,11 +27,18 @@
  */
 package rsb.patterns;
 
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
+import rsb.Event;
 import rsb.LocalServerCreateArgs;
 import rsb.Participant;
 import rsb.ParticipantStateCheck;
 import rsb.Scope;
+import rsb.Utilities;
 import rsb.config.ParticipantConfig;
+
 
 /**
  * A {@link ParticipantStateCheck} for {@link LocalServer} instances.
@@ -46,6 +53,39 @@ public class LocalServerStateTest extends ParticipantStateCheck {
             final ParticipantConfig config) throws Exception {
         return new LocalServer(new LocalServerCreateArgs().setScope(
                 new Scope("/some/scope")).setConfig(config));
+    }
+
+    /**
+     * Checks that deactivation is successful even after adding a method failed.
+     *
+     * @throws Exception
+     *             test error
+     */
+    @Test
+    public void deactivationAfterNewMethodFailure() throws Exception {
+        final LocalServer server = (LocalServer) createParticipant(
+                Utilities.createBrokenParticipantConfig());
+        server.activate();
+        try {
+            server.addMethod("failing", new Callback() {
+
+                @Override
+                public Event internalInvoke(final Event request)
+                        throws UserCodeException {
+                    return null;
+                }
+
+            });
+            // must fail
+            fail("Adding a method with a broken transport configuration "
+                    + "must fail");
+            // We cannot use the junit annotation for expected exceptions here
+            // as also deactivate can raise the same exception type.
+        } catch (final Exception e) {
+            // expected here
+        }
+        // this must still succeed
+        server.deactivate();
     }
 
 }
