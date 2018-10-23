@@ -72,7 +72,7 @@ public class FilteringHandler implements Handler {
     }
 
     @Override
-    public void internalNotify(final Event event) {
+    public void internalNotify(final Event event) throws InterruptedException {
         for (final Filter filter : this.filters) {
             if (!filter.match(event)) {
                 return;

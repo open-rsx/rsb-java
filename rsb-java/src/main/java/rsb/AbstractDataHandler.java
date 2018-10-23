@@ -45,7 +45,7 @@ public abstract class AbstractDataHandler<DataType> implements Handler {
 
     @SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
     @Override
-    public void internalNotify(final Event event) {
+    public void internalNotify(final Event event) throws InterruptedException {
         try {
             this.handleEvent((DataType) event.getData());
         } catch (final RuntimeException ex) {
@@ -60,7 +60,9 @@ public abstract class AbstractDataHandler<DataType> implements Handler {
      *
      * @param data
      *            data contained in the event to handle
+     * @throws InterruptedException
+     *             Execution of the handler operation was interrupted
      */
-    public abstract void handleEvent(DataType data);
+    public abstract void handleEvent(DataType data) throws InterruptedException;
 
 }

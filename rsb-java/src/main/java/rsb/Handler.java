@@ -42,7 +42,9 @@ public interface Handler extends EventListener {
      *
      * @param event
      *            the received event the handler should process
+     * @throws InterruptedException
+     *             Execution of the handler operation was interrupted
      */
-    void internalNotify(Event event);
+    void internalNotify(Event event) throws InterruptedException;
 
 }
