@@ -10,6 +10,8 @@ jdk:
   - openjdk8
   - openjdk10
   - openjdk11
+script:
+  mvn test -B -DtrimStackTrace=false
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 cache:
