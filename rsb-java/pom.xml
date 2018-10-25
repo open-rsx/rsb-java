@@ -15,6 +15,8 @@
 
     <properties>
         <test.configs>${project.basedir}/target/generated-test-config</test.configs>
+        <!-- If set to true, test execution pauses shortly between each test to mitigate https://issues.apache.org/jira/browse/SUREFIRE&#45;1587 -->
+        <test.sleep>false</test.sleep>
     </properties>
 
     <build>
@@ -62,6 +64,10 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                         <property>
                             <name>java.util.logging.config.file</name>
                             <value>${test.configs}/logging.properties</value>
+                        </property>
+                        <property>
+                            <name>rsb.test.sleep</name>
+                            <value>${test.sleep}</value>
                         </property>
                     </systemProperties>
                     <environmentVariables>

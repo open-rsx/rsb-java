@@ -43,6 +43,8 @@ import org.junit.runner.Description;
  */
 public class RsbTestCase {
 
+    private static final long SLEEP_TIME_MS = 700;
+
     /**
      * Rule to start test start and end logging.
      */
@@ -52,6 +54,24 @@ public class RsbTestCase {
 
     @Rule
     public final TestNameLoggingRule log = new TestNameLoggingRule();
+
+    @Rule
+    public final ExternalResource sleeper = new ExternalResource() {
+
+        @Override
+        protected void after() {
+            // if requested via system property, sleep a bit after each test to
+            // mitigate https://issues.apache.org/jira/browse/SUREFIRE-1587
+            if (Boolean.getBoolean("rsb.test.sleep")) {
+                try {
+                    Thread.sleep(SLEEP_TIME_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+    };
     // CHECKSTYLE.ON: VisibilityModifier
 
     private static class TestNameLoggingRule extends TestWatcher {
