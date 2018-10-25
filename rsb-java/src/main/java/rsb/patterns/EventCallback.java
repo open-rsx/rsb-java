@@ -39,10 +39,15 @@ public abstract class EventCallback implements Callback {
 
     // Convenience for users to throw anything
     @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public Event internalInvoke(final Event request) throws UserCodeException {
+    @SuppressWarnings({"PMD.AvoidCatchingGenericException",
+            "PMD.AvoidRethrowingException"})
+    public Event internalInvoke(final Event request) throws UserCodeException,
+            InterruptedException {
         try {
             return this.invoke(request);
+        } catch (final InterruptedException e) {
+            // ensure that interruption is handled explicitly
+            throw e;
         } catch (final Exception e) {
             throw new UserCodeException(e);
         }
@@ -51,11 +56,17 @@ public abstract class EventCallback implements Callback {
     /**
      * This method is called to invoke the actual behavior of an exposed method.
      *
+     * Implementing user code must not swallow interruption state. Instead, it
+     * has to be passed to the outside world through an {@link
+     * InterruptedException}.
+     *
      * @param request
      *            The argument passed to the associated method by the remote
      *            caller.
      * @return A result that should be returned to the remote caller as the
      *         result of the calling the method.
+     * @throws InterruptedException
+     *             Indicates that the operation was interrupted.
      * @throws Exception
      *             Can throw anything.
      */

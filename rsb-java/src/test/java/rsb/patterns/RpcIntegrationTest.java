@@ -141,4 +141,47 @@ public class RpcIntegrationTest extends LoggingEnabled {
         assertEquals(null, reply.get().getData());
     }
 
+    @Test(timeout = 20000)
+    public void serverCallIsInterruptible() throws Exception {
+        final Scope scope = new Scope("/a/scope");
+        final LocalServer server = Factory.getInstance().createLocalServer(
+                scope, Utilities.createParticipantConfig());
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                scope, Utilities.createParticipantConfig());
+
+        final String method = "longrunningmethod";
+        server.addMethod(method, new Callback() {
+            @Override
+            public Event internalInvoke(
+                    final Event request) throws UserCodeException,
+                                                InterruptedException {
+                // CHECKSTYLE.OFF: MagicNumber
+                // Wait longer than the timeout of the test method. If
+                // interruption doesn't work, this will end up in the timeout.
+                Thread.sleep(40000);
+                // CHECKSTYLE.ON: MagicNumber
+                return request;
+            }
+        });
+
+        server.activate();
+        try {
+            remote.activate();
+
+            try {
+
+                remote.callAsync("mymethod");
+                // CHECKSTYLE.OFF: MagicNumber
+                Thread.sleep(1000);
+                // CHECKSTYLE.ON
+
+            } finally {
+                remote.deactivate();
+            }
+
+        } finally {
+            server.deactivate();
+        }
+    }
+
 }

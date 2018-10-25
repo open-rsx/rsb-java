@@ -89,12 +89,18 @@ public interface Callback {
      * Method to invoke the {@link Callback}'s functionality. This method can be
      * considered an internal implementation detail.
      *
+     * Implementing user code must not swallow interruption state. Instead, it
+     * has to be passed to the outside world.
+     *
      * @param request
      *            the request received from a {@link RemoteServer} method call
      * @return an event with the result data of a method
      * @throws UserCodeException
      *             any exception in the user code invoked by the callback
+     * @throws InterruptedException
+     *             indicates that the called action was interrupted
      */
-    Event internalInvoke(Event request) throws UserCodeException;
+    Event internalInvoke(Event request) throws UserCodeException,
+             InterruptedException;
 
 }

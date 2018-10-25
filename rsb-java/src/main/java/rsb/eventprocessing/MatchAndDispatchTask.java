@@ -81,6 +81,10 @@ public class MatchAndDispatchTask implements Callable<Boolean> {
             if (this.match(this.event)) {
                 try {
                     this.handler.internalNotify(this.event);
+                } catch (final InterruptedException e) {
+                    LOG.warning("Interrupted while calling handler");
+                    // restore interruption state
+                    Thread.currentThread().interrupt();
                 } catch (final RuntimeException e) {
                     LOG.log(Level.WARNING,
                             "Unable to dispatch event to handler"

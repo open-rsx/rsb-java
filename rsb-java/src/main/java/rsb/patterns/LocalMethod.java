@@ -105,7 +105,7 @@ class LocalMethod extends Method implements Handler {
                         new IllegalArgumentException(
                             "Null reply from callback"));
             }
-        } catch (final UserCodeException e) {
+        } catch (final UserCodeException | InterruptedException e) {
             final Throwable exception = e.getCause();
             LOG.log(Level.WARNING,
                     "Exception during method invocation in participant: {0}. "

@@ -37,16 +37,18 @@ package rsb;
 public abstract class AbstractEventHandler implements Handler {
 
     @Override
-    public void internalNotify(final Event event) {
+    public void internalNotify(final Event event) throws InterruptedException {
         this.handleEvent(event);
-    };
+    }
 
     /**
      * Shall implement the real handling logic for an event.
      *
      * @param event
      *            the event to handle
+     * @throws InterruptedException
+     *             Execution of the handler operation was interrupted
      */
-    public abstract void handleEvent(Event event);
+    public abstract void handleEvent(Event event) throws InterruptedException;
 
 }
