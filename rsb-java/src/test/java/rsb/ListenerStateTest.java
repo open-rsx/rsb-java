@@ -27,6 +27,8 @@
  */
 package rsb;
 
+import rsb.config.ParticipantConfig;
+
 /**
  * A {@link ParticipantStateCheck} for {@link Listener} instances.
  *
@@ -36,10 +38,10 @@ package rsb;
 public class ListenerStateTest extends ParticipantStateCheck {
 
     @Override
-    protected Participant createParticipant() throws Exception {
+    protected Participant createParticipant(
+            final ParticipantConfig config) throws Exception {
         return new Listener(new ListenerCreateArgs().setScope(
-                new Scope("/some/scope")).setConfig(
-                Utilities.createParticipantConfig()));
+                new Scope("/some/scope")).setConfig(config));
     }
 
 }

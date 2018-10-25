@@ -27,6 +27,8 @@
  */
 package rsb;
 
+import rsb.config.ParticipantConfig;
+
 /**
  * A {@link ParticipantStateCheck} for {@link Informer} instances.
  *
@@ -36,10 +38,11 @@ package rsb;
 public class InformerStateTest extends ParticipantStateCheck {
 
     @Override
-    protected Participant createParticipant() throws Exception {
+    protected Participant createParticipant(
+            final ParticipantConfig config) throws Exception {
         return new Informer<String>(new InformerCreateArgs()
                 .setScope(new Scope("/some/scope")).setType(String.class)
-                .setConfig(Utilities.createParticipantConfig()));
+                .setConfig(config));
     }
 
 }

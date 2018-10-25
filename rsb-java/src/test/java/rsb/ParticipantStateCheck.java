@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import rsb.config.ParticipantConfig;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
 
@@ -49,7 +50,8 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
 
     private Participant participant = null;
 
-    protected abstract Participant createParticipant() throws Exception;
+    protected abstract Participant createParticipant(
+            ParticipantConfig config) throws Exception;
 
     @BeforeClass
     public static void registerConverters() {
@@ -59,7 +61,8 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
 
     @Before
     public void setUp() throws Exception {
-        this.participant = createParticipant();
+        final ParticipantConfig config = Utilities.createParticipantConfig();
+        this.participant = createParticipant(config);
     }
 
     @After

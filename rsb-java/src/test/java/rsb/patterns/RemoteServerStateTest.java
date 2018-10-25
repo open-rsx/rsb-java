@@ -31,7 +31,7 @@ import rsb.Participant;
 import rsb.ParticipantStateCheck;
 import rsb.RemoteServerCreateArgs;
 import rsb.Scope;
-import rsb.Utilities;
+import rsb.config.ParticipantConfig;
 
 /**
  * A {@link ParticipantStateCheck} for {@link RemoteServer} instances.
@@ -42,10 +42,10 @@ import rsb.Utilities;
 public class RemoteServerStateTest extends ParticipantStateCheck {
 
     @Override
-    protected Participant createParticipant() throws Exception {
+    protected Participant createParticipant(
+            final ParticipantConfig config) throws Exception {
         return new RemoteServer(new RemoteServerCreateArgs().setScope(
-                new Scope("/some/scope")).setConfig(
-                Utilities.createParticipantConfig()));
+                new Scope("/some/scope")).setConfig(config));
     }
 
 }

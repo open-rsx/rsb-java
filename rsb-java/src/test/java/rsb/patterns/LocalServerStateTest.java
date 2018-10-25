@@ -31,7 +31,7 @@ import rsb.LocalServerCreateArgs;
 import rsb.Participant;
 import rsb.ParticipantStateCheck;
 import rsb.Scope;
-import rsb.Utilities;
+import rsb.config.ParticipantConfig;
 
 /**
  * A {@link ParticipantStateCheck} for {@link LocalServer} instances.
@@ -42,10 +42,10 @@ import rsb.Utilities;
 public class LocalServerStateTest extends ParticipantStateCheck {
 
     @Override
-    protected Participant createParticipant() throws Exception {
+    protected Participant createParticipant(
+            final ParticipantConfig config) throws Exception {
         return new LocalServer(new LocalServerCreateArgs().setScope(
-                new Scope("/some/scope")).setConfig(
-                Utilities.createParticipantConfig()));
+                new Scope("/some/scope")).setConfig(config));
     }
 
 }
