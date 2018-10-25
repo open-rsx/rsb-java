@@ -98,11 +98,12 @@ public abstract class Server<MethodType extends Method> extends Participant {
 
         @Override
         public void activate() throws RSBException {
+            Server.super.activate();
             for (final Method method : Server.this.methods.values()) {
                 method.activate();
             }
-            Server.super.activate();
             Server.this.state = new StateActive();
+            Server.this.activated();
         }
 
         @Override
@@ -200,7 +201,6 @@ public abstract class Server<MethodType extends Method> extends Participant {
                 throw new IllegalArgumentException("A method with name " + name
                         + " already exists.");
             }
-            method.setObserverManager(getObserverManager());
             this.methods.put(name, method);
         }
     }

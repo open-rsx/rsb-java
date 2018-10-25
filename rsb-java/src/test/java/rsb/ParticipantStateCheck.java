@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import rsb.config.ParticipantConfig;
 import rsb.converter.DefaultConverters;
 import rsb.transport.DefaultTransports;
 
@@ -49,7 +50,8 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
 
     private Participant participant = null;
 
-    protected abstract Participant createParticipant() throws Exception;
+    protected abstract Participant createParticipant(
+            ParticipantConfig config) throws Exception;
 
     @BeforeClass
     public static void registerConverters() {
@@ -59,7 +61,8 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
 
     @Before
     public void setUp() throws Exception {
-        this.participant = createParticipant();
+        final ParticipantConfig config = Utilities.createParticipantConfig();
+        this.participant = createParticipant(config);
     }
 
     @After
@@ -109,6 +112,24 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
         this.participant.activate();
         this.participant.deactivate();
         this.participant.activate();
+    }
+
+    @Test
+    public void inactiveAfterActivationFailure() throws Exception {
+        final ParticipantConfig config =
+                Utilities.createBrokenParticipantConfig();
+        final Participant participant = createParticipant(config);
+        try {
+            participant.activate();
+            // if activation doesn't fail (for instance for remote servers,
+            // which do nothing serious with the transport on activation), we
+            // cannot check this. So, tear down everything and leave the test.
+            participant.deactivate();
+            return;
+        } catch (final RSBException e) {
+            // expected
+        }
+        assertFalse(participant.isActive());
     }
 
 }

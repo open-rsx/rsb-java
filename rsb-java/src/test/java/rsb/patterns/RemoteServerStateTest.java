@@ -27,11 +27,16 @@
  */
 package rsb.patterns;
 
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
 import rsb.Participant;
 import rsb.ParticipantStateCheck;
 import rsb.RemoteServerCreateArgs;
 import rsb.Scope;
 import rsb.Utilities;
+import rsb.config.ParticipantConfig;
 
 /**
  * A {@link ParticipantStateCheck} for {@link RemoteServer} instances.
@@ -42,10 +47,37 @@ import rsb.Utilities;
 public class RemoteServerStateTest extends ParticipantStateCheck {
 
     @Override
-    protected Participant createParticipant() throws Exception {
+    protected Participant createParticipant(
+            final ParticipantConfig config) throws Exception {
         return new RemoteServer(new RemoteServerCreateArgs().setScope(
-                new Scope("/some/scope")).setConfig(
-                Utilities.createParticipantConfig()));
+                new Scope("/some/scope")).setConfig(config));
+    }
+
+    /**
+     * Checks that deactivation is successful even after a failed call to a
+     * previously uncalled method.
+     *
+     * @throws Exception
+     *             test error
+     */
+    @Test
+    public void deactivationAfterNewMethodFailure() throws Exception {
+        final RemoteServer server = (RemoteServer) createParticipant(
+                Utilities.createBrokenParticipantConfig());
+        server.activate();
+        try {
+            server.call("failingmethod");
+            // The previous call must fail as it is the first one to create
+            // actual participants that interact with the transport.
+            fail("Calling a method with a broken transport configuration "
+                    + "must fail");
+            // We cannot use the junit annotation for expected exceptions here
+            // as also deactivate can raise the same exception type.
+        } catch (final Exception e) {
+            // expected here
+        }
+        // this must still succeed
+        server.deactivate();
     }
 
 }

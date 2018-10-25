@@ -119,9 +119,10 @@ public class Listener extends Participant {
 
         @Override
         public void activate() throws RSBException {
+            Listener.super.activate();
             Listener.this.getRouter().activate();
             Listener.this.state = new StateActive();
-            Listener.super.activate();
+            Listener.this.activated();
         }
 
         @Override

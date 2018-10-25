@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2018 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,23 +25,29 @@
  *
  * ============================================================
  */
-package rsb;
+package rsb.patterns;
 
+import rsb.Participant;
+import rsb.ParticipantCreateArgs;
+import rsb.ParticipantStateCheck;
+import rsb.Scope;
 import rsb.config.ParticipantConfig;
 
 /**
- * A {@link ParticipantStateCheck} for {@link Listener} instances.
+ * A {@link ParticipantStateCheck} for {@link LocalMethod} instances.
  *
  * @author jwienke
  */
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
-public class ListenerStateTest extends ParticipantStateCheck {
+public class LocalMethodStateTest extends ParticipantStateCheck {
 
     @Override
     protected Participant createParticipant(
             final ParticipantConfig config) throws Exception {
-        return new Listener(new ListenerCreateArgs().setScope(
-                new Scope("/some/scope")).setConfig(config));
+        return new LocalMethod(
+                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                    // dummy type
+                }.setScope(new Scope("/localmethodtest")).setConfig(config), null);
     }
 
 }

@@ -104,10 +104,11 @@ public abstract class Method extends Participant {
 
         @Override
         public void activate() throws RSBException {
+            Method.super.activate();
             Method.this.getInformer().activate();
             Method.this.getListener().activate();
-            Method.super.activate();
             Method.this.state = new StateActive();
+            Method.this.activated();
         }
 
         @Override
