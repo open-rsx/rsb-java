@@ -14,6 +14,8 @@ script:
   mvn test -B -DtrimStackTrace=false -Dtest.sleep=true
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+after_failure:
+  - cat rsb-java/target/tests-*.log
 cache:
   directories:
     - $HOME/.m2
