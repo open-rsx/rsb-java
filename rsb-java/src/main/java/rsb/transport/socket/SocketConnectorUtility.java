@@ -28,6 +28,8 @@
 package rsb.transport.socket;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import rsb.RSBException;
 import rsb.converter.ConverterSelectionStrategy;
@@ -46,6 +48,9 @@ import rsb.transport.socket.RefCountingBus.DeactivationHandler;
  * @author jwienke
  */
 public class SocketConnectorUtility {
+
+    private static final Logger LOG = Logger.getLogger(
+            SocketConnectorUtility.class.getName());
 
     private static BusCache busClientCache = new BusCache();
     private static BusCache busServerCache = new BusCache();
@@ -150,6 +155,8 @@ public class SocketConnectorUtility {
 
     private static Bus getBusServer(final SocketOptions options)
             throws RSBException {
+        LOG.log(Level.FINE, "Acquiring new bus server with options {0}",
+                options);
         return getBusFromCache(options, busServerCache, new BusCreator() {
 
             @Override
@@ -162,6 +169,8 @@ public class SocketConnectorUtility {
 
     private static Bus getBusClient(final SocketOptions options)
             throws RSBException {
+        LOG.log(Level.FINE, "Acquiring new bus client with options {0}",
+                options);
         return getBusFromCache(options, busClientCache, new BusCreator() {
 
             @Override
@@ -180,6 +189,8 @@ public class SocketConnectorUtility {
      *             error initializing {@link Bus}
      */
     public void activate() throws RSBException {
+        LOG.log(Level.FINE, "Starting activation with serverMode={0}",
+                this.serverMode);
 
         synchronized (this) {
 
@@ -198,6 +209,7 @@ public class SocketConnectorUtility {
                 try {
                     this.bus = getBusServer(this.socketOptions);
                 } catch (final RSBException e) {
+                    LOG.log(Level.FINE, "Acquiring bus server failed", e);
                     this.bus = getBusClient(this.socketOptions);
                 }
                 break;

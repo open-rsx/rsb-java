@@ -45,7 +45,7 @@ import rsb.transport.DefaultTransports;
  *
  * @author jwienke
  */
-public abstract class ParticipantCheck extends LoggingEnabled {
+public abstract class ParticipantCheck extends RsbTestCase {
 
     private Participant participant = null;
 

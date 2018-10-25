@@ -36,14 +36,14 @@ import java.net.InetAddress;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
 /**
  * @author jwienke
  */
-public class BusCacheTest extends LoggingEnabled {
+public class BusCacheTest extends RsbTestCase {
 
     class DummyBus extends BusBase {
 

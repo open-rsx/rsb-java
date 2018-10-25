@@ -52,7 +52,7 @@ import rsb.patterns.RemoteServer;
  * @author jmoringe
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public class ParticipantObservationTest extends LoggingEnabled {
+public class ParticipantObservationTest extends RsbTestCase {
 
     private static final Scope TEST_SCOPE = new Scope("/factorytest");
 

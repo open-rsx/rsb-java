@@ -32,7 +32,7 @@ import org.junit.Test;
 import rsb.Event;
 import rsb.EventId;
 import rsb.Factory;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.ParticipantCreateArgs;
 import rsb.ParticipantId;
 import rsb.Scope;
@@ -40,7 +40,7 @@ import rsb.Scope;
 /**
  * @author jwienke
  */
-public class LocalMethodTest extends LoggingEnabled {
+public class LocalMethodTest extends RsbTestCase {
 
     @Test
     public void testHandleNullReply() throws Exception {

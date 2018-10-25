@@ -36,12 +36,12 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * @author jmoringe
  */
-public class NullConverterTest extends LoggingEnabled {
+public class NullConverterTest extends RsbTestCase {
 
     @Test
     public void serialize() throws Throwable {

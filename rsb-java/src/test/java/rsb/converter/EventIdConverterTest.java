@@ -35,13 +35,13 @@ import java.nio.ByteBuffer;
 import org.junit.Test;
 
 import rsb.EventId;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.ParticipantId;
 
 /**
  * @author jwienke
  */
-public class EventIdConverterTest extends LoggingEnabled {
+public class EventIdConverterTest extends RsbTestCase {
 
     @Test
     public void roundtrip() throws Throwable {

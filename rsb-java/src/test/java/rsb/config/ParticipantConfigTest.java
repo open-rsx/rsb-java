@@ -33,14 +33,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * Test for {@link ParticipantConfig}.
  *
  * @author jwienke
  */
-public class ParticipantConfigTest extends LoggingEnabled {
+public class ParticipantConfigTest extends RsbTestCase {
 
     @Test
     public void construction() {

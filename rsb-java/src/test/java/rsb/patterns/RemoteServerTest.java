@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rsb.Factory;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.Scope;
 import rsb.Utilities;
 
@@ -44,7 +44,7 @@ import rsb.Utilities;
  * @author swrede
  * @author jwienke
  */
-public class RemoteServerTest extends LoggingEnabled {
+public class RemoteServerTest extends RsbTestCase {
 
     private static final double TIMEOUT_DELTA = 0.01;
     private static final Scope SCOPE = new Scope("/example/test");

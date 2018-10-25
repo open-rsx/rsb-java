@@ -32,13 +32,13 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.Utilities;
 
 /**
  * @author swrede
  */
-public class SpreadWrapperTest extends LoggingEnabled {
+public class SpreadWrapperTest extends RsbTestCase {
 
     @Test
     public void spreadWrapper() throws Throwable {

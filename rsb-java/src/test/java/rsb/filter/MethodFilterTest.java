@@ -33,12 +33,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * @author jmoringe
  */
-public class MethodFilterTest extends LoggingEnabled {
+public class MethodFilterTest extends RsbTestCase {
 
     @Test
     public void test() {

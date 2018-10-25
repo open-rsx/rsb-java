@@ -27,8 +27,6 @@
  */
 package rsb;
 
-import java.io.File;
-
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.transport.spread.SpreadOptions;
@@ -42,7 +40,7 @@ import rsb.util.Properties;
  *
  * @author jwienke
  */
-public final class Utilities extends LoggingEnabled {
+public final class Utilities {
 
     private Utilities() {
         super();
@@ -78,11 +76,7 @@ public final class Utilities extends LoggingEnabled {
 
         // handle configuration
         final Properties properties = new Properties();
-        new ConfigLoader().loadFileIfAvailable(
-                0,
-                new File(System.getProperty("user.dir") + "/rsb.conf"),
-                "Test config file",
-                properties);
+        new ConfigLoader().loadEnv(properties);
         new ParticipantConfigCreator().reconfigure(config, properties);
 
         return config;

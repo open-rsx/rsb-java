@@ -36,14 +36,14 @@ import java.util.List;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * Test for {@link LinuxHostInfo}.
  *
  * @author jwienke
  */
-public class LinuxHostInfoTest extends LoggingEnabled {
+public class LinuxHostInfoTest extends RsbTestCase {
 
     private static final String NON_EXISTING_PATH =
             "i/do/not/exists.txttxtxtxt";

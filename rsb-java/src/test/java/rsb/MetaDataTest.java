@@ -40,7 +40,7 @@ import rsb.util.ExactTime;
  *
  * @author jwienke
  */
-public class MetaDataTest extends LoggingEnabled {
+public class MetaDataTest extends RsbTestCase {
 
     private static final int MILLIS_TO_MICROS = 1000;
     private static final int ALLOWED_DELTA_MICROS = 100000;

@@ -38,7 +38,7 @@ import rsb.util.UUIDTools;
 /**
  * @author swrede
  */
-public class ParticipantIdTest extends LoggingEnabled {
+public class ParticipantIdTest extends RsbTestCase {
 
     private static final String KNOWN_ID =
             "2a4b89df-d5a2-4671-af2e-7e7f7ff8961d";

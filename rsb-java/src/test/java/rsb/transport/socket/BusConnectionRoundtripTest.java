@@ -37,7 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
@@ -45,7 +45,7 @@ import rsb.protocol.NotificationType.Notification;
  * @author jwienke
  * @author swrede
  */
-public class BusConnectionRoundtripTest extends LoggingEnabled {
+public class BusConnectionRoundtripTest extends RsbTestCase {
 
     private ServerSocket serverSocket;
     private BusClientConnection client;

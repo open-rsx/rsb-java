@@ -37,7 +37,7 @@ import org.junit.Test;
  *
  * @author jwienke
  */
-public class VersionTest extends LoggingEnabled {
+public class VersionTest extends RsbTestCase {
 
     @Test
     public void versionString() {
