@@ -36,7 +36,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.ParticipantId;
 import rsb.Scope;
 
@@ -44,7 +44,7 @@ import rsb.Scope;
  * @author swrede
  * @author jwienke
  */
-public class FilterObservableTest extends LoggingEnabled {
+public class FilterObservableTest extends RsbTestCase {
 
     private static final class TestObserver implements FilterObserver {
 

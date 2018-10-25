@@ -36,12 +36,12 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * @author jwienke
  */
-public class DoubleConverterTest extends LoggingEnabled {
+public class DoubleConverterTest extends RsbTestCase {
 
     private static final int SERIALIZED_NUM_BYTES = 8;
 

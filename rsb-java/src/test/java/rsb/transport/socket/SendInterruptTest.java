@@ -33,7 +33,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.protocol.NotificationType.Notification;
 
 /**
@@ -45,7 +45,7 @@ import rsb.protocol.NotificationType.Notification;
  *
  * @author jwienke
  */
-public class SendInterruptTest extends LoggingEnabled {
+public class SendInterruptTest extends RsbTestCase {
 
     private BusServer server;
     private BusClient client;

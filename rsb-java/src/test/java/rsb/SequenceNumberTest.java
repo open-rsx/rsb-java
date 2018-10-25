@@ -37,7 +37,7 @@ import rsb.transport.SequenceNumber;
  * @author swrede
  * @author jwienke
  */
-public class SequenceNumberTest extends LoggingEnabled {
+public class SequenceNumberTest extends RsbTestCase {
 
     @Test
     public void defaultConstructor() {

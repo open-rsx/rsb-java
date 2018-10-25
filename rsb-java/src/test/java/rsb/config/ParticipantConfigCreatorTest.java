@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.transport.DefaultTransports;
 import rsb.transport.TransportRegistry;
 import rsb.util.Properties;
@@ -43,7 +43,7 @@ import rsb.util.Properties;
  *
  * @author jwienke
  */
-public class ParticipantConfigCreatorTest extends LoggingEnabled {
+public class ParticipantConfigCreatorTest extends RsbTestCase {
 
     private static final String FALSE_STRING = "false";
     private static final String SPREAD_TRANSPORT = "spread";

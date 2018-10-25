@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class EventIdTest extends LoggingEnabled {
+public class EventIdTest extends RsbTestCase {
 
     private final ParticipantId participantId = new ParticipantId();
 

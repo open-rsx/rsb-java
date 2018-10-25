@@ -32,12 +32,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * @author swrede
  */
-public class ConverterSignatureTest extends LoggingEnabled {
+public class ConverterSignatureTest extends RsbTestCase {
 
     private static final String ENCODING = "utf-8-string";
 

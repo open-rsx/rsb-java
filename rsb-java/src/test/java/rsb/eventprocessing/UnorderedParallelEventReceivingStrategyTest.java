@@ -36,12 +36,12 @@ import org.junit.Test;
 
 import rsb.AbstractEventHandler;
 import rsb.Event;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * @author swrede
  */
-public class UnorderedParallelEventReceivingStrategyTest extends LoggingEnabled {
+public class UnorderedParallelEventReceivingStrategyTest extends RsbTestCase {
 
     private final class TestHandler extends AbstractEventHandler {
 

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.ParticipantId;
 import rsb.Scope;
 
@@ -42,7 +42,7 @@ import rsb.Scope;
  *
  * @author jmoringe
  */
-public class OriginFilterTest extends LoggingEnabled {
+public class OriginFilterTest extends RsbTestCase {
 
     @Test
     public void transform() {

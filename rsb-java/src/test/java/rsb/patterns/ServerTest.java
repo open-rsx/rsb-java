@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import rsb.Factory;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.Utilities;
@@ -45,7 +45,7 @@ import rsb.Utilities;
 /**
  * @author swrede
  */
-public class ServerTest extends LoggingEnabled {
+public class ServerTest extends RsbTestCase {
 
     private static final String CALL_METHOD_NAME = "callme";
     private static final Logger LOG = Logger.getLogger(ServerTest.class

@@ -35,7 +35,7 @@ import org.junit.Test;
 import rsb.Scope;
 import rsb.EventId;
 import rsb.Event;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.ParticipantId;
 
 /**
@@ -43,7 +43,7 @@ import rsb.ParticipantId;
  *
  * @author jmoringe
  */
-public class CauseFilterTest extends LoggingEnabled {
+public class CauseFilterTest extends RsbTestCase {
 
     static final Scope SCOPE = new Scope("/foo");
     static final String PAYLOAD = "foo";

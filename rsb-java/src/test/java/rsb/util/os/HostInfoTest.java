@@ -32,12 +32,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 
 /**
  * @author swrede
  */
-public class HostInfoTest extends LoggingEnabled {
+public class HostInfoTest extends RsbTestCase {
 
     @Test
     public void testHostInfo() {

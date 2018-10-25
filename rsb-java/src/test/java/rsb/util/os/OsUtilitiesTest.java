@@ -33,14 +33,14 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.util.os.OsUtilities.MachineType;
 import rsb.util.os.OsUtilities.OsFamily;
 
 /**
  * @author swrede
  */
-public class OsUtilitiesTest extends LoggingEnabled {
+public class OsUtilitiesTest extends RsbTestCase {
 
     @Test
     public void getOsName() {

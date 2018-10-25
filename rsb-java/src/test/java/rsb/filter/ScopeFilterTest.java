@@ -34,14 +34,14 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.LoggingEnabled;
+import rsb.RsbTestCase;
 import rsb.ParticipantId;
 import rsb.Scope;
 
 /**
  * @author swrede
  */
-public class ScopeFilterTest extends LoggingEnabled {
+public class ScopeFilterTest extends RsbTestCase {
 
     private static final Scope DEFAULT_SCOPE = new Scope("/images");
     private static final int RANDOM_SEQUENCE = 2345;
