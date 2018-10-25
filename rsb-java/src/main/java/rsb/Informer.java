@@ -115,17 +115,14 @@ public class Informer<DataType extends Object> extends Participant {
 
         @Override
         public void activate() throws RSBException {
+            Informer.super.activate();
+            Informer.this.router.activate();
             Informer.this.state = new StateActive();
             LOG.log(Level.FINE,
                     "Informer activated: [Scope={0}, Type={1}]",
                     new Object[] { Informer.this.getScope(),
                             Informer.this.type.getName() });
-            try {
-                Informer.this.router.activate();
-            } catch (final RSBException e) {
-                throw new InitializeException(e);
-            }
-            Informer.super.activate();
+            Informer.this.activated();
         }
 
         @Override

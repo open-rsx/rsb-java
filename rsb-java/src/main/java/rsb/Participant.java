@@ -39,9 +39,10 @@ import rsb.config.ParticipantConfig;
  *
  * Implementing classes need to ensure that {@link #activate()} and
  * {@link #deactivate()} are called in case these methods are overridden. Method
- * {@link #activate()} needs to be called once all required internal details are
- * set up and processing is possible now and {@link #deactivate()} needs to be
- * called before functionality is teared down.
+ * {@link #activate()} has to be called before setting up the active state.
+ * Method {@link #activated()} needs to be called once all required internal
+ * details are set up and processing is possible now and {@link #deactivate()}
+ * needs to be called before functionality is teared down.
  *
  * @author jwienke
  * @author swrede
@@ -84,6 +85,16 @@ public abstract class Participant extends AbstractActivatable {
                             + "and subsequently deactivated once. "
                             + "Multiple cycles are not supported.");
         }
+    }
+
+    /**
+     * Post-activation hook. To be called by subclasses after their activation
+     * has finished and they have effectively entered the active state.
+     *
+     * @throws RSBException
+     *                 activation hook failed
+     */
+    protected void activated() throws RSBException {
         if (this.observerManager != null) {
             this.observerManager.notifyParticipantCreated(this, this.createArgs);
         }

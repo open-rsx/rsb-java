@@ -114,6 +114,24 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
         this.participant.activate();
     }
 
+    @Test
+    public void inactiveAfterActivationFailure() throws Exception {
+        final ParticipantConfig config =
+                Utilities.createBrokenParticipantConfig();
+        final Participant participant = createParticipant(config);
+        try {
+            participant.activate();
+            // if activation doesn't fail (for instance for remote servers,
+            // which do nothing serious with the transport on activation), we
+            // cannot check this. So, tear down everything and leave the test.
+            participant.deactivate();
+            return;
+        } catch (final RSBException e) {
+            // expected
+        }
+        assertFalse(participant.isActive());
+    }
+
 }
 
 //CHECKSTYLE.ON: JavadocMethod

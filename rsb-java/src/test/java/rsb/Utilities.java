@@ -29,6 +29,7 @@ package rsb;
 
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
+import rsb.config.TransportConfig;
 import rsb.transport.spread.SpreadOptions;
 import rsb.transport.spread.SpreadWrapper;
 import rsb.transport.spread.SpreadWrapperImpl;
@@ -41,6 +42,11 @@ import rsb.util.Properties;
  * @author jwienke
  */
 public final class Utilities {
+
+    private static final String SOCKET_TRANSPORT_CONFIG_KEY = "socket";
+    private static final String SOCKET_TRANSPORT_PORT_KEY =
+            "transport.socket.port";
+    private static final int SOCKET_PORT_OFFSET = 10;
 
     private Utilities() {
         super();
@@ -72,7 +78,8 @@ public final class Utilities {
     public static ParticipantConfig createParticipantConfig() {
 
         final ParticipantConfig config = new ParticipantConfig();
-        config.getOrCreateTransport("socket").setEnabled(true);
+        config.getOrCreateTransport(
+                SOCKET_TRANSPORT_CONFIG_KEY).setEnabled(true);
 
         // handle configuration
         final Properties properties = new Properties();
@@ -81,6 +88,26 @@ public final class Utilities {
 
         return config;
 
+    }
+
+    /**
+     * Creates a participant config that will result in a failure in case a
+     * client tries to use it because the transport will not connect.
+     *
+     * @return a participant configuration that fails connecting
+     */
+    public static ParticipantConfig createBrokenParticipantConfig() {
+        final ParticipantConfig config = Utilities.createParticipantConfig();
+        final TransportConfig socketConfig = config.getOrCreateTransport(
+                SOCKET_TRANSPORT_CONFIG_KEY);
+        socketConfig.getOptions().setProperty(
+                SOCKET_TRANSPORT_PORT_KEY,
+                Integer.toString(
+                    socketConfig.getOptions().getProperty(
+                        SOCKET_TRANSPORT_PORT_KEY).asInteger()
+                    + SOCKET_PORT_OFFSET));
+        socketConfig.getOptions().setProperty("transport.socket.server", "0");
+        return config;
     }
 
 }
