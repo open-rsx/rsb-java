@@ -44,12 +44,4 @@ public enum FilterAction {
      */
     REMOVE,
 
-    /**
-     * Filter parameters are updated?
-     *
-     * @deprecated we don't support parameter updates
-     */
-    @Deprecated
-    UPDATE
-
 }
