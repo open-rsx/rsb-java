@@ -182,39 +182,11 @@ public class Event {
     }
 
     /**
-     * Returns the id of the sending participant for this event.
-     *
-     * @return sending participant id
-     * @throws IllegalStateException
-     *             the id is not yet defined because the event was not sent by
-     *             an {@link Informer} so far
-     * @deprecated use {@link #getId()} instead
-     */
-    @Deprecated
-    public ParticipantId getSenderId() {
-        return this.getId().getParticipantId();
-    }
-
-    /**
      * @param scope
      *            the scope to set
      */
     public void setScope(final Scope scope) {
         this.scope = scope;
-    }
-
-    /**
-     * Returns the sequence number of the informer that sent the event.
-     *
-     * @return unique number within one informer that sends an event
-     * @throws IllegalStateException
-     *             the id is not yet defined because the event was not sent by
-     *             an {@link Informer} so far
-     * @deprecated use {@link #getId()} instead
-     */
-    @Deprecated
-    public long getSequenceNumber() {
-        return this.getId().getSequenceNumber();
     }
 
     /**

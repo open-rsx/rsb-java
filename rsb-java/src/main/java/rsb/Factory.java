@@ -698,21 +698,6 @@ public final class Factory {
     }
 
     /**
-     * Returns the participant config used per default for new participants.
-     *
-     * This instance might be modified but changes are only applied to newly
-     * created participants.
-     *
-     * @return default participant config
-     * @deprecated use {@link #getDefaultParticipantConfig()} (without typo in
-     *             name)
-     */
-    @Deprecated
-    public ParticipantConfig getDefaulParticipantconfig() {
-        return getDefaultParticipantConfig();
-    }
-
-    /**
      * Adds an observer to be notified on participant changes.
      *
      * @param observer
