@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2013 CoR-Lab, Bielefeld University
+ * Copyright (C) 2018 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,48 +25,27 @@
  *
  * ============================================================
  */
-package rsb.transport;
 
-import rsb.transport.inprocess.InProcessFactory;
-import rsb.transport.socket.SocketFactory;
-import rsb.transport.spread.SpreadFactory;
+package rsb.transport.socket;
+
+import rsb.plugin.LoadingException;
+import rsb.transport.TransportRegistry;
 
 /**
- * A class statically registering all directly implemented transports.
+ * Plugin implementation for the socket transport.
  *
  * @author jwienke
  */
-public final class DefaultTransports {
+public class Plugin implements rsb.plugin.Plugin {
 
-    private static Boolean registered = false;
-
-    private DefaultTransports() {
-        super();
-        // prevent instantiation of a utility class
-    }
-
-    /**
-     * Registers the known transports. Can be called multiple times.
-     */
-    public static void register() {
-
-        synchronized (registered) {
-
-            if (registered) {
-                return;
-            }
-
-            TransportRegistry.getDefaultInstance().registerTransport("spread",
-                    new SpreadFactory());
+    @Override
+    public void initialize() throws LoadingException {
+        try {
             TransportRegistry.getDefaultInstance().registerTransport("socket",
                     new SocketFactory());
-            TransportRegistry.getDefaultInstance().registerTransport(
-                    "inprocess", new InProcessFactory());
-
-            registered = true;
-
+        } catch (final IllegalArgumentException e) {
+            throw new LoadingException(e);
         }
-
     }
 
 }

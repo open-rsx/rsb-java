@@ -35,7 +35,6 @@ import java.util.Set;
 import org.junit.Test;
 
 import rsb.converter.DefaultConverters;
-import rsb.transport.DefaultTransports;
 
 /**
  * User-level test for RSBJava.
@@ -50,7 +49,6 @@ public class UserLevelTest extends RsbTestCase {
     public void roundtrip() throws Throwable {
 
         DefaultConverters.register();
-        DefaultTransports.register();
 
         final Scope scope = new Scope("/example/informer");
 

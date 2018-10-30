@@ -37,7 +37,6 @@ import org.junit.Test;
 
 import rsb.config.ParticipantConfig;
 import rsb.converter.DefaultConverters;
-import rsb.transport.DefaultTransports;
 
 //CHECKSTYLE.OFF: JavadocMethod - test class
 
@@ -56,7 +55,6 @@ public abstract class ParticipantStateCheck extends RsbTestCase {
     @BeforeClass
     public static void registerConverters() {
         DefaultConverters.register();
-        DefaultTransports.register();
     }
 
     @Before

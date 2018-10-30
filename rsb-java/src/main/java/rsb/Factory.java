@@ -44,7 +44,6 @@ import rsb.introspection.IntrospectionParticipantObserver;
 import rsb.introspection.LacksOsInformationException;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
-import rsb.transport.DefaultTransports;
 import rsb.plugin.PluginManager;
 
 import rsb.util.ConfigLoader;
@@ -169,11 +168,14 @@ public final class Factory {
                 this.properties);
 
         DefaultConverters.register();
-        DefaultTransports.register();
 
         // load plugins
         final PluginManager manager = new PluginManager();
         final Set<String> pluginNames = new HashSet<>();
+        // default plugins
+        pluginNames.add("rsb.transport.inprocess");
+        pluginNames.add("rsb.transport.socket");
+        pluginNames.add("rsb.transport.spread");
         for (final String pluginName : this.properties
                 .getProperty(PLUGIN_LOAD_KEY, "").asString().split(":")) {
             final String trimmed = pluginName.trim();
