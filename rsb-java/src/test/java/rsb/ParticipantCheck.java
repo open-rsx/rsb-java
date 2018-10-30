@@ -38,7 +38,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rsb.converter.DefaultConverters;
-import rsb.transport.DefaultTransports;
 
 /**
  * Abstract test for {@link Participant} implementations.
@@ -61,7 +60,6 @@ public abstract class ParticipantCheck extends RsbTestCase {
     @BeforeClass
     public static void registerConverters() {
         DefaultConverters.register();
-        DefaultTransports.register();
     }
 
     @Before

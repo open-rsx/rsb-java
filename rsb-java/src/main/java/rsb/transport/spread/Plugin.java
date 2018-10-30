@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2013 CoR-Lab, Bielefeld University
+ * Copyright (C) 2018 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,24 +25,28 @@
  *
  * ============================================================
  */
-package rsb.transport;
 
-import org.junit.Test;
+package rsb.transport.spread;
 
-import rsb.RsbTestCase;
+import rsb.plugin.LoadingException;
+import rsb.transport.TransportRegistry;
 
 /**
- * Test for {@link DefaultTransports}.
+ * Plugin implementation for the spread transport.
  *
  * @author jwienke
  */
-public class DefaultTransportsTest extends RsbTestCase {
+public class Plugin implements rsb.plugin.Plugin {
 
-    @Test
-    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-    public void duplicatedRegistration() {
-        DefaultTransports.register();
-        DefaultTransports.register();
+    @Override
+    public void initialize() throws LoadingException {
+        try {
+            TransportRegistry.getDefaultInstance().registerTransport("spread",
+                    new SpreadFactory());
+        } catch (final IllegalArgumentException e) {
+            throw new LoadingException(e);
+        }
     }
 
 }
+

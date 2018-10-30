@@ -30,11 +30,9 @@ package rsb.config;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import rsb.RsbTestCase;
-import rsb.transport.DefaultTransports;
 import rsb.transport.TransportRegistry;
 import rsb.util.Properties;
 
@@ -47,11 +45,6 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
 
     private static final String FALSE_STRING = "false";
     private static final String SPREAD_TRANSPORT = "spread";
-
-    @BeforeClass
-    public static void registerDefaultTransports() {
-        DefaultTransports.register();
-    }
 
     @Test
     public void createContainsAllTransports() {
