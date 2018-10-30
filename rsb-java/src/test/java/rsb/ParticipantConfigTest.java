@@ -68,7 +68,7 @@ public class ParticipantConfigTest extends RsbTestCase {
     public void equalsTransport() {
 
         final TransportConfig transportA =
-                this.configA.getOrCreateTransport("spread");
+                this.configA.getOrCreateTransport("socket");
         assertNotEquals(this.configA, this.configB);
 
         final TransportConfig transportB =

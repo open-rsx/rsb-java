@@ -30,14 +30,11 @@ package rsb;
 import rsb.config.ParticipantConfig;
 import rsb.config.ParticipantConfigCreator;
 import rsb.config.TransportConfig;
-import rsb.transport.spread.SpreadOptions;
-import rsb.transport.spread.SpreadWrapper;
-import rsb.transport.spread.SpreadWrapperImpl;
 import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
 /**
- * A class with helpers for testing the spread transport.
+ * A class with test helpers.
  *
  * @author jwienke
  */
@@ -51,22 +48,6 @@ public final class Utilities {
     private Utilities() {
         super();
         // prevent initialization of helper class
-    }
-
-    /**
-     * Creates a {@link SpreadWrapper} instance while respecting the RSB global
-     * configuration.
-     *
-     * @return new instance
-     * @throws Throwable
-     *             error configuring
-     */
-    public static SpreadWrapper createSpreadWrapper() throws Throwable {
-        final ConfigLoader loader = new ConfigLoader();
-        return new SpreadWrapperImpl(
-                new SpreadOptions("localhost", loader.load(new Properties())
-                        .getProperty("transport.spread.port", "4803")
-                        .asInteger(), true));
     }
 
     /**

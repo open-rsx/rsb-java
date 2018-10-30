@@ -44,7 +44,7 @@ import rsb.util.Properties;
 public class ParticipantConfigCreatorTest extends RsbTestCase {
 
     private static final String FALSE_STRING = "false";
-    private static final String SPREAD_TRANSPORT = "spread";
+    private static final String SOCKET_TRANSPORT = "socket";
 
     @Test
     public void createContainsAllTransports() {
@@ -62,10 +62,10 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
     public void reconfigurePreservesEnabled() {
 
         final ParticipantConfig config = new ParticipantConfig();
-        config.getOrCreateTransport(SPREAD_TRANSPORT).setEnabled(true);
+        config.getOrCreateTransport(SOCKET_TRANSPORT).setEnabled(true);
         new ParticipantConfigCreator().reconfigure(config, new Properties());
 
-        assertTrue(config.getTransports().get(SPREAD_TRANSPORT).isEnabled());
+        assertTrue(config.getTransports().get(SOCKET_TRANSPORT).isEnabled());
 
     }
 
@@ -73,13 +73,13 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
     public void enable() {
 
         final Properties props = new Properties();
-        props.setProperty("transport.spread.enabled", FALSE_STRING);
+        props.setProperty("transport.socket.enabled", FALSE_STRING);
 
         final ParticipantConfig config = new ParticipantConfig();
-        config.getOrCreateTransport(SPREAD_TRANSPORT).setEnabled(true);
+        config.getOrCreateTransport(SOCKET_TRANSPORT).setEnabled(true);
         new ParticipantConfigCreator().reconfigure(config, props);
 
-        assertFalse(config.getTransports().get(SPREAD_TRANSPORT).isEnabled());
+        assertFalse(config.getTransports().get(SOCKET_TRANSPORT).isEnabled());
 
     }
 
@@ -87,7 +87,7 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
     public void options() {
 
         final Properties props = new Properties();
-        final String key1 = "transport.spread.foo";
+        final String key1 = "transport.socket.foo";
         final String randomValue = "42";
         props.setProperty(key1, randomValue);
         final String key2 = "transport.test";
@@ -96,14 +96,14 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
         props.setProperty(key3, randomValue);
 
         final ParticipantConfig config = new ParticipantConfig();
-        config.getOrCreateTransport(SPREAD_TRANSPORT).setEnabled(true);
+        config.getOrCreateTransport(SOCKET_TRANSPORT).setEnabled(true);
         new ParticipantConfigCreator().reconfigure(config, props);
 
-        assertTrue(config.getTransports().get(SPREAD_TRANSPORT).getOptions()
+        assertTrue(config.getTransports().get(SOCKET_TRANSPORT).getOptions()
                 .hasProperty(key1));
-        assertFalse(config.getTransports().get(SPREAD_TRANSPORT).getOptions()
+        assertFalse(config.getTransports().get(SOCKET_TRANSPORT).getOptions()
                 .hasProperty(key2));
-        assertFalse(config.getTransports().get(SPREAD_TRANSPORT).getOptions()
+        assertFalse(config.getTransports().get(SOCKET_TRANSPORT).getOptions()
                 .hasProperty(key3));
 
     }

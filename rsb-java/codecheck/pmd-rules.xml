@@ -5,9 +5,6 @@
 
     <description>rsb-java rules</description>
 
-    <!-- Files we want to scan -->
-    <exclude-pattern>.*/java/spread/.*</exclude-pattern>
-
     <rule ref="rulesets/java/basic.xml" />
     <rule ref="rulesets/java/braces.xml" />
     <rule ref="rulesets/java/clone.xml" />

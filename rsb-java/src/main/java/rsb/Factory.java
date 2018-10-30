@@ -175,7 +175,6 @@ public final class Factory {
         // default plugins
         pluginNames.add("rsb.transport.inprocess");
         pluginNames.add("rsb.transport.socket");
-        pluginNames.add("rsb.transport.spread");
         for (final String pluginName : this.properties
                 .getProperty(PLUGIN_LOAD_KEY, "").asString().split(":")) {
             final String trimmed = pluginName.trim();

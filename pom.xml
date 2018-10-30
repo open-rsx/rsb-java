@@ -30,13 +30,9 @@
         <url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
     </scm>
 
-    <!-- Properties that can be overridden using e.g. 'mvn -Dspread.daemon=/some/path
-        package'. -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pbuf.version>3.4.0</pbuf.version>
-        <spread.daemon>/usr/sbin/spread</spread.daemon>
-        <spread.port>4910</spread.port>
         <socket.port>55444</socket.port>
         <target.java.version>1.7</target.java.version>
         <plugin.checkstyle.version>2.15</plugin.checkstyle.version>

@@ -10,6 +10,5 @@
     <suppress files="[\\/]test[\\/]" checks="JavadocPackage"/>
     <suppress files="[\\/]test[\\/]" checks="JavadocVariable"/>
     <suppress files="[\\/]resources[\\/]" checks=".*"/>
-    <suppress files="[\\/]java[\\/]spread[\\/]" checks=".*"/>
     <suppress files="[\\/]generated-sources[\\/]" checks=".*"/>
 </suppressions>

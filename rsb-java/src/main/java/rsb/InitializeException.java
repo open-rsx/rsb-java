@@ -31,10 +31,6 @@ package rsb;
  * An InitializeException indicates erroneous situations during the setup of the
  * communication infrastructure.
  *
- * Other sources for this exception are related to the spread group
- * communication framework. The value of getMessage() can be inspected to
- * determine the actual reason for this exception.
- *
  * @author swrede
  */
 public class InitializeException extends RSBException {

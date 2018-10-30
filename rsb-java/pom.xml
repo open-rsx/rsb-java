@@ -41,14 +41,6 @@
                                     <!-- This defines the minimum version. -->
                                     <version>${target.java.version}</version>
                                 </requireJavaVersion>
-                                <requireFilesExist>
-                                    <message>
-Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
-                                    </message>
-                                    <files>
-                                        <file>${spread.daemon}</file>
-                                    </files>
-                                </requireFilesExist>
                             </rules>
                         </configuration>
                     </execution>
@@ -71,7 +63,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                         </property>
                     </systemProperties>
                     <environmentVariables>
-                        <RSB_TRANSPORT_SPREAD_PORT>${spread.port}</RSB_TRANSPORT_SPREAD_PORT>
                         <RSB_TRANSPORT_SOCKET_PORT>${socket.port}</RSB_TRANSPORT_SOCKET_PORT>
                     </environmentVariables>
                 </configuration>
@@ -124,14 +115,9 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                 </executions>
                 <configuration>
                     <includes>
-                        <include>${project.basedir}/src/test/resources/spread.conf</include>
                         <include>${project.basedir}/src/test/resources/logging.properties</include>
                     </includes>
                     <replacements>
-                        <replacement>
-                            <token>@SPREAD_PORT@</token>
-                            <value>${spread.port}</value>
-                        </replacement>
                         <replacement>
                             <token>@LOGGING_DIR@</token>
                             <value>${project.basedir}/target</value>
@@ -148,64 +134,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                     <preserveDir>false</preserveDir>
                     <regex>false</regex>
                 </configuration>
-            </plugin>
-
-            <!-- Different steps realized using ant. -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <!-- Start spread before running tests. -->
-                    <execution>
-                        <id>start-spread</id>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-                            <target>
-                                <taskdef
-                                    resource="net/sf/antcontrib/antcontrib.properties"
-                                    classpathref="maven.plugin.classpath" />
-                                <if>
-                                    <not>
-                                        <equals arg1="${skipTests}"
-                                            arg2="true" />
-                                    </not>
-                                    <then>
-                                        <forget>
-                                            <exec executable="${spread.daemon}">
-                                                <arg line="-n localhost -c ${test.configs}/spread.conf" />
-                                            </exec>
-                                        </forget>
-
-                                        <sleep seconds="10" />
-                                    </then>
-                                </if>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <!-- All this is needed to get ant-contrib in the ant
-                        task above. -->
-                    <dependency>
-                        <groupId>ant-contrib</groupId>
-                        <artifactId>ant-contrib</artifactId>
-                        <version>1.0b3</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>ant</groupId>
-                                <artifactId>ant</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>1.8.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <!-- Jacoco coverage report -->
@@ -296,7 +224,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                 <version>${plugin.javadoc.version}</version>
                 <configuration>
                     <show>protected</show>
-                    <excludePackageNames>spread</excludePackageNames>
                     <quiet>true</quiet>
                 </configuration>
             </plugin>
@@ -406,7 +333,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                 <version>${plugin.jacoco.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>spread/**/*.*</exclude>
                         <exclude>rsb/protocol/**/*Type*.*</exclude>
                         <exclude>rsb/protocol/**/Package.*</exclude>
                     </excludes>
@@ -427,7 +353,6 @@ Spread daemon not found at '${spread.daemon}'. Please set spread.daemon.
                 <version>${plugin.javadoc.version}</version>
                 <configuration>
                     <show>protected</show>
-                    <excludePackageNames>spread</excludePackageNames>
                     <quiet>true</quiet>
                 </configuration>
             </plugin>
