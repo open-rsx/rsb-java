@@ -29,8 +29,11 @@
 package rsb;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +45,8 @@ import rsb.introspection.LacksOsInformationException;
 import rsb.patterns.LocalServer;
 import rsb.patterns.RemoteServer;
 import rsb.transport.DefaultTransports;
+import rsb.plugin.PluginManager;
+
 import rsb.util.ConfigLoader;
 import rsb.util.Properties;
 
@@ -65,6 +70,11 @@ public final class Factory {
     @SuppressWarnings("PMD.LongVariable")
     private static final String INTROSPECTION_DISPLAYNAME_KEY =
             "introspection.displayname";
+
+    /**
+     * Configuration key for plugins to load.
+     */
+    private static final String PLUGIN_LOAD_KEY = "plugin.java.load";
 
     /**
      * The singleton instance.
@@ -152,16 +162,26 @@ public final class Factory {
      */
     private Factory() {
 
+        // construct default participant config with default transport
+        new ConfigLoader().load(this.properties);
+        this.defaultConfig.getOrCreateTransport("socket").setEnabled(true);
+        new ParticipantConfigCreator().reconfigure(this.defaultConfig,
+                this.properties);
+
         DefaultConverters.register();
         DefaultTransports.register();
 
-        // construct default participant config with default transport
-        this.defaultConfig.getOrCreateTransport("socket").setEnabled(true);
-
-        // handle configuration
-        new ConfigLoader().load(this.properties);
-        new ParticipantConfigCreator().reconfigure(this.defaultConfig,
-                this.properties);
+        // load plugins
+        final PluginManager manager = new PluginManager();
+        final Set<String> pluginNames = new HashSet<>();
+        for (final String pluginName : this.properties
+                .getProperty(PLUGIN_LOAD_KEY, "").asString().split(":")) {
+            final String trimmed = pluginName.trim();
+            if (!trimmed.isEmpty()) {
+                pluginNames.add(trimmed);
+            }
+        }
+        manager.loadPlugins(pluginNames);
 
         // add support for introspection
         String introspectionDisplayName = null;
