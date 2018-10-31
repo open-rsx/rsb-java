@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2013 CoR-Lab, Bielefeld University
+ * Copyright (C) 2013, 2018 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,20 +25,23 @@
  *
  * ============================================================
  */
-package rsb.transport;
+package rsb.testutils;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import rsb.Event;
 import rsb.EventId;
-import rsb.RsbTestCase;
 import rsb.ParticipantId;
 import rsb.Scope;
+import rsb.transport.EventHandler;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 
 // CHECKSTYLE.OFF: MagicNumber - test values
 // CHECKSTYLE.OFF: JavadocMethod - test class
@@ -46,9 +49,22 @@ import rsb.Scope;
 /**
  * Base class for a generic roundtrip check for Connectors.
  *
+ * For reusability-reasons, this class does extend RsbTestCase, which uses
+ * opinionated default for testing the main framework. Instead, the appropriate
+ * JUnit rules are applied manually or rebuilt with changeable defaults.
+ *
  * @author jwienke
  */
-public abstract class ConnectorRoundtripCheck extends RsbTestCase {
+public abstract class ConnectorRoundtripCheck extends LoggingTestCase {
+
+    // CHECKSTYLE.OFF: VisibilityModifier - required by junit
+    /**
+     * Optionally, sleep between test cases.
+     */
+    @Rule
+    public final SleepRule sleeper = new SleepRule();
+    // CHECKSTYLE.ON: VisibilityModifier
+
 
     private final int dataSize;
 

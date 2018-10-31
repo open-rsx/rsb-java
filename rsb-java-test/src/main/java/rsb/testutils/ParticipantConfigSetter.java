@@ -25,38 +25,35 @@
  *
  * ============================================================
  */
-package rsb.transport.socket;
+package rsb.testutils;
 
-import java.nio.ByteBuffer;
+import rsb.Factory;
+import rsb.config.ParticipantConfig;
 
-import rsb.converter.UnambiguousConverterMap;
-import rsb.transport.ConnectorCheck;
-import rsb.transport.InPushConnector;
-import rsb.transport.OutConnector;
+import org.junit.rules.ExternalResource;
 
 /**
- * Test for socket connectors.
+ * A JUnit rule to set a specified {@link ParticipantConfig} before a test.
  *
  * @author jwienke
  */
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
-public class SocketConnectorTest extends ConnectorCheck {
+public class ParticipantConfigSetter extends ExternalResource {
 
-    @Override
-    protected InPushConnector createInConnector(
-            final UnambiguousConverterMap<ByteBuffer> converters)
-            throws Throwable {
-        return new SocketInPushConnector(
-                rsb.transport.socket.Utilities.getSocketOptions(),
-                ServerMode.AUTO, converters);
+    private final ParticipantConfig config;
+
+    /**
+     * Creates a new setter that applies the specified config before each test.
+     *
+     * @param config
+     *              the config to apply before each test, not <code>null</code>
+     */
+    public ParticipantConfigSetter(final ParticipantConfig config) {
+        this.config = config;
     }
 
     @Override
-    protected OutConnector createOutConnector(
-            final UnambiguousConverterMap<ByteBuffer> converters)
-            throws Throwable {
-        return new SocketOutConnector(Utilities.getSocketOptions(),
-                ServerMode.AUTO, converters);
+    protected void before() throws Throwable {
+        Factory.getInstance().setDefaultParticipantConfig(config);
     }
 
 }

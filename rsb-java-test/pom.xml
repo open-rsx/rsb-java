@@ -8,69 +8,121 @@
         <artifactId>rsb-java</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>rsb</artifactId>
+    <artifactId>rsb-java-test</artifactId>
     <packaging>jar</packaging>
 
-    <name>rsb-java</name>
+    <name>rsb-java-test</name>
+    <description>
+        Contains the tests for RSB java and generates a JAR with reusable test classes for transport implementations.
+    </description>
+
+    <properties>
+        <test.configs>${project.basedir}/target/generated-test-config</test.configs>
+        <!-- If set to true, test execution pauses shortly between each test to mitigate https://issues.apache.org/jira/browse/SUREFIRE&#45;1587 -->
+        <test.sleep>false</test.sleep>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>rsb</groupId>
+            <artifactId>rsb</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
 
-            <!-- Check the availability of different external dependencies. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-external-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <!-- This makes it fail when the first check fails. -->
-                            <failFast>true</failFast>
-                            <rules>
-                                <requireJavaVersion>
-                                    <!-- This defines the minimum version. -->
-                                    <version>${target.java.version}</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- generate the protocol files -->
-            <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Settings for the generated JAR. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
                 <configuration>
-                    <!-- exclude examples from the jar file -->
-                    <excludes>
-                        <include>*.class</include>
-                    </excludes>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Last-Commit>${git.commit}</Last-Commit>
-                        </manifestEntries>
-                    </archive>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>${test.configs}/logging.properties</value>
+                        </property>
+                        <property>
+                            <name>rsb.test.sleep</name>
+                            <value>${test.sleep}</value>
+                        </property>
+                    </systemProperties>
+                    <environmentVariables>
+                        <RSB_TRANSPORT_SOCKET_PORT>${socket.port}</RSB_TRANSPORT_SOCKET_PORT>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+
+            <!-- Jacoco coverage report -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${plugin.jacoco.version}</version>
+                <configuration>
+                    <append>false</append>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>${project.basedir}/src/test/resources/logging.properties</include>
+                    </includes>
+                    <replacements>
+                        <replacement>
+                            <token>@LOGGING_DIR@</token>
+                            <value>${project.basedir}/target</value>
+                        </replacement>
+                        <!-- ugly hack for windows paths. Otherwise the logging
+                            framework interprets backslashes in the config file
+                            as escaped characters -->
+                        <replacement>
+                            <token>\</token>
+                            <value>/</value>
+                        </replacement>
+                    </replacements>
+                    <outputDir>${test.configs}</outputDir>
+                    <preserveDir>false</preserveDir>
+                    <regex>false</regex>
                 </configuration>
             </plugin>
 
@@ -108,9 +160,6 @@
                     <rulesets>
                         <ruleset>${project.parent.basedir}/codecheck/pmd-rules.xml</ruleset>
                     </rulesets>
-                    <excludeRoots>
-                        <excludeRoot>${project.basedir}/target/generated-sources/protobuf/java</excludeRoot>
-                    </excludeRoots>
                     <failOnViolation>${failOnStyleError}</failOnViolation>
                     <verbose>true</verbose>
                 </configuration>
@@ -141,32 +190,25 @@
                 </configuration>
             </plugin>
 
-            <!-- provide a single flat jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
+
     </build>
 
     <reporting>
         <plugins>
+
+            <!-- Jacoco coverage report -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${plugin.jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>rsb/protocol/**/*Type*.*</exclude>
+                        <exclude>rsb/protocol/**/Package.*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
 
             <!-- Generate cross-referenced HTML for the sources. -->
             <plugin>
@@ -196,9 +238,6 @@
                     <rulesets>
                         <ruleset>${project.parent.basedir}/codecheck/pmd-rules.xml</ruleset>
                     </rulesets>
-                    <excludeRoots>
-                        <excludeRoot>${project.basedir}/target/generated-sources/protobuf/java</excludeRoot>
-                    </excludeRoots>
                 </configuration>
             </plugin>
 

@@ -25,61 +25,37 @@
  *
  * ============================================================
  */
-package rsb;
+package rsb.testutils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.Rule;
-import org.junit.rules.ExternalResource;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 /**
- * Derive all test cases from this class to improve the logging output by
- * including the currently running test name.
+ * Base class for tests that expose visible markers in the Java logging output
+ * between test cases.
  *
  * @author jwienke
  */
-public class RsbTestCase {
+public class LoggingTestCase {
 
-    private static final long SLEEP_TIME_MS = 700;
-
+    // CHECKSTYLE.OFF: VisibilityModifier - required by junit
     /**
      * Rule to start test start and end logging.
      */
-    // CHECKSTYLE.OFF: VisibilityModifier - required by junit
-    @Rule
-    public final ParticipantConfigSetter setter = new ParticipantConfigSetter();
-
     @Rule
     public final TestNameLoggingRule log = new TestNameLoggingRule();
-
-    @Rule
-    public final ExternalResource sleeper = new ExternalResource() {
-
-        @Override
-        protected void after() {
-            // if requested via system property, sleep a bit after each test to
-            // mitigate https://issues.apache.org/jira/browse/SUREFIRE-1587
-            if (Boolean.getBoolean("rsb.test.sleep")) {
-                try {
-                    Thread.sleep(SLEEP_TIME_MS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-
-    };
     // CHECKSTYLE.ON: VisibilityModifier
-
+    //
     private static class TestNameLoggingRule extends TestWatcher {
 
         private static final Logger LOG = Logger.getLogger("UNITTEST");
 
         @Override
-        protected void failed(final Throwable e, final Description description) {
+        protected void failed(final Throwable error, final Description description) {
             LOG.log(Level.INFO, "\n\n----- FAILED: {0}#{1}\n\n", new Object[] {
                     description.getClassName(), description.getMethodName() });
         }
@@ -98,18 +74,6 @@ public class RsbTestCase {
                     "\n\n----- SUCCEEDED: {0}#{1}\n\n",
                     new Object[] { description.getClassName(),
                             description.getMethodName() });
-        }
-
-    }
-
-    private static class ParticipantConfigSetter extends ExternalResource {
-
-        @Override
-        protected void before() throws Throwable {
-            // Set the global participant config to something that reflects the
-            // the provided configuration of the test suite.
-            Factory.getInstance().setDefaultParticipantConfig(
-                    Utilities.createParticipantConfig());
         }
 
     }

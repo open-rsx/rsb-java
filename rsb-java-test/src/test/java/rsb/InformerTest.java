@@ -138,7 +138,7 @@ public class InformerTest extends ParticipantCheck {
     }
 
     /**
-     * Test method for {@link rsb.Informer#send(rsb.Event)}.
+     * Test method for {@link rsb.Informer#publish(rsb.Event)}.
      *
      * @throws Throwable
      *             any error
@@ -164,7 +164,7 @@ public class InformerTest extends ParticipantCheck {
     }
 
     /**
-     * Test method for {@link rsb.Informer#send(rsb.Event)}.
+     * Test method for {@link rsb.Informer#publish(rsb.Event)}.
      *
      * @throws Throwable
      *             any error

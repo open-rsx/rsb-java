@@ -27,46 +27,56 @@
  */
 package rsb.transport.inprocess;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.nio.ByteBuffer;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.Test;
+import org.junit.Rule;
 
-import rsb.transport.ConnectorRoundtripCheck;
+import rsb.Utilities;
+import rsb.converter.UnambiguousConverterMap;
+import rsb.testutils.ConnectorCheck;
+import rsb.testutils.ParticipantConfigSetter;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
 
 /**
- * Roundtrip test for the inprocess transport on user level.
+ * Test for in process connectors.
  *
  * @author jwienke
  */
-@RunWith(value = Parameterized.class)
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
-public class InprocessRoundtripTest extends ConnectorRoundtripCheck {
+public class InprocessConnectorTest extends ConnectorCheck {
 
-    private final Bus bus = new Bus();
+    // CHECKSTYLE.OFF: VisibilityModifier - required by junit
+    /**
+     * Rule to set a default participant config.
+     */
+    @Rule
+    public final ParticipantConfigSetter setter = new ParticipantConfigSetter(
+            Utilities.createParticipantConfig());
+    // CHECKSTYLE.ON: VisibilityModifier
 
-    public InprocessRoundtripTest(final int size) {
-        super(size);
-    }
+    private final rsb.transport.inprocess.Bus bus =
+            new rsb.transport.inprocess.Bus();
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        final Object[][] data = new Object[][] { { 100 } };
-        return Arrays.asList(data);
+    @Override
+    protected InPushConnector createInConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
+        return new rsb.transport.inprocess.InPushConnector(this.bus);
     }
 
     @Override
-    protected OutConnector createOutConnector() throws Throwable {
+    protected OutConnector createOutConnector(
+            final UnambiguousConverterMap<ByteBuffer> converters)
+            throws Throwable {
         return new rsb.transport.inprocess.OutConnector(this.bus);
     }
 
+    @Test
     @Override
-    protected InPushConnector createInConnector() throws Throwable {
-        return new rsb.transport.inprocess.InPushConnector(this.bus);
+    public void noConverterPassedToClient() throws Throwable {
+        // not applicable for inprocess
     }
 
 }

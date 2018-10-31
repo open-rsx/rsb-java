@@ -40,10 +40,12 @@
         <plugin.javadoc.version>3.0.1</plugin.javadoc.version>
         <plugin.jacoco.version>0.8.2</plugin.jacoco.version>
         <failOnStyleError>true</failOnStyleError>
+        <junit.version>4.11</junit.version>
     </properties>
 
     <modules>
         <module>rsb-java</module>
+        <module>rsb-java-test</module>
         <module>rsb-java-examples</module>
     </modules>
 
@@ -154,7 +156,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 

@@ -3,7 +3,7 @@
  *
  * This file is part of the rsb-java project
  *
- * Copyright (C) 2010 CoR-Lab, Bielefeld University
+ * Copyright (C) 2013 CoR-Lab, Bielefeld University
  *
  * This file may be licensed under the terms of the
  * GNU Lesser General Public License Version 3 (the ``LGPL''),
@@ -25,63 +25,60 @@
  *
  * ============================================================
  */
-package rsb.transport.socket;
+package rsb.transport.inprocess;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import rsb.converter.StringConverter;
-import rsb.converter.UnambiguousConverterMap;
-import rsb.transport.ConnectorRoundtripCheck;
+import rsb.Utilities;
 import rsb.transport.InPushConnector;
 import rsb.transport.OutConnector;
+import rsb.testutils.ConnectorRoundtripCheck;
+import rsb.testutils.ParticipantConfigSetter;
 
 /**
+ * Roundtrip test for the inprocess transport on user level.
+ *
  * @author jwienke
  */
 @RunWith(value = Parameterized.class)
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
-public class SocketRoundtripTest extends ConnectorRoundtripCheck {
+public class InprocessRoundtripTest extends ConnectorRoundtripCheck {
 
-    public SocketRoundtripTest(final int size) {
+    // CHECKSTYLE.OFF: VisibilityModifier - required by junit
+    /**
+     * Rule to set a default participant config.
+     */
+    @Rule
+    public final ParticipantConfigSetter setter = new ParticipantConfigSetter(
+            Utilities.createParticipantConfig());
+    // CHECKSTYLE.ON: VisibilityModifier
+
+    private final Bus bus = new Bus();
+
+    public InprocessRoundtripTest(final int size) {
         super(size);
     }
 
     @Parameters
     public static Collection<Object[]> data() {
-        final Object[][] data =
-                new Object[][] { { 100 }, { 90000 }, { 110000 }, { 350000 } };
+        final Object[][] data = new Object[][] { { 100 } };
         return Arrays.asList(data);
     }
 
     @Override
     protected OutConnector createOutConnector() throws Throwable {
-
-        final UnambiguousConverterMap<ByteBuffer> outStrategy =
-                new UnambiguousConverterMap<ByteBuffer>();
-        outStrategy.addConverter(String.class.getName(), new StringConverter());
-
-        return new SocketOutConnector(Utilities.getSocketOptions(),
-                ServerMode.AUTO, outStrategy);
-
+        return new rsb.transport.inprocess.OutConnector(this.bus);
     }
 
     @Override
     protected InPushConnector createInConnector() throws Throwable {
-
-        final UnambiguousConverterMap<ByteBuffer> inStrategy =
-                new UnambiguousConverterMap<ByteBuffer>();
-        inStrategy.addConverter("utf-8-string", new StringConverter());
-
-        return new SocketInPushConnector(
-                rsb.transport.socket.Utilities.getSocketOptions(),
-                ServerMode.AUTO, inStrategy);
-
+        return new rsb.transport.inprocess.InPushConnector(this.bus);
     }
 
 }

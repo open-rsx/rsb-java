@@ -25,7 +25,7 @@
  *
  * ============================================================
  */
-package rsb.transport;
+package rsb.testutils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,16 +39,19 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.RsbTestCase;
 import rsb.ParticipantId;
 import rsb.Scope;
 import rsb.converter.ConversionException;
 import rsb.converter.DoubleConverter;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
+import rsb.transport.EventHandler;
+import rsb.transport.InPushConnector;
+import rsb.transport.OutConnector;
 import rsb.util.ExactTime;
 
 // CHECKSTYLE.OFF: JavadocMethod - test class
@@ -57,12 +60,26 @@ import rsb.util.ExactTime;
 /**
  * An abstract test class to implement tests for connectors.
  *
+ * For reusability-reasons, this class does extend RsbTestCase, which uses
+ * opinionated default for testing the main framework. Instead, the appropriate
+ * JUnit rules are applied manually or rebuilt with changeable defaults.
+ *
  * @author jwienke
  */
-public abstract class ConnectorCheck extends RsbTestCase {
+@SuppressWarnings("PMD.TooManyMethods")
+public abstract class ConnectorCheck extends LoggingTestCase {
 
     private static final String UTF8_WIRE_SCHEMA = "utf-8-string";
     private static final Scope OUT_BASE_SCOPE = new Scope("/this");
+
+    // CHECKSTYLE.OFF: VisibilityModifier - required by junit
+    /**
+     * Optionally, sleep between test cases.
+     */
+    @Rule
+    public final SleepRule sleeper = new SleepRule();
+    // CHECKSTYLE.ON: VisibilityModifier
+
     private OutConnector outConnector;
 
     @Before
@@ -107,6 +124,7 @@ public abstract class ConnectorCheck extends RsbTestCase {
     }
 
     @Test(timeout = 10000)
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void primitiveTypeSending() throws Throwable {
         final OutConnector outConnector =
                 createOutConnector(getDoubleConverterStrategy(
@@ -126,7 +144,7 @@ public abstract class ConnectorCheck extends RsbTestCase {
                 public void handle(final Event event) {
                     synchronized (synchronizer) {
                         receivedEvents.add(event);
-                        synchronizer.notify();
+                        synchronizer.notifyAll();
                     }
                 }
 
