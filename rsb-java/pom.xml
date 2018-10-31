@@ -138,6 +138,7 @@
                 <configuration>
                     <show>protected</show>
                     <quiet>true</quiet>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
 
@@ -183,6 +184,7 @@
                 <configuration>
                     <show>protected</show>
                     <quiet>true</quiet>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
 
