@@ -30,13 +30,9 @@
         <url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
     </scm>
 
-    <!-- Properties that can be overridden using e.g. 'mvn -Dspread.daemon=/some/path
-        package'. -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pbuf.version>3.4.0</pbuf.version>
-        <spread.daemon>/usr/sbin/spread</spread.daemon>
-        <spread.port>4910</spread.port>
         <socket.port>55444</socket.port>
         <target.java.version>1.7</target.java.version>
         <plugin.checkstyle.version>2.15</plugin.checkstyle.version>
@@ -44,10 +40,12 @@
         <plugin.javadoc.version>3.0.1</plugin.javadoc.version>
         <plugin.jacoco.version>0.8.2</plugin.jacoco.version>
         <failOnStyleError>true</failOnStyleError>
+        <junit.version>4.11</junit.version>
     </properties>
 
     <modules>
         <module>rsb-java</module>
+        <module>rsb-java-test</module>
         <module>rsb-java-examples</module>
     </modules>
 
@@ -99,56 +97,7 @@
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                	<groupId>org.eclipse.m2e</groupId>
-                	<artifactId>lifecycle-mapping</artifactId>
-                	<version>1.0.0</version>
-                	<configuration>
-                		<lifecycleMappingMetadata>
-                			<pluginExecutions>
-                				<pluginExecution>
-                					<pluginExecutionFilter>
-                						<groupId>
-                							com.google.code.maven-replacer-plugin
-                						</groupId>
-                						<artifactId>
-                							replacer
-                						</artifactId>
-                						<versionRange>
-                							[1.5.3,)
-                						</versionRange>
-                						<goals>
-                							<goal>replace</goal>
-                						</goals>
-                					</pluginExecutionFilter>
-                					<action>
-                						<ignore></ignore>
-                					</action>
-                				</pluginExecution>
-                				<pluginExecution>
-                					<pluginExecutionFilter>
-                						<groupId>
-                							org.apache.maven.plugins
-                						</groupId>
-                						<artifactId>
-                							maven-pmd-plugin
-                						</artifactId>
-                						<versionRange>
-                							[3.5,)
-                						</versionRange>
-                						<goals>
-                							<goal>cpd-check</goal>
-                						</goals>
-                					</pluginExecutionFilter>
-                					<action>
-                						<ignore></ignore>
-                					</action>
-                				</pluginExecution>
-                			</pluginExecutions>
-                		</lifecycleMappingMetadata>
-                	</configuration>
-                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
@@ -158,7 +107,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -174,39 +123,6 @@
             <version>2.0.9</version>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>doclint-java8-disable</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${plugin.javadoc.version}</version>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${plugin.javadoc.version}</version>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </reporting>
-        </profile>
-    </profiles>
 
     <distributionManagement>
         <repository>

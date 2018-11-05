@@ -1,0 +1,3 @@
+ignore:
+    # ignore the coverage information for shared test classes
+  - "rsb-java-test/**/*.java"
