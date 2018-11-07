@@ -175,27 +175,18 @@
                 </executions>
             </plugin>
 
-            <!-- Copied from reporting section because the documented
-                 inheritance of options from the reporting section does not
-                 work.
-                 Cf. https://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag
-                 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${plugin.javadoc.version}</version>
-                <configuration>
-                    <show>protected</show>
-                    <quiet>true</quiet>
-                </configuration>
-            </plugin>
-
         </plugins>
 
     </build>
 
     <reporting>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${plugin.project-info-reports.version}</version>
+            </plugin>
 
             <!-- Jacoco coverage report -->
             <plugin>
@@ -214,7 +205,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <version>${plugin.jxr.version}</version>
             </plugin>
 
             <!-- Generate Javadoc -->
@@ -225,6 +216,20 @@
                 <configuration>
                     <show>protected</show>
                     <quiet>true</quiet>
+                    <doclint>none</doclint>
+                    <additionalOptions>-html5</additionalOptions>
+                </configuration>
+            </plugin>
+
+            <!-- Checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${plugin.checkstyle.version}</version>
+                <configuration>
+                    <configLocation>${project.parent.basedir}/codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=${project.parent.basedir}/codecheck</propertyExpansion>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
                 </configuration>
             </plugin>
 
@@ -241,24 +246,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Checkstyle -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${plugin.checkstyle.version}</version>
-                <configuration>
-                    <configLocation>${project.parent.basedir}/codecheck/checkstyle.xml</configLocation>
-                    <propertyExpansion>config_loc=${project.parent.basedir}/codecheck</propertyExpansion>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                </configuration>
-            </plugin>
-
-            <!-- Just so maven doesn't complain about a missing version. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
-            </plugin>
         </plugins>
     </reporting>
 

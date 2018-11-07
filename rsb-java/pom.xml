@@ -13,33 +13,18 @@
 
     <name>rsb-java</name>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>com.github.jnr</groupId>
+            <artifactId>jnr-ffi</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <plugins>
-
-            <!-- Check the availability of different external dependencies. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-external-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <!-- This makes it fail when the first check fails. -->
-                            <failFast>true</failFast>
-                            <rules>
-                                <requireJavaVersion>
-                                    <!-- This defines the minimum version. -->
-                                    <version>${target.java.version}</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- generate the protocol files -->
             <plugin>
@@ -126,22 +111,6 @@
                 </executions>
             </plugin>
 
-            <!-- Copied from reporting section because the documented
-                 inheritance of options from the reporting section does not
-                 work.
-                 Cf. https://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag
-                 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${plugin.javadoc.version}</version>
-                <configuration>
-                    <show>protected</show>
-                    <quiet>true</quiet>
-                    <doclint>none</doclint>
-                </configuration>
-            </plugin>
-
             <!-- provide a single flat jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -169,11 +138,17 @@
     <reporting>
         <plugins>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${plugin.project-info-reports.version}</version>
+            </plugin>
+
             <!-- Generate cross-referenced HTML for the sources. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <version>${plugin.jxr.version}</version>
             </plugin>
 
             <!-- Generate Javadoc -->
@@ -185,6 +160,19 @@
                     <show>protected</show>
                     <quiet>true</quiet>
                     <doclint>none</doclint>
+                    <additionalOptions>-html5</additionalOptions>
+                </configuration>
+            </plugin>
+
+            <!-- Checkstyle report -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${plugin.checkstyle.version}</version>
+                <configuration>
+                    <configLocation>${project.parent.basedir}/codecheck/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_loc=${project.parent.basedir}/codecheck</propertyExpansion>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
                 </configuration>
             </plugin>
 
@@ -204,24 +192,22 @@
                 </configuration>
             </plugin>
 
-            <!-- Checkstyle -->
+            <!-- Copied from reporting section because the documented
+                 inheritance of options from the reporting section does not
+                 work.
+                 Cf. https://maven.apache.org/guides/mini/guide-configuring-plugins.html#Using_the_reporting_Tag_VS_build_Tag
+                 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${plugin.checkstyle.version}</version>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${plugin.javadoc.version}</version>
                 <configuration>
-                    <configLocation>${project.parent.basedir}/codecheck/checkstyle.xml</configLocation>
-                    <propertyExpansion>config_loc=${project.parent.basedir}/codecheck</propertyExpansion>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <show>protected</show>
+                    <quiet>true</quiet>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
 
-            <!-- Just so maven doesn't complain about a missing version. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
-            </plugin>
         </plugins>
     </reporting>
 
