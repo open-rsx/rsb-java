@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <name>RSB</name>
-    <url>https://code.cor-lab.org/projects/rsb/</url>
+    <url>https://github.com/open-rsx/rsb-java</url>
 
     <description>The Robotics Service Bus (RSB) is a message-oriented, event-driven middleware aiming at scalable integration of robotics systems in diverse environments. Being fundamentally a bus architecture, RSB structures heterogeneous systems of service providers and consumers using broadcast communication over a hierarchy of logically unified channels instead of a large number of point-to-point connections. Nevertheless RSB comes with a collection of communication patterns and other tools for structuring communication, but does not require a particular functional or decomposition style.</description>
 
@@ -26,8 +26,8 @@
     </organization>
 
     <scm>
-        <developerConnection>scm:git:https://code.cor-lab.org/git/rsb.git.java</developerConnection>
-        <url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
+        <developerConnection>scm:git:git@github.com:open-rsx/rsb-java.git</developerConnection>
+        <url>https://github.com/open-rsx/rsb-java.git</url>
     </scm>
 
     <properties>
