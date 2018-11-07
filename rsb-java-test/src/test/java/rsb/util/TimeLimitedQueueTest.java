@@ -51,9 +51,6 @@ public class TimeLimitedQueueTest extends RsbTestCase {
 
     private TimeLimitedQueue queue;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         this.queue =

@@ -33,8 +33,8 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 
 /**
- * Lazily creates and caches a {@link java.nio.CharsetEncoder}, {@link
- * java.nio.CharsetDecoder} pair for each calling thread.
+ * Lazily creates and caches a {@link java.nio.charset.CharsetEncoder}, {@link
+ * java.nio.charset.CharsetDecoder} pair for each calling thread.
  *
  * @author jmoringe
  */

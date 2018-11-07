@@ -216,7 +216,7 @@
                 <configuration>
                     <show>protected</show>
                     <quiet>true</quiet>
-                    <doclint>none</doclint>
+                    <doclint>all</doclint>
                     <additionalOptions>-html5</additionalOptions>
                 </configuration>
             </plugin>

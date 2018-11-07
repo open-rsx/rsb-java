@@ -31,8 +31,8 @@ package rsb.converter;
  * Implementations of this interface perform mappings of one of the followings
  * forms: - wire-schema -&lt; @ref Converter - data-type -&lt; @ref Converter.
  *
- * Implementations must implement {@link #equals(Object)} and
- * {@link #hashCode()} appropriately.
+ * Implementations must implement {@link Object#equals(Object)} and
+ * {@link Object#hashCode()} appropriately.
  *
  * @author jmoringe
  * @author swrede

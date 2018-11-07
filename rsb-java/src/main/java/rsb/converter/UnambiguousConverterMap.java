@@ -31,9 +31,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * A converter selection strategy that can only work if all registered
+ * converters have no conflicting selection criteria.
+ *
  * @author swrede
  * @author jmoringe
- * @param <WireType>
+ * @param <WireType> wire type of the converters
  */
 public class UnambiguousConverterMap<WireType> implements
         ConverterSelectionStrategy<WireType> {
