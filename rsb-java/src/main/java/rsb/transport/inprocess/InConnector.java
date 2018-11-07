@@ -44,8 +44,8 @@ import rsb.transport.EventHandler;
  *
  * @author jwienke
  */
-public class InPushConnector extends ConnectorBase implements
-        rsb.transport.InPushConnector, EventHandler {
+public class InConnector extends ConnectorBase implements
+        rsb.transport.InConnector, EventHandler {
 
     private final Set<EventHandler> handlers = Collections
             .synchronizedSet(new HashSet<EventHandler>());
@@ -57,7 +57,7 @@ public class InPushConnector extends ConnectorBase implements
      * @param bus
      *            the bus to receive from
      */
-    public InPushConnector(final Bus bus) {
+    public InConnector(final Bus bus) {
         super(bus);
     }
 

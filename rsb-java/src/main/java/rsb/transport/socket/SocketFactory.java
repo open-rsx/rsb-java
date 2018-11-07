@@ -35,7 +35,7 @@ import java.util.Set;
 
 import rsb.InitializeException;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
 import rsb.util.Properties;
@@ -135,11 +135,11 @@ public class SocketFactory implements TransportFactory {
 
     @SuppressWarnings("unchecked")
     @Override
-    public InPushConnector createInPushConnector(final Properties properties,
+    public InConnector createInConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
 
-        return new SocketInPushConnector(parseSocketOptions(properties),
+        return new SocketInConnector(parseSocketOptions(properties),
                 parseServerMode(properties),
                 (ConverterSelectionStrategy<ByteBuffer>) converters);
 

@@ -36,7 +36,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import rsb.Utilities;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 import rsb.testutils.ConnectorRoundtripCheck;
 import rsb.testutils.ParticipantConfigSetter;
@@ -77,8 +77,8 @@ public class InprocessRoundtripTest extends ConnectorRoundtripCheck {
     }
 
     @Override
-    protected InPushConnector createInConnector() throws Throwable {
-        return new rsb.transport.inprocess.InPushConnector(this.bus);
+    protected InConnector createInConnector() throws Throwable {
+        return new rsb.transport.inprocess.InConnector(this.bus);
     }
 
 }

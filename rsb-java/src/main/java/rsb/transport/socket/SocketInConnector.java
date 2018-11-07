@@ -47,20 +47,20 @@ import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.ProtocolConversion;
 import rsb.transport.AbstractConnector;
 import rsb.transport.EventHandler;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.socket.Bus.NotificationReceiver;
 
 /**
- * An {@link InPushConnector} for the socket-based transport.
+ * An {@link InConnector} for the socket-based transport.
  *
  * @author jwienke
  */
-public class SocketInPushConnector extends AbstractConnector
-                                   implements InPushConnector,
+public class SocketInConnector extends AbstractConnector
+                                   implements InConnector,
                                               NotificationReceiver {
 
     private static final Logger LOG = Logger
-            .getLogger(SocketInPushConnector.class.getName());
+            .getLogger(SocketInConnector.class.getName());
 
     private final SocketConnectorUtility utility;
     private Scope scope;
@@ -77,7 +77,7 @@ public class SocketInPushConnector extends AbstractConnector
      * @param converters
      *            converters to use for serialization
      */
-    public SocketInPushConnector(final SocketOptions socketOptions,
+    public SocketInConnector(final SocketOptions socketOptions,
             final ServerMode serverMode,
             final ConverterSelectionStrategy<ByteBuffer> converters) {
         this.utility =

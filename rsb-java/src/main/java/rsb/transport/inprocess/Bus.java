@@ -44,7 +44,7 @@ import rsb.util.os.ProcessInfoSelector;
  * Implement an inprocess channel for passing events between different
  * connectors. Ingoing events via the {@link #push(Event)} method are
  * synchronously dispatched to all registered {@link EventHandler}s, which
- * usually should be {@link InPushConnector} instances.
+ * usually should be {@link InConnector} instances.
  *
  * @author jwienke
  */
