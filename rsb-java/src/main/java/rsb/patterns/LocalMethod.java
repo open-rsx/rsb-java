@@ -172,4 +172,4 @@ class LocalMethod extends Method implements Handler {
         }
     }
 
-};
+}

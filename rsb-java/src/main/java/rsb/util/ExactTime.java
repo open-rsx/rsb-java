@@ -119,7 +119,9 @@ public final class ExactTime {
 
             // CHECKSTYLE.OFF: MemberName|VisibilityModifier - required
             // interface
+            @SuppressWarnings("PMD.FieldNamingConventions")
             public final time_t tv_sec = new time_t();
+            @SuppressWarnings("PMD.FieldNamingConventions")
             public final Signed32 tv_usec = new Signed32();
             // CHECKSTYLE.ON: MemberName|VisibilityModifier
 

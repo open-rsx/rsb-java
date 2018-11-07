@@ -44,6 +44,8 @@ import java.util.Set;
  * Multiple threads can read properties in parallel. However, writing needs to
  * be synchronized as well as the provided loading methods.
  *
+ * New instances are initially empty.
+ *
  * @author swrede
  * @author jwienke
  */
@@ -52,14 +54,6 @@ public class Properties implements Iterable<Entry<String, Property>> {
 
     private final Map<String, Property> propertiesByName =
             new HashMap<String, Property>();
-
-    /**
-     * Creates a new instance without loading anything. The instance will
-     * initially be empty.
-     */
-    public Properties() {
-        // just for the documentation string
-    }
 
     /**
      * Dumps the properties to the presented stream.

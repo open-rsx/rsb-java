@@ -147,4 +147,4 @@ public class LocalServer extends Server<LocalMethod> {
         return null;
     }
 
-};
+}

@@ -231,4 +231,4 @@ public abstract class Server<MethodType extends Method> extends Participant {
         return new HashSet<URI>();
     }
 
-};
+}

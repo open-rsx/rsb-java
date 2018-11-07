@@ -127,40 +127,53 @@ class Future<Data> implements java.util.concurrent.Future<Data> {
         }
     }
 
+    private void waitForever() throws InterruptedException {
+        synchronized (this) {
+            // Wait until
+            // - a result arrives
+            // - the operation is cancelled
+            // In case of spurious wakeups, just continue waiting.
+            while (!this.hasResult && !this.cancelled) {
+                this.wait();
+            }
+        }
+    }
+
+    private void waitUntil(final long timeout, final TimeUnit unit)
+            throws InterruptedException {
+        synchronized (this) {
+            // Calculate waiting time in milliseconds. Prevent
+            // waiting forever, if timeout was not 0, but was
+            // rounded to 0
+            long timeoutMillis = unit.toMillis(timeout);
+            if (timeout > 0 && timeoutMillis == 0) {
+                timeoutMillis = 1;
+            }
+
+            // Wait until
+            // - a result arrives
+            // - the operation is cancelled
+            // - the specified timeout is exceeded
+            // In case of spurious wakeups, just continue waiting.
+            long waitTime = 0;
+            while (!this.hasResult && !this.cancelled
+                    && waitTime < timeoutMillis) {
+                this.wait(timeoutMillis - waitTime);
+                // TODO(jmoringe): use real clock
+                waitTime += timeoutMillis;
+            }
+        }
+    }
+
     @SuppressWarnings("PMD.ConfusingTernary")
     @Override
     public Data get(final long timeout, final TimeUnit unit)
             throws ExecutionException, TimeoutException, InterruptedException {
         synchronized (this) {
             if (timeout == 0) {
-                // Wait until
-                // - a result arrives
-                // - the operation is cancelled
-                // In case of spurious wakeups, just continue waiting.
-                while (!this.hasResult && !this.cancelled) {
-                    this.wait();
-                }
+                waitForever();
             } else {
-                // Calculate waiting time in milliseconds. Prevent
-                // waiting forever, if timeout was not 0, but was
-                // rounded to 0
-                long timeoutMillis = unit.toMillis(timeout);
-                if (timeout > 0 && timeoutMillis == 0) {
-                    timeoutMillis = 1;
-                }
-
-                // Wait until
-                // - a result arrives
-                // - the operation is cancelled
-                // - the specified timeout is exceeded
-                // In case of spurious wakeups, just continue waiting.
-                long waitTime = 0;
-                while (!this.hasResult && !this.cancelled
-                        && waitTime < timeoutMillis) {
-                    this.wait(timeoutMillis - waitTime);
-                    // TODO(jmoringe): use real clock
-                    waitTime += timeoutMillis;
-                }
+                waitUntil(timeout, unit);
             }
 
             // One of the conditions occurred. Determine which.

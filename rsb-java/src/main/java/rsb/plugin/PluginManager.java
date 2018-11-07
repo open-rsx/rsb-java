@@ -40,6 +40,31 @@ public class PluginManager {
     private final Map<String, Plugin> loadedPlugins =
             new HashMap<String, Plugin>();
 
+    private Plugin loadPluginClass(final String pluginName)
+            throws LoadingException {
+        final String className = pluginName + "." + "Plugin";
+        try {
+
+            final Class<?> pluginClass = Class.forName(className);
+
+            final Plugin instance = (Plugin) pluginClass.newInstance();
+
+            instance.initialize();
+
+            return instance;
+
+        } catch (final ClassNotFoundException e) {
+            throw this.prepareException(className,
+                    "cannot be found on the classpath", e);
+        } catch (final ClassCastException e) {
+            throw this.prepareException(className, "is not an instance of "
+                    + Plugin.class.getCanonicalName(), e);
+        } catch (final InstantiationException | IllegalAccessException e) {
+            throw this.prepareException(className, "cannot be instantiated",
+                    e);
+        }
+    }
+
     /**
      * @param pluginNames
      *                        Names of the plugins to load
@@ -55,27 +80,10 @@ public class PluginManager {
                         "Plugin " + pluginName + " was already loaded");
             }
 
-            final String className = pluginName + "." + "Plugin";
+            final Plugin instance = loadPluginClass(pluginName);
 
-            try {
-                final Class<?> pluginClass = Class.forName(className);
+            this.loadedPlugins.put(pluginName, instance);
 
-                final Plugin instance = (Plugin) pluginClass.newInstance();
-
-                instance.initialize();
-
-                this.loadedPlugins.put(pluginName, instance);
-
-            } catch (final ClassNotFoundException e) {
-                throw this.prepareException(className,
-                        "cannot be found on the classpath", e);
-            } catch (final ClassCastException e) {
-                throw this.prepareException(className, "is not an instance of "
-                        + Plugin.class.getCanonicalName(), e);
-            } catch (final InstantiationException | IllegalAccessException e) {
-                throw this.prepareException(className, "cannot be instantiated",
-                        e);
-            }
         }
 
     }

@@ -37,6 +37,9 @@ import rsb.util.ExactTime;
  * Framework-supplied meta data attached to each event that give information
  * e.g. about timing issues.
  *
+ * New instances have creation time set to the time of creation of the meta data
+ * instance.
+ *
  * In case you are setting timestamps manually, ensure to create these
  * timestamps using {@link ExactTime} to get the highest possible resolution.
  *
@@ -50,13 +53,6 @@ public class MetaData {
     private long deliverTime = 0;
     private final Map<String, Long> userTimes = new HashMap<String, Long>();
     private final Map<String, String> userInfos = new HashMap<String, String>();
-
-    /**
-     * Creates a new {@link MetaData} instance with creation time now.
-     */
-    public MetaData() {
-        super();
-    }
 
     /**
      * Returns a time stamp that is automatically filled with the time the event

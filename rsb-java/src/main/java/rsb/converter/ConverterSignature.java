@@ -84,7 +84,8 @@ public class ConverterSignature {
         return result;
     }
 
-    @SuppressWarnings({ "PMD.OnlyOneReturn", "PMD.CyclomaticComplexity" })
+    @SuppressWarnings({ "PMD.OnlyOneReturn", "PMD.CyclomaticComplexity",
+            "PMD.SimplifyBooleanReturns" })
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

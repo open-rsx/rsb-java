@@ -71,7 +71,7 @@ public final class FileReadingUtilities {
             final List<String> lines = new LinkedList<String>();
 
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) { // NOPMD: common
                 lines.add(line);
             }
 

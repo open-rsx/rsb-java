@@ -34,6 +34,8 @@ package rsb;
  * @author jwienke
  * @author jmoringe
  */
+// We want method chaining here, silence linguist
+@SuppressWarnings("PMD.LinguisticNaming")
 public class RemoteServerCreateArgs extends
         ParticipantCreateArgs<RemoteServerCreateArgs> {
 

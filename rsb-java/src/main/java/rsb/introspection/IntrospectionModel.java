@@ -167,6 +167,8 @@ public class IntrospectionModel {
      *            optionally the parent participant or <code>null</code> if no
      *            parent exists
      */
+    // PMD: all data is ASCII, which should always work
+    @SuppressWarnings("PMD.UseLocaleWithCaseConversions")
     public void addParticipant(final Participant participant,
             final Participant parent) {
         assert participant != null;
@@ -213,6 +215,8 @@ public class IntrospectionModel {
      * @param participant
      *            participant to remove, not <code>null</code>
      */
+    // PMD: all data is ASCII, which should always work
+    @SuppressWarnings("PMD.UseLocaleWithCaseConversions")
     public void removeParticipant(final Participant participant) {
         assert participant != null;
         LOG.log(Level.FINE, "Removing {0} {1} at {2}", new Object[] {

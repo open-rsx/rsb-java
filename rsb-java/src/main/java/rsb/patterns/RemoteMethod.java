@@ -228,4 +228,4 @@ public class RemoteMethod extends Method implements Handler {
         return new HashSet<URI>();
     }
 
-};
+}

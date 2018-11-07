@@ -467,4 +467,4 @@ public class RemoteServer extends Server<RemoteMethod> {
         return null;
     }
 
-};
+}

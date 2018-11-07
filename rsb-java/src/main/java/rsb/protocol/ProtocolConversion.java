@@ -149,9 +149,7 @@ public final class ProtocolConversion {
         try {
             final Converter<ByteBuffer> converter = converters
                     .getConverter(event.getType().getName());
-            final WireContents<ByteBuffer> convertedDataBuffer = converter
-                    .serialize(event.getType(), event.getData());
-            return convertedDataBuffer;
+            return converter.serialize(event.getType(), event.getData());
         } catch (final NoSuchConverterException e) {
             throw new ConversionException(e);
         }

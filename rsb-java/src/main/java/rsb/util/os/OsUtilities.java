@@ -54,7 +54,7 @@ public final class OsUtilities {
      *
      * @author swrede
      */
-    public static enum OsFamily {
+    public enum OsFamily {
 
         /**
          * Operating system family for linux-based systems.
@@ -85,7 +85,7 @@ public final class OsUtilities {
          * @param name
          *            string name representing this class of operating system.
          */
-        private OsFamily(final String name) {
+        OsFamily(final String name) {
             this.name = name;
         }
 
@@ -157,7 +157,7 @@ public final class OsUtilities {
      *
      * @author swrede
      */
-    public static enum MachineType {
+    public enum MachineType {
 
         /**
          * A 32-bit system in the x86 family (sometimes called "i386",
@@ -185,7 +185,7 @@ public final class OsUtilities {
          * @param name
          *            string name representing this class of machines.
          */
-        private MachineType(final String name) {
+        MachineType(final String name) {
             this.name = name;
         }
 
