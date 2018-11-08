@@ -194,8 +194,10 @@ public class LinuxProcessInfo extends PortableProcessInfo {
             LOG.log(Level.WARNING,
                     "Pattern {0} does not match the line read from {1}, "
                             + "which is:\n{2}",
-                    new Object[] { PROC_STAT_FILE_PATTERN, procStatFile,
-                            procStatLine });
+                    new Object[] {
+                        PROC_STAT_FILE_PATTERN, procStatFile,
+                        procStatLine,
+                    });
             throw new IOException("Could not match pattern against proc file");
         }
         return Long.parseLong(procStatLineMatcher.group(2));

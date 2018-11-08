@@ -37,8 +37,8 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import rsb.Factory;
-import rsb.RsbTestCase;
 import rsb.RSBException;
+import rsb.RsbTestCase;
 import rsb.Scope;
 import rsb.Utilities;
 

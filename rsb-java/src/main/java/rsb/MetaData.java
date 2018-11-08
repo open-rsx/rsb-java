@@ -212,7 +212,7 @@ public class MetaData {
      */
     public void setUserTime(final String key, final long time) {
         if (time <= 0) {
-            this.userTimes.put(key,  ExactTime.currentTimeMicros());
+            this.userTimes.put(key, ExactTime.currentTimeMicros());
         } else {
             this.userTimes.put(key, time);
         }

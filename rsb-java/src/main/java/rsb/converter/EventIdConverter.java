@@ -29,10 +29,10 @@ package rsb.converter;
 
 import java.nio.ByteBuffer;
 
+import com.google.protobuf.ByteString;
+
 import rsb.ParticipantId;
 import rsb.protocol.EventIdType.EventId;
-
-import com.google.protobuf.ByteString;
 
 /**
  * A converter for {@link rsb.EventId} instances.

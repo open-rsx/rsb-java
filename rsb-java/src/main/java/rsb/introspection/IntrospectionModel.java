@@ -174,8 +174,12 @@ public class IntrospectionModel {
         assert participant != null;
         LOG.log(Level.FINE,
                 "Adding {0} {1} at {2} with parent {2}",
-                new Object[] { participant.getKind().toUpperCase(),
-                        participant.getId(), participant.getScope(), parent });
+                new Object[] {
+                    participant.getKind().toUpperCase(),
+                    participant.getId(),
+                    participant.getScope(),
+                    parent,
+                });
 
         ParticipantId parentId = null;
         if (parent != null) {
@@ -219,9 +223,12 @@ public class IntrospectionModel {
     @SuppressWarnings("PMD.UseLocaleWithCaseConversions")
     public void removeParticipant(final Participant participant) {
         assert participant != null;
-        LOG.log(Level.FINE, "Removing {0} {1} at {2}", new Object[] {
-                participant.getKind().toUpperCase(), participant.getId(),
-                participant.getScope() });
+        LOG.log(Level.FINE, "Removing {0} {1} at {2}",
+                new Object[] {
+                    participant.getKind().toUpperCase(),
+                    participant.getId(),
+                    participant.getScope(),
+                });
 
         synchronized (this) {
 

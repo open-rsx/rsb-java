@@ -36,10 +36,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import rsb.Utilities;
-import rsb.transport.InConnector;
-import rsb.transport.OutConnector;
 import rsb.testutils.ConnectorRoundtripCheck;
 import rsb.testutils.ParticipantConfigSetter;
+import rsb.transport.InConnector;
+import rsb.transport.OutConnector;
 
 /**
  * Roundtrip test for the inprocess transport on user level.

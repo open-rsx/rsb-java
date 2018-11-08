@@ -117,8 +117,8 @@ public class BusServer extends BusBase {
                     }
                     LOG.log(Level.FINER,
                             "Activated a new client connection {0} "
-                                    + "for socket {1}", new Object[] {
-                                    connection, socket });
+                                    + "for socket {1}",
+                            new Object[] { connection, socket });
 
                 } catch (final IOException e) {
                     if (this.shutdown) {

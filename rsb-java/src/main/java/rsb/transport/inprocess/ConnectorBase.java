@@ -37,7 +37,7 @@ import rsb.transport.AbstractConnector;
  *
  * @author jwienke
  */
-abstract class ConnectorBase extends AbstractConnector  {
+abstract class ConnectorBase extends AbstractConnector {
 
     private final Bus bus;
     private boolean active = false;

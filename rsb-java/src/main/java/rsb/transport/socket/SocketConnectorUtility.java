@@ -132,19 +132,18 @@ public class SocketConnectorUtility {
                 return bus;
             }
 
-            final Bus bus =
-                    new RefCountingBus(creator.create(options),
-                            new DeactivationHandler() {
+            final Bus bus = new RefCountingBus(creator.create(options),
+                    new DeactivationHandler() {
 
-                                @Override
-                                public void
-                                        deactivated(final RefCountingBus bus) {
-                                    synchronized (cache.getSynchronizer()) {
-                                        cache.unregister(bus);
-                                    }
-                                }
+                        @Override
+                        public void
+                                deactivated(final RefCountingBus bus) {
+                            synchronized (cache.getSynchronizer()) {
+                                cache.unregister(bus);
+                            }
+                        }
 
-                            });
+                    });
             bus.activate();
             cache.register(bus);
             return bus;

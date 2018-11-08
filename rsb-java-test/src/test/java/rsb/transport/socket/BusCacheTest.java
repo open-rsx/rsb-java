@@ -36,8 +36,8 @@ import java.net.InetAddress;
 
 import org.junit.Test;
 
-import rsb.RsbTestCase;
 import rsb.RSBException;
+import rsb.RsbTestCase;
 import rsb.protocol.NotificationType.Notification;
 
 /**

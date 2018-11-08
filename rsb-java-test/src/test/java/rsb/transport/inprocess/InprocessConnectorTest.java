@@ -29,8 +29,8 @@ package rsb.transport.inprocess;
 
 import java.nio.ByteBuffer;
 
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 
 import rsb.Utilities;
 import rsb.converter.UnambiguousConverterMap;

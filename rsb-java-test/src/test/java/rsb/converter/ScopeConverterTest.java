@@ -35,8 +35,8 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
-import rsb.Scope;
 import rsb.RsbTestCase;
+import rsb.Scope;
 
 /**
  * @author jmoringe

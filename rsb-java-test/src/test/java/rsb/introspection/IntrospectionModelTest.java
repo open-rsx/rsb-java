@@ -39,10 +39,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import rsb.RsbTestCase;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
+import rsb.RsbTestCase;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
 import rsb.introspection.IntrospectionModel.IntrospectionModelObserver;

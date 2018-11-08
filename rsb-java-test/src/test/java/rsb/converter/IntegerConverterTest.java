@@ -74,11 +74,11 @@ public class IntegerConverterTest extends RsbTestCase {
                 new IntegerConverter(IntegerConverter.UINT32_SIGNATURE);
         final Integer input = 130236144;
         final WireContents<ByteBuffer> buf =
-            converter.serialize(Integer.class, input);
+                converter.serialize(Integer.class, input);
         assertNotNull(buf);
         final Object output =
-            converter.deserialize(buf.getWireSchema(),
-                                  buf.getSerialization()).getData();
+                converter.deserialize(buf.getWireSchema(),
+                                    buf.getSerialization()).getData();
         final Integer outputInteger = (Integer) output;
         assertEquals(input, outputInteger);
     }
@@ -89,11 +89,11 @@ public class IntegerConverterTest extends RsbTestCase {
                 new IntegerConverter(IntegerConverter.UINT32_SIGNATURE);
         final Integer input = Integer.MAX_VALUE;
         final WireContents<ByteBuffer> buf =
-            converter.serialize(Integer.class, input);
+                converter.serialize(Integer.class, input);
         assertNotNull(buf);
         final Object output =
-            converter.deserialize(buf.getWireSchema(),
-                                  buf.getSerialization()).getData();
+                converter.deserialize(buf.getWireSchema(),
+                                    buf.getSerialization()).getData();
         final Integer outputInteger = (Integer) output;
         assertEquals(input, outputInteger);
     }

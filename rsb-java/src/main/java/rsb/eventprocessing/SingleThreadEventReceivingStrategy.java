@@ -44,8 +44,8 @@ import rsb.filter.Filter;
  * @author jwienke
  */
 public class SingleThreadEventReceivingStrategy
-    extends AbstractActivatable
-    implements EventReceivingStrategy {
+        extends AbstractActivatable
+        implements EventReceivingStrategy {
 
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());

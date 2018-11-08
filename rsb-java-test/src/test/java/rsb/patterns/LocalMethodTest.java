@@ -32,9 +32,9 @@ import org.junit.Test;
 import rsb.Event;
 import rsb.EventId;
 import rsb.Factory;
-import rsb.RsbTestCase;
 import rsb.ParticipantCreateArgs;
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
 import rsb.Scope;
 
 /**

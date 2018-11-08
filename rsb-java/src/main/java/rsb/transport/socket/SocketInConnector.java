@@ -139,8 +139,8 @@ public class SocketInConnector extends AbstractConnector
         if (!this.scope.equals(notificationScope)
                 && !notificationScope.isSubScopeOf(this.scope)) {
             LOG.log(Level.FINER, "Ignoring notification on scope {0} "
-                    + "because it is not a (sub)scope of {1}", new Object[] {
-                    notificationScope, this.scope });
+                    + "because it is not a (sub)scope of {1}",
+                    new Object[] { notificationScope, this.scope });
             return;
         }
 

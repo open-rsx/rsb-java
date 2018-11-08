@@ -34,8 +34,8 @@ import rsb.AbstractActivatable;
  *
  * @author jmoringe
  */
-@SuppressWarnings("PMD")
+@SuppressWarnings("PMD.AbstractClassWithoutAnyMethod")
 public abstract class AbstractEventReceivingStrategy
-    extends AbstractActivatable
-    implements EventReceivingStrategy {
+        extends AbstractActivatable
+        implements EventReceivingStrategy {
 }

@@ -12,6 +12,7 @@
   <property name="severity" value="warning"/>
   <module name="TreeWalker">
     <module name="FileContentsHolder"/>
+    <module name="OneTopLevelClass"/>
     <module name="JavadocMethod">
       <property name="scope" value="protected"/>
       <property name="allowUndeclaredRTE" value="true"/>
@@ -31,17 +32,27 @@
     <module name="MemberName"/>
     <module name="MethodName"/>
     <module name="PackageName"/>
+    <module name="PackageDeclaration"/>
     <module name="ParameterName"/>
     <module name="StaticVariableName"/>
     <module name="TypeName"/>
     <module name="AvoidStarImport"/>
     <module name="IllegalImport"/>
     <module name="UnusedImports"/>
+    <module name="CustomImportOrder">
+      <property name="customImportOrderRules"
+          value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS"/>
+      <property name="specialImportsRegExp" value="^org\."/>
+      <property name="sortImportsInGroupAlphabetically" value="true"/>
+      <property name="separateLineBetweenGroups" value="true"/>
+    </module>
     <module name="MethodLength"/>
     <module name="ParameterNumber"/>
     <module name="EmptyForIteratorPad"/>
     <module name="GenericWhitespace"/>
+    <module name="CommentsIndentation"/>
     <module name="MethodParamPad"/>
+    <module name="NonEmptyAtclauseDescription"/>
     <module name="NoWhitespaceAfter">
       <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
     </module>
@@ -53,6 +64,7 @@
     <module name="WhitespaceAround"/>
     <module name="ModifierOrder"/>
     <module name="RedundantModifier"/>
+    <module name="RedundantImport"/>
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock">
       <property name="tokens" value="LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_IF,LITERAL_FOR,LITERAL_TRY,LITERAL_WHILE,INSTANCE_INIT,STATIC_INIT"/>
@@ -69,7 +81,13 @@
       <property name="ignoreHashCodeMethod" value="true"/>
       <property name="ignoreAnnotation" value="true"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format" value="\S\s\s+(?=\S).*$"/>
+      <property name="message" value="Superfluous whitespace"/>
+      <property name="ignoreComments" value="true"/>
+    </module>
     <module name="MissingSwitchDefault"/>
+    <module name="BooleanExpressionComplexity"/>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="DesignForExtension">
@@ -83,6 +101,8 @@
     <module name="ArrayTypeStyle"/>
     <module name="FinalParameters"/>
     <module name="UpperEll"/>
+    <module name="ArrayTrailingComma"/>
+    <module name="AnnotationLocation"/>
     <module name="AnnotationUseStyle"/>
     <module name="MissingDeprecated"/>
     <module name="MissingOverride"/>
@@ -101,10 +121,32 @@
     <module name="DeclarationOrder"/>
     <module name="MultipleStringLiterals"/>
     <module name="MultipleVariableDeclarations"/>
+    <module name="VariableDeclarationUsageDistance"/>
     <module name="OneStatementPerLine"/>
     <module name="LineLength">
       <property name="max" value="90"/>
       <property name="tabWidth" value="4"/>
+    </module>
+    <module name="Indentation">
+      <property name="throwsIndent" value="8"/>
+      <property name="lineWrappingIndentation" value="8"/>
+      <property name="caseIndent" value="0"/>
+    </module>
+    <module name="TypecastParenPad"/>
+    <module name="SeparatorWrap">
+      <property name="tokens" value="DOT" />
+      <property name="tokens" value="AT"/>
+      <property name="option" value="nl" />
+    </module>
+    <module name="SeparatorWrap">
+      <property name="tokens" value="COMMA" />
+      <property name="tokens" value="LPAREN" />
+      <property name="tokens" value="SEMI" />
+      <property name="tokens" value="RBRACK"/>
+      <property name="tokens" value="ARRAY_DECLARATOR"/>
+      <property name="tokens" value="ELLIPSIS"/>
+      <property name="tokens" value="SEMI"/>
+      <property name="option" value="eol" />
     </module>
   </module>
   <module name="SuppressionCommentFilter">

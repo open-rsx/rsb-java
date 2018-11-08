@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import rsb.RsbTestCase;
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
 import rsb.Scope;
 
 /**

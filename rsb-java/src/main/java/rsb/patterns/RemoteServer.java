@@ -438,12 +438,11 @@ public class RemoteServer extends Server<RemoteMethod> {
             InterruptedException {
         LOG.fine("Registering new method " + name);
 
-        final RemoteMethod method =
-                new RemoteMethod(
-                        new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
-                            // dummy type
-                        }.setScope(getScope().concat(new Scope("/" + name)))
-                                .setConfig(getConfig()).setParent(this));
+        final RemoteMethod method = new RemoteMethod(
+                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                    // dummy type
+                }.setScope(getScope().concat(new Scope("/" + name)))
+                        .setConfig(getConfig()).setParent(this));
         method.setObserverManager(this.getObserverManager());
 
         if (this.isActive()) {

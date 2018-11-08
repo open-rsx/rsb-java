@@ -74,11 +74,11 @@ public class LongConverterTest extends RsbTestCase {
                 new LongConverter(LongConverter.UINT64_SIGNATURE);
         final Long input = 130236144L;
         final WireContents<ByteBuffer> buf =
-            converter.serialize(Long.class, input);
+                converter.serialize(Long.class, input);
         assertNotNull(buf);
         final Object output =
-            converter.deserialize(buf.getWireSchema(),
-                                  buf.getSerialization()).getData();
+                converter.deserialize(buf.getWireSchema(),
+                                      buf.getSerialization()).getData();
         final Long outputLong = (Long) output;
         assertEquals(input, outputLong);
     }
@@ -89,11 +89,11 @@ public class LongConverterTest extends RsbTestCase {
                 new LongConverter(LongConverter.UINT64_SIGNATURE);
         final Long input = 6172840431323434035L;
         final WireContents<ByteBuffer> buf =
-            converter.serialize(Long.class, input);
+                converter.serialize(Long.class, input);
         assertNotNull(buf);
         final Object output =
-            converter.deserialize(buf.getWireSchema(),
-                                  buf.getSerialization()).getData();
+                converter.deserialize(buf.getWireSchema(),
+                                    buf.getSerialization()).getData();
         final Long outputLong = (Long) output;
         assertEquals(input, outputLong);
     }
