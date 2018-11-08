@@ -65,7 +65,7 @@ public class SingleThreadEventReceivingStrategy
 
         private final BlockingQueue<Event> events;
 
-        public DispatchThread(final BlockingQueue<Event> events) {
+        DispatchThread(final BlockingQueue<Event> events) {
             this.events = events;
         }
 

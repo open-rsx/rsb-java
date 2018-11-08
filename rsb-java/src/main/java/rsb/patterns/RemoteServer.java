@@ -349,7 +349,7 @@ public class RemoteServer extends Server<RemoteMethod> {
 
     private class EventFuturePreparator extends FuturePreparator<Event> {
 
-        public EventFuturePreparator(final Future<Event> future) {
+        EventFuturePreparator(final Future<Event> future) {
             super(future);
         }
 
@@ -366,7 +366,7 @@ public class RemoteServer extends Server<RemoteMethod> {
     private class DataFuturePreparator<DataType> extends
             FuturePreparator<DataType> {
 
-        public DataFuturePreparator(final Future<DataType> future) {
+        DataFuturePreparator(final Future<DataType> future) {
             super(future);
         }
 

@@ -47,7 +47,7 @@ public class BusCacheTest extends RsbTestCase {
 
     class DummyBus extends BusBase {
 
-        public DummyBus(final SocketOptions options) {
+        DummyBus(final SocketOptions options) {
             super(options);
         }
 

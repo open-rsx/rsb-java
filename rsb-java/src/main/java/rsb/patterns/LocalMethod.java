@@ -76,7 +76,7 @@ class LocalMethod extends Method implements Handler {
      *             error initializing the method or one of the underlying
      *             participants
      */
-    public LocalMethod(final ParticipantCreateArgs<?> args,
+    LocalMethod(final ParticipantCreateArgs<?> args,
             final Callback callback)
             throws InterruptedException, InitializeException {
         super(args);

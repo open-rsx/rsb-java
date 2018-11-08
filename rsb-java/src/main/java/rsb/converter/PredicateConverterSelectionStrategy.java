@@ -201,7 +201,7 @@ public class PredicateConverterSelectionStrategy<WireType> implements
         private final Predicate predicate;
         private final Converter<WireType> converter;
 
-        public PredicateConverterPair(final Predicate predicate,
+        PredicateConverterPair(final Predicate predicate,
                 final Converter<WireType> converter) {
             this.predicate = predicate;
             this.converter = converter;
