@@ -40,7 +40,7 @@ import rsb.EventId;
 import rsb.ParticipantId;
 import rsb.Scope;
 import rsb.transport.EventHandler;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 
 // CHECKSTYLE.OFF: MagicNumber - test values
@@ -77,7 +77,7 @@ public abstract class ConnectorRoundtripCheck extends LoggingTestCase {
 
         final Scope scope = new Scope("/a/test/scope");
 
-        final InPushConnector inPort = createInConnector();
+        final InConnector inPort = createInConnector();
         final OutConnector outPort = createOutConnector();
 
         final List<Event> receivedEvents = new ArrayList<Event>();
@@ -136,7 +136,7 @@ public abstract class ConnectorRoundtripCheck extends LoggingTestCase {
 
     protected abstract OutConnector createOutConnector() throws Throwable;
 
-    protected abstract InPushConnector createInConnector() throws Throwable;
+    protected abstract InConnector createInConnector() throws Throwable;
 
 }
 

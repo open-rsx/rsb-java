@@ -34,7 +34,7 @@ import org.junit.Rule;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.testutils.ConnectorCheck;
 import rsb.testutils.ParticipantConfigSetter;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 
 /**
@@ -55,10 +55,10 @@ public class SocketConnectorTest extends ConnectorCheck {
     // CHECKSTYLE.ON: VisibilityModifier
 
     @Override
-    protected InPushConnector createInConnector(
+    protected InConnector createInConnector(
             final UnambiguousConverterMap<ByteBuffer> converters)
             throws Throwable {
-        return new SocketInPushConnector(
+        return new SocketInConnector(
                 rsb.transport.socket.Utilities.getSocketOptions(),
                 ServerMode.AUTO, converters);
     }

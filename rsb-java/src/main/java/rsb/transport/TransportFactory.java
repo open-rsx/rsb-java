@@ -134,7 +134,7 @@ public interface TransportFactory {
      * @throws InitializeException
      *             error creating a new connector
      */
-    InPushConnector createInPushConnector(Properties properties,
+    InConnector createInConnector(Properties properties,
             ConverterSelectionStrategy<?> converters)
             throws InitializeException;
 

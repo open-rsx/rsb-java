@@ -36,7 +36,7 @@ import rsb.Utilities;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.testutils.ConnectorCheck;
 import rsb.testutils.ParticipantConfigSetter;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 
 /**
@@ -60,10 +60,10 @@ public class InprocessConnectorTest extends ConnectorCheck {
             new rsb.transport.inprocess.Bus();
 
     @Override
-    protected InPushConnector createInConnector(
+    protected InConnector createInConnector(
             final UnambiguousConverterMap<ByteBuffer> converters)
             throws Throwable {
-        return new rsb.transport.inprocess.InPushConnector(this.bus);
+        return new rsb.transport.inprocess.InConnector(this.bus);
     }
 
     @Override

@@ -32,7 +32,7 @@ import java.util.Set;
 
 import rsb.InitializeException;
 import rsb.converter.ConverterSelectionStrategy;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 import rsb.transport.TransportFactory;
 import rsb.util.Properties;
@@ -64,10 +64,10 @@ public class InProcessFactory implements TransportFactory {
     }
 
     @Override
-    public InPushConnector createInPushConnector(final Properties properties,
+    public InConnector createInConnector(final Properties properties,
             final ConverterSelectionStrategy<?> converters)
             throws InitializeException {
-        return new rsb.transport.inprocess.InPushConnector(defaultBus);
+        return new rsb.transport.inprocess.InConnector(defaultBus);
     }
 
 }

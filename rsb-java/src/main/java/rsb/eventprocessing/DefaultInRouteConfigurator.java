@@ -35,20 +35,20 @@ import rsb.Handler;
 import rsb.RSBException;
 import rsb.Scope;
 import rsb.filter.Filter;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 
 /**
- * Default implementation of a {@link PushInRouteConfigurator}.
+ * Default implementation of a {@link InRouteConfigurator}.
  *
  * @author jwienke
  * @author swrede
  */
-public class DefaultPushInRouteConfigurator extends AbstractActivatable
-                                            implements PushInRouteConfigurator {
+public class DefaultInRouteConfigurator extends AbstractActivatable
+                                            implements InRouteConfigurator {
 
     private EventReceivingStrategy receivingStrategy =
             new SingleThreadEventReceivingStrategy();
-    private final RouteConfiguratorUtility<InPushConnector> utility;
+    private final RouteConfiguratorUtility<InConnector> utility;
 
     /**
      * Constructor.
@@ -56,14 +56,14 @@ public class DefaultPushInRouteConfigurator extends AbstractActivatable
      * @param scope
      *            the scope events are received on
      */
-    public DefaultPushInRouteConfigurator(final Scope scope) {
-        this.utility = new RouteConfiguratorUtility<InPushConnector>(scope);
+    public DefaultInRouteConfigurator(final Scope scope) {
+        this.utility = new RouteConfiguratorUtility<InConnector>(scope);
     }
 
     @Override
     public void activate() throws RSBException {
         synchronized (this.utility) {
-            for (final InPushConnector connector : this.utility.getConnectors()) {
+            for (final InConnector connector : this.utility.getConnectors()) {
                 connector.addHandler(this.receivingStrategy);
             }
             this.utility.activate();
@@ -82,7 +82,7 @@ public class DefaultPushInRouteConfigurator extends AbstractActivatable
                 // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
                 Thread.currentThread().interrupt();
             }
-            for (final InPushConnector connector : this.utility.getConnectors()) {
+            for (final InConnector connector : this.utility.getConnectors()) {
                 connector.removeHandler(this.receivingStrategy);
             }
         }
@@ -113,12 +113,12 @@ public class DefaultPushInRouteConfigurator extends AbstractActivatable
     }
 
     @Override
-    public void addConnector(final InPushConnector connector) {
+    public void addConnector(final InConnector connector) {
         this.utility.addConnector(connector);
     }
 
     @Override
-    public boolean removeConnector(final InPushConnector connector) {
+    public boolean removeConnector(final InConnector connector) {
         return this.utility.removeConnector(connector);
     }
 

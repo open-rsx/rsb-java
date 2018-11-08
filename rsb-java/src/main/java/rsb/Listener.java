@@ -36,8 +36,8 @@ import java.util.logging.Logger;
 
 import rsb.config.TransportConfig;
 import rsb.converter.DefaultConverterRepository;
-import rsb.eventprocessing.DefaultPushInRouteConfigurator;
-import rsb.eventprocessing.PushInRouteConfigurator;
+import rsb.eventprocessing.DefaultInRouteConfigurator;
+import rsb.eventprocessing.InRouteConfigurator;
 import rsb.filter.Filter;
 import rsb.transport.TransportRegistry;
 
@@ -66,7 +66,7 @@ public class Listener extends Participant {
 
     private final List<Filter> filters = new ArrayList<Filter>();
     private final List<Handler> handlers = new ArrayList<Handler>();
-    private final PushInRouteConfigurator router;
+    private final InRouteConfigurator router;
 
     /**
      * Interface for State-pattern in the Listener class.
@@ -158,7 +158,7 @@ public class Listener extends Participant {
         super(args);
 
         this.state = new StateInactive();
-        this.router = new DefaultPushInRouteConfigurator(getScope());
+        this.router = new DefaultInRouteConfigurator(getScope());
         this.router.setEventReceivingStrategy(getConfig()
                 .getReceivingStrategy().create());
         for (final TransportConfig transportConfig : getConfig()
@@ -166,7 +166,7 @@ public class Listener extends Participant {
             this.router.addConnector(TransportRegistry
                     .getDefaultInstance()
                     .getFactory(transportConfig.getName())
-                    .createInPushConnector(
+                    .createInConnector(
                             transportConfig.getOptions(),
                             transportConfig.getConverters(
                                     DefaultConverterRepository
@@ -182,7 +182,7 @@ public class Listener extends Participant {
      *
      * @return router used for this participant, not <code>null</code>
      */
-    private PushInRouteConfigurator getRouter() {
+    private InRouteConfigurator getRouter() {
         return this.router;
     }
 
@@ -235,9 +235,9 @@ public class Listener extends Participant {
     }
 
     /**
-     * Returns an interator over all handlers attached to this listener.
+     * Returns an iterator over all handlers attached to this listener.
      *
-     * @return handler interator
+     * @return handler iterator
      */
     public Iterator<Handler> getHandlerIterator() {
         return this.handlers.iterator();

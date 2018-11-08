@@ -38,7 +38,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 import rsb.testutils.ConnectorRoundtripCheck;
 import rsb.testutils.ParticipantConfigSetter;
@@ -83,13 +83,13 @@ public class SocketRoundtripTest extends ConnectorRoundtripCheck {
     }
 
     @Override
-    protected InPushConnector createInConnector() throws Throwable {
+    protected InConnector createInConnector() throws Throwable {
 
         final UnambiguousConverterMap<ByteBuffer> inStrategy =
                 new UnambiguousConverterMap<ByteBuffer>();
         inStrategy.addConverter("utf-8-string", new StringConverter());
 
-        return new SocketInPushConnector(
+        return new SocketInConnector(
                 rsb.transport.socket.Utilities.getSocketOptions(),
                 ServerMode.AUTO, inStrategy);
 

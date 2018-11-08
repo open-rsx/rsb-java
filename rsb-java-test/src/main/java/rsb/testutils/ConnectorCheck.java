@@ -50,7 +50,7 @@ import rsb.converter.DoubleConverter;
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
 import rsb.transport.EventHandler;
-import rsb.transport.InPushConnector;
+import rsb.transport.InConnector;
 import rsb.transport.OutConnector;
 import rsb.util.ExactTime;
 
@@ -129,7 +129,7 @@ public abstract class ConnectorCheck extends LoggingTestCase {
         final OutConnector outConnector =
                 createOutConnector(getDoubleConverterStrategy(
                         DoubleConverter.SIGNATURE.getDataType().getName()));
-        final InPushConnector inConnector =
+        final InConnector inConnector =
                 createInConnector(getDoubleConverterStrategy(
                         DoubleConverter.SIGNATURE.getSchema()));
         try {
@@ -197,12 +197,12 @@ public abstract class ConnectorCheck extends LoggingTestCase {
         // install event handlers for all receive scopes
         final Map<Scope, List<Event>> receivedEventsByScope =
                 new HashMap<Scope, List<Event>>();
-        final List<InPushConnector> inPorts = new ArrayList<InPushConnector>();
+        final List<InConnector> inPorts = new ArrayList<InConnector>();
         for (final Scope scope : receiveScopes) {
 
             final List<Event> receivedEvents = new ArrayList<Event>();
             receivedEventsByScope.put(scope, receivedEvents);
-            final InPushConnector inPort = createInConnector(
+            final InConnector inPort = createInConnector(
                     getStringConverterStrategy(UTF8_WIRE_SCHEMA));
             inPort.addHandler(new EventHandler() {
 
@@ -253,13 +253,13 @@ public abstract class ConnectorCheck extends LoggingTestCase {
         }
 
         // deactivate ports
-        for (final InPushConnector inPort : inPorts) {
+        for (final InConnector inPort : inPorts) {
             inPort.deactivate();
         }
 
     }
 
-    protected abstract InPushConnector createInConnector(
+    protected abstract InConnector createInConnector(
             final UnambiguousConverterMap<ByteBuffer> converters)
                     throws Throwable;
 
@@ -292,7 +292,7 @@ public abstract class ConnectorCheck extends LoggingTestCase {
 
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final InPushConnector inPort =
+        final InConnector inPort =
                 createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
         inPort.addHandler(new EventHandler() {
 
@@ -359,7 +359,7 @@ public abstract class ConnectorCheck extends LoggingTestCase {
 
         // create a receiver to wait for event
         final List<Event> receivedEvents = new ArrayList<Event>();
-        final InPushConnector inPort =
+        final InConnector inPort =
                 createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
         inPort.addHandler(new EventHandler() {
 
@@ -396,7 +396,7 @@ public abstract class ConnectorCheck extends LoggingTestCase {
     @Test
     public void hasTransportUri() throws Throwable {
         assertNotNull(this.outConnector.getTransportUri());
-        final InPushConnector inConnector =
+        final InConnector inConnector =
                 createInConnector(getStringConverterStrategy(UTF8_WIRE_SCHEMA));
         inConnector.setScope(new Scope("/some/strange/scope"));
         inConnector.activate();
