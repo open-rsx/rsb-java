@@ -31,10 +31,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import rsb.converter.DefaultConverters;
+import rsb.patterns.Reader;
 
 /**
  * User-level test for RSBJava.
@@ -69,30 +71,106 @@ public class UserLevelTest extends RsbTestCase {
             }
         }, true);
 
-        // send events
-        final Set<String> sentMessages = new HashSet<String>();
         final Informer<String> informer =
                 new Informer<String>(new InformerCreateArgs().setScope(scope)
                         .setConfig(Utilities.createParticipantConfig()));
         informer.activate();
-        for (int i = 0; i < EVENTS_TO_SEND; ++i) {
-            final String message =
-                    "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
-            informer.publish(message);
-            sentMessages.add(message);
-        }
 
-        // wait for receiving all events that were sent
-        synchronized (receivedMessages) {
-            while (receivedMessages.size() < sentMessages.size()) {
-                receivedMessages.wait();
+        try {
+
+            // send events
+            final Set<String> sentMessages = new HashSet<String>();
+            for (int i = 0; i < EVENTS_TO_SEND; ++i) {
+                final String message =
+                        "<message val=\"Hello World!\" nr=\"" + i + "\"/>";
+                informer.publish(message);
+                sentMessages.add(message);
+            }
+
+            // wait for receiving all events that were sent
+            synchronized (receivedMessages) {
+                while (receivedMessages.size() < sentMessages.size()) {
+                    receivedMessages.wait();
+                }
+            }
+
+            assertEquals(sentMessages, receivedMessages);
+
+        } finally {
+            if (informer.isActive()) {
+                try {
+                    informer.deactivate();
+                } catch (final Exception e) {
+                    // ignore any error here
+                }
+            }
+            if (listener.isActive()) {
+                try {
+                    listener.deactivate();
+                } catch (final Exception e) {
+                    // ignore any error here
+                }
             }
         }
 
-        assertEquals(sentMessages, receivedMessages);
+    }
 
-        informer.deactivate();
-        listener.deactivate();
+    @Test(timeout = 15000)
+    public void roundtripReader() throws Exception {
+
+        DefaultConverters.register();
+
+        final Scope scope = new Scope("/example/reader");
+
+        // set up a receiver for events
+        final Reader reader = new Reader(
+                new ReaderCreateArgs()
+                    .setConfig(Utilities.createParticipantConfig())
+                    .setScope(scope),
+                Factory.getInstance());
+        reader.activate();
+
+        final Informer<String> informer =
+                new Informer<String>(new InformerCreateArgs().setScope(scope)
+                        .setConfig(Utilities.createParticipantConfig()));
+        informer.activate();
+
+        try {
+
+            // send events
+            final Set<String> sentMessages = new HashSet<String>();
+            for (int i = 0; i < EVENTS_TO_SEND; ++i) {
+                final String message = "data " + i;
+                informer.publish(message);
+                sentMessages.add(message);
+            }
+
+            // read events
+            final Set<String> receivedMessages = new HashSet<String>();
+            for (int i = 0; i < EVENTS_TO_SEND; ++i) {
+                receivedMessages.add((String) reader.read(
+                            1, TimeUnit.SECONDS).getData());
+            }
+
+            assertEquals(sentMessages, receivedMessages);
+
+        } finally {
+            if (informer.isActive()) {
+                try {
+                    informer.deactivate();
+                } catch (final Exception e) {
+                    // ignore any error here
+                }
+            }
+            if (reader.isActive()) {
+                try {
+                    reader.deactivate();
+                } catch (final Exception e) {
+                    // ignore any error here
+                }
+            }
+        }
 
     }
+
 }

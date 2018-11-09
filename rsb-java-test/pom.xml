@@ -20,6 +20,7 @@
         <test.configs>${project.basedir}/target/generated-test-config</test.configs>
         <!-- If set to true, test execution pauses shortly between each test to mitigate https://issues.apache.org/jira/browse/SUREFIRE&#45;1587 -->
         <test.sleep>false</test.sleep>
+        <jmockit.version>1.43</jmockit.version>
     </properties>
 
     <dependencies>
@@ -34,6 +35,13 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>${jmockit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -44,19 +52,20 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
                 <configuration>
-                    <systemProperties>
-                        <property>
-                            <name>java.util.logging.config.file</name>
-                            <value>${test.configs}/logging.properties</value>
-                        </property>
-                        <property>
-                            <name>rsb.test.sleep</name>
-                            <value>${test.sleep}</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                        <java.util.logging.config.file>
+                            ${test.configs}/logging.properties
+                        </java.util.logging.config.file>
+                        <rsb.test.sleep>
+                            ${test.sleep}
+                        </rsb.test.sleep>
+                    </systemPropertyVariables>
                     <environmentVariables>
                         <RSB_TRANSPORT_SOCKET_PORT>${socket.port}</RSB_TRANSPORT_SOCKET_PORT>
                     </environmentVariables>
+                    <argLine>
+                        @{argLine} -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+                    </argLine>
                 </configuration>
             </plugin>
 

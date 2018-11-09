@@ -43,6 +43,7 @@ import rsb.converter.DefaultConverters;
 import rsb.introspection.IntrospectionParticipantObserver;
 import rsb.introspection.LacksOsInformationException;
 import rsb.patterns.LocalServer;
+import rsb.patterns.Reader;
 import rsb.patterns.RemoteServer;
 import rsb.plugin.PluginManager;
 
@@ -476,6 +477,91 @@ public final class Factory {
                 new Listener(addConfigToArgs(args));
         listener.setObserverManager(this.observerManager);
         return listener;
+    }
+
+    /**
+     * Creates a new reader instance.
+     *
+     * @param scope
+     *            scope of the reader
+     * @return new reader
+     * @throws InitializeException
+     *             error initializing the reader
+     */
+    public Reader createReader(final Scope scope)
+            throws InitializeException {
+        return createReader(new ReaderCreateArgs().setScope(scope));
+    }
+
+    /**
+     * Creates a new reader instance.
+     *
+     * @param scope
+     *            scope of the reader
+     * @return new reader
+     * @throws InitializeException
+     *             error initializing the reader
+     */
+    public Reader createReader(final String scope)
+            throws InitializeException {
+        return createReader(new ReaderCreateArgs()
+                .setScope(new Scope(scope)));
+    }
+
+    /**
+     * Creates a new reader instance.
+     *
+     * @param scope
+     *            scope of the reader
+     * @param config
+     *            participant configuration to use
+     * @return new reader
+     * @throws InitializeException
+     *             error initializing the reader
+     */
+    public Reader createReader(final String scope,
+            final ParticipantConfig config) throws InitializeException {
+        return createReader(new ReaderCreateArgs().setScope(
+                new Scope(scope)).setConfig(config));
+    }
+
+    /**
+     * Creates a new reader instance.
+     *
+     * @param scope
+     *            scope of the reader
+     * @param config
+     *            participant configuration to use
+     * @return new reader
+     * @throws InitializeException
+     *             error initializing the reader
+     */
+    public Reader createReader(final Scope scope,
+            final ParticipantConfig config) throws InitializeException {
+        return createReader(new ReaderCreateArgs().setScope(scope)
+                .setConfig(config));
+    }
+
+    /**
+     * Creates a new reader instance.
+     *
+     * @param args
+     *            Parameter object with create arguments for the participant.
+     * @return new reader
+     * @throws InitializeException
+     *             error initializing the reader
+     * @throws IllegalArgumentException
+     *             args is <code>null</code>
+     */
+    public Reader createReader(final ReaderCreateArgs args)
+            throws InitializeException {
+        if (args == null) {
+            throw new IllegalArgumentException(
+                    "Creation arguments must not be null");
+        }
+        final Reader reader = new Reader(addConfigToArgs(args), this);
+        reader.setObserverManager(this.observerManager);
+        return reader;
     }
 
     /**
