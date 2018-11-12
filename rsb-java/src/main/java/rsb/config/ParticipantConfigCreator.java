@@ -30,7 +30,6 @@ package rsb.config;
 import java.util.HashSet;
 import java.util.Set;
 
-import rsb.transport.TransportRegistry;
 import rsb.util.Properties;
 
 /**
@@ -40,6 +39,8 @@ import rsb.util.Properties;
  * @author jwienke
  */
 public class ParticipantConfigCreator {
+
+    private static final String TRANSPORT_PREFIX = "transport.";
 
     /**
      * Create a new {@link ParticipantConfig} from the given properties.
@@ -75,11 +76,18 @@ public class ParticipantConfigCreator {
         config.setIntrospectionEnabled(properties.getProperty(
                 "introspection.enabled", true).asBoolean());
 
-        // transports
-        for (final String transportName : TransportRegistry
-                .getDefaultInstance().transportNames()) {
+        // extract names of transports in the config
+        final Set<String> configuredTransportNames = new HashSet<>();
+        for (final String key : properties.getAvailableKeys()) {
+            if (key.startsWith(TRANSPORT_PREFIX)) {
+                configuredTransportNames.add(key.split("\\.")[1]);
+            }
+        }
 
-            final String transportPropPrefix = "transport." + transportName;
+        // configure the discovered transports
+        for (final String transportName : configuredTransportNames) {
+
+            final String transportPropPrefix = TRANSPORT_PREFIX + transportName;
             final Properties transportProps = properties
                     .filter(transportPropPrefix);
 

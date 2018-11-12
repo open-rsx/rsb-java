@@ -163,8 +163,8 @@ public final class Factory {
     private Factory() {
 
         // construct default participant config with default transport
-        new ConfigLoader().load(this.properties);
         this.defaultConfig.getOrCreateTransport("socket").setEnabled(true);
+        new ConfigLoader().load(this.properties);
         new ParticipantConfigCreator().reconfigure(this.defaultConfig,
                 this.properties);
 

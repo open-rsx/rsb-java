@@ -33,7 +33,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rsb.RsbTestCase;
-import rsb.transport.TransportRegistry;
 import rsb.util.Properties;
 
 /**
@@ -45,18 +44,6 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
 
     private static final String FALSE_STRING = "false";
     private static final String SOCKET_TRANSPORT = "socket";
-
-    @Test
-    public void createContainsAllTransports() {
-
-        final ParticipantConfig config = new ParticipantConfigCreator()
-                .create(new Properties());
-        for (final String transportName : TransportRegistry
-                .getDefaultInstance().transportNames()) {
-            assertTrue(config.hasTransport(transportName));
-        }
-
-    }
 
     @Test
     public void reconfigurePreservesEnabled() {
@@ -120,6 +107,20 @@ public class ParticipantConfigCreatorTest extends RsbTestCase {
         new ParticipantConfigCreator().reconfigure(config, props);
         assertFalse(config.isIntrospectionEnabled());
 
+    }
+
+    @Test
+    public void configuresUnknownTransports() throws Exception {
+        final Properties props = new Properties();
+        final String key = "transport.strange.enabled";
+        final String value = "true";
+        props.setProperty(key, value);
+
+        final ParticipantConfig config = new ParticipantConfig();
+        config.getOrCreateTransport(SOCKET_TRANSPORT).setEnabled(true);
+        new ParticipantConfigCreator().reconfigure(config, props);
+
+        assertTrue(config.getTransports().get("strange").isEnabled());
     }
 
 }
