@@ -74,7 +74,7 @@ public final class Factory {
     /**
      * Configuration key for plugins to load.
      */
-    private static final String PLUGIN_LOAD_KEY = "plugin.java.load";
+    private static final String PLUGIN_LOAD_KEY = "plugins.java.load";
 
     /**
      * The singleton instance.
