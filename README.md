@@ -4,7 +4,7 @@
 
 This repository contains the Java implementation of the [Robotics Service Bus](https://github.com/open-rsx) middleware.
 
-**The full documentation for RSB can be found at <https://docs.cor-lab.de/manual/rsb-trunk/index.html>.**
+**The full documentation for RSB can be found at <https://open-rsx.github.io/rsb-manual/>.**
 
 # Dependencies
 
