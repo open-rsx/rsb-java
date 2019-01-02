@@ -50,10 +50,10 @@ public interface TransportFactory {
      */
     class ConnectorInfo {
 
-        private final String      name;
+        private final String name;
         private final Set<String> schemas;
         private final Set<String> options;
-        private final boolean     remote;
+        private final boolean remote;
 
         /**
          * Creates a description for the transport implementation
@@ -71,14 +71,14 @@ public interface TransportFactory {
          *            Indicates whether the transport performs remote
          *            communication.
          */
-        public ConnectorInfo(final String      name,
+        public ConnectorInfo(final String name,
                              final Set<String> schemas,
                              final Set<String> options,
-                             final boolean     remote) {
-            this.name    = name;
+                             final boolean remote) {
+            this.name = name;
             this.schemas = schemas;
             this.options = options;
-            this.remote  = remote;
+            this.remote = remote;
         }
 
         public String getName() {

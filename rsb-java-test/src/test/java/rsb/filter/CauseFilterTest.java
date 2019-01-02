@@ -32,11 +32,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import rsb.Scope;
-import rsb.EventId;
 import rsb.Event;
-import rsb.RsbTestCase;
+import rsb.EventId;
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
+import rsb.Scope;
 
 /**
  * Unit tests for the {@link rsb.filter.CauseFilter} class.

@@ -33,8 +33,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import rsb.Event;
-import rsb.RsbTestCase;
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
 import rsb.Scope;
 
 /**

@@ -121,17 +121,9 @@ public final class RuntimeOsUtilities {
                     runtimeInterface.getMethod("getInputArguments");
             this.getStartTime = runtimeInterface.getMethod("getStartTime");
             this.getName = runtimeInterface.getMethod("getName");
-        } catch (final ClassNotFoundException e) {
-            throw new RuntimeNotAvailableException(e);
-        } catch (final SecurityException e) {
-            throw new RuntimeNotAvailableException(e);
-        } catch (final NoSuchMethodException e) {
-            throw new RuntimeNotAvailableException(e);
-        } catch (final IllegalArgumentException e) {
-            throw new RuntimeNotAvailableException(e);
-        } catch (final IllegalAccessException e) {
-            throw new RuntimeNotAvailableException(e);
-        } catch (final InvocationTargetException e) {
+        } catch (final ClassNotFoundException | SecurityException
+                | NoSuchMethodException | IllegalArgumentException
+                | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeNotAvailableException(e);
         }
     }
@@ -153,17 +145,13 @@ public final class RuntimeOsUtilities {
      */
     @SuppressWarnings("unchecked")
     public List<String> determineArguments() {
-        Exception error = null;
         try {
             return (List<String>) this.getInputArguments.invoke(this.runtime);
-        } catch (final IllegalArgumentException e) {
-            error = e;
-        } catch (final IllegalAccessException e) {
-            error = e;
-        } catch (final InvocationTargetException e) {
-            error = e;
+        } catch (final IllegalArgumentException
+                | IllegalAccessException
+                | InvocationTargetException e) {
+            logReflectionError("determineArguments", e);
         }
-        logReflectionError("determineArguments", error);
         return null;
     }
 
@@ -174,23 +162,18 @@ public final class RuntimeOsUtilities {
      *         determinable on current system
      */
     public Long determineStartTime() {
-        Exception error = null;
         try {
             return (Long) this.getStartTime.invoke(this.runtime);
-        } catch (final IllegalArgumentException e) {
-            error = e;
-        } catch (final IllegalAccessException e) {
-            error = e;
-        } catch (final InvocationTargetException e) {
-            error = e;
+        } catch (final IllegalArgumentException
+                | IllegalAccessException
+                | InvocationTargetException e) {
+            logReflectionError("determineStartTime", e);
         }
-        logReflectionError("determineStartTime", error);
         return null;
     }
 
     @SuppressWarnings("PMD.ReturnEmptyArrayRatherThanNull")
     private String[] getPidAndHost() {
-        Exception error = null;
         try {
             // getName returns something like 6460@AURORA. Where the value
             // before the @ symbol is the PID.
@@ -213,14 +196,11 @@ public final class RuntimeOsUtilities {
 
             return jvmNameParts;
 
-        } catch (final IllegalArgumentException e) {
-            error = e;
-        } catch (final IllegalAccessException e) {
-            error = e;
-        } catch (final InvocationTargetException e) {
-            error = e;
+        } catch (final IllegalArgumentException
+                | IllegalAccessException
+                | InvocationTargetException e) {
+            logReflectionError("getPidAndHost", e);
         }
-        logReflectionError("getPidAndHost", error);
         return null;
     }
 

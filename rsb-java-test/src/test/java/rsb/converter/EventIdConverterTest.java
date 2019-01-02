@@ -35,8 +35,8 @@ import java.nio.ByteBuffer;
 import org.junit.Test;
 
 import rsb.EventId;
-import rsb.RsbTestCase;
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
 
 /**
  * @author jwienke

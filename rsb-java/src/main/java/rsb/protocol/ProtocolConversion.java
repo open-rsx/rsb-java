@@ -30,6 +30,8 @@ package rsb.protocol;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
+import com.google.protobuf.ByteString;
+
 import rsb.Event;
 import rsb.ParticipantId;
 import rsb.Scope;
@@ -45,8 +47,6 @@ import rsb.protocol.EventMetaDataType.UserInfo;
 import rsb.protocol.EventMetaDataType.UserTime;
 import rsb.protocol.NotificationType.Notification;
 import rsb.protocol.NotificationType.Notification.Builder;
-
-import com.google.protobuf.ByteString;
 
 /**
  * A utility class to converter between protocol buffers based classes and our
@@ -149,9 +149,7 @@ public final class ProtocolConversion {
         try {
             final Converter<ByteBuffer> converter = converters
                     .getConverter(event.getType().getName());
-            final WireContents<ByteBuffer> convertedDataBuffer = converter
-                    .serialize(event.getType(), event.getData());
-            return convertedDataBuffer;
+            return converter.serialize(event.getType(), event.getData());
         } catch (final NoSuchConverterException e) {
             throw new ConversionException(e);
         }

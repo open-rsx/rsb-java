@@ -43,7 +43,9 @@ import rsb.config.ParticipantConfig;
  *            available after using one of the setters in this class.
  */
 // There is no way to instantiate a Participant directly since it is abstract
-@SuppressWarnings("PMD.AbstractClassWithoutAbstractMethod")
+// We want method chaining here, silence linguist
+@SuppressWarnings({"PMD.AbstractClassWithoutAbstractMethod",
+        "PMD.LinguisticNaming"})
 // CHECKSTYLE.OFF: LineLength - no way to format this
 public abstract class ParticipantCreateArgs<ConcreteClass extends ParticipantCreateArgs<?>> {
 

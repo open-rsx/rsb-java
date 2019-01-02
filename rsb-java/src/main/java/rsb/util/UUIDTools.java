@@ -114,7 +114,8 @@ public final class UUIDTools {
      */
     // LongVariable: no natural way to shorten variables respecting their
     // original name
-    @SuppressWarnings({ "PMD.UseVarargs", "PMD.LongVariable" })
+    @SuppressWarnings({ "PMD.UseVarargs", "PMD.LongVariable",
+            "PMD.LinguisticNaming" })
     private static byte[] setVersionAndVariant(final byte[] bytes) {
         // Constants and bit manipulation from:
         // http://svn.apache.org/repos/asf/commons/sandbox/id/trunk/

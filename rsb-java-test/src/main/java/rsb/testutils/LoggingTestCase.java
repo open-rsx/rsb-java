@@ -56,24 +56,31 @@ public class LoggingTestCase {
 
         @Override
         protected void failed(final Throwable error, final Description description) {
-            LOG.log(Level.INFO, "\n\n----- FAILED: {0}#{1}\n\n", new Object[] {
-                    description.getClassName(), description.getMethodName() });
+            LOG.log(Level.INFO, "\n\n----- FAILED: {0}#{1}\n\n",
+                    new Object[] {
+                        description.getClassName(),
+                        description.getMethodName(),
+                    });
         }
 
         @Override
         protected void starting(final Description description) {
             LOG.log(Level.INFO,
                     "\n\n----- STARTING: {0}#{1}\n\n",
-                    new Object[] { description.getClassName(),
-                            description.getMethodName() });
+                    new Object[] {
+                        description.getClassName(),
+                        description.getMethodName(),
+                    });
         }
 
         @Override
         protected void succeeded(final Description description) {
             LOG.log(Level.INFO,
                     "\n\n----- SUCCEEDED: {0}#{1}\n\n",
-                    new Object[] { description.getClassName(),
-                            description.getMethodName() });
+                    new Object[] {
+                        description.getClassName(),
+                        description.getMethodName(),
+                    });
         }
 
     }

@@ -349,7 +349,7 @@ public class RemoteServer extends Server<RemoteMethod> {
 
     private class EventFuturePreparator extends FuturePreparator<Event> {
 
-        public EventFuturePreparator(final Future<Event> future) {
+        EventFuturePreparator(final Future<Event> future) {
             super(future);
         }
 
@@ -366,7 +366,7 @@ public class RemoteServer extends Server<RemoteMethod> {
     private class DataFuturePreparator<DataType> extends
             FuturePreparator<DataType> {
 
-        public DataFuturePreparator(final Future<DataType> future) {
+        DataFuturePreparator(final Future<DataType> future) {
             super(future);
         }
 
@@ -438,12 +438,11 @@ public class RemoteServer extends Server<RemoteMethod> {
             InterruptedException {
         LOG.fine("Registering new method " + name);
 
-        final RemoteMethod method =
-                new RemoteMethod(
-                        new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
-                            // dummy type
-                        }.setScope(getScope().concat(new Scope("/" + name)))
-                                .setConfig(getConfig()).setParent(this));
+        final RemoteMethod method = new RemoteMethod(
+                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                    // dummy type
+                }.setScope(getScope().concat(new Scope("/" + name)))
+                        .setConfig(getConfig()).setParent(this));
         method.setObserverManager(this.getObserverManager());
 
         if (this.isActive()) {
@@ -467,4 +466,4 @@ public class RemoteServer extends Server<RemoteMethod> {
         return null;
     }
 
-};
+}

@@ -99,4 +99,4 @@ public abstract class DataCallback<ReplyType, RequestType> implements Callback {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public abstract ReplyType invoke(RequestType request) throws Exception;
 
-};
+}

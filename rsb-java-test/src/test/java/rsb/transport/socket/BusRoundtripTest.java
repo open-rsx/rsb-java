@@ -34,8 +34,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import rsb.RsbTestCase;
 import rsb.RSBException;
+import rsb.RsbTestCase;
 import rsb.protocol.NotificationType.Notification;
 
 /**

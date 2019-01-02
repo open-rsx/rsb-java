@@ -39,10 +39,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import rsb.RsbTestCase;
 import rsb.Participant;
 import rsb.ParticipantCreateArgs;
 import rsb.RSBException;
+import rsb.RsbTestCase;
 import rsb.Scope;
 import rsb.config.ParticipantConfig;
 import rsb.introspection.IntrospectionModel.IntrospectionModelObserver;
@@ -57,7 +57,7 @@ public class IntrospectionModelTest extends RsbTestCase {
 
         private final List<ObserverCall> calls = new LinkedList<ObserverCall>();
 
-        public static enum CallType {
+        public enum CallType {
             ADDED, REMOVED
         }
 
@@ -108,7 +108,7 @@ public class IntrospectionModelTest extends RsbTestCase {
 
     private static class TestParticipant extends Participant {
 
-        public TestParticipant(final Scope scope) {
+        TestParticipant(final Scope scope) {
             super(new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
                 // dummy type
             }.setScope(scope).setConfig(new ParticipantConfig()));

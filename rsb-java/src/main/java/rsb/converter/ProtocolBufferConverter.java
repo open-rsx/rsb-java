@@ -30,10 +30,10 @@ package rsb.converter;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import rsb.util.ByteHelpers;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
+
+import rsb.util.ByteHelpers;
 
 /**
  * Converter for protocol buffer generated messages.

@@ -99,15 +99,21 @@ public class PropertiesTest extends RsbTestCase {
 
         // add some options which we want to retrieve later
         final String desiredPrefix = "a.test";
-        final String[] desired = new String[] { desiredPrefix + ".foo",
-                desiredPrefix + ".bar.bla", desiredPrefix };
+        final String[] desired = new String[] {
+            desiredPrefix + ".foo",
+            desiredPrefix + ".bar.bla", desiredPrefix,
+        };
         for (final String key : desired) {
             props.setProperty(key, "blaaa");
         }
 
         // add some stuff we do not want
-        for (final String key : new String[] { "a", "other.root", "bar.bla",
-                "a.testing" }) {
+        for (final String key : new String[] {
+                "a",
+                "other.root",
+                "bar.bla",
+                "a.testing",
+                }) {
             props.setProperty(key, "blubb");
         }
 

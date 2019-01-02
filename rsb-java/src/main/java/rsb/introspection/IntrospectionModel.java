@@ -167,13 +167,19 @@ public class IntrospectionModel {
      *            optionally the parent participant or <code>null</code> if no
      *            parent exists
      */
+    // PMD: all data is ASCII, which should always work
+    @SuppressWarnings("PMD.UseLocaleWithCaseConversions")
     public void addParticipant(final Participant participant,
             final Participant parent) {
         assert participant != null;
         LOG.log(Level.FINE,
                 "Adding {0} {1} at {2} with parent {2}",
-                new Object[] { participant.getKind().toUpperCase(),
-                        participant.getId(), participant.getScope(), parent });
+                new Object[] {
+                    participant.getKind().toUpperCase(),
+                    participant.getId(),
+                    participant.getScope(),
+                    parent,
+                });
 
         ParticipantId parentId = null;
         if (parent != null) {
@@ -213,11 +219,16 @@ public class IntrospectionModel {
      * @param participant
      *            participant to remove, not <code>null</code>
      */
+    // PMD: all data is ASCII, which should always work
+    @SuppressWarnings("PMD.UseLocaleWithCaseConversions")
     public void removeParticipant(final Participant participant) {
         assert participant != null;
-        LOG.log(Level.FINE, "Removing {0} {1} at {2}", new Object[] {
-                participant.getKind().toUpperCase(), participant.getId(),
-                participant.getScope() });
+        LOG.log(Level.FINE, "Removing {0} {1} at {2}",
+                new Object[] {
+                    participant.getKind().toUpperCase(),
+                    participant.getId(),
+                    participant.getScope(),
+                });
 
         synchronized (this) {
 

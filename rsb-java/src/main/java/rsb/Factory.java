@@ -755,6 +755,8 @@ public final class Factory {
         return server;
     }
 
+    // false-positive
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private <ArgType extends ParticipantCreateArgs<?>> ArgType addConfigToArgs(
             final ArgType args) {
         if (args.getConfig() == null) {

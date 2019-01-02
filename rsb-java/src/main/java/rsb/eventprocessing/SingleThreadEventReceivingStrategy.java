@@ -44,8 +44,8 @@ import rsb.filter.Filter;
  * @author jwienke
  */
 public class SingleThreadEventReceivingStrategy
-    extends AbstractActivatable
-    implements EventReceivingStrategy {
+        extends AbstractActivatable
+        implements EventReceivingStrategy {
 
     private final Set<Filter> filters = Collections
             .synchronizedSet(new HashSet<Filter>());
@@ -65,7 +65,7 @@ public class SingleThreadEventReceivingStrategy
 
         private final BlockingQueue<Event> events;
 
-        public DispatchThread(final BlockingQueue<Event> events) {
+        DispatchThread(final BlockingQueue<Event> events) {
             this.events = events;
         }
 

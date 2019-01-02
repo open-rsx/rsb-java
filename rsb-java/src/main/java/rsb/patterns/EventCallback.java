@@ -74,4 +74,4 @@ public abstract class EventCallback implements Callback {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public abstract Event invoke(Event request) throws Exception;
 
-};
+}

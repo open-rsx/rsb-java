@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import rsb.RsbTestCase;
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
 import rsb.Scope;
 
 /**
@@ -53,7 +53,7 @@ public class FilterObservableTest extends RsbTestCase {
             private final Filter filter;
             private final FilterAction action;
 
-            public Call(final Filter filter, final FilterAction action) {
+            Call(final Filter filter, final FilterAction action) {
                 this.filter = filter;
                 this.action = action;
             }

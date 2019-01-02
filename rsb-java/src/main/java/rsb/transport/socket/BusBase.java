@@ -40,8 +40,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rsb.RSBException;
 import rsb.AbstractActivatable;
+import rsb.RSBException;
 import rsb.protocol.NotificationType.Notification;
 
 /**

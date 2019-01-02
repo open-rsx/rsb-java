@@ -27,10 +27,10 @@
  */
 package rsb.testutils;
 
+import org.junit.rules.ExternalResource;
+
 import rsb.Factory;
 import rsb.config.ParticipantConfig;
-
-import org.junit.rules.ExternalResource;
 
 /**
  * A JUnit rule to set a specified {@link ParticipantConfig} before a test.

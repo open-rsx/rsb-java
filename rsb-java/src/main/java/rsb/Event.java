@@ -265,6 +265,7 @@ public class Event {
     }
 
     @Override
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;

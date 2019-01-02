@@ -55,8 +55,10 @@ public class ConfigLoader {
      */
     private static final String CONFIG_DEBUG_VARIABLE = "RSB_CONFIG_DEBUG";
 
+    // CHECKSTYLE.OFF: RegexpSinglelineJava - desired here
     private static final String DEBUG_INDENT_1 = "  ";
     private static final String DEBUG_INDENT_2 = "     ";
+    // CHECKSTYLE.ON: RegexpSinglelineJava
 
     // File-related things.
 
@@ -80,10 +82,10 @@ public class ConfigLoader {
      * 2. from ${HOME}/.config/rsb.conf, if the file exists
      * 3. from $(pwd)/rsb.conf, if the file exists
      */
-    private static final List<String> DEFAULT_CONFIG_FILES
-        = Arrays.asList(CONFIG_FILE_KEY_PREFIX,
-                        CONFIG_FILE_KEY_USER,
-                        CONFIG_FILE_KEY_PWD);
+    private static final List<String> DEFAULT_CONFIG_FILES =
+            Arrays.asList(CONFIG_FILE_KEY_PREFIX,
+                    CONFIG_FILE_KEY_USER,
+                    CONFIG_FILE_KEY_PWD);
 
     // Environment variable things.
     private static final String ENV_SEPARATOR = "_";
@@ -259,7 +261,7 @@ public class ConfigLoader {
             }
         } catch (final IOException ex) {
             LOG.log(Level.SEVERE,
-                    String.format("Caught IOException trying to read  '%s'.",
+                    String.format("Caught IOException trying to read '%s'.",
                             file.getPath()), ex);
         }
         return results;
@@ -351,7 +353,9 @@ public class ConfigLoader {
         LOG.log(Level.FINE, "Loading properties from environment into {0}",
                 results);
         if (this.debug) {
+            // CHECKSTYLE.OFF: RegexpSinglelineJava - desired here
             System.out.println("  2. Environment variables with prefix RSB_");
+            // CHECKSTYLE.ON
         }
         this.parseMap(System.getenv(), results);
         return results;

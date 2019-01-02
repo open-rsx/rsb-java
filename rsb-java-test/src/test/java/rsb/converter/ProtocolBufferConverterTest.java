@@ -34,12 +34,12 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
-import rsb.RsbTestCase;
+import com.google.protobuf.ByteString;
+
 import rsb.ParticipantId;
+import rsb.RsbTestCase;
 import rsb.protocol.EventIdType.EventId;
 import rsb.protocol.NotificationType.Notification;
-
-import com.google.protobuf.ByteString;
 
 /**
  * @author swrede

@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <name>RSB</name>
-    <url>https://code.cor-lab.org/projects/rsb/</url>
+    <url>https://github.com/open-rsx/rsb-java</url>
 
     <description>The Robotics Service Bus (RSB) is a message-oriented, event-driven middleware aiming at scalable integration of robotics systems in diverse environments. Being fundamentally a bus architecture, RSB structures heterogeneous systems of service providers and consumers using broadcast communication over a hierarchy of logically unified channels instead of a large number of point-to-point connections. Nevertheless RSB comes with a collection of communication patterns and other tools for structuring communication, but does not require a particular functional or decomposition style.</description>
 
@@ -26,19 +26,21 @@
     </organization>
 
     <scm>
-        <developerConnection>scm:git:https://code.cor-lab.org/git/rsb.git.java</developerConnection>
-        <url>https://code.cor-lab.org/projects/rsb/repository/rsb-java</url>
+        <developerConnection>scm:git:git@github.com:open-rsx/rsb-java.git</developerConnection>
+        <url>https://github.com/open-rsx/rsb-java.git</url>
     </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pbuf.version>3.4.0</pbuf.version>
         <socket.port>55444</socket.port>
-        <target.java.version>1.7</target.java.version>
-        <plugin.checkstyle.version>2.15</plugin.checkstyle.version>
-        <plugin.pmd.version>3.6</plugin.pmd.version>
+        <target.java.version>1.8</target.java.version>
+        <plugin.checkstyle.version>3.0.0</plugin.checkstyle.version>
+        <plugin.pmd.version>3.11.0</plugin.pmd.version>
         <plugin.javadoc.version>3.0.1</plugin.javadoc.version>
         <plugin.jacoco.version>0.8.2</plugin.jacoco.version>
+        <plugin.project-info-reports.version>3.0.0</plugin.project-info-reports.version>
+        <plugin.jxr.version>3.0.0</plugin.jxr.version>
         <failOnStyleError>true</failOnStyleError>
         <junit.version>4.11</junit.version>
     </properties>
@@ -50,6 +52,7 @@
     </modules>
 
     <build>
+
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -57,6 +60,9 @@
                 <version>1.6.0</version>
             </extension>
         </extensions>
+
+        <!-- This section is only effective for the build section. Reporting
+             plugin versions have to be repeated in each module. -->
         <pluginManagement>
             <plugins>
 
@@ -93,34 +99,60 @@
                     </configuration>
                 </plugin>
 
-                <plugin>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
-
             </plugins>
+
         </pluginManagement>
+
+        <plugins>
+
+            <!-- Ensure that a suitable Java version is used for compiling -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <!-- This makes it fail when the first check fails. -->
+                            <failFast>true</failFast>
+                            <rules>
+                                <requireJavaVersion>
+                                    <!-- This defines the minimum version. -->
+                                    <version>${target.java.version}</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
     </build>
 
-    <!-- All direct dependencies need to be specified here. -->
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
+    <reporting>
+        <plugins>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${plugin.project-info-reports.version}</version>
+            </plugin>
+
+        </plugins>
+
+    </reporting>
+
+    <!-- Common dependencies. -->
+    <dependencies>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>[${pbuf.version}]</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.jnr</groupId>
-            <artifactId>jnr-ffi</artifactId>
-            <version>2.0.9</version>
         </dependency>
     </dependencies>
 

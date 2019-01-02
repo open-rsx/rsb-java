@@ -342,13 +342,11 @@ public class ProtocolHandler extends AbstractEventHandler implements
         if (participant != null) {
             try {
                 participant.deactivate();
-            } catch (final RSBException e) {
-                // ignore this since we can't do anything
             } catch (final InterruptedException e) {
                 // pass to external code to preserve interruption state
                 // cf. http://www.ibm.com/developerworks/library/j-jtp05236/
                 Thread.currentThread().interrupt();
-            } catch (final RuntimeException e) {
+            } catch (final RSBException | RuntimeException e) {
                 // ignore this since we can't do anything
             }
         }
@@ -443,10 +441,7 @@ public class ProtocolHandler extends AbstractEventHandler implements
                 this.informer.deactivate();
                 this.informer = null;
             }
-        } catch (final RSBException e) {
-            safeCleanup();
-            throw e;
-        } catch (final InterruptedException e) {
+        } catch (final RSBException | InterruptedException e) {
             safeCleanup();
             throw e;
         }

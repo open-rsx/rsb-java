@@ -120,8 +120,10 @@ public class Informer<DataType extends Object> extends Participant {
             Informer.this.state = new StateActive();
             LOG.log(Level.FINE,
                     "Informer activated: [Scope={0}, Type={1}]",
-                    new Object[] { Informer.this.getScope(),
-                            Informer.this.type.getName() });
+                    new Object[] {
+                        Informer.this.getScope(),
+                        Informer.this.type.getName(),
+                    });
             Informer.this.activated();
         }
 
@@ -146,8 +148,10 @@ public class Informer<DataType extends Object> extends Participant {
             Informer.this.state = new StateTerminal();
             LOG.log(Level.FINE,
                     "Informer deactivated: [Scope={0}, Type={1}]",
-                    new Object[] { Informer.this.getScope(),
-                            Informer.this.type.getName() });
+                    new Object[] {
+                        Informer.this.getScope(),
+                        Informer.this.type.getName(),
+                    });
         }
 
         @Override

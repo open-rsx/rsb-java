@@ -38,10 +38,10 @@ import org.junit.runners.Parameterized.Parameters;
 
 import rsb.converter.StringConverter;
 import rsb.converter.UnambiguousConverterMap;
-import rsb.transport.InConnector;
-import rsb.transport.OutConnector;
 import rsb.testutils.ConnectorRoundtripCheck;
 import rsb.testutils.ParticipantConfigSetter;
+import rsb.transport.InConnector;
+import rsb.transport.OutConnector;
 
 /**
  * @author jwienke

@@ -49,14 +49,20 @@ public class LoggingObserver implements ParticipantObserver {
             final ParticipantCreateArgs<?> args) {
         LOG.log(Level.INFO,
                 "New participant created: {0} at {1} with parent {2}",
-                new Object[] { participant.getId(), participant.getScope(),
-                        args.getParent() });
+                new Object[] {
+                    participant.getId(),
+                    participant.getScope(),
+                    args.getParent(),
+                });
     }
 
     @Override
     public void destroyed(final Participant participant) {
-        LOG.log(Level.INFO, "Participant removed: {0} at {1}", new Object[] {
-                participant.getId(), participant.getScope() });
+        LOG.log(Level.INFO, "Participant removed: {0} at {1}",
+                new Object[] {
+                    participant.getId(),
+                    participant.getScope(),
+                });
     }
 
 }

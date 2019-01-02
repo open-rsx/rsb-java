@@ -79,15 +79,14 @@ public class LocalServer extends Server<LocalMethod> {
                 + " with signature object: " + callback);
         synchronized (this) {
             try {
-                final LocalMethod method =
-                        new LocalMethod(
-                                new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
-                                    // dummy type
-                                }.setScope(
-                                        getScope()
-                                                .concat(new Scope("/" + name)))
-                                        .setConfig(getConfig()).setParent(this),
-                                callback);
+                final LocalMethod method = new LocalMethod(
+                        new ParticipantCreateArgs<ParticipantCreateArgs<?>>() {
+                            // dummy type
+                        }.setScope(
+                                getScope()
+                                        .concat(new Scope("/" + name)))
+                                .setConfig(getConfig()).setParent(this),
+                        callback);
                 this.addAndActivate(name, method);
             } catch (final InterruptedException e) {
                 // restore interruption state
@@ -147,4 +146,4 @@ public class LocalServer extends Server<LocalMethod> {
         return null;
     }
 
-};
+}

@@ -57,8 +57,10 @@ public class LinuxProcessInfoTest extends RsbTestCase {
                         getClass().getResource("proc-self-stat.txt").getPath()));
         assertTrue(info.getProgramName().startsWith("my cp with spaces"));
         assertEquals(
-                Arrays.asList(new String[] { "/proc/self/cmdline",
-                        "test/rsb/util/cmdline-correct.txt" }),
+                Arrays.asList(new String[] {
+                    "/proc/self/cmdline",
+                    "test/rsb/util/cmdline-correct.txt",
+                }),
                 info.getArguments());
         assertNotNull(info.getStartTime());
         assertEquals(Long.valueOf(TEST_START_TIME), info.getStartTime());

@@ -141,16 +141,13 @@ public class LimitedQueue<ElementType> implements BlockingQueue<ElementType> {
     }
 
     @Override
-    // CHECKSTYLE.OFF: LineLength - Eclipse will not format this better
-            public
-            boolean
-            addAll(@SuppressWarnings("PMD.ShortVariable") final Collection<? extends ElementType> c) {
+    public boolean addAll(
+            @SuppressWarnings("PMD.ShortVariable")
+            final Collection<? extends ElementType> c) {
         synchronized (this) {
             return this.queue.addAll(c);
         }
     }
-
-    // CHECKSTYLE.ON: LineLength
 
     @Override
     public boolean removeAll(
