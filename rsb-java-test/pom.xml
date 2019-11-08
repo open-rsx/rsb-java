@@ -194,6 +194,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${plugin.javadoc.version}</version>
                 <configuration>
+                    <source>8</source>
                     <show>protected</show>
                     <quiet>true</quiet>
                 </configuration>
@@ -232,6 +233,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${plugin.javadoc.version}</version>
                 <configuration>
+                    <source>8</source>
                     <show>protected</show>
                     <quiet>true</quiet>
                 </configuration>
