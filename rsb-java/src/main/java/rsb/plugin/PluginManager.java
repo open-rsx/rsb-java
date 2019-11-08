@@ -28,6 +28,7 @@
 
 package rsb.plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -60,7 +61,8 @@ public class PluginManager {
             try {
                 final Class<?> pluginClass = Class.forName(className);
 
-                final Plugin instance = (Plugin) pluginClass.newInstance();
+                final Plugin instance
+                    = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
 
                 instance.initialize();
 
@@ -72,7 +74,8 @@ public class PluginManager {
             } catch (final ClassCastException e) {
                 throw this.prepareException(className, "is not an instance of "
                         + Plugin.class.getCanonicalName(), e);
-            } catch (final InstantiationException | IllegalAccessException e) {
+            } catch (final InstantiationException | NoSuchMethodException
+                     | InvocationTargetException | IllegalAccessException e) {
                 throw this.prepareException(className, "cannot be instantiated",
                         e);
             }
