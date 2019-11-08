@@ -29,6 +29,9 @@ package rsb.patterns;
 
 import static org.junit.Assert.assertEquals;
 
+// CHECKSTYLE.OFF: UnusedImport
+import java.util.concurrent.ExecutionException;
+// CHECKSTYLE.ON: UnusedImport
 import java.util.concurrent.Future;
 
 import org.junit.After;
@@ -49,7 +52,9 @@ public class RpcIntegrationTest extends RsbTestCase {
     private static final int NUM_CALLS = 100;
     private static final String TEST_DATA = "A test String";
     private static final String METHOD_NAME = "myMethod";
+    private static final String LONG_RUNNING_METHOD_NAME = "longrunningmethod";
     private static final String VOID_VOID_METHOD_NAME = "voidvoid";
+    private static final Scope SERVER_SCOPE = new Scope("/test/server");
 
     private LocalServer server;
     private RemoteServer remote;
@@ -142,19 +147,25 @@ public class RpcIntegrationTest extends RsbTestCase {
     }
 
     @Test(timeout = 20000)
-    public void serverCallIsInterruptible() throws Exception {
-        final Scope scope = new Scope("/a/scope");
-        final LocalServer server = Factory.getInstance().createLocalServer(
-                scope, Utilities.createParticipantConfig());
+    public void nonReturningCallIsInterruptible() throws Exception {
+        final String method = "nonexistingmethod";
         final RemoteServer remote = Factory.getInstance().createRemoteServer(
-                scope, Utilities.createParticipantConfig());
+                SERVER_SCOPE, Utilities.createParticipantConfig());
 
-        final String method = "longrunningmethod";
-        server.addMethod(method, new Callback() {
+        remote.activate();
+        try {
+            remote.callAsync(method);
+        } finally {
+            remote.deactivate();
+        }
+    }
+
+    LocalServer createLocalServerWithLongRunningMethod() throws Exception {
+        final LocalServer server =  Factory.getInstance().createLocalServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+        server.addMethod(LONG_RUNNING_METHOD_NAME, new EventCallback() {
             @Override
-            public Event internalInvoke(
-                    final Event request) throws UserCodeException,
-                                                InterruptedException {
+            public Event invoke(final Event request) throws Exception {
                 // CHECKSTYLE.OFF: MagicNumber
                 // Wait longer than the timeout of the test method. If
                 // interruption doesn't work, this will end up in the timeout.
@@ -163,24 +174,46 @@ public class RpcIntegrationTest extends RsbTestCase {
                 return request;
             }
         });
+        return server;
+    }
+
+    @Test(timeout = 20000)
+    public void longRunningCallIsInterruptibleRemoteFirst() throws Exception {
+        final LocalServer server = createLocalServerWithLongRunningMethod();
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
 
         server.activate();
         try {
             remote.activate();
-
             try {
-
-                remote.callAsync("mymethod");
+                remote.callAsync(LONG_RUNNING_METHOD_NAME);
                 // CHECKSTYLE.OFF: MagicNumber
                 Thread.sleep(1000);
                 // CHECKSTYLE.ON
-
             } finally {
                 remote.deactivate();
             }
-
         } finally {
             server.deactivate();
+        }
+    }
+
+    @Test(timeout = 20000, expected = java.util.concurrent.ExecutionException.class)
+    public void longRunningCallIsInterruptibleLocalFirst() throws Exception {
+        final LocalServer server = createLocalServerWithLongRunningMethod();
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+
+        server.activate();
+        remote.activate();
+        try {
+            java.util.concurrent.Future<Event> result
+                = remote.callAsync(LONG_RUNNING_METHOD_NAME);
+            server.deactivate();
+            result.get();
+        } finally {
+            remote.deactivate();
         }
     }
 

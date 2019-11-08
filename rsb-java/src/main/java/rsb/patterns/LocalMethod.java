@@ -57,6 +57,9 @@ import rsb.patterns.Callback.UserCodeException;
  */
 class LocalMethod extends Method implements Handler {
 
+    private static final String ERROR_KEY = "rsb:error?";
+    private static final String ERROR_VALUE = "1";
+
     private static final Logger LOG = Logger.getLogger(LocalMethod.class
             .getName());
 
@@ -97,6 +100,7 @@ class LocalMethod extends Method implements Handler {
     public void internalNotify(final Event request) {
 
         Event reply;
+        boolean isInterrupted = false;
         try {
             reply = this.callback.internalInvoke(request);
             if (reply == null) {
@@ -105,7 +109,11 @@ class LocalMethod extends Method implements Handler {
                         new IllegalArgumentException(
                             "Null reply from callback"));
             }
-        } catch (final UserCodeException | InterruptedException e) {
+        } catch (final InterruptedException e) {
+            reply = new Event(String.class, "Method invocation interrupted");
+            reply.getMetaData().setUserInfo(ERROR_KEY, ERROR_VALUE);
+            isInterrupted = true;
+        } catch (final UserCodeException e) {
             final Throwable exception = e.getCause();
             LOG.log(Level.WARNING,
                     "Exception during method invocation in participant: {0}. "
@@ -121,7 +129,7 @@ class LocalMethod extends Method implements Handler {
                             + exceptionWriter.toString();
             // return error information
             reply = new Event(String.class, error);
-            reply.getMetaData().setUserInfo("rsb:error?", "1");
+            reply.getMetaData().setUserInfo(ERROR_KEY, ERROR_VALUE);
         }
 
         reply.setScope(this.getScope());
@@ -137,6 +145,10 @@ class LocalMethod extends Method implements Handler {
                     "Exception while sending reply in server: {0}."
                             + " Exception message: {1}",
                     new Object[] { this.getScope(), exception });
+        }
+
+        if (isInterrupted) {
+            Thread.currentThread().interrupt();
         }
     }
 
