@@ -65,6 +65,10 @@ public class SingleThreadEventReceivingStrategy
 
         private final BlockingQueue<Event> events;
 
+        // We use this flag instead of just check this.interrupted()
+        // because a handler could clear the interrupted flag.
+        private boolean isShuttingDown = false;
+
         public DispatchThread(final BlockingQueue<Event> events) {
             this.events = events;
         }
@@ -74,7 +78,7 @@ public class SingleThreadEventReceivingStrategy
 
             try {
 
-                outer: while (!interrupted()) {
+                outer: while (!this.isShuttingDown) {
 
                     final Event eventToDispatch = this.events.take();
 
@@ -108,6 +112,12 @@ public class SingleThreadEventReceivingStrategy
                 return;
             }
 
+        }
+
+        @Override
+        public void interrupt() {
+            this.isShuttingDown = true;
+            super.interrupt();
         }
 
     }

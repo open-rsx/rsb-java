@@ -29,6 +29,9 @@ package rsb.patterns;
 
 import static org.junit.Assert.assertEquals;
 
+// CHECKSTYLE.OFF: UnusedImport
+import java.util.concurrent.ExecutionException;
+// CHECKSTYLE.ON: UnusedImport
 import java.util.concurrent.Future;
 
 import org.junit.After;
@@ -49,7 +52,9 @@ public class RpcIntegrationTest extends RsbTestCase {
     private static final int NUM_CALLS = 100;
     private static final String TEST_DATA = "A test String";
     private static final String METHOD_NAME = "myMethod";
+    private static final String LONG_RUNNING_METHOD_NAME = "longrunningmethod";
     private static final String VOID_VOID_METHOD_NAME = "voidvoid";
+    private static final Scope SERVER_SCOPE = new Scope("/test/server");
 
     private LocalServer server;
     private RemoteServer remote;
@@ -142,43 +147,134 @@ public class RpcIntegrationTest extends RsbTestCase {
     }
 
     @Test(timeout = 20000)
-    public void serverCallIsInterruptible() throws Exception {
-        final Scope scope = new Scope("/a/scope");
-        final LocalServer server = Factory.getInstance().createLocalServer(
-                scope, Utilities.createParticipantConfig());
+    public void nonReturningCallIsInterruptible() throws Exception {
+        final String method = "nonexistingmethod";
         final RemoteServer remote = Factory.getInstance().createRemoteServer(
-                scope, Utilities.createParticipantConfig());
+                SERVER_SCOPE, Utilities.createParticipantConfig());
 
-        final String method = "longrunningmethod";
-        server.addMethod(method, new Callback() {
-            @Override
-            public Event internalInvoke(
-                    final Event request) throws UserCodeException,
-                                                InterruptedException {
-                // CHECKSTYLE.OFF: MagicNumber
-                // Wait longer than the timeout of the test method. If
-                // interruption doesn't work, this will end up in the timeout.
-                Thread.sleep(40000);
-                // CHECKSTYLE.ON: MagicNumber
+        remote.activate();
+        try {
+            remote.callAsync(method);
+        } finally {
+            remote.deactivate();
+        }
+    }
+
+    private class MyException extends RuntimeException {
+        public MyException(final Exception cause) {
+            super(cause);
+        }
+    }
+
+    enum OnInterrupt {
+        SWALLOW,
+        KEEP,
+        USER_EXCEPTION
+    }
+
+    LocalServer createLocalServerWithLongRunningMethod(
+        final OnInterrupt onInterrupt) throws Exception {
+        final LocalServer server =  Factory.getInstance().createLocalServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+        server.addMethod(LONG_RUNNING_METHOD_NAME, new EventCallback() {
+            public Event invoke(final Event request) throws Exception {
+                try {
+                    // CHECKSTYLE.OFF: MagicNumber
+                    // Wait longer than the timeout of the test method. If
+                    // interruption doesn't work, this will end up in the timeout.
+                    Thread.sleep(40000);
+                    // CHECKSTYLE.ON: MagicNumber
+                } catch (InterruptedException e) {
+                    switch (onInterrupt) {
+                    case SWALLOW:
+                        break;
+                    case KEEP:
+                        throw e;
+                    case USER_EXCEPTION:
+                        throw new MyException(e);
+                    default: // cannot happen, but checkstyle :(
+                    }
+                }
                 return request;
             }
         });
+        return server;
+    }
+
+    @Test(timeout = 20000)
+    public void longRunningCallIsInterruptibleRemoteFirst() throws Exception {
+        final LocalServer server
+            = createLocalServerWithLongRunningMethod(OnInterrupt.KEEP);
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
 
         server.activate();
         try {
             remote.activate();
-
             try {
-
-                remote.callAsync("mymethod");
-                // CHECKSTYLE.OFF: MagicNumber
-                Thread.sleep(1000);
-                // CHECKSTYLE.ON
-
+                remote.callAsync(LONG_RUNNING_METHOD_NAME);
             } finally {
                 remote.deactivate();
             }
+        } finally {
+            server.deactivate();
+        }
+    }
 
+    @Test(timeout = 20000, expected = java.util.concurrent.ExecutionException.class)
+    public void longRunningCallIsInterruptibleLocalFirst() throws Exception {
+        final LocalServer server
+            = createLocalServerWithLongRunningMethod(OnInterrupt.KEEP);
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+
+        server.activate();
+        remote.activate();
+        try {
+            java.util.concurrent.Future<Event> result
+                = remote.callAsync(LONG_RUNNING_METHOD_NAME);
+            server.deactivate();
+            result.get();
+        } finally {
+            remote.deactivate();
+        }
+    }
+
+    @Test(timeout = 20000)
+    public void swallowingServerCallIsInterruptible() throws Exception {
+        final LocalServer server
+            = createLocalServerWithLongRunningMethod(OnInterrupt.SWALLOW);
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+
+        server.activate();
+        try {
+            remote.activate();
+            try {
+                remote.callAsync(LONG_RUNNING_METHOD_NAME);
+            } finally {
+                remote.deactivate();
+            }
+        } finally {
+            server.deactivate();
+        }
+    }
+
+    @Test(timeout = 20000)
+    public void throwingServerCallIsInterruptible() throws Exception {
+        final LocalServer server
+            = createLocalServerWithLongRunningMethod(OnInterrupt.USER_EXCEPTION);
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+
+        server.activate();
+        try {
+            remote.activate();
+            try {
+                remote.callAsync(LONG_RUNNING_METHOD_NAME);
+            } finally {
+                remote.deactivate();
+            }
         } finally {
             server.deactivate();
         }
