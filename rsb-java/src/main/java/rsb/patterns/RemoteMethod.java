@@ -62,6 +62,27 @@ public class RemoteMethod extends Method implements Handler {
             new ConcurrentHashMap<EventId, FuturePreparator<?>>(16, 0.75f, 8);
 
     /**
+     * A specialized active state that cancels pending requests on
+     * exit.
+     */
+    protected class StateActive extends Method.StateActive {
+
+        @Override
+        public void deactivate() throws RSBException, InterruptedException {
+            LOG.finer("Canceling all in-progress requests");
+            synchronized (RemoteMethod.this) {
+                for (final FuturePreparator<?> request
+                         : RemoteMethod.this.pendingRequests.values()) {
+                    request.error(new RSBException("Server deactivated"));
+                }
+                RemoteMethod.this.pendingRequests.clear();
+            }
+            super.deactivate();
+        }
+
+    }
+
+    /**
      * Instances of this class are used to prepare a {@link Future} instance
      * containing the desired result of the client from the reply {@link Event}
      * instance.
@@ -149,6 +170,11 @@ public class RemoteMethod extends Method implements Handler {
                         .setConfig(this.getConfig()).setParent(this)));
         this.getListener().addFilter(new MethodFilter("REPLY"));
         this.getListener().addHandler(this, true);
+    }
+
+    @Override
+    protected State createActiveState() {
+        return new StateActive();
     }
 
     /**
