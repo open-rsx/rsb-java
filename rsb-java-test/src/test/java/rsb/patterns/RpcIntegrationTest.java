@@ -29,10 +29,10 @@ package rsb.patterns;
 
 import static org.junit.Assert.assertEquals;
 
-// CHECKSTYLE.OFF: UnusedImport
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-// CHECKSTYLE.ON: UnusedImport
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +40,7 @@ import org.junit.Test;
 
 import rsb.Event;
 import rsb.Factory;
+import rsb.RSBException;
 import rsb.RsbTestCase;
 import rsb.Scope;
 import rsb.Utilities;
@@ -53,6 +54,7 @@ public class RpcIntegrationTest extends RsbTestCase {
     private static final String TEST_DATA = "A test String";
     private static final String METHOD_NAME = "myMethod";
     private static final String LONG_RUNNING_METHOD_NAME = "longrunningmethod";
+    private static final String NON_EXISTING_METHOD_NAME = "nonexistingmethod";
     private static final String VOID_VOID_METHOD_NAME = "voidvoid";
     private static final Scope SERVER_SCOPE = new Scope("/test/server");
 
@@ -146,18 +148,47 @@ public class RpcIntegrationTest extends RsbTestCase {
         assertEquals(null, reply.get().getData());
     }
 
-    @Test(timeout = 20000)
-    public void nonReturningCallIsInterruptible() throws Exception {
-        final String method = "nonexistingmethod";
+    @Test(timeout = 20000, expected = ExecutionException.class)
+    public void nonReturningAsyncCallIsInterruptible() throws Exception {
         final RemoteServer remote = Factory.getInstance().createRemoteServer(
                 SERVER_SCOPE, Utilities.createParticipantConfig());
 
         remote.activate();
+        Future<Event> result;
         try {
-            remote.callAsync(method);
+            result = remote.callAsync(NON_EXISTING_METHOD_NAME);
         } finally {
             remote.deactivate();
         }
+        result.get();
+    }
+
+    @Test(timeout = 20000)
+    public void nonReturningSyncCallIsInterruptible() throws Exception {
+        final RemoteServer remote = Factory.getInstance().createRemoteServer(
+                SERVER_SCOPE, Utilities.createParticipantConfig());
+
+        remote.activate();
+        final boolean[] good = new boolean[1];
+        good[0] = false;
+        Thread thread = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        remote.call(NON_EXISTING_METHOD_NAME);
+                    } catch (ExecutionException e) {
+                       good[0] = true;
+                    } catch (RSBException | TimeoutException
+                             | CancellationException | InterruptedException e) {
+                    }
+                }
+            });
+        thread.start();
+        // CHECKSTYLE.OFF: MagicNumber
+        Thread.sleep(1000);
+        // CHECKSTYLE.ON: MagicNumber
+        remote.deactivate();
+        thread.join();
+        assertEquals(true, good[0]);
     }
 
     private class MyException extends RuntimeException {
@@ -221,7 +252,7 @@ public class RpcIntegrationTest extends RsbTestCase {
         }
     }
 
-    @Test(timeout = 20000, expected = java.util.concurrent.ExecutionException.class)
+    @Test(timeout = 20000, expected = ExecutionException.class)
     public void longRunningCallIsInterruptibleLocalFirst() throws Exception {
         final LocalServer server
             = createLocalServerWithLongRunningMethod(OnInterrupt.KEEP);

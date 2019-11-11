@@ -66,14 +66,14 @@ public abstract class Method extends Participant {
      *
      * @author jwienke
      */
-    private abstract class State extends Activatable.State {
+    protected abstract class State extends Activatable.State {
         // pull into own namespace for nice class names
     }
 
     /**
      * Represents the state of a method that is currently active.
      */
-    private class StateActive extends State {
+    protected class StateActive extends State {
 
         @Override
         public void deactivate() throws RSBException, InterruptedException {
@@ -100,14 +100,14 @@ public abstract class Method extends Participant {
     /**
      * Represents the state of a method that is currently inactive.
      */
-    private class StateInactive extends State {
+    protected class StateInactive extends State {
 
         @Override
         public void activate() throws RSBException {
             Method.super.activate();
             Method.this.getInformer().activate();
             Method.this.getListener().activate();
-            Method.this.state = new StateActive();
+            Method.this.state = Method.this.createActiveState();
             Method.this.activated();
         }
 
@@ -123,7 +123,7 @@ public abstract class Method extends Participant {
      *
      * @author jwienke
      */
-    private class StateTerminal extends State {
+    protected class StateTerminal extends State {
 
         @Override
         public boolean isActive() {
@@ -205,6 +205,15 @@ public abstract class Method extends Participant {
     @Override
     public void deactivate() throws RSBException, InterruptedException {
         this.state.deactivate();
+    }
+
+    /**
+     * Creates and returns a suitable active state.
+     *
+     * @return The active state object.
+     */
+    protected State createActiveState() {
+        return new StateActive();
     }
 
     @Override
