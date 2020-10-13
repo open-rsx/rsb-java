@@ -40,7 +40,7 @@
         <plugin.javadoc.version>3.0.1</plugin.javadoc.version>
         <plugin.jacoco.version>0.8.2</plugin.jacoco.version>
         <failOnStyleError>true</failOnStyleError>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
     <modules>
